@@ -32,24 +32,21 @@
 
 - [x] Docker Compose設定
   - PostgreSQL 16
-  - Redis 7（または Dragonfly）
+  - Dragonfly（Redis互換）
   - MySQL 8（オプション、プロファイル経由）
 - [x] 環境変数テンプレート（.env.example）
 
 **関連ファイル:**
-- `/docker-compose.yml`
+- `/compose.yml`
 - `/.env.example`
 
 **起動コマンド:**
 ```bash
-# PostgreSQL + Redis起動
-docker-compose up -d
+# PostgreSQL + Dragonfly起動
+docker compose up -d
 
 # MySQL追加の場合
-docker-compose --profile mysql up -d
-
-# Dragonfly使用の場合
-docker-compose --profile dragonfly up -d
+docker compose --profile mysql up -d
 ```
 
 ### 3. 共通型定義 ✅ 完了

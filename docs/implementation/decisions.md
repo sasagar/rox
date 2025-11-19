@@ -106,6 +106,36 @@
 
 ---
 
+## キュー・キャッシュ
+
+### 決定: Dragonfly（Redis互換）
+
+**選択肢:**
+1. Redis
+2. Dragonfly
+3. KeyDB
+
+**決定:** Dragonfly
+
+**理由:**
+- Redis完全互換（既存のRedisクライアント・ツールがそのまま使える）
+- メモリ効率が高い（最大25倍効率的、メーカー公称値）
+- マルチスレッド対応でパフォーマンスが高い
+- 軽量でリソース消費が少ない
+- アクティブに開発・メンテナンスされている
+
+**用途:**
+- BullMQジョブキュー（ActivityPub配送など）
+- セッションキャッシュ（将来的に）
+- Pub/Sub（リアルタイム通知、Phase 3以降）
+
+**設定:**
+- ポート: 6379（Redisと同じデフォルトポート）
+- データ永続化: ボリュームマウント（/data）
+- ヘルスチェック: redis-cli ping
+
+---
+
 ## ストレージ
 
 ### 決定: マルチストレージ対応
@@ -185,11 +215,11 @@
 **理由:**
 - リアルタイム性の向上
 - 帯域節約
-- スケーラビリティは Redis Pub/Sub で対応
+- スケーラビリティは Dragonfly Pub/Sub で対応
 
 **実装予定:**
 - Socket.IO または Hono WebSocket
-- Redis Pub/Sub でサーバー間通信
+- Dragonfly Pub/Sub でサーバー間通信（Redis互換API）
 
 ---
 
@@ -313,6 +343,32 @@ return `${timestamp}${random}`;
 
 ---
 
+## 開発環境
+
+### 決定: Docker Compose v2形式
+
+**変更内容:**
+- ファイル名: `docker-compose.yml` → `compose.yml`
+- `version` フィールド削除（v2では不要）
+- コマンド: `docker-compose` → `docker compose`（ハイフンなし）
+
+**理由:**
+- Docker Compose v2の推奨フォーマット
+- Docker CLIとの統合（docker composeがネイティブサブコマンド）
+- 将来的な互換性の確保
+
+**compose.yml構成:**
+- **postgres**: PostgreSQL 16（メインデータベース）
+- **dragonfly**: Dragonfly latest（キュー・キャッシュ）
+- **mysql**: MySQL 8（オプション、`--profile mysql`で起動）
+
+**注意事項:**
+- docker-compose（v1、Python版）は非推奨
+- docker compose（v2、Go版）の使用を推奨
+- 既存のdocker-compose.ymlは削除済み
+
+---
+
 ## デプロイメント
 
 ### 決定: 複数デプロイメントオプション提供
@@ -321,7 +377,7 @@ return `${timestamp}${random}`;
 
 1. **VPS / Dedicated Server（推奨）**
    - Docker Compose
-   - PostgreSQL + Redis + Backend + Frontend
+   - PostgreSQL + Dragonfly + Backend + Frontend
    - Nginx/Caddy リバースプロキシ
 
 2. **Cloudflare（Edge）**
@@ -382,6 +438,8 @@ return `${timestamp}${random}`;
 | 日付 | 項目 | 変更内容 | 理由 |
 |------|------|---------|------|
 | 2025-11-19 | - | 初版作成 | - |
+| 2025-11-19 | Docker構成 | RedisをDragonflyに変更、docker-compose.yml→compose.ymlにリネーム | Dragonflyの方がRedis互換でより軽量。Docker Compose v2の推奨フォーマットに準拠 |
+| 2025-11-19 | ドキュメント | CLAUDE.mdへの参照を削除、docs/implementation/への参照に変更 | CLAUDE.mdはAI専用ファイルで人間向けドキュメントではないため |
 
 ---
 

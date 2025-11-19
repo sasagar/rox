@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -18,29 +16,18 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: rox-redis
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: rox-dragonfly
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - dragonfly_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # Alternative: Dragonfly (Redis-compatible, lighter)
-  dragonfly:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
-    container_name: rox-dragonfly
-    ports:
-      - "6380:6379"
-    volumes:
-      - dragonfly_data:/data
-    profiles:
-      - dragonfly
 
   # MySQL (optional, for testing multi-DB support)
   mysql:
@@ -60,6 +47,5 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
   dragonfly_data:
   mysql_data:

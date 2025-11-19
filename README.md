@@ -56,11 +56,11 @@ cp .env.example .env
 ### 4. Start development services
 
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up -d
+# Start PostgreSQL and Dragonfly
+docker compose up -d
 
 # Wait for services to be healthy
-docker-compose ps
+docker compose ps
 ```
 
 ### 5. Run database migrations
@@ -110,7 +110,7 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 
 ```bash
 # Start MySQL service
-docker-compose --profile mysql up -d
+docker compose --profile mysql up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -151,7 +151,7 @@ Rox uses the **Repository Pattern** and **Adapter Pattern** to decouple business
 - **Adapter Pattern**: Storage operations use adapters (`LocalStorageAdapter`, `S3StorageAdapter`)
 - **Dependency Injection**: Implementations are injected via Hono Context based on environment variables
 
-See [CLAUDE.md](./CLAUDE.md) for detailed architectural documentation.
+See [Implementation Guide](./docs/implementation/README.md) for detailed architectural documentation.
 
 ## Technology Stack
 
@@ -176,7 +176,14 @@ See [CLAUDE.md](./CLAUDE.md) for detailed architectural documentation.
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUTING.md) before submitting PRs.
+
+**Key Points:**
+
+- TSDoc comments must be in English
+- Follow the Repository and Adapter patterns
+- Run `bun run lint && bun run typecheck && bun test` before submitting
+- Use conventional commit messages
 
 ## License
 
@@ -184,6 +191,7 @@ MIT
 
 ## Links
 
+- [Contributing Guidelines](./CONTRIBUTING.md)
 - [Project Specification](./docs/project/v1.md) (Japanese)
-- [Developer Guide](./CLAUDE.md)
+- [Implementation Guide](./docs/implementation/README.md)
 - [API Documentation](./docs/api/) (Coming soon)

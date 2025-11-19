@@ -56,11 +56,11 @@ cp .env.example .env
 ### 4. 開発サービスを起動
 
 ```bash
-# PostgreSQLとRedisを起動
-docker-compose up -d
+# PostgreSQLとDragonflyを起動
+docker compose up -d
 
 # サービスが正常に起動するまで待機
-docker-compose ps
+docker compose ps
 ```
 
 ### 5. データベースマイグレーションを実行
@@ -110,7 +110,7 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 
 ```bash
 # MySQLサービスを起動
-docker-compose --profile mysql up -d
+docker compose --profile mysql up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -151,7 +151,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 - **アダプターパターン**: ストレージ操作はアダプター（`LocalStorageAdapter`、`S3StorageAdapter`）を使用
 - **依存性注入**: 環境変数に基づいてHono Context経由で実装を注入
 
-詳細なアーキテクチャドキュメントは [CLAUDE.md](./CLAUDE.md) を参照してください。
+詳細なアーキテクチャドキュメントは [実装ガイド](./docs/implementation/README.md) を参照してください。
 
 ## 技術スタック
 
@@ -176,7 +176,14 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 
 ## コントリビューション
 
-コントリビューションを歓迎します！PRを送信する前に、コントリビューションガイドラインをお読みください。
+コントリビューションを歓迎します！PRを送信する前に[コントリビューションガイドライン](./CONTRIBUTING.ja.md)をお読みください。
+
+**重要ポイント：**
+
+- TSDocコメントは必ず英語で記述
+- リポジトリパターンとアダプターパターンに従う
+- 送信前に `bun run lint && bun run typecheck && bun test` を実行
+- Conventional Commitメッセージを使用
 
 ## ライセンス
 
@@ -184,6 +191,7 @@ MIT
 
 ## リンク
 
+- [コントリビューションガイドライン](./CONTRIBUTING.ja.md)
 - [プロジェクト仕様書](./docs/project/v1.md)（日本語）
-- [開発者ガイド](./CLAUDE.md)（英語）
+- [実装ガイド](./docs/implementation/README.md)
 - [APIドキュメント](./docs/api/)（準備中）

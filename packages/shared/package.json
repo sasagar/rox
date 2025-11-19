@@ -1,5 +1,5 @@
 {
-  "name": "shared",
+  "name": "rox_shared",
   "version": "0.1.0",
   "private": true,
   "type": "module",
