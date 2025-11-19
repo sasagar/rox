@@ -32,6 +32,11 @@ export interface ISessionRepository {
   delete(id: string): Promise<void>;
 
   /**
+   * トークンでセッションを削除
+   */
+  deleteByToken(token: string): Promise<void>;
+
+  /**
    * ユーザーの全セッションを削除
    */
   deleteByUserId(userId: string): Promise<void>;

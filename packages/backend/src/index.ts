@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { diMiddleware, errorHandler } from './middleware/index.js';
+import usersRoute from './routes/users.js';
+import authRoute from './routes/auth.js';
 
 const app = new Hono();
 
@@ -29,8 +31,9 @@ app.get('/', (c) => {
   });
 });
 
-// TODO: Phase 1でAPIルートを追加
-// app.route('/api', apiRoutes);
+// APIルート
+app.route('/api/users', usersRoute);
+app.route('/api/auth', authRoute);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 

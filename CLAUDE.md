@@ -2,6 +2,41 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentation Policy
+
+### Code Documentation Standards
+
+- **TSDoc Comments**: All TSDoc comments (/** */) MUST be written in English
+  - Module-level documentation
+  - Function/method documentation
+  - Class/interface documentation
+  - Parameter descriptions (@param)
+  - Return value descriptions (@returns)
+  - Example code (@example)
+
+- **Inline Comments**: Inline comments (`//` or `/* */`) MAY be in Japanese or English
+  - Implementation notes
+  - TODO comments
+  - Code explanations
+
+### User-Facing Documentation
+
+- **Primary Language**: English (for global accessibility)
+- **Japanese Support**: Parallel Japanese documentation provided
+  - README.ja.md (Japanese version of README.md)
+  - docs/project/v1.md (Japanese specification)
+
+### Rationale
+
+While this project originates from a Japanese community, we maintain English-first documentation for:
+
+- International collaboration
+- Global developer accessibility
+- Better IDE/tooling support (most tools expect English)
+- Industry standard compliance
+
+Japanese documentation is provided in parallel to support the local community.
+
 ## Project Overview
 
 **Rox** is a lightweight ActivityPub server & client designed to be:

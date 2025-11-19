@@ -77,6 +77,10 @@ export class PostgresSessionRepository implements ISessionRepository {
     await this.db.delete(sessions).where(eq(sessions.id, id));
   }
 
+  async deleteByToken(token: string): Promise<void> {
+    await this.db.delete(sessions).where(eq(sessions.token, token));
+  }
+
   async deleteByUserId(userId: string): Promise<void> {
     await this.db.delete(sessions).where(eq(sessions.userId, userId));
   }
@@ -84,8 +88,9 @@ export class PostgresSessionRepository implements ISessionRepository {
   async deleteExpired(): Promise<number> {
     const result = await this.db
       .delete(sessions)
-      .where(lt(sessions.expiresAt, new Date()));
+      .where(lt(sessions.expiresAt, new Date()))
+      .returning({ id: sessions.id });
 
-    return result.rowCount ?? 0;
+    return result.length;
   }
 }

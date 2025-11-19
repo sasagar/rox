@@ -5,6 +5,7 @@
     "lib": ["ES2022"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "noEmit": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,

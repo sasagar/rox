@@ -2,6 +2,8 @@
 
 A lightweight ActivityPub server & client with Misskey API compatibility.
 
+**Languages**: English | [日本語](./README.ja.md)
+
 ## Features
 
 - **Lightweight & High Performance**: Built with Bun runtime and modern web standards

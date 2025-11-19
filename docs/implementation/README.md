@@ -16,10 +16,36 @@
 
 | フェーズ | ステータス | 完了率 | 備考 |
 |---------|----------|--------|------|
-| Phase 0: Foundation | 🔄 進行中 | 60% | モノレポ構築完了、Repository実装中 |
-| Phase 1: Misskey API | ⏳ 未着手 | 0% | Phase 0完了後に開始 |
+| Phase 0: Foundation | ✅ 完了 | 100% | 全ての基盤コンポーネント実装・テスト完了 |
+| Phase 1: Misskey API | 🔄 進行中 | 30% | 認証システム完了、ノート機能は未着手 |
 | Phase 2: Frontend | ⏳ 未着手 | 0% | Phase 1完了後に開始 |
 | Phase 3: Federation | ⏳ 未着手 | 0% | Phase 1完了後に開始可能 |
+
+## 直近の実装内容
+
+### Phase 0 (完了)
+- ✅ Bunワークスペース・モノレポ構造
+- ✅ TypeScript strict mode設定
+- ✅ oxc設定（リント・フォーマット）
+- ✅ Docker Compose（PostgreSQL/Redis）
+- ✅ Drizzle ORMスキーマ定義（6テーブル）
+- ✅ Repository Pattern実装（6リポジトリ）
+- ✅ Storage Adapter Pattern実装（Local/S3）
+- ✅ DIコンテナとミドルウェア
+- ✅ データベースマイグレーション
+
+### Phase 1 (進行中)
+- ✅ パスワードハッシュユーティリティ（Argon2id）
+- ✅ セッション管理ユーティリティ
+- ✅ 認証サービス（登録・ログイン・ログアウト）
+- ✅ 認証ミドルウェア（optionalAuth/requireAuth）
+- ✅ ユーザーAPIルート（登録・取得・更新）
+- ✅ 認証APIルート（ログイン・ログアウト・セッション検証）
+- ✅ 全機能のテスト完了
+- ⏳ ノート投稿機能（未着手）
+- ⏳ タイムライン機能（未着手）
+- ⏳ リアクション機能（未着手）
+- ⏳ ファイルアップロード機能（未着手）
 
 ## クイックリンク
 
@@ -32,5 +58,5 @@
 このドキュメントは実装の進行に合わせて更新されます。
 
 **最終更新:** 2025-11-19
-**現在のフェーズ:** Phase 0 (Foundation)
-**次のマイルストーン:** Repository Pattern実装完了
+**現在のフェーズ:** Phase 1 (Misskey API - 認証システム完了)
+**次のマイルストーン:** ノート投稿機能の実装

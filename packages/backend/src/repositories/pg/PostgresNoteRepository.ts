@@ -51,29 +51,29 @@ export class PostgresNoteRepository implements INoteRepository {
   async getLocalTimeline(options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    let query = this.db
-      .select()
-      .from(notes)
-      .innerJoin(users, eq(notes.userId, users.id))
-      .where(
-        and(
-          isNull(users.host), // ローカルユーザーのみ
-          eq(notes.visibility, 'public'), // 公開投稿のみ
-          eq(notes.localOnly, false) // localOnlyでない投稿
-        )
-      )
-      .orderBy(desc(notes.createdAt))
-      .limit(limit);
+    // 条件を配列に集める
+    const conditions = [
+      isNull(users.host), // ローカルユーザーのみ
+      eq(notes.visibility, 'public'), // 公開投稿のみ
+      eq(notes.localOnly, false), // localOnlyでない投稿
+    ];
 
     if (sinceId) {
-      query = query.where(gt(notes.id, sinceId));
+      conditions.push(gt(notes.id, sinceId));
     }
 
     if (untilId) {
-      query = query.where(lt(notes.id, untilId));
+      conditions.push(lt(notes.id, untilId));
     }
 
-    const results = await query;
+    const results = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(and(...conditions))
+      .orderBy(desc(notes.createdAt))
+      .limit(limit);
+
     return results.map((r) => r.notes as Note);
   }
 
@@ -209,15 +209,20 @@ export class PostgresNoteRepository implements INoteRepository {
   }
 
   async count(localOnly = false): Promise<number> {
-    let query = this.db.select({ count: sql<number>`count(*)::int` }).from(notes);
-
     if (localOnly) {
-      query = query
+      const [result] = await this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(notes)
         .innerJoin(users, eq(notes.userId, users.id))
         .where(isNull(users.host));
+
+      return result?.count ?? 0;
     }
 
-    const [result] = await query;
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(notes);
+
     return result?.count ?? 0;
   }
 }

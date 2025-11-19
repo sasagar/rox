@@ -59,8 +59,8 @@ export const notes = pgTable(
     cw: text('cw'), // Content Warning
     visibility: text('visibility').notNull().default('public'), // public, home, followers, specified
     localOnly: boolean('local_only').notNull().default(false),
-    replyId: text('reply_id').references(() => notes.id, { onDelete: 'set null' }),
-    renoteId: text('renote_id').references(() => notes.id, { onDelete: 'set null' }),
+    replyId: text('reply_id'),
+    renoteId: text('renote_id'),
     fileIds: jsonb('file_ids').$type<string[]>().notNull().default([]),
     mentions: jsonb('mentions').$type<string[]>().notNull().default([]),
     emojis: jsonb('emojis').$type<string[]>().notNull().default([]),
