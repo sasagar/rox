@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { diMiddleware, errorHandler } from './middleware/index.js';
 import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
+import driveRoute from './routes/drive.js';
 
 const app = new Hono();
 
@@ -34,6 +35,7 @@ app.get('/', (c) => {
 // APIルート
 app.route('/api/users', usersRoute);
 app.route('/api/auth', authRoute);
+app.route('/api/drive', driveRoute);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 

@@ -289,11 +289,43 @@ Response: { users: UserProfile[]; nextCursor?: string }
 
 ---
 
-## 3. ファイル管理（Week 2）
+## 3. ファイル管理（Week 2）✅ 完了
 
 **優先度:** 🟡 高
+**ステータス:** ✅ 完了（2025-11-19）
 **前提:** 認証システム完了
 **ブロック:** ノート作成（画像添付）
+
+### 完了した機能
+
+1. **FileService実装**
+   - ✅ ファイルアップロード（`services/FileService.ts`）
+   - ✅ ファイルサイズバリデーション（最大10MB、環境変数で設定可能）
+   - ✅ MD5ハッシュ計算
+   - ✅ ストレージアダプター統合（Local/S3対応）
+   - ✅ ファイル削除
+   - ✅ メタデータ更新（isSensitive, comment）
+   - ✅ ストレージ使用量計算
+
+2. **ドライブAPIエンドポイント**
+   - ✅ `POST /api/drive/files/create` - ファイルアップロード
+   - ✅ `GET /api/drive/files` - ファイル一覧（ページネーション対応）
+   - ✅ `GET /api/drive/files/show` - ファイル情報取得
+   - ✅ `POST /api/drive/files/update` - メタデータ更新
+   - ✅ `POST /api/drive/files/delete` - ファイル削除
+   - ✅ `GET /api/drive/usage` - ストレージ使用量取得
+
+3. **セキュリティ**
+   - ✅ 認証必須（requireAuth）
+   - ✅ 所有者確認（自分のファイルのみアクセス可能）
+   - ✅ ファイルサイズ制限
+
+### Phase 1.1で実装予定（後回し）
+
+- ⏳ サムネイル生成（画像）
+- ⏳ Blurhash生成（プレビュー）
+- ⏳ WebP変換（オプション）
+- ⏳ MIME typeバリデーション強化
 
 ### 3.1 ドライブAPI
 
