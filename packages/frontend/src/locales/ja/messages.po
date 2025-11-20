@@ -17,14 +17,126 @@ msgstr ""
 #~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
 #~ msgstr ""
 
+#: src/components/timeline/Timeline.tsx:152
+msgid "Be the first to post something!"
+msgstr "最初の投稿をしてみましょう！"
+
+#: src/pages/login.tsx:85
+msgid "Choose your preferred sign-in method"
+msgstr "サインイン方法を選択してください"
+
+#: src/components/note/NoteCard.tsx:103
+msgid "Content Warning"
+msgstr "閲覧注意"
+
+#: src/pages/login.tsx:168
+msgid "Don't have an account?"
+msgstr "アカウントをお持ちでないですか？"
+
+#: src/components/timeline/Timeline.tsx:118
+msgid "Error loading timeline"
+msgstr "タイムラインの読み込みに失敗しました"
+
+#: src/components/timeline/Timeline.tsx:161
+msgid "Load more"
+msgstr "もっと読み込む"
+
+#: src/pages/login.tsx:52
+msgid "Login failed. Please check your credentials."
+msgstr "ログインに失敗しました。認証情報を確認してください。"
+
+#: src/components/timeline/Timeline.tsx:149
+msgid "No notes yet"
+msgstr "まだ投稿がありません"
+
+#: src/pages/login.tsx:126
+msgid "Or continue with password"
+msgstr "またはパスワードでログイン"
+
+#: src/pages/login.tsx:71
+msgid "Passkey authentication failed."
+msgstr "パスキー認証に失敗しました。"
+
+#: src/pages/login.tsx:144
+msgid "Password"
+msgstr "パスワード"
+
+#: src/pages/login.tsx:148
+msgid "Password is required"
+msgstr "パスワードを入力してください"
+
 #: src/app/page.tsx:57
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr ""
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Post"
+msgstr "投稿"
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Posting..."
+msgstr "投稿中..."
+
+#: src/pages/index.tsx:32
+msgid "Recent posts from your community"
+msgstr "コミュニティの最新投稿"
+
+#: src/components/note/NoteCard.tsx:94
+msgid "Renoted"
+msgstr "リノート"
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Reply"
+msgstr "返信"
+
+#: src/components/note/NoteCard.tsx:111
+msgid "Show content"
+msgstr "内容を表示"
+
+#: src/pages/login.tsx:163
+msgid "Sign in"
+msgstr "サインイン"
+
+#: src/pages/login.tsx:82
+msgid "Sign in to Rox"
+msgstr "Roxにサインイン"
+
+#: src/pages/login.tsx:113
+msgid "Sign in with GitHub"
+msgstr "GitHubでサインイン"
+
+#: src/pages/login.tsx:99
+msgid "Sign in with Passkey"
+msgstr "パスキーでサインイン"
+
+#: src/pages/login.tsx:170
+msgid "Sign up"
+msgstr "新規登録"
+
+#: src/pages/login.tsx:163
+msgid "Signing in..."
+msgstr "サインイン中..."
+
+#: src/pages/index.tsx:29
+msgid "Timeline"
+msgstr "タイムライン"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr ""
 
+#: src/pages/login.tsx:135
+msgid "Username"
+msgstr "ユーザー名"
+
+#: src/pages/login.tsx:139
+msgid "Username is required"
+msgstr "ユーザー名を入力してください"
+
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"
 #~ msgstr ""
+
+#: src/components/timeline/Timeline.tsx:140
+msgid "You've reached the end of the timeline"
+msgstr "タイムラインの最後に到達しました"

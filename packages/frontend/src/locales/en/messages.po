@@ -17,14 +17,126 @@ msgstr ""
 #~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
 #~ msgstr "A lightweight ActivityPub server with Misskey API compatibility"
 
+#: src/components/timeline/Timeline.tsx:152
+msgid "Be the first to post something!"
+msgstr "Be the first to post something!"
+
+#: src/pages/login.tsx:85
+msgid "Choose your preferred sign-in method"
+msgstr "Choose your preferred sign-in method"
+
+#: src/components/note/NoteCard.tsx:103
+msgid "Content Warning"
+msgstr "Content Warning"
+
+#: src/pages/login.tsx:168
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+#: src/components/timeline/Timeline.tsx:118
+msgid "Error loading timeline"
+msgstr "Error loading timeline"
+
+#: src/components/timeline/Timeline.tsx:161
+msgid "Load more"
+msgstr "Load more"
+
+#: src/pages/login.tsx:52
+msgid "Login failed. Please check your credentials."
+msgstr "Login failed. Please check your credentials."
+
+#: src/components/timeline/Timeline.tsx:149
+msgid "No notes yet"
+msgstr "No notes yet"
+
+#: src/pages/login.tsx:126
+msgid "Or continue with password"
+msgstr "Or continue with password"
+
+#: src/pages/login.tsx:71
+msgid "Passkey authentication failed."
+msgstr "Passkey authentication failed."
+
+#: src/pages/login.tsx:144
+msgid "Password"
+msgstr "Password"
+
+#: src/pages/login.tsx:148
+msgid "Password is required"
+msgstr "Password is required"
+
 #: src/app/page.tsx:57
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Post"
+msgstr "Post"
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Posting..."
+msgstr "Posting..."
+
+#: src/pages/index.tsx:32
+msgid "Recent posts from your community"
+msgstr "Recent posts from your community"
+
+#: src/components/note/NoteCard.tsx:94
+msgid "Renoted"
+msgstr "Renoted"
+
+#: src/components/note/NoteComposer.tsx:274
+msgid "Reply"
+msgstr "Reply"
+
+#: src/components/note/NoteCard.tsx:111
+msgid "Show content"
+msgstr "Show content"
+
+#: src/pages/login.tsx:163
+msgid "Sign in"
+msgstr "Sign in"
+
+#: src/pages/login.tsx:82
+msgid "Sign in to Rox"
+msgstr "Sign in to Rox"
+
+#: src/pages/login.tsx:113
+msgid "Sign in with GitHub"
+msgstr "Sign in with GitHub"
+
+#: src/pages/login.tsx:99
+msgid "Sign in with Passkey"
+msgstr "Sign in with Passkey"
+
+#: src/pages/login.tsx:170
+msgid "Sign up"
+msgstr "Sign up"
+
+#: src/pages/login.tsx:163
+msgid "Signing in..."
+msgstr "Signing in..."
+
+#: src/pages/index.tsx:29
+msgid "Timeline"
+msgstr "Timeline"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
 
+#: src/pages/login.tsx:135
+msgid "Username"
+msgstr "Username"
+
+#: src/pages/login.tsx:139
+msgid "Username is required"
+msgstr "Username is required"
+
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"
 #~ msgstr "Welcome to Rox"
+
+#: src/components/timeline/Timeline.tsx:140
+msgid "You've reached the end of the timeline"
+msgstr "You've reached the end of the timeline"
