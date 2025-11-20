@@ -25,7 +25,7 @@ msgstr "Be the first to post something!"
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
 
-#: src/components/note/NoteCard.tsx:137
+#: src/components/note/NoteCard.tsx:173
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -36,6 +36,14 @@ msgstr "Don't have an account?"
 #: src/components/timeline/Timeline.tsx:118
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
+
+#: src/components/note/NoteCard.tsx:156
+msgid "Follow"
+msgstr "Follow"
+
+#: src/components/note/NoteCard.tsx:156
+msgid "Following"
+msgstr "Following"
 
 #: src/components/timeline/Timeline.tsx:161
 msgid "Load more"
@@ -69,11 +77,11 @@ msgstr "Password is required"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Post"
 msgstr "Post"
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Posting..."
 msgstr "Posting..."
 
@@ -85,15 +93,19 @@ msgstr "React"
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
-#: src/components/note/NoteCard.tsx:128
+#: src/components/note/NoteCard.tsx:164
 msgid "Renoted"
 msgstr "Renoted"
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteCard.tsx:145
+#: src/components/note/NoteComposer.tsx:152
+msgid "Replying to"
+msgstr "Replying to"
+
+#: src/components/note/NoteCard.tsx:181
 msgid "Show content"
 msgstr "Show content"
 

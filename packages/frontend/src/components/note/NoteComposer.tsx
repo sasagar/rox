@@ -146,6 +146,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           />
 
           <div className="flex-1 space-y-3">
+            {/* Reply indicator */}
+            {replyTo && (
+              <div className="text-sm text-gray-600">
+                <Trans>Replying to</Trans> <span className="text-primary-600 font-medium">{replyTo}</span>
+              </div>
+            )}
+
             {/* Content Warning */}
             {showCw && (
               <div className="space-y-2">

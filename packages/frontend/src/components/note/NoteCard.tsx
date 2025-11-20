@@ -8,9 +8,11 @@ import { Card, CardContent } from '../ui/Card';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { notesApi } from '../../lib/api/notes';
+import { NoteComposer } from './NoteComposer';
 import { ReactionButton } from './ReactionPicker';
 import { createReaction, deleteReaction, getMyReactions } from '../../lib/api/reactions';
-import { tokenAtom } from '../../lib/atoms/auth';
+import { followUser, unfollowUser } from '../../lib/api/following';
+import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
 
 /**
  * Props for the NoteCard component
@@ -32,7 +34,10 @@ export interface NoteCardProps {
 export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showReplyComposer, setShowReplyComposer] = useState(false);
   const [token] = useAtom(tokenAtom);
+  const [currentUser] = useAtom(currentUserAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
 
   // Load user's existing reactions on mount
@@ -86,6 +91,22 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
     }
   };
 
+  const handleFollow = async () => {
+    if (!token || !currentUser) return;
+
+    try {
+      if (isFollowing) {
+        await unfollowUser(note.user.id, token);
+        setIsFollowing(false);
+      } else {
+        await followUser(note.user.id, token);
+        setIsFollowing(true);
+      }
+    } catch (error) {
+      console.error('Failed to update follow status:', error);
+    }
+  };
+
   // Get user initials for avatar fallback
   const userInitials = note.user.name
     ? note.user.name
@@ -120,6 +141,21 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
               {new Date(note.createdAt).toLocaleString()}
             </div>
           </div>
+          {/* Follow button (only show if not own post and logged in) */}
+          {currentUser && currentUser.id !== note.user.id && (
+            <Button
+              variant={isFollowing ? 'secondary' : 'primary'}
+              size="sm"
+              onPress={handleFollow}
+              className={`${
+                isFollowing
+                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-primary-500 text-white hover:bg-primary-600'
+              }`}
+            >
+              {isFollowing ? <Trans>Following</Trans> : <Trans>Follow</Trans>}
+            </Button>
+          )}
         </div>
 
         {/* Renote Indicator */}
@@ -210,7 +246,12 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
 
         {/* Interaction Buttons */}
         <div className="flex items-center gap-4 border-t border-gray-100 pt-3">
-          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-primary-600">
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => setShowReplyComposer(!showReplyComposer)}
+            className="text-gray-600 hover:text-primary-600"
+          >
             💬 {note.repliesCount || 0}
           </Button>
           <Button
@@ -246,6 +287,20 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
             </div>
           )}
         </div>
+
+        {/* Reply Composer */}
+        {showReplyComposer && currentUser && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <NoteComposer
+              replyId={note.id}
+              replyTo={`@${note.user.username}`}
+              onNoteCreated={() => {
+                setShowReplyComposer(false);
+                // TODO: Refresh note to show new reply count
+              }}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

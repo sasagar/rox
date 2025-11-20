@@ -25,7 +25,7 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/components/note/NoteCard.tsx:137
+#: src/components/note/NoteCard.tsx:173
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -36,6 +36,14 @@ msgstr "アカウントをお持ちでないですか？"
 #: src/components/timeline/Timeline.tsx:118
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
+
+#: src/components/note/NoteCard.tsx:156
+msgid "Follow"
+msgstr "フォロー"
+
+#: src/components/note/NoteCard.tsx:156
+msgid "Following"
+msgstr "フォロー中"
 
 #: src/components/timeline/Timeline.tsx:161
 msgid "Load more"
@@ -69,11 +77,11 @@ msgstr "パスワードを入力してください"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr ""
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -85,15 +93,19 @@ msgstr "リアクション"
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
-#: src/components/note/NoteCard.tsx:128
+#: src/components/note/NoteCard.tsx:164
 msgid "Renoted"
 msgstr "リノート"
 
-#: src/components/note/NoteComposer.tsx:274
+#: src/components/note/NoteComposer.tsx:281
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteCard.tsx:145
+#: src/components/note/NoteComposer.tsx:152
+msgid "Replying to"
+msgstr "返信先:"
+
+#: src/components/note/NoteCard.tsx:181
 msgid "Show content"
 msgstr "内容を表示"
 
