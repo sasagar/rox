@@ -1,23 +1,35 @@
 # Phase 2: Frontend (Waku Client)
 
 **期間:** 3-4週間
-**ステータス:** ⏳ 未着手
-**前提条件:** Phase 1 (Misskey API)完了
+**ステータス:** 🚧 進行中
+**前提条件:** Phase 1 (Misskey API)完了 ✅
 **並行可能:** Phase 3と並行可能
 
 ## 目的
 
 Waku + React Server Components + Jotai を活用した、高速で使いやすいWebクライアントを構築する。
 
+## 技術スタック
+
+| カテゴリ | 技術 | 目的 |
+|---------|------|------|
+| フレームワーク | Waku | React Server Components (RSC) ネイティブサポート |
+| 状態管理 | Jotai | アトミックな状態管理、最小限の再レンダリング |
+| UIコンポーネント | React Aria Components | アクセシブルで高品質なヘッドレスUIコンポーネント |
+| スタイリング | Tailwind CSS | ユーティリティファーストCSS、ビルド時最適化 |
+| 国際化 | Lingui | 読みやすく自動化された最適化されたi18n（3kb） |
+| フォーム | React Hook Form | パフォーマンス重視のフォーム管理 |
+
 ## 実装順序
 
 1. **Waku + Jotai環境構築** (Week 1)
-2. **UIコンポーネントライブラリ** (Week 1-2)
-3. **認証フロー** (Week 2)
-4. **タイムライン実装** (Week 2-3)
-5. **投稿機能** (Week 3)
-6. **ユーザーインタラクション** (Week 3-4)
-7. **パフォーマンス最適化** (Week 4)
+2. **多言語化設定 (Lingui)** (Week 1)
+3. **UIコンポーネントライブラリ (React Aria Components + Tailwind)** (Week 1-2)
+4. **認証フロー** (Week 2)
+5. **タイムライン実装** (Week 2-3)
+6. **投稿機能** (Week 3)
+7. **ユーザーインタラクション** (Week 3-4)
+8. **パフォーマンス最適化** (Week 4)
 
 ---
 
@@ -173,49 +185,307 @@ export const apiClient = new ApiClient(
 
 ---
 
-## 2. UIコンポーネントライブラリ（Week 1-2）
+## 2. 多言語化設定（Lingui）（Week 1）
 
-**優先度:** 🟡 高（全UI実装の前提）
+**優先度:** 🔴 最高（全UI実装の前提）
+**ライブラリ:** [@lingui/core](https://lingui.dev/) - 3kb、最適化されたi18nライブラリ
 
-### 2.1 基本コンポーネント
+### 2.1 Linguiセットアップ
+
+```bash
+# Lingui関連パッケージのインストール
+bun add @lingui/core @lingui/react
+bun add -D @lingui/cli @lingui/macro babel-plugin-macros
+```
+
+### 2.2 Lingui設定ファイル
+
+```javascript
+// lingui.config.js
+/** @type {import('@lingui/conf').LinguiConfig} */
+export default {
+  locales: ['en', 'ja'],
+  sourceLocale: 'en',
+  catalogs: [
+    {
+      path: '<rootDir>/src/locales/{locale}/messages',
+      include: ['src'],
+    },
+  ],
+  format: 'po',
+};
+```
+
+### 2.3 i18nプロバイダー設定
 
 ```typescript
-// src/components/ui/Button.tsx
-interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  onClick?: () => void;
-  disabled?: boolean;
-}
+// src/lib/i18n.ts
+import { i18n } from '@lingui/core';
+import { messages as enMessages } from '@/locales/en/messages';
+import { messages as jaMessages } from '@/locales/ja/messages';
 
-export function Button({
-  children,
-  variant = 'primary',
-  size = 'md',
-  ...props
-}: ButtonProps) {
-  // Tailwind CSS classes with variants
-  return <button className={/* ... */} {...props}>{children}</button>;
+export const locales = {
+  en: 'English',
+  ja: '日本語',
+};
+
+export const defaultLocale = 'en';
+
+i18n.load({
+  en: enMessages,
+  ja: jaMessages,
+});
+
+i18n.activate(defaultLocale);
+
+export { i18n };
+```
+
+```typescript
+// src/app/layout.tsx
+import { I18nProvider } from '@lingui/react';
+import { i18n } from '@/lib/i18n';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang={i18n.locale}>
+      <body>
+        <I18nProvider i18n={i18n}>
+          {children}
+        </I18nProvider>
+      </body>
+    </html>
+  );
 }
 ```
 
-**実装予定コンポーネント:**
-- Button
-- Input / Textarea
-- Modal / Dialog
-- Avatar
-- Card
-- Loading Spinner
-- Toast / Alert
-- Dropdown
-- Tabs
+### 2.4 使用例
 
-### 2.2 フォームコンポーネント
+```typescript
+// Trans コンポーネント使用例
+import { Trans } from '@lingui/macro';
+
+export function WelcomeMessage() {
+  return (
+    <h1>
+      <Trans>Welcome to Rox</Trans>
+    </h1>
+  );
+}
+
+// t マクロ使用例（プレーンテキスト）
+import { t } from '@lingui/macro';
+
+const placeholder = t`Enter your username`;
+
+// 複数形対応
+import { plural } from '@lingui/macro';
+
+const message = plural(count, {
+  one: '# note',
+  other: '# notes',
+});
+```
+
+### 2.5 言語切り替え機能
+
+```typescript
+// src/components/LanguageSwitcher.tsx
+'use client';
+
+import { useLingui } from '@lingui/react';
+import { locales } from '@/lib/i18n';
+
+export function LanguageSwitcher() {
+  const { i18n } = useLingui();
+
+  return (
+    <select
+      value={i18n.locale}
+      onChange={(e) => {
+        i18n.activate(e.target.value);
+        // Save to localStorage for persistence
+        localStorage.setItem('locale', e.target.value);
+      }}
+    >
+      {Object.entries(locales).map(([key, label]) => (
+        <option key={key} value={key}>
+          {label}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+**完了条件:**
+- [ ] Lingui設定完了
+- [ ] en/ja カタログ作成
+- [ ] i18nプロバイダー設定
+- [ ] 言語切り替え機能実装
+- [ ] メッセージ抽出ワークフロー確立（`bun lingui extract`）
+
+---
+
+## 3. UIコンポーネントライブラリ（Week 1-2）
+
+**優先度:** 🟡 高（全UI実装の前提）
+**ライブラリ:** [React Aria Components](https://react-spectrum.adobe.com/react-aria/) - アクセシブルなヘッドレスUIコンポーネント
+
+### 3.1 React Aria Componentsセットアップ
+
+```bash
+# React Aria Components インストール
+bun add react-aria-components
+bun add -D tailwindcss-react-aria-components
+```
+
+### 3.2 Tailwind設定（React Aria対応）
+
+```javascript
+// tailwind.config.js
+import { plugin } from 'tailwindcss-react-aria-components';
+
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#3b82f6',
+          dark: '#2563eb',
+        },
+      },
+    },
+  },
+  plugins: [plugin],
+};
+```
+
+### 3.3 基本コンポーネント（React Aria Components版）
+
+```typescript
+// src/components/ui/Button.tsx
+import { Button as AriaButton, type ButtonProps as AriaButtonProps } from 'react-aria-components';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: {
+      variant: {
+        primary: 'bg-primary text-white hover:bg-primary-dark',
+        secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+        danger: 'bg-red-600 text-white hover:bg-red-700',
+      },
+      size: {
+        sm: 'h-9 px-3',
+        md: 'h-10 px-4 py-2',
+        lg: 'h-11 px-8',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
+    },
+  }
+);
+
+interface ButtonProps extends AriaButtonProps, VariantProps<typeof buttonVariants> {}
+
+export function Button({ variant, size, className, ...props }: ButtonProps) {
+  return (
+    <AriaButton
+      className={buttonVariants({ variant, size, className })}
+      {...props}
+    />
+  );
+}
+```
+
+```typescript
+// src/components/ui/TextField.tsx
+import { TextField as AriaTextField, Label, Input } from 'react-aria-components';
+import { Trans } from '@lingui/macro';
+
+interface TextFieldProps {
+  label: string;
+  description?: string;
+  errorMessage?: string;
+}
+
+export function TextField({ label, description, errorMessage, ...props }: TextFieldProps) {
+  return (
+    <AriaTextField {...props} className="flex flex-col gap-1">
+      <Label className="text-sm font-medium">{label}</Label>
+      <Input className="rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+      {description && <div className="text-sm text-gray-600">{description}</div>}
+      {errorMessage && <div className="text-sm text-red-600">{errorMessage}</div>}
+    </AriaTextField>
+  );
+}
+```
+
+```typescript
+// src/components/ui/Dialog.tsx
+import {
+  Dialog as AriaDialog,
+  DialogTrigger,
+  Modal,
+  ModalOverlay,
+  Heading,
+} from 'react-aria-components';
+import { Trans } from '@lingui/macro';
+
+export function Dialog({ title, children, trigger }: {
+  title: string;
+  children: React.ReactNode;
+  trigger: React.ReactNode;
+}) {
+  return (
+    <DialogTrigger>
+      {trigger}
+      <ModalOverlay className="fixed inset-0 bg-black/50">
+        <Modal className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-xl">
+          <AriaDialog>
+            {({ close }) => (
+              <>
+                <Heading className="mb-4 text-xl font-bold">{title}</Heading>
+                {children}
+              </>
+            )}
+          </AriaDialog>
+        </Modal>
+      </ModalOverlay>
+    </DialogTrigger>
+  );
+}
+```
+
+**実装予定コンポーネント（React Aria Components）:**
+- ✅ Button (AriaButton)
+- ✅ TextField / TextArea (AriaTextField)
+- ✅ Dialog / Modal (AriaDialog)
+- [ ] Select / ComboBox (AriaSelect, AriaComboBox)
+- [ ] Menu / Dropdown (AriaMenu)
+- [ ] Tabs (AriaTabs)
+- [ ] Switch (AriaSwitch)
+- [ ] RadioGroup (AriaRadioGroup)
+- [ ] DatePicker (AriaDatePicker)
+- カスタムコンポーネント:
+  - Avatar
+  - Card
+  - Loading Spinner
+  - Toast / Alert
+
+### 3.4 フォームコンポーネント（React Hook Form + React Aria）
 
 ```typescript
 // src/components/ui/Form.tsx
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { Form as AriaForm } from 'react-aria-components';
+import { TextField } from './TextField';
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -223,17 +493,39 @@ interface FormProps {
 }
 
 export function Form({ onSubmit, children }: FormProps) {
-  const { handleSubmit } = useForm();
+  const { handleSubmit, control } = useForm();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <AriaForm onSubmit={handleSubmit(onSubmit)}>
       {children}
-    </form>
+    </AriaForm>
+  );
+}
+
+// 使用例
+export function LoginForm() {
+  const { control, handleSubmit } = useForm();
+
+  return (
+    <AriaForm onSubmit={handleSubmit((data) => console.log(data))}>
+      <Controller
+        name="username"
+        control={control}
+        rules={{ required: true }}
+        render={({ field, fieldState }) => (
+          <TextField
+            label={t`Username`}
+            errorMessage={fieldState.error?.message}
+            {...field}
+          />
+        )}
+      />
+    </AriaForm>
   );
 }
 ```
 
-### 2.3 レイアウトコンポーネント
+### 3.5 レイアウトコンポーネント
 
 ```typescript
 // src/app/layout.tsx
@@ -261,14 +553,25 @@ export default function RootLayout({
 ```
 
 **完了条件:**
-- [ ] 全基本コンポーネント実装
+- [ ] React Aria Components基本セットアップ
+- [ ] 全基本コンポーネント実装（Button, TextField, Dialog, Select, Menu）
 - [ ] レスポンシブ対応
-- [ ] アクセシビリティ対応（ARIA）
+- [ ] アクセシビリティ対応（自動対応済み、React Ariaの利点）
+- [ ] キーボードナビゲーション対応（自動対応済み）
+- [ ] Tailwind CSSスタイリング
 - [ ] ダークモード対応（オプション）
+
+**React Aria Componentsの利点:**
+- WAI-ARIA準拠の自動実装
+- キーボードナビゲーション対応
+- フォーカス管理
+- スクリーンリーダー対応
+- 国際化対応（RTL、日付フォーマットなど）
+- モバイルタッチ対応
 
 ---
 
-## 3. 認証フロー（Week 2）
+## 4. 認証フロー（Week 2）
 
 **優先度:** 🔴 最高（全認証機能の前提）
 
@@ -288,33 +591,38 @@ export const isAuthenticatedAtom = atom((get) => {
 });
 ```
 
-### 3.2 ログインページ
+### 4.2 ログインページ（React Aria + Lingui対応）
 
 ```typescript
 // src/app/login/page.tsx
 'use client';
 
 import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'waku/router';
+import { Trans, t } from '@lingui/macro';
+import { useLingui } from '@lingui/react';
+import { Form } from 'react-aria-components';
 import { tokenAtom, currentUserAtom } from '@/lib/atoms/auth';
 import { apiClient } from '@/lib/api/client';
+import { TextField } from '@/components/ui/TextField';
+import { Button } from '@/components/ui/Button';
+
+interface LoginFormData {
+  username: string;
+  password: string;
+}
 
 export default function LoginPage() {
+  const { _ } = useLingui();
   const router = useRouter();
   const [, setToken] = useAtom(tokenAtom);
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await apiClient.post('/api/signin', {
-        username,
-        password,
-      });
+      const response = await apiClient.post('/api/auth/session', data);
 
       setToken(response.token);
       setCurrentUser(response.user);
@@ -323,33 +631,58 @@ export default function LoginPage() {
       router.push('/');
     } catch (error) {
       console.error('Login failed:', error);
+      // TODO: Show error toast
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <form onSubmit={handleLogin} className="w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold">ログイン</h1>
-        <Input
-          type="text"
-          placeholder="ユーザー名"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <Input
-          type="password"
-          placeholder="パスワード"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button type="submit">ログイン</Button>
-      </form>
+      <div className="w-full max-w-md space-y-6">
+        <h1 className="text-2xl font-bold">
+          <Trans>Sign in to Rox</Trans>
+        </h1>
+
+        <Form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: _(t`Username is required`) }}
+            render={({ field, fieldState }) => (
+              <TextField
+                label={_(t`Username`)}
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name="password"
+            control={control}
+            rules={{ required: _(t`Password is required`) }}
+            render={({ field, fieldState }) => (
+              <TextField
+                label={_(t`Password`)}
+                type="password"
+                errorMessage={fieldState.error?.message}
+                isRequired
+                {...field}
+              />
+            )}
+          />
+
+          <Button type="submit" isDisabled={isSubmitting} className="w-full">
+            {isSubmitting ? <Trans>Signing in...</Trans> : <Trans>Sign in</Trans>}
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 }
 ```
 
-### 3.3 Protected Routes
+### 4.3 Protected Routes
 
 ```typescript
 // src/components/auth/ProtectedRoute.tsx
@@ -388,11 +721,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 ---
 
-## 4. タイムライン実装（Week 2-3）
+## 5. タイムライン実装（Week 2-3）
 
 **優先度:** 🔴 最高（コア機能）
 
-### 4.1 タイムライン（Server Component）
+### 5.1 タイムライン（Server Component）
 
 ```typescript
 // src/app/page.tsx (Server Component)
@@ -418,7 +751,7 @@ async function fetchLocalTimeline() {
 }
 ```
 
-### 4.2 タイムラインコンポーネント（Client Component）
+### 5.2 タイムラインコンポーネント（Client Component）
 
 ```typescript
 // src/components/timeline/Timeline.tsx
@@ -470,7 +803,7 @@ export function Timeline({ initialData }: TimelineProps) {
 }
 ```
 
-### 4.3 ノートカード
+### 5.3 ノートカード
 
 ```typescript
 // src/components/note/NoteCard.tsx
@@ -525,7 +858,7 @@ export function NoteCard({ note }: { note: Note }) {
 }
 ```
 
-### 4.4 無限スクロール
+### 5.4 無限スクロール
 
 ```typescript
 // src/hooks/useInfiniteScroll.ts
@@ -568,11 +901,11 @@ export function useInfiniteScroll(callback: () => void) {
 
 ---
 
-## 5. 投稿機能（Week 3）
+## 6. 投稿機能（Week 3）
 
 **優先度:** 🔴 最高
 
-### 5.1 ノート投稿コンポーザー
+### 6.1 ノート投稿コンポーザー
 
 ```typescript
 // src/components/note/NoteComposer.tsx
@@ -656,7 +989,7 @@ export function NoteComposer() {
 
 ---
 
-## 6. ユーザーインタラクション（Week 3-4）
+## 7. ユーザーインタラクション（Week 3-4）
 
 **完了条件:**
 - [ ] リプライ機能
@@ -668,7 +1001,7 @@ export function NoteComposer() {
 
 ---
 
-## 7. パフォーマンス最適化（Week 4）
+## 8. パフォーマンス最適化（Week 4）
 
 **実施項目:**
 - [ ] 画像遅延読み込み

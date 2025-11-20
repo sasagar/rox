@@ -59,7 +59,9 @@ Japanese documentation is provided in parallel to support the local community.
 | Backend Framework | Hono | Ultra-lightweight, web standards-compliant framework with edge compatibility |
 | Frontend Framework | Waku | React Server Components (RSC) native support with minimal configuration |
 | State Management | Jotai | Atomic state management with minimal re-renders |
+| UI Components | React Aria Components | Accessible, headless UI components with WAI-ARIA compliance |
 | Styling | Tailwind CSS | Utility-first CSS with build-time optimization |
+| Internationalization | Lingui | Readable, automated, and optimized (3kb) i18n for JavaScript |
 | ORM | Drizzle ORM | TypeScript-first, lightweight, SQL-like operations with multi-DB support |
 | Queue | Dragonfly / BullMQ | Async job processing for ActivityPub delivery (VPS environments) |
 | Code Quality | oxc | Rust-based toolchain for linting and formatting (replaces ESLint/Prettier) |

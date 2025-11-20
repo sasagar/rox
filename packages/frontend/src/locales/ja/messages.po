@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-11-20 08:17+0900\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ja\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/app/page.tsx:17
+#~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
+#~ msgstr ""
+
+#: src/app/page.tsx:57
+#~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
+#~ msgstr ""
+
+#: src/app/page.tsx:22
+#~ msgid "UI Components Demo"
+#~ msgstr ""
+
+#: src/app/page.tsx:12
+#~ msgid "Welcome to Rox"
+#~ msgstr ""
