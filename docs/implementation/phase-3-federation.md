@@ -1,9 +1,9 @@
 # Phase 3: ActivityPub Federation
 
 **期間:** 4-5週間
-**ステータス:** ⏳ 未着手
-**前提条件:** Phase 1 (Misskey API)完了
-**並行可能:** Phase 2と並行可能
+**ステータス:** 🚧 実装中 (約70%完了)
+**前提条件:** Phase 2 (Misskey API)完了 ✅
+**最終更新:** 2025-11-25
 
 ## 目的
 
@@ -243,11 +243,16 @@ export function generateKeyPair(): {
 ```
 
 **完了条件:**
-- [ ] Actor documentエンドポイント実装
-- [ ] WebFingerエンドポイント実装
-- [ ] 鍵ペア生成・保存
-- [ ] Content-Type適切に設定
-- [ ] CORSヘッダー設定
+- [x] Actor documentエンドポイント実装 ✅
+- [x] WebFingerエンドポイント実装 ✅
+- [x] 鍵ペア生成・保存 ✅
+- [x] Content-Type適切に設定 ✅
+- [x] CORSヘッダー設定 ✅
+
+**実装ファイル:**
+- `src/routes/ap/actor.ts` - Actor document endpoint
+- `src/routes/ap/webfinger.ts` - WebFinger endpoint
+- `src/utils/crypto.ts` - Key pair generation
 
 ---
 
@@ -362,11 +367,16 @@ async function fetchPublicKey(keyId: string): Promise<string> {
 ```
 
 **完了条件:**
-- [ ] 署名生成実装
-- [ ] 署名検証実装
-- [ ] 公開鍵フェッチ・キャッシュ
-- [ ] Date/Digestヘッダー検証
-- [ ] リプレイ攻撃対策
+- [x] 署名生成実装 ✅
+- [x] 署名検証実装 ✅
+- [x] 公開鍵フェッチ・キャッシュ ✅
+- [x] Date/Digestヘッダー検証 ✅
+- [x] リプレイ攻撃対策 ✅
+
+**実装ファイル:**
+- `src/utils/crypto.ts` - Signature generation
+- `src/middleware/httpSignature.ts` - Signature verification middleware
+- `src/services/ap/ActivityPubActorService.ts` - Public key caching
 
 ---
 
@@ -464,11 +474,20 @@ export class ActivityHandler {
 ```
 
 **完了条件:**
-- [ ] 全アクティビティタイプ対応
+- [x] Inboxエンドポイント実装 ✅
+- [x] Follow Activity 処理 ✅
+- [x] Accept Activity 送信 ✅
+- [x] リモートユーザー保存 ✅
+- [ ] Create Activity 処理 (部分的実装)
+- [ ] Undo Activity 処理
+- [ ] Like/Announce Activity 処理
 - [ ] 重複排除
 - [ ] オブジェクトフェッチ
-- [ ] リモートユーザー保存
-- [ ] リモートノート保存
+
+**実装ファイル:**
+- `src/routes/ap/inbox.ts` - Inbox endpoint
+- `src/services/ap/ActivityHandler.ts` - Activity handler logic
+- `src/services/ap/ActivityPubActorService.ts` - Remote actor handling
 
 ---
 
@@ -629,12 +648,19 @@ export class NoteService {
 ```
 
 **完了条件:**
-- [ ] Outboxエンドポイント
-- [ ] BullMQ配送キュー
-- [ ] 配送ワーカー
+- [x] Outboxエンドポイント (基本実装) ✅
+- [ ] BullMQ配送キュー ⚠️ **最優先実装項目**
+- [ ] 配送ワーカー ⚠️ **最優先実装項目**
 - [ ] リトライロジック（1分/5分/30分）
 - [ ] レート制限
 - [ ] Shared Inbox対応
+- [ ] Note作成時の自動配送
+
+**実装ファイル:**
+- `src/routes/ap/outbox.ts` - Outbox endpoint (implemented)
+- `src/services/ap/ActivityPubDeliveryService.ts` - Delivery service (skeleton only)
+
+**優先度:** 🔴 **最高** - このセクションの完了がPhase 3完了の鍵
 
 ---
 
@@ -655,10 +681,13 @@ Response: OrderedCollection with paging
 ```
 
 **完了条件:**
-- [ ] Followersコレクション実装
-- [ ] Followingコレクション実装
-- [ ] ページネーション対応
+- [x] Followersコレクション実装 ✅
+- [x] Followingコレクション実装 ✅
+- [x] ページネーション対応 ✅
 - [ ] プライバシー制御
+
+**実装ファイル:**
+- `src/routes/ap/collections.ts` - Collections endpoints
 
 ---
 
@@ -686,13 +715,48 @@ Response: OrderedCollection with paging
 
 ## 完了条件（Phase 3全体）
 
+- [x] WebFinger実装 ✅
+- [x] Actor document実装 ✅
+- [x] HTTP Signatures正常動作 ✅
+- [x] Inbox実装（Follow対応） ✅
+- [x] Outbox基本実装 ✅
+- [x] Collections実装 ✅
+- [ ] BullMQ配送キュー実装 ⚠️ **最優先**
+- [ ] 配送ワーカー実装 ⚠️ **最優先**
+- [ ] リトライ機構動作
+- [ ] 配送成功率95%以上
+- [ ] 全アクティビティタイプ対応
 - [ ] Mastodonと連合成功
 - [ ] Misskeyと連合成功
-- [ ] 全アクティビティタイプ対応
-- [ ] HTTP Signatures正常動作
-- [ ] 配送成功率95%以上
-- [ ] リトライ機構動作
 - [ ] 基本的なモデレーション機能
+
+## Phase 3 進捗状況
+
+**完了率:** 約70%
+
+**完了したコンポーネント:**
+- ✅ WebFinger Discovery
+- ✅ Actor Document
+- ✅ HTTP Signatures (generation & verification)
+- ✅ Inbox (Follow activity)
+- ✅ Outbox (basic endpoint)
+- ✅ Collections (Followers/Following)
+- ✅ Public key management
+- ✅ Remote actor caching
+
+**未完了のコンポーネント (優先度順):**
+1. 🔴 **BullMQ配送キュー** - プロダクション必須
+2. 🔴 **配送ワーカー** - プロダクション必須
+3. 🟡 リトライロジック
+4. 🟡 追加Activityタイプ (Undo, Like, Announce)
+5. 🟢 実サーバー連合テスト
+
+**テスト結果:**
+- 全36テスト合格 ✅
+- TypeScript型エラー 0件 ✅
+- ActivityPubコア機能動作確認済み ✅
+
+詳細は [activitypub-test-results.md](../activitypub-test-results.md) を参照。
 
 ## 参考資料
 
