@@ -117,6 +117,7 @@ export class AuthService {
       followersUrl: `${baseUrl}/users/${input.username}/followers`,
       followingUrl: `${baseUrl}/users/${input.username}/following`,
       uri: `${baseUrl}/users/${input.username}`,
+      sharedInbox: null, // Local users don't have shared inbox
     });
 
     // セッション作成

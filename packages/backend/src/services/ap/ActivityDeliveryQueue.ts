@@ -15,12 +15,34 @@ import { ActivityDeliveryService } from './ActivityDeliveryService.js';
  * Job priority levels
  */
 export enum JobPriority {
-  /** Urgent: Follow, Accept, Reject activities */
+  /** Urgent: Follow, Accept, Reject, Undo activities (immediate user actions) */
   URGENT = 1,
-  /** Normal: Like, Announce activities */
+  /** Normal: Like, Announce, Create activities (content distribution) */
   NORMAL = 5,
-  /** Low: Update, Delete activities */
+  /** Low: Update, Delete activities (cleanup operations) */
   LOW = 10,
+}
+
+/**
+ * Rate limit configuration per server
+ */
+interface RateLimitConfig {
+  /** Maximum deliveries per window (default: 10) */
+  maxDeliveries: number;
+  /** Time window in milliseconds (default: 1000ms = 1 second) */
+  windowMs: number;
+}
+
+/**
+ * Rate limit state for a server
+ */
+interface RateLimitState {
+  /** Hostname of the server */
+  hostname: string;
+  /** Timestamps of recent deliveries (within window) */
+  deliveries: number[];
+  /** Last cleanup time */
+  lastCleanup: number;
 }
 
 /**
@@ -68,15 +90,29 @@ export class ActivityDeliveryQueue {
   private useQueue: boolean = false;
   private initPromise: Promise<void>;
   private deliveryMetrics: Map<string, { success: number; failure: number }> = new Map();
+  private rateLimits: Map<string, RateLimitState> = new Map();
+  private rateLimitConfig: RateLimitConfig = {
+    maxDeliveries: 10, // 10 deliveries per second per server
+    windowMs: 1000, // 1 second window
+  };
+  private statsInterval: NodeJS.Timeout | null = null;
 
   /**
    * Constructor
    *
    * Creates a new ActivityDeliveryQueue instance and initializes Redis connection.
+   * Optionally starts periodic statistics logging.
+   *
+   * @param enableStatsLogging - Enable periodic statistics logging (default: true in production)
    */
-  constructor() {
+  constructor(enableStatsLogging: boolean = process.env.NODE_ENV === 'production') {
     this.deliveryService = new ActivityDeliveryService();
     this.initPromise = this.initializeQueue();
+
+    // Start periodic statistics logging if enabled
+    if (enableStatsLogging) {
+      this.startPeriodicStatsLogging();
+    }
   }
 
   /**
@@ -154,10 +190,95 @@ export class ActivityDeliveryQueue {
   }
 
   /**
+   * Extract hostname from inbox URL
+   *
+   * @param inboxUrl - Target inbox URL
+   * @returns Hostname (e.g., "mastodon.social")
+   *
+   * @private
+   */
+  private extractHostname(inboxUrl: string): string {
+    try {
+      return new URL(inboxUrl).hostname;
+    } catch {
+      return inboxUrl; // Fallback to full URL if parsing fails
+    }
+  }
+
+  /**
+   * Check if delivery is allowed under rate limit
+   *
+   * Implements sliding window rate limiting per server.
+   *
+   * @param hostname - Target server hostname
+   * @returns True if delivery is allowed, false if rate limit exceeded
+   *
+   * @private
+   */
+  private checkRateLimit(hostname: string): boolean {
+    const now = Date.now();
+    let state = this.rateLimits.get(hostname);
+
+    // Initialize state if not exists
+    if (!state) {
+      state = {
+        hostname,
+        deliveries: [],
+        lastCleanup: now,
+      };
+      this.rateLimits.set(hostname, state);
+    }
+
+    // Cleanup old deliveries (outside window)
+    const windowStart = now - this.rateLimitConfig.windowMs;
+    state.deliveries = state.deliveries.filter(timestamp => timestamp > windowStart);
+    state.lastCleanup = now;
+
+    // Check if we're under the limit
+    if (state.deliveries.length >= this.rateLimitConfig.maxDeliveries) {
+      return false; // Rate limit exceeded
+    }
+
+    // Record this delivery
+    state.deliveries.push(now);
+    return true;
+  }
+
+  /**
+   * Calculate delay needed to respect rate limit
+   *
+   * Returns the minimum delay (in milliseconds) needed before the next
+   * delivery to this server can proceed.
+   *
+   * @param hostname - Target server hostname
+   * @returns Delay in milliseconds (0 if no delay needed)
+   *
+   * @private
+   */
+  private calculateRateLimitDelay(hostname: string): number {
+    const state = this.rateLimits.get(hostname);
+    if (!state || state.deliveries.length < this.rateLimitConfig.maxDeliveries) {
+      return 0; // No delay needed
+    }
+
+    // Find the oldest delivery in the window
+    const oldestDelivery = Math.min(...state.deliveries);
+    const windowStart = Date.now() - this.rateLimitConfig.windowMs;
+
+    // If oldest delivery is still within window, calculate delay
+    if (oldestDelivery > windowStart) {
+      return oldestDelivery + this.rateLimitConfig.windowMs - Date.now();
+    }
+
+    return 0;
+  }
+
+  /**
    * Enqueue activity delivery
    *
    * Adds delivery job to queue (if available) or delivers synchronously.
    * Supports priority levels and deduplication by inbox URL.
+   * Implements per-server rate limiting with automatic backpressure handling.
    *
    * @param data - Delivery job data
    * @returns Promise that resolves when job is enqueued or delivered
@@ -175,9 +296,28 @@ export class ActivityDeliveryQueue {
    */
   public async enqueue(data: DeliveryJobData): Promise<void> {
     const priority = data.priority ?? JobPriority.NORMAL;
+    const hostname = this.extractHostname(data.inboxUrl);
+
+    // Check rate limit
+    const rateLimitOk = this.checkRateLimit(hostname);
 
     if (this.useQueue && this.queue) {
-      // Add to queue with retry options and priority
+      let delay = 0;
+
+      // If rate limit exceeded, calculate backpressure delay
+      if (!rateLimitOk) {
+        delay = this.calculateRateLimitDelay(hostname);
+
+        // Cap delay at 60 seconds (backpressure limit)
+        if (delay > 60000) {
+          console.warn(`⚠️  Rate limit backpressure too high for ${hostname}, dropping delivery`);
+          return; // Drop the job if backpressure is too high
+        }
+
+        console.log(`⏳ Rate limit reached for ${hostname}, delaying by ${delay}ms`);
+      }
+
+      // Add to queue with retry options, priority, and optional delay
       await this.queue.add('deliver', data, {
         priority, // Lower number = higher priority
         attempts: 5, // Retry up to 5 times
@@ -185,6 +325,7 @@ export class ActivityDeliveryQueue {
           type: 'exponential',
           delay: 1000, // Start with 1 second delay
         },
+        delay, // Apply rate limit delay if needed
         removeOnComplete: true, // Clean up completed jobs
         removeOnFail: {
           age: 24 * 3600, // Keep failed jobs for 24 hours
@@ -194,9 +335,19 @@ export class ActivityDeliveryQueue {
       });
 
       const priorityLabel = priority === JobPriority.URGENT ? '🚨' : priority === JobPriority.LOW ? '🐌' : '📤';
-      console.log(`${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})`);
+      const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : '';
+      console.log(`${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`);
     } else {
       // Fallback to synchronous delivery
+      // In sync mode, apply rate limit via sleep
+      if (!rateLimitOk) {
+        const delay = this.calculateRateLimitDelay(hostname);
+        if (delay > 0 && delay <= 60000) {
+          console.log(`⏳ Rate limit reached for ${hostname}, waiting ${delay}ms`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+
       console.log(`📤 Synchronous delivery to ${data.inboxUrl}`);
       await this.deliverSync(data);
     }
@@ -290,6 +441,135 @@ export class ActivityDeliveryQueue {
   }
 
   /**
+   * Get delivery statistics summary
+   *
+   * Calculates overall success rate and per-server statistics.
+   *
+   * @returns Delivery statistics summary
+   *
+   * @example
+   * ```typescript
+   * const stats = queue.getDeliveryStatistics();
+   * console.log(`Success rate: ${stats.successRate}%`);
+   * ```
+   */
+  public getDeliveryStatistics(): {
+    totalDeliveries: number;
+    successfulDeliveries: number;
+    failedDeliveries: number;
+    successRate: number;
+    serverCount: number;
+    topServers: Array<{ inbox: string; success: number; failure: number; successRate: number }>;
+  } {
+    let totalSuccess = 0;
+    let totalFailure = 0;
+
+    // Calculate totals
+    for (const metrics of this.deliveryMetrics.values()) {
+      totalSuccess += metrics.success;
+      totalFailure += metrics.failure;
+    }
+
+    const totalDeliveries = totalSuccess + totalFailure;
+    const successRate = totalDeliveries > 0
+      ? Math.round((totalSuccess / totalDeliveries) * 100 * 100) / 100
+      : 0;
+
+    // Get top servers by delivery count
+    const serverStats = Array.from(this.deliveryMetrics.entries())
+      .map(([inbox, metrics]) => ({
+        inbox,
+        success: metrics.success,
+        failure: metrics.failure,
+        successRate: metrics.success + metrics.failure > 0
+          ? Math.round((metrics.success / (metrics.success + metrics.failure)) * 100 * 100) / 100
+          : 0,
+      }))
+      .sort((a, b) => (b.success + b.failure) - (a.success + a.failure))
+      .slice(0, 10); // Top 10 servers
+
+    return {
+      totalDeliveries,
+      successfulDeliveries: totalSuccess,
+      failedDeliveries: totalFailure,
+      successRate,
+      serverCount: this.deliveryMetrics.size,
+      topServers: serverStats,
+    };
+  }
+
+  /**
+   * Log delivery statistics to console
+   *
+   * Outputs a formatted summary of delivery statistics.
+   */
+  public logDeliveryStatistics(): void {
+    const stats = this.getDeliveryStatistics();
+
+    console.log('\n' + '='.repeat(60));
+    console.log('📊 ActivityPub Delivery Statistics');
+    console.log('='.repeat(60));
+    console.log(`Total Deliveries:      ${stats.totalDeliveries}`);
+    console.log(`✅ Successful:         ${stats.successfulDeliveries} (${stats.successRate}%)`);
+    console.log(`❌ Failed:             ${stats.failedDeliveries}`);
+    console.log(`🌐 Unique Servers:     ${stats.serverCount}`);
+
+    if (stats.topServers.length > 0) {
+      console.log('\n📈 Top 10 Servers by Delivery Count:');
+      console.log('─'.repeat(60));
+
+      for (const server of stats.topServers) {
+        const total = server.success + server.failure;
+        const hostname = this.extractHostname(server.inbox);
+        console.log(`  ${hostname}`);
+        console.log(`    Total: ${total} | Success: ${server.success} | Failed: ${server.failure} | Rate: ${server.successRate}%`);
+      }
+    }
+
+    console.log('='.repeat(60) + '\n');
+  }
+
+  /**
+   * Start periodic statistics logging
+   *
+   * Logs delivery statistics every hour (configurable via STATS_LOG_INTERVAL_MS env var).
+   *
+   * @private
+   */
+  private startPeriodicStatsLogging(): void {
+    const intervalMs = parseInt(process.env.STATS_LOG_INTERVAL_MS || '3600000', 10); // Default: 1 hour
+
+    this.statsInterval = setInterval(() => {
+      const stats = this.getDeliveryStatistics();
+
+      // Only log if there have been any deliveries
+      if (stats.totalDeliveries > 0) {
+        this.logDeliveryStatistics();
+
+        // Warn if success rate is below 95%
+        if (stats.successRate < 95) {
+          console.warn(`⚠️  Delivery success rate (${stats.successRate}%) is below target (95%)`);
+        }
+      }
+    }, intervalMs);
+
+    console.log(`📊 Periodic statistics logging started (interval: ${intervalMs}ms)`);
+  }
+
+  /**
+   * Stop periodic statistics logging
+   *
+   * @private
+   */
+  private stopPeriodicStatsLogging(): void {
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+      this.statsInterval = null;
+      console.log('📊 Periodic statistics logging stopped');
+    }
+  }
+
+  /**
    * Deliver activity synchronously
    *
    * Fallback method when queue is not available.
@@ -316,6 +596,7 @@ export class ActivityDeliveryQueue {
    * Gracefully shutdown queue and worker
    *
    * Should be called when application is shutting down.
+   * Logs final statistics before shutting down.
    *
    * @example
    * ```typescript
@@ -327,6 +608,16 @@ export class ActivityDeliveryQueue {
    */
   public async shutdown(): Promise<void> {
     console.log('Shutting down ActivityDeliveryQueue...');
+
+    // Stop periodic statistics logging
+    this.stopPeriodicStatsLogging();
+
+    // Log final statistics
+    const stats = this.getDeliveryStatistics();
+    if (stats.totalDeliveries > 0) {
+      console.log('\n📊 Final Delivery Statistics:');
+      this.logDeliveryStatistics();
+    }
 
     if (this.worker) {
       await this.worker.close();

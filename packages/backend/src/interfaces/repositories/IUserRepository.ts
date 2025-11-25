@@ -1,4 +1,4 @@
-import type { User } from 'shared';
+import type { User } from '../../db/schema/pg.js';
 
 export interface IUserRepository {
   /**

@@ -20,6 +20,7 @@ export interface User extends Timestamps {
   followersUrl: string | null; // Followers collection URL
   followingUrl: string | null; // Following collection URL
   uri: string | null; // ActivityPub actor URI (for remote users)
+  sharedInbox: string | null; // Shared inbox URL (for remote users, optional)
 }
 
 export interface UserProfile {

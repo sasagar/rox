@@ -8,7 +8,7 @@
  */
 
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
-import type { User } from 'shared';
+import type { User } from '../../db/schema/pg.js';
 import { generateId } from 'shared';
 import { RemoteFetchService } from './RemoteFetchService.js';
 
@@ -38,6 +38,9 @@ interface ActorDocument {
     id: string;
     owner: string;
     publicKeyPem: string;
+  };
+  endpoints?: {
+    sharedInbox?: string;
   };
 }
 
@@ -105,6 +108,7 @@ export class RemoteActorService {
         outbox: actor.outbox || null,
         followersUrl: actor.followers || null,
         followingUrl: actor.following || null,
+        sharedInbox: actor.endpoints?.sharedInbox || null,
       });
 
       console.log(`✅ Refreshed remote user: ${actor.preferredUsername}@${host}`);
@@ -131,6 +135,7 @@ export class RemoteActorService {
       followersUrl: actor.followers || null,
       followingUrl: actor.following || null,
       uri: actorUri,
+      sharedInbox: actor.endpoints?.sharedInbox || null,
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);

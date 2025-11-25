@@ -9,7 +9,8 @@
 
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
-import type { Note, User } from 'shared';
+import type { Note } from 'shared';
+import type { User } from '../../db/schema/pg.js';
 import { ActivityDeliveryQueue, JobPriority } from './ActivityDeliveryQueue.js';
 
 /**
@@ -42,6 +43,42 @@ export class ActivityPubDeliveryService {
   }
 
   /**
+   * Get unique inbox URLs from users, preferring shared inbox when available
+   *
+   * Groups users by their inbox URL (shared or individual) to minimize deliveries.
+   * When a user has a sharedInbox, that will be used instead of their individual inbox.
+   *
+   * @param users - Array of users to get inboxes from
+   * @returns Set of unique inbox URLs
+   * @private
+   *
+   * @example
+   * ```typescript
+   * const inboxes = this.getUniqueInboxUrls(followers);
+   * // Returns: Set(['https://mastodon.social/inbox', 'https://other.server/users/alice/inbox'])
+   * ```
+   */
+  private getUniqueInboxUrls(users: User[]): Set<string> {
+    const inboxUrls = new Set<string>();
+
+    for (const user of users) {
+      // Skip local users
+      if (!user.host) {
+        continue;
+      }
+
+      // Prefer sharedInbox over individual inbox
+      const inboxUrl = user.sharedInbox || user.inbox;
+
+      if (inboxUrl) {
+        inboxUrls.add(inboxUrl);
+      }
+    }
+
+    return inboxUrls;
+  }
+
+  /**
    * Deliver Create activity for a note to all followers
    *
    * @param note - The created note
@@ -67,6 +104,12 @@ export class ActivityPubDeliveryService {
       return;
     }
 
+    // Fetch all follower users
+    const followers = await Promise.all(
+      follows.map(follow => this.userRepository.findById(follow.followerId))
+    );
+    const remoteFollowers = followers.filter((f): f is User => f !== null && f.host !== null);
+
     // Create ActivityPub Create activity
     const activity = {
       '@context': 'https://www.w3.org/ns/activitystreams',
@@ -87,14 +130,8 @@ export class ActivityPubDeliveryService {
       },
     };
 
-    // Get unique inbox URLs
-    const inboxUrls = new Set<string>();
-    for (const follow of follows) {
-      const follower = await this.userRepository.findById(follow.followerId);
-      if (follower && follower.host && follower.inbox) {
-        inboxUrls.add(follower.inbox);
-      }
-    }
+    // Get unique inbox URLs (uses shared inbox when available)
+    const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     // Skip delivery if author has no private key
     if (!author.privateKey) {
@@ -222,13 +259,13 @@ export class ActivityPubDeliveryService {
       },
     };
 
-    // Enqueue delivery to followee's inbox with normal priority
+    // Enqueue delivery to followee's inbox with urgent priority (immediate user action)
     await this.queue.enqueue({
       activity,
       inboxUrl: followee.inbox,
       keyId: `${baseUrl}/users/${follower.username}#main-key`,
       privateKey: follower.privateKey,
-      priority: JobPriority.NORMAL,
+      priority: JobPriority.URGENT,
     });
 
     console.log(`📤 Enqueued Undo Follow delivery to ${followee.inbox} (${follower.username} unfollowed ${followee.username}@${followee.host})`);
@@ -283,13 +320,13 @@ export class ActivityPubDeliveryService {
       },
     };
 
-    // Enqueue delivery to note author's inbox with normal priority
+    // Enqueue delivery to note author's inbox with urgent priority (immediate user action)
     await this.queue.enqueue({
       activity,
       inboxUrl: noteAuthor.inbox,
       keyId: `${baseUrl}/users/${reactor.username}#main-key`,
       privateKey: reactor.privateKey,
-      priority: JobPriority.NORMAL,
+      priority: JobPriority.URGENT,
     });
 
     console.log(`📤 Enqueued Undo Like delivery to ${noteAuthor.inbox} (${reactor.username} unliked note by ${noteAuthor.username}@${noteAuthor.host})`);
@@ -330,36 +367,42 @@ export class ActivityPubDeliveryService {
 
     // Get all remote followers to deliver to
     const followRelations = await this.followRepository.findByFolloweeId(author.id);
-    const remoteFollowers = await Promise.all(
+    const followers = await Promise.all(
       followRelations.map(async relation => {
         const follower = await this.userRepository.findById(relation.followerId);
         return follower;
       })
     );
 
-    // Enqueue delivery to each remote follower's inbox (filter for remote users only)
-    const deliveryPromises = remoteFollowers
-      .filter((follower): follower is User =>
-        follower !== null &&
-        follower.host !== null && // Remote user
-        follower.inbox !== null
-      )
-      .map(async follower => {
-        await this.queue.enqueue({
-          activity,
-          inboxUrl: follower.inbox!,
-          keyId: `${baseUrl}/users/${author.username}#main-key`,
-          privateKey: author.privateKey!,
-          priority: JobPriority.LOW, // Delete activities have lower priority
-        });
-        console.log(`📤 Enqueued Delete delivery to ${follower.inbox} (${author.username}'s note deleted)`);
+    // Filter for remote users only
+    const remoteFollowers = followers.filter((follower): follower is User =>
+      follower !== null &&
+      follower.host !== null &&
+      follower.inbox !== null
+    );
+
+    // Get unique inbox URLs (uses shared inbox when available)
+    const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
+
+    if (inboxUrls.size === 0) {
+      console.log(`ℹ️  No remote followers to deliver Delete activity for note ${note.id}`);
+      return;
+    }
+
+    // Enqueue delivery to each unique inbox with low priority
+    const deliveryPromises = Array.from(inboxUrls).map(async inboxUrl => {
+      await this.queue.enqueue({
+        activity,
+        inboxUrl,
+        keyId: `${baseUrl}/users/${author.username}#main-key`,
+        privateKey: author.privateKey!,
+        priority: JobPriority.LOW, // Delete activities have lower priority
       });
+    });
 
     await Promise.all(deliveryPromises);
 
-    if (deliveryPromises.length === 0) {
-      console.log(`ℹ️  No remote followers to deliver Delete activity for note ${note.id}`);
-    }
+    console.log(`📤 Enqueued Delete delivery to ${inboxUrls.size} inboxes (${remoteFollowers.length} followers) for note ${note.id}`);
   }
 
   /**
@@ -429,35 +472,41 @@ export class ActivityPubDeliveryService {
 
     // Get all remote followers to deliver to
     const followRelations = await this.followRepository.findByFolloweeId(user.id);
-    const remoteFollowers = await Promise.all(
+    const followers = await Promise.all(
       followRelations.map(async relation => {
         const follower = await this.userRepository.findById(relation.followerId);
         return follower;
       })
     );
 
-    // Enqueue delivery to each remote follower's inbox (filter for remote users only)
-    const deliveryPromises = remoteFollowers
-      .filter((follower): follower is User =>
-        follower !== null &&
-        follower.host !== null && // Remote user
-        follower.inbox !== null
-      )
-      .map(async follower => {
-        await this.queue.enqueue({
-          activity,
-          inboxUrl: follower.inbox!,
-          keyId: `${baseUrl}/users/${user.username}#main-key`,
-          privateKey: user.privateKey!,
-          priority: JobPriority.LOW, // Update activities have lower priority
-        });
-        console.log(`📤 Enqueued Update delivery to ${follower.inbox} (${user.username}'s profile updated)`);
+    // Filter for remote users only
+    const remoteFollowers = followers.filter((follower): follower is User =>
+      follower !== null &&
+      follower.host !== null &&
+      follower.inbox !== null
+    );
+
+    // Get unique inbox URLs (uses shared inbox when available)
+    const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
+
+    if (inboxUrls.size === 0) {
+      console.log(`ℹ️  No remote followers to deliver Update activity for user ${user.id}`);
+      return;
+    }
+
+    // Enqueue delivery to each unique inbox with low priority
+    const deliveryPromises = Array.from(inboxUrls).map(async inboxUrl => {
+      await this.queue.enqueue({
+        activity,
+        inboxUrl,
+        keyId: `${baseUrl}/users/${user.username}#main-key`,
+        privateKey: user.privateKey!,
+        priority: JobPriority.LOW, // Update activities have lower priority
       });
+    });
 
     await Promise.all(deliveryPromises);
 
-    if (deliveryPromises.length === 0) {
-      console.log(`ℹ️  No remote followers to deliver Update activity for user ${user.id}`);
-    }
+    console.log(`📤 Enqueued Update delivery to ${inboxUrls.size} inboxes (${remoteFollowers.length} followers) for user ${user.username}`);
   }
 }

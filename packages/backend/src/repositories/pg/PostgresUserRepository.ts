@@ -1,8 +1,7 @@
 import { eq, and, isNull, sql } from 'drizzle-orm';
 import type { Database } from '../../db/index.js';
-import { users } from '../../db/schema/pg.js';
+import { users, type User } from '../../db/schema/pg.js';
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
-import type { User } from 'shared';
 
 export class PostgresUserRepository implements IUserRepository {
   constructor(private db: Database) {}

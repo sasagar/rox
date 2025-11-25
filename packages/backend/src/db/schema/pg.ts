@@ -23,6 +23,7 @@ export const users = pgTable(
     followersUrl: text('followers_url'),
     followingUrl: text('following_url'),
     uri: text('uri'), // ActivityPub actor URI (for remote users)
+    sharedInbox: text('shared_inbox'), // Shared inbox URL (for remote users, optional)
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
