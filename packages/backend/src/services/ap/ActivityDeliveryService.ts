@@ -10,6 +10,11 @@
 import { signRequest, getSignedHeaders } from '../../utils/crypto.js';
 
 /**
+ * Delivery timeout in milliseconds (30 seconds)
+ */
+const DELIVERY_TIMEOUT = 30000;
+
+/**
  * Activity Delivery Service
  *
  * Responsible for delivering ActivityPub activities to remote servers
@@ -53,7 +58,7 @@ export class ActivityDeliveryService {
       // Get required headers
       const headers = getSignedHeaders(inboxUrl, body);
 
-      // Send request
+      // Send request with timeout
       const headersObj = new Headers();
       headersObj.set('Content-Type', 'application/activity+json');
       headersObj.set('Host', headers.host!);
@@ -63,24 +68,39 @@ export class ActivityDeliveryService {
         headersObj.set('Digest', headers.digest);
       }
 
-      const response = await fetch(inboxUrl, {
-        method: 'POST',
-        headers: headersObj,
-        body,
-      });
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT);
+
+      let response: Response;
+      try {
+        response = await fetch(inboxUrl, {
+          method: 'POST',
+          headers: headersObj,
+          body,
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
         console.error(
           `Failed to deliver activity to ${inboxUrl}: ${response.status} ${response.statusText}`
         );
-        return false;
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       console.log(`✅ Activity delivered to ${inboxUrl}: ${activity.type}`);
       return true;
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error(`⏱️  Timeout delivering activity to ${inboxUrl} (${DELIVERY_TIMEOUT}ms)`);
+        throw new Error(`Delivery timeout after ${DELIVERY_TIMEOUT}ms`);
+      }
+
       console.error(`Error delivering activity to ${inboxUrl}:`, error);
-      return false;
+      throw error; // Re-throw for queue retry logic
     }
   }
 

@@ -10,7 +10,7 @@
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
 import type { Note, User } from 'shared';
-import { ActivityDeliveryQueue } from './ActivityDeliveryQueue.js';
+import { ActivityDeliveryQueue, JobPriority } from './ActivityDeliveryQueue.js';
 
 /**
  * ActivityPub Delivery Service
@@ -102,13 +102,14 @@ export class ActivityPubDeliveryService {
       return;
     }
 
-    // Enqueue delivery to each inbox
+    // Enqueue delivery to each inbox with normal priority
     const deliveryPromises = Array.from(inboxUrls).map((inboxUrl) =>
       this.queue.enqueue({
         activity,
         inboxUrl,
         keyId: `${baseUrl}/users/${author.username}#main-key`,
         privateKey: author.privateKey as string,
+        priority: JobPriority.NORMAL,
       })
     );
 
@@ -158,12 +159,13 @@ export class ActivityPubDeliveryService {
       object: noteUri,
     };
 
-    // Enqueue delivery
+    // Enqueue delivery with normal priority
     await this.queue.enqueue({
       activity,
       inboxUrl: noteAuthorInbox,
       keyId: `${baseUrl}/users/${reactor.username}#main-key`,
       privateKey: reactor.privateKey,
+      priority: JobPriority.NORMAL,
     });
 
     console.log(`📤 Enqueued Like activity delivery to ${noteAuthorInbox} for note ${noteId}`);
@@ -220,12 +222,13 @@ export class ActivityPubDeliveryService {
       },
     };
 
-    // Enqueue delivery to followee's inbox
+    // Enqueue delivery to followee's inbox with normal priority
     await this.queue.enqueue({
       activity,
       inboxUrl: followee.inbox,
       keyId: `${baseUrl}/users/${follower.username}#main-key`,
       privateKey: follower.privateKey,
+      priority: JobPriority.NORMAL,
     });
 
     console.log(`📤 Enqueued Undo Follow delivery to ${followee.inbox} (${follower.username} unfollowed ${followee.username}@${followee.host})`);
@@ -280,12 +283,13 @@ export class ActivityPubDeliveryService {
       },
     };
 
-    // Enqueue delivery to note author's inbox
+    // Enqueue delivery to note author's inbox with normal priority
     await this.queue.enqueue({
       activity,
       inboxUrl: noteAuthor.inbox,
       keyId: `${baseUrl}/users/${reactor.username}#main-key`,
       privateKey: reactor.privateKey,
+      priority: JobPriority.NORMAL,
     });
 
     console.log(`📤 Enqueued Undo Like delivery to ${noteAuthor.inbox} (${reactor.username} unliked note by ${noteAuthor.username}@${noteAuthor.host})`);
@@ -346,6 +350,7 @@ export class ActivityPubDeliveryService {
           inboxUrl: follower.inbox!,
           keyId: `${baseUrl}/users/${author.username}#main-key`,
           privateKey: author.privateKey!,
+          priority: JobPriority.LOW, // Delete activities have lower priority
         });
         console.log(`📤 Enqueued Delete delivery to ${follower.inbox} (${author.username}'s note deleted)`);
       });
@@ -399,10 +404,10 @@ export class ActivityPubDeliveryService {
         mediaType: 'image/jpeg',
         url: user.avatarUrl,
       } : undefined,
-      image: user.headerUrl ? {
+      image: user.bannerUrl ? {
         type: 'Image',
         mediaType: 'image/jpeg',
-        url: user.headerUrl,
+        url: user.bannerUrl,
       } : undefined,
       publicKey: {
         id: `${actorUrl}#main-key`,
@@ -444,6 +449,7 @@ export class ActivityPubDeliveryService {
           inboxUrl: follower.inbox!,
           keyId: `${baseUrl}/users/${user.username}#main-key`,
           privateKey: user.privateKey!,
+          priority: JobPriority.LOW, // Update activities have lower priority
         });
         console.log(`📤 Enqueued Update delivery to ${follower.inbox} (${user.username}'s profile updated)`);
       });

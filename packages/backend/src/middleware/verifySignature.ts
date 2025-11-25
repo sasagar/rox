@@ -170,6 +170,9 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
       c.set('requestBody', body);
     }
 
+    // Store keyId for activity validation
+    c.set('signatureKeyId', params.keyId);
+
     console.log('Signature verified successfully', { keyId: params.keyId });
 
     return await next();

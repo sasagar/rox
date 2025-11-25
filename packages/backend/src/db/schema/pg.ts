@@ -161,6 +161,18 @@ export const follows = pgTable(
   })
 );
 
+// Received Activities table (for deduplication)
+export const receivedActivities = pgTable(
+  'received_activities',
+  {
+    activityId: text('activity_id').primaryKey(),
+    receivedAt: timestamp('received_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    receivedAtIdx: index('received_activities_received_at_idx').on(table.receivedAt),
+  })
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -174,3 +186,5 @@ export type Reaction = typeof reactions.$inferSelect;
 export type NewReaction = typeof reactions.$inferInsert;
 export type Follow = typeof follows.$inferSelect;
 export type NewFollow = typeof follows.$inferInsert;
+export type ReceivedActivity = typeof receivedActivities.$inferSelect;
+export type NewReceivedActivity = typeof receivedActivities.$inferInsert;

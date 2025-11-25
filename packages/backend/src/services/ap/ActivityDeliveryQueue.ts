@@ -12,6 +12,18 @@ import { Redis } from 'ioredis';
 import { ActivityDeliveryService } from './ActivityDeliveryService.js';
 
 /**
+ * Job priority levels
+ */
+export enum JobPriority {
+  /** Urgent: Follow, Accept, Reject activities */
+  URGENT = 1,
+  /** Normal: Like, Announce activities */
+  NORMAL = 5,
+  /** Low: Update, Delete activities */
+  LOW = 10,
+}
+
+/**
  * Delivery job data structure
  */
 export interface DeliveryJobData {
@@ -23,6 +35,8 @@ export interface DeliveryJobData {
   keyId: string;
   /** Sender's private key for HTTP Signature */
   privateKey: string;
+  /** Job priority (optional, defaults to NORMAL) */
+  priority?: JobPriority;
 }
 
 /**
@@ -53,6 +67,7 @@ export class ActivityDeliveryQueue {
   private deliveryService: ActivityDeliveryService;
   private useQueue: boolean = false;
   private initPromise: Promise<void>;
+  private deliveryMetrics: Map<string, { success: number; failure: number }> = new Map();
 
   /**
    * Constructor
@@ -142,6 +157,7 @@ export class ActivityDeliveryQueue {
    * Enqueue activity delivery
    *
    * Adds delivery job to queue (if available) or delivers synchronously.
+   * Supports priority levels and deduplication by inbox URL.
    *
    * @param data - Delivery job data
    * @returns Promise that resolves when job is enqueued or delivered
@@ -149,17 +165,21 @@ export class ActivityDeliveryQueue {
    * @example
    * ```typescript
    * await queue.enqueue({
-   *   activity: { type: 'Like', actor: '...', object: '...' },
+   *   activity: { type: 'Follow', actor: '...', object: '...' },
    *   inboxUrl: 'https://remote.example/inbox',
    *   keyId: 'https://local.example/users/alice#main-key',
    *   privateKey: '-----BEGIN PRIVATE KEY-----...',
+   *   priority: JobPriority.URGENT,
    * });
    * ```
    */
   public async enqueue(data: DeliveryJobData): Promise<void> {
+    const priority = data.priority ?? JobPriority.NORMAL;
+
     if (this.useQueue && this.queue) {
-      // Add to queue with retry options
+      // Add to queue with retry options and priority
       await this.queue.add('deliver', data, {
+        priority, // Lower number = higher priority
         attempts: 5, // Retry up to 5 times
         backoff: {
           type: 'exponential',
@@ -169,14 +189,34 @@ export class ActivityDeliveryQueue {
         removeOnFail: {
           age: 24 * 3600, // Keep failed jobs for 24 hours
         },
+        // Deduplication: if same activity to same inbox within 5 seconds, skip
+        jobId: this.generateJobId(data),
       });
 
-      console.log(`📤 Queued delivery to ${data.inboxUrl}`);
+      const priorityLabel = priority === JobPriority.URGENT ? '🚨' : priority === JobPriority.LOW ? '🐌' : '📤';
+      console.log(`${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})`);
     } else {
       // Fallback to synchronous delivery
       console.log(`📤 Synchronous delivery to ${data.inboxUrl}`);
       await this.deliverSync(data);
     }
+  }
+
+  /**
+   * Generate unique job ID for deduplication
+   *
+   * Creates a job ID based on activity ID and inbox URL to prevent
+   * duplicate deliveries within a short time window.
+   *
+   * @param data - Delivery job data
+   * @returns Job ID for deduplication
+   *
+   * @private
+   */
+  private generateJobId(data: DeliveryJobData): string {
+    const activityId = data.activity.id || JSON.stringify(data.activity);
+    const hash = Buffer.from(`${activityId}-${data.inboxUrl}`).toString('base64').slice(0, 32);
+    return `deliver-${hash}`;
   }
 
   /**
@@ -192,9 +232,61 @@ export class ActivityDeliveryQueue {
 
     console.log(`📤 Processing delivery to ${inboxUrl} (attempt ${job.attemptsMade + 1})`);
 
-    await this.deliveryService.deliver(activity, inboxUrl, keyId, privateKey);
+    try {
+      await this.deliveryService.deliver(activity, inboxUrl, keyId, privateKey);
 
-    console.log(`✅ Delivered to ${inboxUrl}`);
+      console.log(`✅ Delivered to ${inboxUrl}`);
+
+      // Record success metric
+      this.recordMetric(inboxUrl, 'success');
+    } catch (error) {
+      // Record failure metric
+      this.recordMetric(inboxUrl, 'failure');
+      throw error; // Re-throw for BullMQ retry logic
+    }
+  }
+
+  /**
+   * Record delivery metrics
+   *
+   * Tracks success/failure counts per inbox URL.
+   *
+   * @param inboxUrl - Target inbox URL
+   * @param type - Metric type (success or failure)
+   *
+   * @private
+   */
+  private recordMetric(inboxUrl: string, type: 'success' | 'failure'): void {
+    const metrics = this.deliveryMetrics.get(inboxUrl) || { success: 0, failure: 0 };
+
+    if (type === 'success') {
+      metrics.success++;
+    } else {
+      metrics.failure++;
+    }
+
+    this.deliveryMetrics.set(inboxUrl, metrics);
+  }
+
+  /**
+   * Get delivery metrics
+   *
+   * Returns current delivery statistics for all inboxes.
+   *
+   * @returns Map of inbox URLs to success/failure counts
+   */
+  public getMetrics(): Map<string, { success: number; failure: number }> {
+    return new Map(this.deliveryMetrics);
+  }
+
+  /**
+   * Get metrics for a specific inbox
+   *
+   * @param inboxUrl - Target inbox URL
+   * @returns Success/failure counts or null if no data
+   */
+  public getMetricsForInbox(inboxUrl: string): { success: number; failure: number } | null {
+    return this.deliveryMetrics.get(inboxUrl) || null;
   }
 
   /**

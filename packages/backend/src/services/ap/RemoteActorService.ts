@@ -10,6 +10,7 @@
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { User } from 'shared';
 import { generateId } from 'shared';
+import { RemoteFetchService } from './RemoteFetchService.js';
 
 /**
  * ActivityPub Actor document
@@ -46,15 +47,20 @@ interface ActorDocument {
  * Manages remote ActivityPub actors (users from other servers).
  */
 export class RemoteActorService {
-  constructor(private userRepository: IUserRepository) {}
+  private fetchService: RemoteFetchService;
+
+  constructor(private userRepository: IUserRepository) {
+    this.fetchService = new RemoteFetchService();
+  }
 
   /**
    * Resolve remote actor by URI
    *
    * Fetches actor document from remote server and saves/updates in database.
-   * Results are cached in the database.
+   * Results are cached in the database and refreshed if older than 24 hours.
    *
    * @param actorUri - ActivityPub actor URI (e.g., "https://remote.example.com/users/alice")
+   * @param forceRefresh - Force refresh even if cache is fresh (default: false)
    * @returns User record (either existing or newly created)
    *
    * @example
@@ -64,12 +70,21 @@ export class RemoteActorService {
    * );
    * ```
    */
-  async resolveActor(actorUri: string): Promise<User> {
+  async resolveActor(actorUri: string, forceRefresh = false): Promise<User> {
     // Check if actor already exists in database
     const existing = await this.userRepository.findByUri(actorUri);
-    if (existing) {
-      // TODO: Implement refresh logic (refresh if older than 24 hours)
-      return existing;
+
+    if (existing && !forceRefresh) {
+      // Check if cache is fresh (< 24 hours old)
+      const cacheAge = Date.now() - existing.updatedAt.getTime();
+      const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+      if (cacheAge < CACHE_TTL) {
+        console.log(`📦 Using cached actor: ${existing.username}@${existing.host}`);
+        return existing;
+      }
+
+      console.log(`🔄 Actor cache expired, refreshing: ${existing.username}@${existing.host}`);
     }
 
     // Fetch actor document from remote server
@@ -78,7 +93,25 @@ export class RemoteActorService {
     // Extract host from actor URI
     const host = new URL(actorUri).hostname;
 
-    // Create user record
+    // Update existing user or create new one
+    if (existing) {
+      const updated = await this.userRepository.update(existing.id, {
+        displayName: actor.name || actor.preferredUsername,
+        avatarUrl: actor.icon?.url || null,
+        bannerUrl: actor.image?.url || null,
+        bio: actor.summary || null,
+        publicKey: actor.publicKey?.publicKeyPem || null,
+        inbox: actor.inbox,
+        outbox: actor.outbox || null,
+        followersUrl: actor.followers || null,
+        followingUrl: actor.following || null,
+      });
+
+      console.log(`✅ Refreshed remote user: ${actor.preferredUsername}@${host}`);
+      return updated;
+    }
+
+    // Create new user record
     const user = await this.userRepository.create({
       id: generateId(),
       username: actor.preferredUsername,
@@ -108,41 +141,32 @@ export class RemoteActorService {
   /**
    * Fetch actor document from remote server
    *
-   * Performs HTTP GET request with ActivityPub content negotiation.
+   * Performs HTTP GET request with ActivityPub content negotiation,
+   * automatic retries, and comprehensive error handling.
    *
    * @param actorUri - ActivityPub actor URI
    * @returns Actor document
    * @throws Error if fetch fails or response is invalid
    */
   private async fetchActor(actorUri: string): Promise<ActorDocument> {
-    try {
-      const response = await fetch(actorUri, {
-        headers: {
-          Accept: 'application/activity+json, application/ld+json',
-        },
-      });
+    const result = await this.fetchService.fetchActivityPubObject<ActorDocument>(actorUri);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch actor: ${response.status} ${response.statusText}`);
-      }
-
-      const actor = (await response.json()) as {
-        id?: string;
-        type?: string;
-        preferredUsername?: string;
-        inbox?: string;
-      };
-
-      // Validate actor document
-      if (!actor.id || !actor.type || !actor.preferredUsername || !actor.inbox) {
-        throw new Error('Invalid actor document: missing required fields');
-      }
-
-      return actor as ActorDocument;
-    } catch (error) {
-      console.error(`Failed to fetch actor ${actorUri}:`, error);
-      throw error;
+    if (!result.success) {
+      const errorMsg = `Failed to fetch actor ${actorUri}: ${result.error?.message}`;
+      console.error(errorMsg, result.error);
+      throw new Error(errorMsg);
     }
+
+    const actor = result.data!;
+
+    // Validate actor document
+    if (!actor.id || !actor.type || !actor.preferredUsername || !actor.inbox) {
+      const errorMsg = `Invalid actor document: missing required fields (id, type, preferredUsername, or inbox)`;
+      console.error(errorMsg, actor);
+      throw new Error(errorMsg);
+    }
+
+    return actor;
   }
 
   /**

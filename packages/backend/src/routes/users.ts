@@ -7,7 +7,6 @@
  */
 
 import { Hono } from 'hono';
-import type { User } from 'shared';
 import { AuthService } from '../services/AuthService.js';
 import { UserService } from '../services/UserService.js';
 import { requireAuth } from '../middleware/auth.js';

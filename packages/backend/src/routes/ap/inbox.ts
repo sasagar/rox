@@ -13,6 +13,14 @@ import { verifySignatureMiddleware } from '../../middleware/verifySignature.js';
 import { RemoteActorService } from '../../services/ap/RemoteActorService.js';
 import { ActivityDeliveryService } from '../../services/ap/ActivityDeliveryService.js';
 import { RemoteNoteService } from '../../services/ap/RemoteNoteService.js';
+import { RemoteFetchService } from '../../services/ap/RemoteFetchService.js';
+import { getDatabase } from '../../db/index.js';
+import { receivedActivities } from '../../db/schema/pg.js';
+import {
+  validateActivity,
+  formatValidationErrors,
+  ValidationErrorType,
+} from '../../utils/activityValidation.js';
 
 const inbox = new Hono();
 
@@ -59,13 +67,64 @@ inbox.post('/users/:username/inbox', verifySignatureMiddleware, async (c: Contex
     return c.json({ error: 'Invalid JSON' }, 400);
   }
 
-  // Validate activity structure
-  if (!activity.type || !activity.actor) {
-    console.warn('Invalid activity structure:', activity);
-    return c.json({ error: 'Invalid activity' }, 400);
+  // Enhanced activity validation
+  const signatureKeyId = c.get('signatureKeyId');
+  const validationResult = validateActivity(activity, signatureKeyId);
+
+  if (!validationResult.valid) {
+    console.warn('Activity validation failed:', {
+      activity: activity.type,
+      actor: activity.actor,
+      errors: validationResult.errors,
+    });
+
+    // Determine appropriate status code based on error type
+    const hasAuthError = validationResult.errors.some(
+      e => e.type === ValidationErrorType.ACTOR_MISMATCH
+    );
+    const statusCode = hasAuthError ? 401 : 422; // Unprocessable Entity
+
+    return c.json(
+      {
+        error: 'Validation failed',
+        message: formatValidationErrors(validationResult.errors),
+        details: validationResult.errors,
+      },
+      statusCode
+    );
   }
 
   console.log(`📥 Inbox: Received ${activity.type} from ${activity.actor} for ${username}`);
+
+  // Check for duplicate activity (deduplication)
+  const activityId = activity.id;
+  if (activityId) {
+    try {
+      const db = getDatabase();
+      const { eq } = await import('drizzle-orm');
+
+      // Check if we've already received this activity
+      const existing = await db
+        .select()
+        .from(receivedActivities)
+        .where(eq(receivedActivities.activityId, activityId))
+        .limit(1);
+
+      if (existing.length > 0) {
+        console.log(`⚠️  Duplicate activity detected (ID: ${activityId}), skipping`);
+        return c.json({ status: 'accepted' }, 202);
+      }
+
+      // Record this activity as received
+      await db.insert(receivedActivities).values({
+        activityId,
+        receivedAt: new Date(),
+      });
+    } catch (error) {
+      console.error('Deduplication check failed:', error);
+      // Continue processing even if deduplication fails
+    }
+  }
 
   // Handle activity based on type
   try {
@@ -368,20 +427,17 @@ async function handleAnnounce(c: Context, activity: any, _recipientId: string): 
     if (!targetNote) {
       console.log(`Target note not found locally, fetching: ${objectUri}`);
       const remoteNoteService = new RemoteNoteService(noteRepository, userRepository);
+      const fetchService = new RemoteFetchService();
 
-      // Fetch the remote note object
-      const response = await fetch(objectUri, {
-        headers: {
-          Accept: 'application/activity+json, application/ld+json',
-        },
-      });
+      // Fetch the remote note object with retry logic
+      const result = await fetchService.fetchActivityPubObject(objectUri);
 
-      if (!response.ok) {
-        console.warn(`Failed to fetch remote note: ${objectUri}`);
+      if (!result.success) {
+        console.warn(`Failed to fetch remote note: ${objectUri}`, result.error);
         return;
       }
 
-      const noteObject = (await response.json()) as any;
+      const noteObject = result.data as any;
       targetNote = await remoteNoteService.processNote(noteObject);
     }
 

@@ -16,6 +16,7 @@ import followersRoute from './routes/ap/followers.js';
 import followingAPRoute from './routes/ap/following.js';
 import noteAPRoute from './routes/ap/note.js';
 import packageJson from '../../../package.json';
+import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 
 const app = new Hono();
 
@@ -66,6 +67,25 @@ console.log(`🚀 Rox API server starting on port ${port}`);
 console.log(`📊 Database: ${process.env.DB_TYPE || 'postgres'}`);
 console.log(`💾 Storage: ${process.env.STORAGE_TYPE || 'local'}`);
 console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+
+// Start cleanup service for received activities
+const cleanupService = new ReceivedActivitiesCleanupService({
+  retentionDays: 7,
+  intervalMs: 24 * 60 * 60 * 1000, // 24 hours
+});
+cleanupService.start();
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing cleanup service');
+  cleanupService.stop();
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing cleanup service');
+  cleanupService.stop();
+  process.exit(0);
+});
 
 export default {
   port,
