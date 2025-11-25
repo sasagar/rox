@@ -63,6 +63,16 @@ export class PostgresUserRepository implements IUserRepository {
     return (result as User) ?? null;
   }
 
+  async findByUri(uri: string): Promise<User | null> {
+    const [result] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.uri, uri))
+      .limit(1);
+
+    return (result as User) ?? null;
+  }
+
   async update(
     id: string,
     data: Partial<Omit<User, 'id' | 'createdAt'>>

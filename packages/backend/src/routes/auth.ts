@@ -13,6 +13,97 @@ import { requireAuth } from '../middleware/auth.js';
 const app = new Hono();
 
 /**
+ * User Registration
+ *
+ * POST /api/auth/register
+ *
+ * Creates a new user account and automatically logs in.
+ *
+ * @remarks
+ * Request Body:
+ * ```json
+ * {
+ *   "username": "alice",
+ *   "email": "alice@example.com",
+ *   "password": "securePassword123",
+ *   "name": "Alice Smith" // optional
+ * }
+ * ```
+ *
+ * Response (201):
+ * ```json
+ * {
+ *   "user": { "id": "...", "username": "alice", ... },
+ *   "token": "a3f2e1d0c9b8a7f6..."
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: Missing or invalid fields
+ * - 409: Username or email already exists
+ */
+app.post('/register', async (c) => {
+  const body = await c.req.json();
+
+  // Validation
+  if (!body.username || typeof body.username !== 'string') {
+    return c.json({ error: 'Username is required' }, 400);
+  }
+  if (!body.email || typeof body.email !== 'string') {
+    return c.json({ error: 'Email is required' }, 400);
+  }
+  if (!body.password || typeof body.password !== 'string') {
+    return c.json({ error: 'Password is required' }, 400);
+  }
+
+  // Username validation
+  if (body.username.length < 3 || body.username.length > 20) {
+    return c.json({ error: 'Username must be between 3 and 20 characters' }, 400);
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(body.username)) {
+    return c.json({ error: 'Username must contain only alphanumeric characters and underscores' }, 400);
+  }
+
+  // Password validation
+  if (body.password.length < 8) {
+    return c.json({ error: 'Password must be at least 8 characters long' }, 400);
+  }
+
+  // Email validation
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    return c.json({ error: 'Invalid email address' }, 400);
+  }
+
+  try {
+    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const { user, session } = await authService.register({
+      username: body.username,
+      email: body.email,
+      password: body.password,
+      name: body.name,
+    });
+
+    // Remove sensitive data from response
+    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+
+    return c.json(
+      {
+        user: publicUser,
+        token: session.token,
+      },
+      201
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('already exists')) {
+        return c.json({ error: error.message }, 409);
+      }
+    }
+    throw error;
+  }
+});
+
+/**
  * Login
  *
  * POST /api/auth/session

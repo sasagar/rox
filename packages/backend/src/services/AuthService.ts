@@ -13,6 +13,7 @@ import type { User, Session } from 'shared';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { generateSessionToken, calculateSessionExpiry } from '../utils/session.js';
 import { generateId } from 'shared';
+import { generateKeyPair } from '../utils/crypto.js';
 
 /**
  * User Registration Input Data
@@ -91,7 +92,11 @@ export class AuthService {
     // パスワードをハッシュ化
     const passwordHash = await hashPassword(input.password);
 
+    // ActivityPub用の鍵ペア生成（ローカルユーザー用）
+    const { publicKey, privateKey } = generateKeyPair();
+
     // ユーザー作成
+    const baseUrl = process.env.URL || 'http://localhost:3000';
     const user = await this.userRepository.create({
       id: generateId(),
       username: input.username,
@@ -104,8 +109,14 @@ export class AuthService {
       bio: null,
       isAdmin: false,
       isSuspended: false,
-      publicKey: null,
-      privateKey: null,
+      publicKey,
+      privateKey,
+      // ActivityPub fields for local users
+      inbox: `${baseUrl}/users/${input.username}/inbox`,
+      outbox: `${baseUrl}/users/${input.username}/outbox`,
+      followersUrl: `${baseUrl}/users/${input.username}/followers`,
+      followingUrl: `${baseUrl}/users/${input.username}/following`,
+      uri: `${baseUrl}/users/${input.username}`,
     });
 
     // セッション作成

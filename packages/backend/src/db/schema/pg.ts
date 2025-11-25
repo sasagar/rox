@@ -17,12 +17,19 @@ export const users = pgTable(
     publicKey: text('public_key'),
     privateKey: text('private_key'),
     host: text('host'), // null for local users
+    // ActivityPub fields
+    inbox: text('inbox'),
+    outbox: text('outbox'),
+    followersUrl: text('followers_url'),
+    followingUrl: text('following_url'),
+    uri: text('uri'), // ActivityPub actor URI (for remote users)
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
   (table) => ({
     usernameHostIdx: uniqueIndex('username_host_idx').on(table.username, table.host),
     emailIdx: uniqueIndex('email_idx').on(table.email),
+    uriIdx: index('uri_idx').on(table.uri),
   })
 );
 

@@ -37,7 +37,7 @@ following.post('/create', requireAuth(), async (c: Context) => {
 
   try {
     const follow = await followService.follow(user.id, body.userId);
-    return c.json(follow);
+    return c.json(follow, 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to follow user';
     return c.json({ error: message }, 400);
@@ -71,6 +71,34 @@ following.post('/delete', requireAuth(), async (c: Context) => {
     return c.json({ success: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to unfollow user';
+    return c.json({ error: message }, 400);
+  }
+});
+
+/**
+ * GET /api/following/exists
+ *
+ * Check if a follow relationship exists
+ *
+ * @auth Required
+ * @query {string} userId - User ID to check if current user is following
+ * @returns {object} { exists: boolean }
+ */
+following.get('/exists', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
+  const followRepository = c.get('followRepository');
+
+  const userId = c.req.query('userId');
+
+  if (!userId) {
+    return c.json({ error: 'userId is required' }, 400);
+  }
+
+  try {
+    const exists = await followRepository.exists(user.id, userId);
+    return c.json({ exists });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to check follow status';
     return c.json({ error: message }, 400);
   }
 });

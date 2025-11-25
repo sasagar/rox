@@ -58,3 +58,7 @@ Thumbs.db
 
 # typedoc
 typedoc/
+
+# Test scripts
+packages/backend/test-*.ts
+packages/backend/check-*.ts

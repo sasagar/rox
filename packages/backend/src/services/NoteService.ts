@@ -10,9 +10,11 @@
 import type { INoteRepository } from '../interfaces/repositories/INoteRepository.js';
 import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
 import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
+import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
 import type { Note } from '../../../shared/src/types/note.js';
 import type { Visibility } from '../../../shared/src/types/common.js';
 import { generateId } from '../../../shared/src/utils/id.js';
+import { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 
 /**
  * Note creation input data
@@ -69,18 +71,29 @@ export class NoteService {
   private readonly defaultTimelineLimit = 20;
   private readonly maxTimelineLimit = 100;
 
+  private readonly deliveryService: ActivityPubDeliveryService;
+
   /**
    * NoteService Constructor
    *
    * @param noteRepository - Note repository
    * @param driveFileRepository - Drive file repository
    * @param followRepository - Follow repository
+   * @param userRepository - User repository
    */
   constructor(
     private readonly noteRepository: INoteRepository,
     private readonly driveFileRepository: IDriveFileRepository,
     private readonly followRepository: IFollowRepository,
-  ) {}
+    private readonly userRepository: IUserRepository,
+    activityDeliveryQueue: any, // Import from DI container
+  ) {
+    this.deliveryService = new ActivityPubDeliveryService(
+      userRepository,
+      followRepository,
+      activityDeliveryQueue
+    );
+  }
 
   /**
    * Create a new note
@@ -161,8 +174,11 @@ export class NoteService {
     const emojis = this.extractEmojis(text || '');
 
     // ノート作成
+    const noteId = generateId();
+    const baseUrl = process.env.URL || 'http://localhost:3000';
+
     const note = await this.noteRepository.create({
-      id: generateId(),
+      id: noteId,
       userId,
       text,
       cw,
@@ -174,8 +190,17 @@ export class NoteService {
       mentions,
       emojis,
       tags,
-      uri: null, // ローカルノートなのでnull
+      uri: `${baseUrl}/notes/${noteId}`, // ActivityPub URI for local notes
     });
+
+    // Deliver Create activity to followers (async, non-blocking)
+    const author = await this.userRepository.findById(userId);
+    if (author && !author.host && !localOnly && visibility === 'public') {
+      // Fire and forget - don't await to avoid blocking the response
+      this.deliveryService.deliverCreateNote(note, author).catch((error) => {
+        console.error(`Failed to deliver Create activity for note ${noteId}:`, error);
+      });
+    }
 
     return note;
   }

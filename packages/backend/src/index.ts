@@ -8,6 +8,13 @@ import driveRoute from './routes/drive.js';
 import notesRoute from './routes/notes.js';
 import reactionsRoute from './routes/reactions.js';
 import followingRoute from './routes/following.js';
+import actorRoute from './routes/ap/actor.js';
+import webfingerRoute from './routes/ap/webfinger.js';
+import inboxRoute from './routes/ap/inbox.js';
+import outboxRoute from './routes/ap/outbox.js';
+import followersRoute from './routes/ap/followers.js';
+import followingAPRoute from './routes/ap/following.js';
+import noteAPRoute from './routes/ap/note.js';
 import packageJson from '../../../package.json';
 
 const app = new Hono();
@@ -43,6 +50,15 @@ app.route('/api/drive', driveRoute);
 app.route('/api/notes', notesRoute);
 app.route('/api/notes/reactions', reactionsRoute);
 app.route('/api/following', followingRoute);
+
+// ActivityPubルート
+app.route('/', webfingerRoute); // /.well-known/webfinger
+app.route('/users', actorRoute); // /users/:username
+app.route('/', inboxRoute); // /users/:username/inbox
+app.route('/users', outboxRoute); // /users/:username/outbox
+app.route('/users', followersRoute); // /users/:username/followers
+app.route('/users', followingAPRoute); // /users/:username/following
+app.route('/', noteAPRoute); // /notes/:id
 
 const port = parseInt(process.env.PORT || '3000', 10);
 

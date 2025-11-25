@@ -27,8 +27,17 @@ reactions.post('/create', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const reactionService = new ReactionService(reactionRepository, noteRepository);
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   const body = await c.req.json();
 
@@ -68,8 +77,17 @@ reactions.post('/delete', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const reactionService = new ReactionService(reactionRepository, noteRepository);
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   const body = await c.req.json();
 
@@ -103,8 +121,17 @@ reactions.post('/delete', requireAuth(), async (c: Context) => {
 reactions.get('/', optionalAuth(), async (c: Context) => {
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const reactionService = new ReactionService(reactionRepository, noteRepository);
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   const noteId = c.req.query('noteId');
   const limit = c.req.query('limit')
@@ -136,8 +163,17 @@ reactions.get('/', optionalAuth(), async (c: Context) => {
 reactions.get('/counts', optionalAuth(), async (c: Context) => {
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const reactionService = new ReactionService(reactionRepository, noteRepository);
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   const noteId = c.req.query('noteId');
 
@@ -167,8 +203,17 @@ reactions.get('/my-reactions', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const reactionService = new ReactionService(reactionRepository, noteRepository);
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   const noteId = c.req.query('noteId');
 

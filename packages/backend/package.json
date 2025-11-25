@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "start": "bun run dist/index.js",
     "typecheck": "tsc --noEmit",
@@ -14,12 +14,14 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "hono": "^4.6.15",
-    "drizzle-orm": "^0.36.4",
-    "postgres": "^3.4.5",
-    "mysql2": "^3.11.5",
-    "better-sqlite3": "^11.7.0",
     "@aws-sdk/client-s3": "^3.705.0",
+    "better-sqlite3": "^11.7.0",
+    "bullmq": "^5.64.1",
+    "drizzle-orm": "^0.36.4",
+    "hono": "^4.6.15",
+    "ioredis": "^5.8.2",
+    "mysql2": "^3.11.5",
+    "postgres": "^3.4.5",
     "rox_shared": "workspace:*"
   },
   "devDependencies": {

@@ -21,6 +21,7 @@ import {
   LocalStorageAdapter,
   S3StorageAdapter,
 } from '../adapters/storage/index.js';
+import { ActivityDeliveryQueue } from '../services/ap/ActivityDeliveryQueue.js';
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -30,6 +31,7 @@ export interface AppContainer {
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
   fileStorage: IFileStorage;
+  activityDeliveryQueue: ActivityDeliveryQueue;
 }
 
 /**
@@ -46,9 +48,17 @@ export function createContainer(): AppContainer {
   // Storage Adapter選択
   const fileStorage = createStorageAdapter();
 
+  // Activity Delivery Queue
+  const activityDeliveryQueue = new ActivityDeliveryQueue();
+  // Initialize in background (non-blocking)
+  activityDeliveryQueue.waitForInit().catch((error) => {
+    console.error('Failed to initialize ActivityDeliveryQueue:', error);
+  });
+
   return {
     ...repositories,
     fileStorage,
+    activityDeliveryQueue,
   };
 }
 

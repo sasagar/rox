@@ -24,6 +24,17 @@ export interface IUserRepository {
   findByEmail(email: string): Promise<User | null>;
 
   /**
+   * URIでユーザーを取得
+   *
+   * Remote ActivityPub actors are identified by their URI.
+   * This method is used to resolve remote actors and check if they already exist in the database.
+   *
+   * @param uri - ActivityPub actor URI (e.g., "https://mastodon.social/users/alice")
+   * @returns User record if found, null otherwise
+   */
+  findByUri(uri: string): Promise<User | null>;
+
+  /**
    * ユーザー情報を更新
    */
   update(id: string, data: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<User>;

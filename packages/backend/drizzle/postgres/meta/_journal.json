@@ -22,6 +22,13 @@
       "when": 1763565080940,
       "tag": "0002_famous_the_hunter",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1764038184215,
+      "tag": "0003_square_living_mummy",
+      "breakpoints": true
     }
   ]
 }

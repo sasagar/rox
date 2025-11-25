@@ -14,6 +14,12 @@ export interface User extends Timestamps {
   publicKey: string | null;
   privateKey: string | null;
   host: string | null; // null for local users, domain for remote users
+  // ActivityPub fields
+  inbox: string | null; // ActivityPub inbox URL
+  outbox: string | null; // ActivityPub outbox URL
+  followersUrl: string | null; // Followers collection URL
+  followingUrl: string | null; // Following collection URL
+  uri: string | null; // ActivityPub actor URI (for remote users)
 }
 
 export interface UserProfile {

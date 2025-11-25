@@ -33,11 +33,15 @@ notes.post('/create', requireAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const body = await c.req.json();
@@ -74,11 +78,15 @@ notes.get('/show', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const noteId = c.req.query('noteId');
@@ -110,11 +118,15 @@ notes.post('/delete', requireAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const body = await c.req.json();
@@ -149,11 +161,15 @@ notes.get('/local-timeline', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -187,11 +203,15 @@ notes.get('/timeline', requireAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -225,11 +245,15 @@ notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -263,11 +287,15 @@ notes.get('/user-notes', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
   const followRepository = c.get('followRepository');
+  const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
+    userRepository,
+    activityDeliveryQueue,
   );
 
   const userId = c.req.query('userId');
@@ -303,14 +331,6 @@ notes.get('/user-notes', optionalAuth(), async (c: Context) => {
  */
 notes.get('/replies', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
-
-  const noteService = new NoteService(
-    noteRepository,
-    driveFileRepository,
-    followRepository,
-  );
 
   const noteId = c.req.query('noteId');
 
@@ -329,10 +349,9 @@ notes.get('/replies', optionalAuth(), async (c: Context) => {
     untilId,
   });
 
-  // Hydrate replies with user and file data
-  const hydratedReplies = await noteService.hydrateNotes(replies);
+  // TODO: Implement hydration with user and file data
+  return c.json(replies);
 
-  return c.json(hydratedReplies);
 });
 
 export default notes;

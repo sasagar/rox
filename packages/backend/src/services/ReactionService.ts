@@ -9,8 +9,10 @@
 
 import type { IReactionRepository } from '../interfaces/repositories/IReactionRepository.js';
 import type { INoteRepository } from '../interfaces/repositories/INoteRepository.js';
+import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
 import type { Reaction } from '../../../shared/src/types/reaction.js';
 import { generateId } from '../../../shared/src/utils/id.js';
+import { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 
 /**
  * Reaction creation input data
@@ -41,17 +43,30 @@ export interface ReactionCreateInput {
  */
 export class ReactionService {
   private readonly maxReactionLength = 100;
+  private readonly deliveryService: ActivityPubDeliveryService;
 
   /**
    * ReactionService Constructor
    *
    * @param reactionRepository - Reaction repository
    * @param noteRepository - Note repository
+   * @param userRepository - User repository
+   * @param followRepository - Follow repository
+   * @param activityDeliveryQueue - Activity delivery queue
    */
   constructor(
     private readonly reactionRepository: IReactionRepository,
     private readonly noteRepository: INoteRepository,
-  ) {}
+    private readonly userRepository: IUserRepository,
+    followRepository: any, // IFollowRepository
+    activityDeliveryQueue: any,
+  ) {
+    this.deliveryService = new ActivityPubDeliveryService(
+      userRepository,
+      followRepository,
+      activityDeliveryQueue
+    );
+  }
 
   /**
    * Create a reaction
@@ -118,6 +133,25 @@ export class ReactionService {
       noteId,
       reaction,
     });
+
+    // Deliver Like activity to remote note author (async, non-blocking)
+    const reactor = await this.userRepository.findById(userId);
+    const noteAuthor = await this.userRepository.findById(note.userId);
+
+    if (reactor && !reactor.host && noteAuthor && noteAuthor.host && noteAuthor.inbox) {
+      // Only deliver if:
+      // 1. Reactor is a local user (reactor.host is null)
+      // 2. Note author is a remote user (noteAuthor.host is not null)
+      // 3. Note author has an inbox URL
+      this.deliveryService.deliverLikeActivity(
+        note.id,
+        note.uri || `${process.env.URL || 'http://localhost:3000'}/notes/${note.id}`,
+        noteAuthor.inbox,
+        reactor
+      ).catch((error) => {
+        console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
+      });
+    }
 
     return newReaction;
   }

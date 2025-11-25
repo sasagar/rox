@@ -9,7 +9,7 @@
 Phase 0: Foundation         [██████████] 100% ✅ 完了 (2025-11-19)
 Phase 1: Misskey API        [██████████] 100% ✅ 完了 (2025-11-19)
 Phase 2: Frontend           [██████████] 100% ✅ 完了 (2025-11-25)
-Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開始可能)
+Phase 3: Federation         [███░░░░░░░]  30% 🔄 進行中 (2025-11-25〜)
 ```
 
 ---
@@ -244,29 +244,29 @@ Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開
 **期間:** 2026-01-29 〜 2026-02-18
 **目標:** ActivityPub基盤
 
-#### Week 11: Actor & Signatures
+#### Week 11: Actor & Signatures ✅
 
-- [ ] **Day 71-73: Actor実装**
-  - [ ] Actor document
-  - [ ] WebFinger
-  - [ ] 鍵ペア生成
+- [x] **Day 71-73: Actor実装**
+  - [x] Actor document ([actor.ts](../../packages/backend/src/routes/ap/actor.ts))
+  - [x] WebFinger ([webfinger.ts](../../packages/backend/src/routes/ap/webfinger.ts))
+  - [x] 鍵ペア生成 ([generate-keypairs.ts](../../packages/backend/scripts/generate-keypairs.ts))
 
-- [ ] **Day 74-77: HTTP Signatures**
-  - [ ] 署名生成
-  - [ ] 署名検証
-  - [ ] 公開鍵キャッシュ
+- [x] **Day 74-77: HTTP Signatures**
+  - [x] 署名生成 ([crypto.ts](../../packages/backend/src/utils/crypto.ts))
+  - [x] 署名検証 ([httpSignature.ts](../../packages/backend/src/utils/httpSignature.ts))
+  - [x] 公開鍵キャッシュ ([verifySignature.ts](../../packages/backend/src/middleware/verifySignature.ts))
 
-#### Week 12: Inbox
+#### Week 12: Inbox ✅
 
-- [ ] **Day 78-81: Inboxエンドポイント**
-  - [ ] Create handler
-  - [ ] Follow handler
-  - [ ] Update/Delete handler
+- [x] **Day 78-81: Inboxエンドポイント**
+  - [x] Create handler ([inbox.ts:222](../../packages/backend/src/routes/ap/inbox.ts#L222))
+  - [x] Follow handler ([inbox.ts:137](../../packages/backend/src/routes/ap/inbox.ts#L137))
+  - [x] Undo handler ([inbox.ts:295](../../packages/backend/src/routes/ap/inbox.ts#L295))
 
-- [ ] **Day 82-84: リモートオブジェクト**
-  - [ ] リモートユーザー保存
-  - [ ] リモートノート保存
-  - [ ] オブジェクトフェッチ
+- [x] **Day 82-84: リモートオブジェクト**
+  - [x] リモートユーザー保存 ([RemoteActorService.ts](../../packages/backend/src/services/ap/RemoteActorService.ts))
+  - [x] リモートノート保存 ([RemoteNoteService.ts](../../packages/backend/src/services/ap/RemoteNoteService.ts))
+  - [x] Activity配送 ([ActivityDeliveryService.ts](../../packages/backend/src/services/ap/ActivityDeliveryService.ts))
 
 #### Week 13: Outbox & Delivery
 
@@ -431,9 +431,9 @@ Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開
 
 ## 現在の状況
 
-**現在のフェーズ:** Phase 3準備中
+**現在のフェーズ:** Phase 3 (ActivityPub Federation) - 進行中
 **完了フェーズ:** Phase 0, 1, 2
-**ステータス:** ✅ Phase 2完了、Phase 3開始可能
+**ステータス:** 🔄 Phase 3 Week 1-2 完了、Week 2-3 進行中
 
 **Phase 0-2 完了項目:**
 - ✅ 基盤構築（モノレポ、DI、Repository Pattern）
@@ -444,13 +444,23 @@ Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開
 - ✅ UI/UXの改善（Lucide React、アクセシビリティ対応）
 - ✅ 国際化対応（Lingui、日本語・英語、127メッセージ）
 
-**次のフェーズ:** Phase 3 (ActivityPub Federation)
+**Phase 3 完了項目 (2025-11-25):**
+- ✅ Actor document実装 (GET /users/:username)
+- ✅ WebFinger実装 (GET /.well-known/webfinger)
+- ✅ RSA鍵ペア生成・保存（全ローカルユーザー）
+- ✅ HTTP Signatures署名生成
+- ✅ HTTP Signatures署名検証ミドルウェア
+- ✅ 公開鍵フェッチ・キャッシング
+- ✅ Date/Digest検証（リプレイ攻撃対策）
+- ✅ Inboxエンドポイント基本実装 (POST /users/:username/inbox)
+- ✅ HTTP Signaturesテスト（全10項目パス）
 
 **次のタスク:**
-- WebFinger実装
-- Actor endpoint実装
-- HTTP Signatures対応
-- Inbox/Outbox実装
+- リモートユーザー解決・保存機能
+- Follow/Acceptハンドラー実装
+- Createハンドラー実装（リモート投稿受信）
+- Outbox実装
+- 配送キュー実装
 
 **ブロッカー:** なし
 
@@ -463,3 +473,4 @@ Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開
 | 2025-11-19 | タイムライン初版作成 | プロジェクト開始 |
 | 2025-11-19 | Phase 0, 1完了を記録 | 基盤とAPI実装完了 |
 | 2025-11-25 | Phase 2完了を記録 | フロントエンド実装完了（Lucide React、React Aria Select、i18n 127メッセージ） |
+| 2025-11-25 | Phase 3開始・Week 1-2完了を記録 | Actor/WebFinger/HTTP Signatures/Inbox基本実装完了 |
