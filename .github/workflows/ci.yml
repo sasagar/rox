@@ -25,8 +25,12 @@ jobs:
 
       - name: Debug TypeScript version
         run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          ls -la src/ || echo "No src dir"
+          ls -la src/adapters/ || echo "No adapters dir"
+          ls -la src/adapters/storage/ || echo "No storage dir"
           bunx tsc --version
-          ls -la src/adapters/storage/
         working-directory: packages/backend
 
       - name: Type check
