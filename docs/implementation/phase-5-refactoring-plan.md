@@ -121,17 +121,26 @@ handlers/AnnounceHandler.ts  # Use getRemoteNoteService()
 
 ---
 
-### 1.4 Dynamic Import Cleanup (Low Priority)
+### 1.4 Dynamic Import Cleanup (Low Priority) ✅ COMPLETE
 
-**Current State:**
-- `await import('shared')` used in multiple places
-- Inconsistent import patterns
+**Before:**
+- `await import('shared')` used in multiple handler files
+- `await import('blurhash')` in ImageProcessor
+- `await import('drizzle-orm')` in inbox.ts
 
-**Tasks:**
-- [ ] Convert dynamic imports to top-level imports where possible
-- [ ] Document cases where dynamic import is necessary
+**After:**
+- All dynamic imports converted to top-level imports
+- `generateId()` changed from async to sync method
 
-**Estimated Impact:** Minor code cleanliness
+**Files Updated:**
+- `handlers/BaseHandler.ts` - Top-level import from 'shared'
+- `handlers/LikeHandler.ts` - Updated to sync generateId()
+- `handlers/AnnounceHandler.ts` - Updated to sync generateId()
+- `handlers/FollowHandler.ts` - Updated to sync generateId()
+- `services/ImageProcessor.ts` - Top-level import of blurhash
+- `routes/ap/inbox.ts` - Top-level import of drizzle-orm
+
+**Estimated Impact:** Minor code cleanliness ✅ Achieved
 
 ---
 
@@ -144,9 +153,10 @@ handlers/AnnounceHandler.ts  # Use getRemoteNoteService()
    - Cache public timeline results for 30 seconds
    - Invalidate on new local note creation
 
-2. **User Profile Cache**
-   - Cache user profiles for 5 minutes
-   - Invalidate on profile update (planned)
+2. **User Profile Cache** ✅
+   - Cache user profiles for 5 minutes (CacheTTL.MEDIUM)
+   - Invalidate on profile update
+   - Cache by ID (`findById`) and username (`findByUsername`)
 
 3. **Remote Actor Cache**
    - Already partially implemented
@@ -158,7 +168,8 @@ handlers/AnnounceHandler.ts  # Use getRemoteNoteService()
 - [x] Add caching to `NoteService.getLocalTimeline()` (30s TTL for first page)
 - [x] Add cache invalidation on note creation
 - [x] Add `cacheService` to DI Container
-- [ ] Add caching to `UserService.findById()` (planned)
+- [x] Add caching to `UserService.findById()` and `findByUsername()`
+- [x] Add cache invalidation on profile update
 
 **Implementation Details:**
 ```
@@ -167,7 +178,9 @@ adapters/cache/DragonflyCacheAdapter.ts  # Dragonfly implementation with TTL con
 di/container.ts                      # Added cacheService to AppContainer
 middleware/di.ts                     # Inject cacheService into Hono Context
 services/NoteService.ts              # Added timeline caching + invalidation
+services/UserService.ts              # Added profile caching + invalidation
 routes/notes.ts                      # Pass cacheService to NoteService
+routes/users.ts                      # Pass cacheService to UserService
 ```
 
 **Cache Configuration:**
@@ -289,15 +302,15 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 - `ImageProcessor.test.ts` - 19 tests ✅ NEW
 - `FollowService.test.ts` - 20 tests ✅ NEW
 - `AuthService.test.ts` - 14 tests ✅ NEW
-- `UserService.test.ts` - 11 tests ✅ NEW
-- **Total: 93 unit tests**
+- `UserService.test.ts` - 16 tests ✅ (added 5 cache tests)
+- **Total: 98 unit tests**
 
 **Target Services:**
 - [x] `NoteService` - create, delete, timeline methods
 - [x] `ImageProcessor` - WebP conversion, thumbnail generation
 - [x] `FollowService` - follow, unfollow, getFollowers, getFollowing, counts
 - [x] `AuthService` - register, login, logout, validateSession
-- [x] `UserService` - updateProfile, findById, findByUsername
+- [x] `UserService` - updateProfile, findById, findByUsername, caching
 
 ### 4.2 Integration Tests (Medium Priority)
 
@@ -364,7 +377,8 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
    - Added environment variable configuration
 3. ✅ FollowService unit tests - **COMPLETE** (20 tests)
 4. ✅ AuthService unit tests - **COMPLETE** (14 tests)
-5. ✅ UserService unit tests - **COMPLETE** (11 tests)
+5. ✅ UserService unit tests - **COMPLETE** (16 tests, including cache tests)
+6. ✅ User Profile Cache - **COMPLETE**
 
 ---
 
@@ -375,8 +389,8 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 | inbox.ts lines | 756 | 140 | <200 | ✅ Achieved |
 | ActivityPubDeliveryService lines | 633 | 276 | <300 | ✅ Achieved |
 | Unit test files | 2 | 6 | 10+ | In Progress |
-| Unit test count | 9 | 93 | 100+ | Almost There! |
-| Test coverage | ~5% | ~25% | 40%+ | In Progress |
+| Unit test count | 9 | 98 | 100+ | Almost There! |
+| Test coverage | ~5% | ~28% | 40%+ | In Progress |
 | Timeline response time (p95) | TBD | TBD | <100ms | Pending |
 
 ---

@@ -9,6 +9,7 @@ import { describe, test, expect, mock, beforeEach } from 'bun:test';
 import { UserService } from '../../services/UserService';
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository';
 import type { ActivityPubDeliveryService } from '../../services/ap/ActivityPubDeliveryService';
+import type { ICacheService } from '../../interfaces/ICacheService';
 import type { User } from '../../db/schema/pg.js';
 
 /**
@@ -16,6 +17,7 @@ import type { User } from '../../db/schema/pg.js';
  */
 type MockUserRepo = Pick<IUserRepository, 'findById' | 'findByUsername' | 'update'>;
 type MockDeliveryService = Pick<ActivityPubDeliveryService, 'deliverUpdate'>;
+type MockCacheService = Pick<ICacheService, 'get' | 'set' | 'delete' | 'isAvailable'>;
 
 describe('UserService', () => {
   // Mock data
@@ -239,6 +241,114 @@ describe('UserService', () => {
 
       expect(result?.id).toBe('user2');
       expect(result?.host).toBe('remote.example.com');
+    });
+  });
+
+  describe('caching', () => {
+    let mockCacheService: MockCacheService;
+    const cacheStore = new Map<string, unknown>();
+
+    beforeEach(() => {
+      cacheStore.clear();
+      mockCacheService = {
+        isAvailable: mock(() => true),
+        get: mock((key: string) => Promise.resolve(cacheStore.get(key) ?? null)),
+        set: mock((key: string, value: unknown) => {
+          cacheStore.set(key, value);
+          return Promise.resolve();
+        }),
+        delete: mock((key: string) => {
+          cacheStore.delete(key);
+          return Promise.resolve();
+        }),
+      };
+    });
+
+    test('should return cached user on findById', async () => {
+      const service = new UserService(
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+        mockCacheService as ICacheService
+      );
+
+      // First call - should fetch from repo and cache
+      const result1 = await service.findById('user1');
+      expect(result1?.id).toBe('user1');
+      expect(mockUserRepo.findById).toHaveBeenCalledTimes(1);
+      expect(mockCacheService.set).toHaveBeenCalled();
+
+      // Second call - should return from cache
+      const result2 = await service.findById('user1');
+      expect(result2?.id).toBe('user1');
+      expect(mockUserRepo.findById).toHaveBeenCalledTimes(1); // Still 1, no new DB call
+    });
+
+    test('should return cached user on findByUsername', async () => {
+      const service = new UserService(
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+        mockCacheService as ICacheService
+      );
+
+      // First call - should fetch from repo and cache
+      const result1 = await service.findByUsername('testuser');
+      expect(result1?.id).toBe('user1');
+      expect(mockUserRepo.findByUsername).toHaveBeenCalledTimes(1);
+
+      // Second call - should return from cache
+      const result2 = await service.findByUsername('testuser');
+      expect(result2?.id).toBe('user1');
+      expect(mockUserRepo.findByUsername).toHaveBeenCalledTimes(1); // Still 1
+    });
+
+    test('should invalidate cache on profile update', async () => {
+      const service = new UserService(
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+        mockCacheService as ICacheService
+      );
+
+      // Cache the user first
+      await service.findById('user1');
+      expect(cacheStore.size).toBeGreaterThan(0);
+
+      // Update profile - should invalidate cache
+      await service.updateProfile('user1', { displayName: 'New Name' });
+
+      // Wait for async cache invalidation
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(mockCacheService.delete).toHaveBeenCalled();
+    });
+
+    test('should work without cache service', async () => {
+      const service = new UserService(
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService
+        // No cache service
+      );
+
+      const result = await service.findById('user1');
+      expect(result?.id).toBe('user1');
+      expect(mockUserRepo.findById).toHaveBeenCalled();
+    });
+
+    test('should skip cache when unavailable', async () => {
+      const unavailableCacheService: MockCacheService = {
+        ...mockCacheService,
+        isAvailable: mock(() => false),
+      };
+
+      const service = new UserService(
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+        unavailableCacheService as ICacheService
+      );
+
+      // Should still work, just without caching
+      const result = await service.findById('user1');
+      expect(result?.id).toBe('user1');
+      expect(unavailableCacheService.get).not.toHaveBeenCalled();
     });
   });
 });

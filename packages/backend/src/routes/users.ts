@@ -369,11 +369,13 @@ app.patch('/@me', requireAuth(), async (c) => {
   const body = await c.req.json();
   const userRepository = c.get('userRepository');
   const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
-  // Initialize UserService with ActivityPub delivery support
+  // Initialize UserService with ActivityPub delivery support and caching
   const userService = new UserService(
     userRepository,
     deliveryService,
+    cacheService,
   );
 
   // 更新可能なフィールドのみを抽出
