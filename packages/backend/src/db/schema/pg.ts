@@ -178,6 +178,23 @@ export const receivedActivities = pgTable(
   })
 );
 
+// Instance blocks table (for federation moderation)
+export const instanceBlocks = pgTable(
+  'instance_blocks',
+  {
+    id: text('id').primaryKey(),
+    host: text('host').notNull().unique(), // Blocked instance hostname (e.g., "spam.instance.com")
+    reason: text('reason'), // Optional reason for the block
+    blockedById: text('blocked_by_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'set null' }), // Admin who created the block
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    hostIdx: uniqueIndex('instance_block_host_idx').on(table.host),
+  })
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -193,3 +210,5 @@ export type Follow = typeof follows.$inferSelect;
 export type NewFollow = typeof follows.$inferInsert;
 export type ReceivedActivity = typeof receivedActivities.$inferSelect;
 export type NewReceivedActivity = typeof receivedActivities.$inferInsert;
+export type InstanceBlock = typeof instanceBlocks.$inferSelect;
+export type NewInstanceBlock = typeof instanceBlocks.$inferInsert;

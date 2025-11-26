@@ -206,15 +206,16 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Activity deduplication
   - ✅ Delivery metrics & monitoring
   - ✅ Federation tested with Mastodon, Misskey, GoToSocial
-- **Phase 4**: Refactoring & Optimization ⏳ **In Progress**
-  - Code refactoring (inbox handlers, delivery service)
-  - Redis caching (timeline, profiles)
-  - Image optimization (WebP conversion)
-  - Test coverage improvement
-- **Phase 5**: Administration & Security
-  - Instance block management UI
-  - Moderation features
-  - Rate limiting improvements
+- **Phase 4**: Refactoring & Optimization ✅ **Complete**
+  - ✅ Code refactoring (inbox handlers split into 11 dedicated handlers)
+  - ✅ Redis caching (user profiles via CacheService)
+  - ✅ Image optimization (WebP conversion via ImageProcessor)
+  - ✅ Test coverage improvement (180+ unit tests)
+- **Phase 5**: Administration & Security ✅ **Complete**
+  - ✅ Admin role and permissions (`requireAdmin` middleware)
+  - ✅ Instance block management (API + federation enforcement)
+  - ✅ User suspension/moderation (API + auth enforcement)
+  - ✅ Rate limiting (middleware implemented)
 - **Phase 6**: Production Readiness ✅ **Complete**
   - ✅ Input validation (Zod schemas)
   - ✅ Health checks and metrics endpoints

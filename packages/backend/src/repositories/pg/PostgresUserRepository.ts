@@ -1,7 +1,7 @@
-import { eq, and, isNull, sql } from 'drizzle-orm';
+import { eq, and, isNull, sql, desc } from 'drizzle-orm';
 import type { Database } from '../../db/index.js';
 import { users, type User } from '../../db/schema/pg.js';
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
+import type { IUserRepository, ListUsersOptions } from '../../interfaces/repositories/IUserRepository.js';
 
 export class PostgresUserRepository implements IUserRepository {
   constructor(private db: Database) {}
@@ -103,5 +103,33 @@ export class PostgresUserRepository implements IUserRepository {
       .where(localOnly ? isNull(users.host) : undefined);
 
     return result?.count ?? 0;
+  }
+
+  async findAll(options: ListUsersOptions = {}): Promise<User[]> {
+    const { limit = 100, offset = 0, localOnly, isAdmin, isSuspended } = options;
+
+    const conditions = [];
+
+    if (localOnly === true) {
+      conditions.push(isNull(users.host));
+    }
+
+    if (isAdmin !== undefined) {
+      conditions.push(eq(users.isAdmin, isAdmin));
+    }
+
+    if (isSuspended !== undefined) {
+      conditions.push(eq(users.isSuspended, isSuspended));
+    }
+
+    const results = await this.db
+      .select()
+      .from(users)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(users.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return results as User[];
   }
 }

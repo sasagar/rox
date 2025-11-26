@@ -113,6 +113,69 @@ export function requireAuth() {
       return c.json({ error: 'Invalid or expired token' }, 401);
     }
 
+    // Check if user is suspended
+    if (result.user.isSuspended) {
+      return c.json({ error: 'Your account has been suspended' }, 403);
+    }
+
+    c.set('user', result.user);
+    c.set('session', result.session);
+
+    return await next();
+  };
+}
+
+/**
+ * Admin-only Authentication Middleware
+ *
+ * Requires the user to be authenticated AND have admin privileges.
+ * Returns 401 if not authenticated, 403 if not an admin.
+ *
+ * @returns Hono middleware function
+ *
+ * @example
+ * ```typescript
+ * app.post('/api/admin/users/suspend', requireAdmin(), async (c) => {
+ *   const admin = c.get('user')!; // Guaranteed to be admin
+ *   // Suspend user
+ * });
+ * ```
+ *
+ * @remarks
+ * - Chains authentication check with admin role verification
+ * - Not authenticated: `401 Authentication required`
+ * - Authenticated but not admin: `403 Admin access required`
+ * - Use for administrative endpoints
+ */
+export function requireAdmin() {
+  return async (c: Context, next: Next) => {
+    const authHeader = c.req.header('Authorization');
+    if (!authHeader) {
+      return c.json({ error: 'Authentication required' }, 401);
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, '');
+    if (!token) {
+      return c.json({ error: 'Invalid token format' }, 401);
+    }
+
+    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const result = await authService.validateSession(token);
+
+    if (!result) {
+      return c.json({ error: 'Invalid or expired token' }, 401);
+    }
+
+    // Check if user is suspended
+    if (result.user.isSuspended) {
+      return c.json({ error: 'Your account has been suspended' }, 403);
+    }
+
+    // Check if user is admin
+    if (!result.user.isAdmin) {
+      return c.json({ error: 'Admin access required' }, 403);
+    }
+
     c.set('user', result.user);
     c.set('session', result.session);
 

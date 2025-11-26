@@ -1,5 +1,21 @@
 import type { User } from '../../db/schema/pg.js';
 
+/**
+ * Pagination options for listing users
+ */
+export interface ListUsersOptions {
+  /** Maximum number of users to return */
+  limit?: number;
+  /** Number of users to skip */
+  offset?: number;
+  /** Filter by local users only (host is null) */
+  localOnly?: boolean;
+  /** Filter by admin status */
+  isAdmin?: boolean;
+  /** Filter by suspended status */
+  isSuspended?: boolean;
+}
+
 export interface IUserRepository {
   /**
    * ユーザーを作成
@@ -10,6 +26,14 @@ export interface IUserRepository {
    * IDでユーザーを取得
    */
   findById(id: string): Promise<User | null>;
+
+  /**
+   * Get all users with pagination and filters
+   *
+   * @param options - Pagination and filter options
+   * @returns Array of users
+   */
+  findAll(options?: ListUsersOptions): Promise<User[]>;
 
   /**
    * ユーザー名でユーザーを取得

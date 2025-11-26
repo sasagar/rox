@@ -9,6 +9,7 @@
 
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
+import type { IInstanceBlockRepository } from '../../interfaces/repositories/IInstanceBlockRepository.js';
 import type { Note } from 'shared';
 import type { User } from '../../db/schema/pg.js';
 import { ActivityDeliveryQueue, JobPriority } from './ActivityDeliveryQueue.js';
@@ -43,9 +44,23 @@ export class ActivityPubDeliveryService {
     private readonly userRepository: IUserRepository,
     private readonly followRepository: IFollowRepository,
     activityDeliveryQueue: ActivityDeliveryQueue,
+    private readonly instanceBlockRepository?: IInstanceBlockRepository,
   ) {
     this.queue = activityDeliveryQueue;
     this.builder = new ActivityBuilder();
+  }
+
+  /**
+   * Check if an inbox URL's host is blocked
+   */
+  private async isHostBlocked(inboxUrl: string): Promise<boolean> {
+    if (!this.instanceBlockRepository) return false;
+    try {
+      const host = new URL(inboxUrl).hostname;
+      return await this.instanceBlockRepository.isBlocked(host);
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -85,6 +100,12 @@ export class ActivityPubDeliveryService {
 
     if (!actor.privateKey) {
       console.log(`⚠️  Cannot deliver: actor has no private key`);
+      return;
+    }
+
+    // Check if the target instance is blocked
+    if (await this.isHostBlocked(inboxUrl)) {
+      console.log(`🚫 Skipping delivery to blocked instance: ${inboxUrl}`);
       return;
     }
 

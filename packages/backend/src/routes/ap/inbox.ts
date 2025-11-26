@@ -96,6 +96,25 @@ inbox.post('/users/:username/inbox', inboxRateLimit(RateLimitPresets.inbox), ver
 
   console.log(`📥 Inbox: Received ${activity.type} from ${activity.actor} for ${username}`);
 
+  // Check if actor's instance is blocked
+  const actorUrl = typeof activity.actor === 'string' ? activity.actor : (activity.actor as { id?: string })?.id;
+  if (actorUrl) {
+    try {
+      const actorHost = new URL(actorUrl).hostname;
+      const instanceBlockRepository = c.get('instanceBlockRepository');
+      const isBlocked = await instanceBlockRepository.isBlocked(actorHost);
+
+      if (isBlocked) {
+        console.log(`🚫 Activity from blocked instance ${actorHost}, rejecting`);
+        // Return 202 to not reveal block status to remote (security through obscurity)
+        return c.json({ status: 'accepted' }, 202);
+      }
+    } catch (error) {
+      console.error('Instance block check failed:', error);
+      // Continue processing if block check fails
+    }
+  }
+
   // Check for duplicate activity (deduplication)
   const activityId = activity.id;
   if (activityId) {

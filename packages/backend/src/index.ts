@@ -19,6 +19,7 @@ import noteAPRoute from './routes/ap/note.js';
 import nodeinfoRoute from './routes/ap/nodeinfo.js';
 import proxyRoute from './routes/proxy.js';
 import healthRoute from './routes/health.js';
+import adminRoute from './routes/admin.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 import { getContainer } from './di/container.js';
@@ -53,6 +54,7 @@ app.route('/api/drive', driveRoute);
 app.route('/api/notes', notesRoute);
 app.route('/api/notes/reactions', reactionsRoute);
 app.route('/api/following', followingRoute);
+app.route('/api/admin', adminRoute);
 
 // Media Proxy
 app.route('/proxy', proxyRoute);

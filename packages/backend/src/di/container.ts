@@ -7,6 +7,7 @@ import type {
   ISessionRepository,
   IReactionRepository,
   IFollowRepository,
+  IInstanceBlockRepository,
 } from '../interfaces/repositories/index.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
 import type { ICacheService } from '../interfaces/ICacheService.js';
@@ -17,6 +18,7 @@ import {
   PostgresSessionRepository,
   PostgresReactionRepository,
   PostgresFollowRepository,
+  PostgresInstanceBlockRepository,
 } from '../repositories/pg/index.js';
 import {
   LocalStorageAdapter,
@@ -35,6 +37,7 @@ export interface AppContainer {
   sessionRepository: ISessionRepository;
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
+  instanceBlockRepository: IInstanceBlockRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -88,7 +91,8 @@ export function createContainer(): AppContainer {
   const activityPubDeliveryService = new ActivityPubDeliveryService(
     repositories.userRepository,
     repositories.followRepository,
-    activityDeliveryQueue
+    activityDeliveryQueue,
+    repositories.instanceBlockRepository
   );
 
   return {
@@ -115,6 +119,7 @@ function createRepositories(db: any, dbType: string) {
         sessionRepository: new PostgresSessionRepository(db),
         reactionRepository: new PostgresReactionRepository(db),
         followRepository: new PostgresFollowRepository(db),
+        instanceBlockRepository: new PostgresInstanceBlockRepository(db),
       };
 
     case 'mysql':
