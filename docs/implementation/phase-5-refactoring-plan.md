@@ -294,16 +294,17 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 
 ## 4. Test Coverage
 
-### 4.1 Unit Tests (High Priority) - IN PROGRESS
+### 4.1 Unit Tests (High Priority) ✅ COMPLETE
 
 **Current Coverage:**
 - `ReactionService.test.ts` - 9 tests
-- `NoteService.test.ts` - 20 tests ✅ NEW
-- `ImageProcessor.test.ts` - 19 tests ✅ NEW
-- `FollowService.test.ts` - 20 tests ✅ NEW
-- `AuthService.test.ts` - 14 tests ✅ NEW
-- `UserService.test.ts` - 16 tests ✅ (added 5 cache tests)
-- **Total: 98 unit tests**
+- `NoteService.test.ts` - 20 tests
+- `ImageProcessor.test.ts` - 19 tests
+- `FollowService.test.ts` - 20 tests
+- `AuthService.test.ts` - 14 tests
+- `UserService.test.ts` - 16 tests (including cache tests)
+- `InboxService.test.ts` - 9 tests ✅ NEW
+- **Total: 107 unit tests** 🎉
 
 **Target Services:**
 - [x] `NoteService` - create, delete, timeline methods
@@ -311,6 +312,7 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 - [x] `FollowService` - follow, unfollow, getFollowers, getFollowing, counts
 - [x] `AuthService` - register, login, logout, validateSession
 - [x] `UserService` - updateProfile, findById, findByUsername, caching
+- [x] `InboxService` - handler registration, activity routing, singleton
 
 ### 4.2 Integration Tests (Medium Priority)
 
@@ -367,8 +369,8 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
     - Verified N+1 avoidance via JOINs
 11. Integration tests (4.2) - deferred
 
-### Sprint 5: DI & Unit Tests (Week 5) - IN PROGRESS
-1. ✅ DI Container Enhancement (1.3) - **MOSTLY COMPLETE**
+### Sprint 5: DI & Unit Tests (Week 5) ✅ COMPLETE
+1. ✅ DI Container Enhancement (1.3) - **COMPLETE**
    - Added `RemoteActorService` to DI container
    - Added `RemoteNoteService` to DI container
    - Updated handlers to use injected services
@@ -379,6 +381,7 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 4. ✅ AuthService unit tests - **COMPLETE** (14 tests)
 5. ✅ UserService unit tests - **COMPLETE** (16 tests, including cache tests)
 6. ✅ User Profile Cache - **COMPLETE**
+7. ✅ InboxService unit tests - **COMPLETE** (9 tests)
 
 ---
 
@@ -388,9 +391,9 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 |--------|--------|---------|--------|--------|
 | inbox.ts lines | 756 | 140 | <200 | ✅ Achieved |
 | ActivityPubDeliveryService lines | 633 | 276 | <300 | ✅ Achieved |
-| Unit test files | 2 | 6 | 10+ | In Progress |
-| Unit test count | 9 | 98 | 100+ | Almost There! |
-| Test coverage | ~5% | ~28% | 40%+ | In Progress |
+| Unit test files | 2 | 7 | 10+ | In Progress |
+| Unit test count | 9 | 107 | 100+ | ✅ Achieved |
+| Test coverage | ~5% | ~30% | 40%+ | In Progress |
 | Timeline response time (p95) | TBD | TBD | <100ms | Pending |
 
 ---
