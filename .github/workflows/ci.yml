@@ -23,6 +23,10 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Build shared package
+        run: bun run build
+        working-directory: packages/shared
+
       - name: Type check
         run: bun run typecheck
         working-directory: packages/backend
@@ -63,6 +67,10 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Build shared package
+        run: bun run build
+        working-directory: packages/shared
 
       - name: Build backend
         run: bun run build
