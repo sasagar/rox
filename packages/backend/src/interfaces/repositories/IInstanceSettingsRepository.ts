@@ -21,7 +21,9 @@ export type InstanceSettingKey =
   | 'instance.iconUrl'
   | 'instance.bannerUrl'
   | 'instance.tosUrl'
-  | 'instance.privacyPolicyUrl';
+  | 'instance.privacyPolicyUrl'
+  | 'theme.primaryColor'
+  | 'theme.darkMode';
 
 /**
  * Instance settings repository interface

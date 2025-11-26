@@ -22,6 +22,7 @@ import healthRoute from './routes/health.js';
 import adminRoute from './routes/admin.js';
 import reportsRoute from './routes/reports.js';
 import invitationsRoute from './routes/invitations.js';
+import instanceRoute from './routes/instance.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 import { getContainer } from './di/container.js';
@@ -59,6 +60,7 @@ app.route('/api/following', followingRoute);
 app.route('/api/admin', adminRoute);
 app.route('/api/reports', reportsRoute);
 app.route('/api/invitations', invitationsRoute);
+app.route('/api/instance', instanceRoute);
 
 // Media Proxy
 app.route('/proxy', proxyRoute);

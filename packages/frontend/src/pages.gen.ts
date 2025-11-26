@@ -11,6 +11,8 @@ import type { getConfig as File_NotesNoteId_getConfig } from './pages/notes/[not
 // prettier-ignore
 type Page =
 | ({ path: '/[username]' } & GetConfigResponse<typeof File_UsernameIndex_getConfig>)
+| { path: '/admin/invitations'; render: 'dynamic' }
+| { path: '/admin/settings'; render: 'dynamic' }
 | { path: '/'; render: 'dynamic' }
 | { path: '/login'; render: 'dynamic' }
 | ({ path: '/notes/[noteId]' } & GetConfigResponse<typeof File_NotesNoteId_getConfig>)

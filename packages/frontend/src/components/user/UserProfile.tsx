@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useId } from 'react';
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
 import { usersApi, type User } from '../../lib/api/users';
@@ -13,6 +13,54 @@ import { Spinner } from '../ui/Spinner';
 import { ErrorMessage } from '../ui/ErrorMessage';
 import { TimelineSkeleton } from '../ui/Skeleton';
 import { Layout } from '../layout/Layout';
+
+/**
+ * Sanitize and scope user custom CSS to prevent XSS and global style leakage
+ * Only allows safe CSS properties within the profile container
+ */
+function sanitizeCustomCss(css: string, containerId: string): string {
+  if (!css || typeof css !== 'string') return '';
+
+  // Remove potentially dangerous content
+  let sanitized = css
+    // Remove JavaScript expressions
+    .replace(/expression\s*\(/gi, '')
+    .replace(/javascript\s*:/gi, '')
+    .replace(/behavior\s*:/gi, '')
+    .replace(/-moz-binding\s*:/gi, '')
+    // Remove url() calls that could load external resources (except data: and https:)
+    .replace(/url\s*\(\s*(['"]?)(?!data:|https:)/gi, 'url($1blocked:')
+    // Remove @import to prevent loading external stylesheets
+    .replace(/@import/gi, '/* @import blocked */')
+    // Remove @font-face to prevent loading external fonts
+    .replace(/@font-face/gi, '/* @font-face blocked */')
+    // Remove position:fixed/absolute that could overlay UI
+    .replace(/position\s*:\s*(fixed|absolute)/gi, 'position: relative');
+
+  // Scope all rules to the container
+  // This is a simple approach - prepend container ID to each selector
+  const scopedCss = sanitized
+    .split('}')
+    .map(rule => {
+      if (!rule.trim()) return '';
+      const parts = rule.split('{');
+      if (parts.length !== 2) return '';
+      const selector = parts[0]?.trim();
+      const declarations = parts[1]?.trim();
+      if (!selector || !declarations) return '';
+
+      // Scope the selector to the container
+      const scopedSelectors = selector
+        .split(',')
+        .map(s => `#${containerId} ${s.trim()}`)
+        .join(', ');
+
+      return `${scopedSelectors} { ${declarations} }`;
+    })
+    .join('\n');
+
+  return scopedCss;
+}
 
 /**
  * Props for the UserProfile component
@@ -38,6 +86,9 @@ export function UserProfile({ username }: UserProfileProps) {
   const [followLoading, setFollowLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Generate unique ID for custom CSS scoping
+  const profileContainerId = useId().replace(/:/g, '-');
 
   // Set API token
   useEffect(() => {
@@ -184,8 +235,18 @@ export function UserProfile({ username }: UserProfileProps) {
 
   const isOwnProfile = currentUser?.id === user.id;
 
+  // Get sanitized custom CSS for the profile
+  const customCss = user.customCss ? sanitizeCustomCss(user.customCss, profileContainerId) : '';
+
   return (
     <Layout>
+      {/* User Custom CSS */}
+      {customCss && (
+        <style dangerouslySetInnerHTML={{ __html: customCss }} />
+      )}
+
+      {/* Profile Container with ID for CSS scoping */}
+      <div id={profileContainerId} className="user-profile-container">
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
         {/* Banner */}
@@ -343,6 +404,7 @@ export function UserProfile({ username }: UserProfileProps) {
             <Trans>You've reached the end</Trans>
           </div>
         )}
+      </div>
       </div>
     </Layout>
   );

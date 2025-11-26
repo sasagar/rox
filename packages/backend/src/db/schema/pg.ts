@@ -61,6 +61,8 @@ export const users = pgTable(
     followingUrl: text('following_url'),
     uri: text('uri'), // ActivityPub actor URI (for remote users)
     sharedInbox: text('shared_inbox'), // Shared inbox URL (for remote users, optional)
+    // User customization
+    customCss: text('custom_css'), // User's custom CSS for profile page
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

@@ -41,6 +41,7 @@ describe('UserService', () => {
     followingUrl: 'http://localhost:3000/users/testuser/following',
     uri: 'http://localhost:3000/users/testuser',
     sharedInbox: null,
+    customCss: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

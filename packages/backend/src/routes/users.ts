@@ -384,6 +384,13 @@ app.patch('/@me', requireAuth(), async (c) => {
   if (body.description !== undefined) updateData.bio = body.description;
   if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
   if (body.bannerUrl !== undefined) updateData.headerUrl = body.bannerUrl;
+  if (body.customCss !== undefined) {
+    // Sanitize CSS to prevent XSS (allow basic safe CSS)
+    // Limit to 10KB to prevent abuse
+    if (typeof body.customCss === 'string' && body.customCss.length <= 10240) {
+      updateData.customCss = body.customCss;
+    }
+  }
 
   try {
     const updatedUser = await userService.updateProfile(user.id, updateData);

@@ -64,6 +64,7 @@ export const usersApi = {
     description?: string;
     avatarUrl?: string;
     bannerUrl?: string;
+    customCss?: string;
   }): Promise<User> {
     return apiClient.patch<User>('/api/users/@me', data);
   },

@@ -13,47 +13,99 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/signup.tsx:76
+#: src/pages/settings.tsx:211
+msgid ""
+"/* Add custom styles for your profile page */\n"
+".profile-header {\n"
+"  background: linear-gradient(...);\n"
+"}"
+msgstr ""
+
+#: src/pages/admin/invitations.tsx:295
+msgid "1 Day"
+msgstr "1日"
+
+#: src/pages/signup.tsx:164
 msgid "3-20 characters, letters, numbers, and underscores only"
 msgstr "3-20文字、英数字とアンダースコアのみ"
+
+#: src/pages/admin/invitations.tsx:297
+msgid "30 Days"
+msgstr "30日"
+
+#: src/pages/admin/invitations.tsx:296
+msgid "7 Days"
+msgstr "7日"
 
 #: src/app/page.tsx:17
 #~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
 #~ msgstr ""
 
 #: src/components/LandingPage.tsx:28
-msgid "A lightweight, federated social network powered by ActivityPub"
-msgstr "ActivityPubで動作する軽量で分散型のソーシャルネットワーク"
+#~ msgid "A lightweight, federated social network powered by ActivityPub"
+#~ msgstr "ActivityPubで動作する軽量で分散型のソーシャルネットワーク"
+
+#: src/components/LandingPage.tsx:204
+msgid "About This Instance"
+msgstr "このインスタンスについて"
 
 #: src/components/LandingPage.tsx:93
-msgid "About This Server"
-msgstr "このサーバーについて"
+#~ msgid "About This Server"
+#~ msgstr "このサーバーについて"
 
-#: src/pages/signup.tsx:124
+#: src/components/layout/Sidebar.tsx:56
+msgid "Admin"
+msgstr "管理"
+
+#: src/pages/admin/settings.tsx:179
+msgid "Admin Settings"
+msgstr "管理設定"
+
+#: src/pages/admin/settings.tsx:381
+msgid "Allow new users to register accounts"
+msgstr "新規ユーザーのアカウント登録を許可"
+
+#: src/pages/signup.tsx:224
 msgid "Already have an account?"
 msgstr "すでにアカウントをお持ちですか？"
+
+#: src/pages/signup.tsx:116
+msgid "Already have an account? Sign in"
+msgstr "すでにアカウントをお持ちですか？サインイン"
 
 #: src/components/note/NoteComposer.tsx:189
 msgid "Authentication required"
 msgstr "認証が必要です"
 
+#: src/pages/admin/invitations.tsx:371
+msgid "Available"
+msgstr "利用可能"
+
+#: src/pages/admin/invitations.tsx:238
+msgid "Available Codes"
+msgstr "利用可能なコード"
+
 #: src/components/pages/NoteDetailPageClient.tsx:100
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
+
+#: src/pages/admin/settings.tsx:298
+msgid "Banner URL"
+msgstr "バナーURL"
 
 #: src/components/timeline/Timeline.tsx:174
 msgid "Be the first to post something!"
 msgstr "最初の投稿をしてみましょう！"
 
-#: src/pages/settings.tsx:159
+#: src/pages/settings.tsx:162
 msgid "Bio"
 msgstr "自己紹介"
 
-#: src/components/user/UserProfile.tsx:258
+#: src/components/user/UserProfile.tsx:319
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/settings.tsx:229
+#: src/pages/settings.tsx:260
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -61,15 +113,27 @@ msgstr "キャンセル"
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/components/LandingPage.tsx:67
+#: src/pages/admin/invitations.tsx:173
+msgid "Code copied to clipboard"
+msgstr "コードをクリップボードにコピーしました"
+
+#: src/pages/admin/settings.tsx:182
+msgid "Configure your instance settings"
+msgstr "インスタンスの設定を構成"
+
+#: src/components/LandingPage.tsx:167
 msgid "Connect with users across the fediverse using ActivityPub protocol"
 msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザーと繋がる"
 
-#: src/components/note/NoteCard.tsx:247
+#: src/components/LandingPage.tsx:228
+msgid "Contact"
+msgstr "連絡先"
+
+#: src/components/note/NoteCard.tsx:279
 msgid "Content Warning"
 msgstr "閲覧注意"
 
-#: src/components/LandingPage.tsx:85
+#: src/components/LandingPage.tsx:193
 msgid "Control your data and choose who sees your posts"
 msgstr "データを管理し、誰が投稿を見るかを選択できます"
 
@@ -77,13 +141,55 @@ msgstr "データを管理し、誰が投稿を見るかを選択できます"
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
-#: src/pages/signup.tsx:62
+#: src/pages/admin/invitations.tsx:392
+msgid "Copy code"
+msgstr "コードをコピー"
+
+#: src/pages/admin/invitations.tsx:248
+#: src/pages/admin/invitations.tsx:312
+msgid "Create Invitation Code"
+msgstr "招待コードを作成"
+
+#: src/pages/signup.tsx:130
 msgid "Create your account"
 msgstr "アカウントを作成"
 
-#: src/pages/signup.tsx:119
+#. placeholder {0}: formatDate(invitation.createdAt)
+#: src/pages/admin/invitations.tsx:383
+msgid "Created: {0}"
+msgstr "作成日: {0}"
+
+#: src/pages/signup.tsx:219
 msgid "Creating account..."
 msgstr "アカウント作成中..."
+
+#: src/pages/admin/invitations.tsx:254
+msgid "Custom Code (optional)"
+msgstr "カスタムコード（任意）"
+
+#: src/pages/settings.tsx:205
+msgid "Custom CSS"
+msgstr "カスタムCSS"
+
+#: src/pages/settings.tsx:219
+msgid "Custom CSS for your profile page (max 10KB)"
+msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
+
+#: src/pages/admin/settings.tsx:549
+msgid "Dark"
+msgstr "ダーク"
+
+#: src/pages/admin/settings.tsx:503
+msgid "Default Color Mode"
+msgstr "デフォルトカラーモード"
+
+#: src/pages/admin/invitations.tsx:400
+msgid "Delete code"
+msgstr "コードを削除"
+
+#: src/pages/admin/settings.tsx:249
+msgid "Description"
+msgstr "説明"
 
 #: src/components/note/NoteComposer.tsx:271
 msgid "Direct"
@@ -93,8 +199,8 @@ msgstr "ダイレクト"
 msgid "Discard"
 msgstr "破棄"
 
-#: src/pages/settings.tsx:139
-#: src/pages/signup.tsx:101
+#: src/pages/settings.tsx:142
+#: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "表示名"
 
@@ -110,43 +216,72 @@ msgstr "下書きを破棄しました"
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/user/UserProfile.tsx:229
+#: src/components/user/UserProfile.tsx:290
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
-#: src/pages/signup.tsx:82
+#: src/pages/signup.tsx:170
 msgid "Email"
 msgstr "メールアドレス"
 
-#: src/pages/signup.tsx:86
+#: src/pages/signup.tsx:174
 msgid "Email is required"
 msgstr "メールアドレスを入力してください"
 
-#: src/components/ui/EmojiPicker.tsx:261
+#: src/components/ui/EmojiPicker.tsx:260
 msgid "Emoji Picker"
 msgstr "絵文字ピッカー"
+
+#: src/pages/admin/settings.tsx:378
+msgid "Enable Registration"
+msgstr "登録を有効化"
+
+#: src/pages/signup.tsx:152
+msgid "Enter your invitation code to register"
+msgstr "登録には招待コードを入力してください"
 
 #: src/components/timeline/Timeline.tsx:127
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:176
+#: src/components/user/UserProfile.tsx:227
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
-#: src/components/note/NoteCard.tsx:111
+#: src/pages/admin/invitations.tsx:361
+msgid "Expired"
+msgstr "期限切れ"
+
+#: src/pages/admin/invitations.tsx:287
+msgid "Expires In"
+msgstr "有効期限"
+
+#. placeholder {0}: formatDate(invitation.expiresAt)
+#: src/pages/admin/invitations.tsx:379
+msgid "Expires: {0}"
+msgstr "有効期限: {0}"
+
+#: src/components/note/NoteCard.tsx:134
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
+
+#: src/pages/admin/invitations.tsx:140
+msgid "Failed to create invitation code"
+msgstr "招待コードの作成に失敗しました"
+
+#: src/pages/admin/invitations.tsx:164
+msgid "Failed to delete invitation code"
+msgstr "招待コードの削除に失敗しました"
 
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
 
-#: src/components/note/NoteCard.tsx:129
+#: src/components/note/NoteCard.tsx:152
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
-#: src/components/note/NoteCard.tsx:157
+#: src/components/note/NoteCard.tsx:180
 msgid "Failed to update follow status"
 msgstr "フォロー状態の更新に失敗しました"
 
@@ -155,62 +290,121 @@ msgstr "フォロー状態の更新に失敗しました"
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
-#: src/components/LandingPage.tsx:76
+#: src/components/LandingPage.tsx:180
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
-#: src/components/LandingPage.tsx:64
+#: src/components/LandingPage.tsx:164
 msgid "Federated"
 msgstr "分散型"
 
-#: src/components/note/NoteCard.tsx:230
-#: src/components/user/UserProfile.tsx:245
+#: src/components/note/NoteCard.tsx:262
+#: src/components/user/UserProfile.tsx:306
 msgid "Follow"
 msgstr "フォロー"
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/components/user/UserProfile.tsx:279
+#: src/components/user/UserProfile.tsx:340
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/note/NoteCard.tsx:230
-#: src/components/user/UserProfile.tsx:243
-#: src/components/user/UserProfile.tsx:285
+#: src/components/note/NoteCard.tsx:262
+#: src/components/user/UserProfile.tsx:304
+#: src/components/user/UserProfile.tsx:346
 msgid "Following"
 msgstr "フォロー中"
 
-#: src/components/note/NoteCard.tsx:150
+#: src/components/note/NoteCard.tsx:173
 msgid "Following successfully"
 msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:240
+#: src/components/user/UserProfile.tsx:301
 msgid "Following..."
 msgstr "フォロー中..."
 
-#: src/components/LandingPage.tsx:46
+#: src/components/LandingPage.tsx:136
 msgid "Get Started"
 msgstr "始める"
 
-#: src/components/LandingPage.tsx:37
+#: src/components/LandingPage.tsx:127
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
-#: src/components/layout/Sidebar.tsx:33
+#: src/components/layout/Sidebar.tsx:34
 #: src/components/note/NoteComposer.tsx:269
 #: src/pages/timeline.tsx:131
 msgid "Home"
 msgstr "ホーム"
 
-#: src/pages/signup.tsx:65
+#: src/pages/admin/settings.tsx:282
+msgid "Icon URL"
+msgstr "アイコンURL"
+
+#: src/pages/admin/settings.tsx:197
+msgid "Instance"
+msgstr "インスタンス"
+
+#: src/components/LandingPage.tsx:223
+msgid "Instance Details"
+msgstr "インスタンス詳細"
+
+#: src/pages/admin/settings.tsx:228
+msgid "Instance Information"
+msgstr "インスタンス情報"
+
+#: src/pages/admin/settings.tsx:233
+msgid "Instance Name"
+msgstr "インスタンス名"
+
+#: src/pages/admin/settings.tsx:113
+msgid "Instance settings saved"
+msgstr "インスタンス設定を保存しました"
+
+#: src/pages/signup.tsx:148
+msgid "Invitation Code"
+msgstr "招待コード"
+
+#: src/pages/admin/invitations.tsx:127
+msgid "Invitation code created"
+msgstr "招待コードを作成しました"
+
+#: src/pages/admin/invitations.tsx:156
+msgid "Invitation code deleted"
+msgstr "招待コードを削除しました"
+
+#: src/pages/signup.tsx:153
+msgid "Invitation code is required"
+msgstr "招待コードを入力してください"
+
+#: src/pages/admin/invitations.tsx:217
+#: src/pages/admin/invitations.tsx:323
+msgid "Invitation Codes"
+msgstr "招待コード"
+
+#: src/components/LandingPage.tsx:99
+#: src/pages/admin/settings.tsx:399
+#: src/pages/signup.tsx:138
+msgid "Invite Only"
+msgstr "招待制"
+
+#: src/pages/signup.tsx:133
 msgid "Join Rox and start sharing"
 msgstr "Roxに参加して共有を始めましょう"
 
-#: src/components/LandingPage.tsx:73
+#: src/pages/admin/invitations.tsx:260
+msgid "Leave empty for auto-generated code"
+msgstr "空欄にすると自動生成されます"
+
+#: src/pages/admin/settings.tsx:534
+msgid "Light"
+msgstr "ライト"
+
+#: src/components/LandingPage.tsx:177
 msgid "Lightweight"
 msgstr "軽量"
 
 #: src/components/timeline/Timeline.tsx:187
-#: src/components/user/UserProfile.tsx:334
+#: src/components/user/UserProfile.tsx:395
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -222,7 +416,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/user/UserProfile.tsx:330
+#: src/components/user/UserProfile.tsx:391
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -230,7 +424,7 @@ msgstr "読み込み中..."
 msgid "Local"
 msgstr "ローカル"
 
-#: src/components/LandingPage.tsx:52
+#: src/components/LandingPage.tsx:143
 msgid "Log In"
 msgstr "ログイン"
 
@@ -238,23 +432,47 @@ msgstr "ログイン"
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/pages/settings.tsx:129
+#: src/pages/admin/settings.tsx:265
+msgid "Maintainer Email"
+msgstr "管理者メールアドレス"
+
+#: src/pages/admin/invitations.tsx:220
+msgid "Manage invitation codes for new user registration"
+msgstr "新規ユーザー登録用の招待コードを管理"
+
+#: src/pages/settings.tsx:132
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
 
-#: src/pages/signup.tsx:95
+#: src/pages/admin/invitations.tsx:269
+msgid "Max Uses"
+msgstr "最大使用回数"
+
+#: src/pages/signup.tsx:183
 msgid "Minimum 8 characters"
 msgstr "最低8文字"
 
-#: src/components/ui/EmojiPicker.tsx:336
+#: src/pages/admin/invitations.tsx:294
+msgid "Never"
+msgstr "無期限"
+
+#: src/pages/admin/settings.tsx:423
+msgid "New accounts require admin approval"
+msgstr "新規アカウントは管理者の承認が必要"
+
+#: src/components/ui/EmojiPicker.tsx:335
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
+
+#: src/pages/admin/invitations.tsx:336
+msgid "No invitation codes yet"
+msgstr "招待コードがまだありません"
 
 #: src/components/timeline/Timeline.tsx:171
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
-#: src/components/user/UserProfile.tsx:310
+#: src/components/user/UserProfile.tsx:371
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -278,11 +496,19 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:123
+#: src/components/note/NoteCard.tsx:146
 msgid "Note renoted"
 msgstr "リノートしました"
 
-#: src/pages/signup.tsx:105
+#: src/pages/settings.tsx:226
+msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
+msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
+
+#: src/components/LandingPage.tsx:106
+msgid "Open Registration"
+msgstr "登録受付中"
+
+#: src/pages/signup.tsx:193
 msgid "Optional"
 msgstr "任意"
 
@@ -295,12 +521,12 @@ msgid "Passkey authentication failed."
 msgstr "パスキー認証に失敗しました。"
 
 #: src/pages/login.tsx:152
-#: src/pages/signup.tsx:91
+#: src/pages/signup.tsx:179
 msgid "Password"
 msgstr "パスワード"
 
 #: src/pages/login.tsx:156
-#: src/pages/signup.tsx:96
+#: src/pages/signup.tsx:184
 msgid "Password is required"
 msgstr "パスワードを入力してください"
 
@@ -312,36 +538,60 @@ msgstr "パスワードを入力してください"
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
-#: src/pages/settings.tsx:74
+#: src/pages/settings.tsx:76
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
-#: src/components/note/NoteComposer.tsx:540
+#: src/components/note/NoteComposer.tsx:529
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:536
+#: src/components/note/NoteComposer.tsx:525
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:273
-#: src/components/user/UserProfile.tsx:295
+#: src/components/user/UserProfile.tsx:334
+#: src/components/user/UserProfile.tsx:356
 msgid "Posts"
 msgstr "投稿"
 
-#: src/components/LandingPage.tsx:110
+#: src/components/LandingPage.tsx:276
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/LandingPage.tsx:82
+#: src/pages/admin/settings.tsx:560
+msgid "Preview"
+msgstr "プレビュー"
+
+#: src/pages/admin/settings.tsx:567
+msgid "Primary Button"
+msgstr "プライマリボタン"
+
+#: src/pages/admin/settings.tsx:446
+msgid "Primary Color"
+msgstr "テーマカラー"
+
+#: src/components/LandingPage.tsx:294
+msgid "Privacy"
+msgstr "プライバシー"
+
+#: src/components/LandingPage.tsx:190
 msgid "Privacy First"
 msgstr "プライバシー第一"
 
-#: src/components/layout/Sidebar.tsx:39
+#: src/components/LandingPage.tsx:256
+msgid "Privacy Policy"
+msgstr "プライバシーポリシー"
+
+#: src/pages/admin/settings.tsx:333
+msgid "Privacy Policy URL"
+msgstr "プライバシーポリシーURL"
+
+#: src/components/layout/Sidebar.tsx:40
 msgid "Profile"
 msgstr "プロフィール"
 
-#: src/pages/settings.tsx:93
+#: src/pages/settings.tsx:96
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
@@ -353,7 +603,7 @@ msgstr "公開"
 #~ msgid "React"
 #~ msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:104
+#: src/components/note/NoteCard.tsx:127
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
@@ -361,11 +611,28 @@ msgstr "リアクションを追加しました"
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
-#: src/pages/signup.tsx:51
+#: src/pages/admin/settings.tsx:207
+msgid "Registration"
+msgstr "登録"
+
+#: src/components/LandingPage.tsx:114
+#: src/pages/signup.tsx:107
+msgid "Registration Closed"
+msgstr "登録停止中"
+
+#: src/pages/signup.tsx:86
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/components/note/NoteCard.tsx:238
+#: src/pages/admin/settings.tsx:362
+msgid "Registration Settings"
+msgstr "登録設定"
+
+#: src/pages/admin/settings.tsx:132
+msgid "Registration settings saved"
+msgstr "登録設定を保存しました"
+
+#: src/components/note/NoteCard.tsx:270
 msgid "Renoted"
 msgstr "リノート"
 
@@ -374,13 +641,21 @@ msgstr "リノート"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:538
+#: src/components/note/NoteComposer.tsx:527
 msgid "Reply"
 msgstr "返信"
 
 #: src/components/note/NoteComposer.tsx:336
 msgid "Replying to"
 msgstr "返信先:"
+
+#: src/pages/admin/settings.tsx:402
+msgid "Require an invitation code to register"
+msgstr "登録に招待コードが必要"
+
+#: src/pages/admin/settings.tsx:420
+msgid "Require Approval"
+msgstr "承認が必要"
 
 #: src/components/ui/ImageModal.tsx:209
 msgid "Reset"
@@ -398,33 +673,49 @@ msgstr "再試行"
 msgid "Retrying..."
 msgstr "再試行中..."
 
-#: src/pages/settings.tsx:217
+#: src/pages/settings.tsx:248
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/pages/settings.tsx:213
+#: src/pages/admin/settings.tsx:351
+msgid "Save Instance Settings"
+msgstr "インスタンス設定を保存"
+
+#: src/pages/admin/settings.tsx:430
+msgid "Save Registration Settings"
+msgstr "登録設定を保存"
+
+#: src/pages/admin/settings.tsx:583
+msgid "Save Theme Settings"
+msgstr "テーマ設定を保存"
+
+#: src/pages/settings.tsx:244
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/ui/EmojiPicker.tsx:278
+#: src/components/ui/EmojiPicker.tsx:277
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
 
-#: src/components/layout/Sidebar.tsx:45
-#: src/pages/settings.tsx:126
+#: src/pages/admin/settings.tsx:576
+msgid "Secondary"
+msgstr "セカンダリ"
+
+#: src/components/layout/Sidebar.tsx:46
+#: src/pages/settings.tsx:129
 msgid "Settings"
 msgstr "設定"
 
-#: src/components/LandingPage.tsx:101
+#: src/components/LandingPage.tsx:213
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 msgstr "思いを共有し、友人とつながり、Fediverse全体での会話に参加しましょう。データはあなたのもので、誰が何を見るかを管理できます。"
 
-#: src/components/note/NoteCard.tsx:257
+#: src/components/note/NoteCard.tsx:289
 msgid "Show content"
 msgstr "内容を表示"
 
 #: src/pages/login.tsx:171
-#: src/pages/signup.tsx:126
+#: src/pages/signup.tsx:226
 msgid "Sign in"
 msgstr "サインイン"
 
@@ -441,7 +732,7 @@ msgid "Sign in with Passkey"
 msgstr "パスキーでサインイン"
 
 #: src/pages/login.tsx:178
-#: src/pages/signup.tsx:119
+#: src/pages/signup.tsx:219
 msgid "Sign up"
 msgstr "新規登録"
 
@@ -453,19 +744,55 @@ msgstr "サインイン中..."
 msgid "Social"
 msgstr "ソーシャル"
 
-#: src/pages/settings.tsx:165
+#: src/components/LandingPage.tsx:238
+msgid "Software"
+msgstr "ソフトウェア"
+
+#: src/pages/admin/settings.tsx:519
+msgid "System"
+msgstr "システム"
+
+#: src/pages/settings.tsx:168
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
+
+#: src/components/LandingPage.tsx:289
+msgid "Terms"
+msgstr "利用規約"
+
+#: src/components/LandingPage.tsx:246
+msgid "Terms of Service"
+msgstr "利用規約"
+
+#: src/pages/admin/settings.tsx:317
+msgid "Terms of Service URL"
+msgstr "利用規約URL"
 
 #: src/components/note/NoteComposer.tsx:184
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
-#: src/components/LandingPage.tsx:96
+#: src/pages/admin/settings.tsx:217
+msgid "Theme"
+msgstr "テーマ"
+
+#: src/pages/admin/settings.tsx:441
+msgid "Theme Settings"
+msgstr "テーマ設定"
+
+#: src/pages/admin/settings.tsx:151
+msgid "Theme settings saved"
+msgstr "テーマ設定を保存しました"
+
+#: src/pages/signup.tsx:110
+msgid "This instance is not accepting new registrations at this time."
+msgstr "このインスタンスは現在新規登録を受け付けていません。"
+
+#: src/components/LandingPage.tsx:208
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
 
-#: src/components/user/UserProfile.tsx:316
+#: src/components/user/UserProfile.tsx:377
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -474,15 +801,19 @@ msgstr "このユーザーはまだ何も投稿していません"
 msgid "Timeline"
 msgstr "タイムライン"
 
+#: src/pages/admin/invitations.tsx:230
+msgid "Total Codes"
+msgstr "コード総数"
+
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr ""
 
-#: src/components/note/NoteCard.tsx:143
+#: src/components/note/NoteCard.tsx:166
 msgid "Unfollowed successfully"
 msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:240
+#: src/components/user/UserProfile.tsx:301
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -490,42 +821,68 @@ msgstr "フォロー解除中..."
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:534
+#: src/components/note/NoteComposer.tsx:523
 msgid "Uploading..."
 msgstr "アップロード中..."
 
-#: src/components/user/UserProfile.tsx:177
+#: src/pages/admin/invitations.tsx:366
+msgid "Used"
+msgstr "使用済み"
+
+#: src/components/user/UserProfile.tsx:228
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:184
-#: src/pages/signup.tsx:72
+#: src/pages/settings.tsx:187
+#: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/settings.tsx:195
+#: src/pages/settings.tsx:198
 msgid "Username cannot be changed"
 msgstr "ユーザー名は変更できません"
 
 #: src/pages/login.tsx:147
-#: src/pages/signup.tsx:77
+#: src/pages/signup.tsx:165
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
+
+#: src/pages/admin/settings.tsx:553
+msgid "Users can still override this with their own preference"
+msgstr "ユーザーは自分の設定で上書きできます"
+
+#. placeholder {0}: invitation.useCount
+#. placeholder {1}: invitation.maxUses
+#: src/pages/admin/invitations.tsx:376
+msgid "Uses: {0}/{1}"
+msgstr "使用回数: {0}/{1}"
+
+#: src/components/LandingPage.tsx:259
+msgid "View Policy"
+msgstr "ポリシーを見る"
+
+#: src/components/LandingPage.tsx:249
+msgid "View Terms"
+msgstr "規約を見る"
 
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"
 #~ msgstr ""
 
+#: src/components/LandingPage.tsx:154
+msgid "Why Join?"
+msgstr "なぜ参加するの？"
+
 #: src/components/note/NoteComposer.tsx:299
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
-#: src/components/user/UserProfile.tsx:314
+#: src/components/user/UserProfile.tsx:375
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
-#: src/components/user/UserProfile.tsx:343
+#: src/components/user/UserProfile.tsx:404
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
@@ -533,10 +890,14 @@ msgstr "最後まで到達しました"
 msgid "You've reached the end of the timeline"
 msgstr "タイムラインの最後に到達しました"
 
-#: src/pages/settings.tsx:173
+#: src/pages/signup.tsx:204
+msgid "Your account will need to be approved by an administrator before you can use it."
+msgstr "アカウントは管理者の承認後に使用可能になります。"
+
+#: src/pages/settings.tsx:176
 msgid "Your bio (max 500 characters)"
 msgstr "自己紹介（最大500文字）"
 
-#: src/pages/settings.tsx:152
+#: src/pages/settings.tsx:155
 msgid "Your public display name (max 50 characters)"
 msgstr "表示名（最大50文字）"

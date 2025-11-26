@@ -813,14 +813,16 @@ app.get('/users/:userId/roles', async (c) => {
 app.get('/settings', async (c) => {
   const instanceSettingsService = c.get('instanceSettingsService');
 
-  const [registration, metadata] = await Promise.all([
+  const [registration, metadata, theme] = await Promise.all([
     instanceSettingsService.getRegistrationSettings(),
     instanceSettingsService.getInstanceMetadata(),
+    instanceSettingsService.getThemeSettings(),
   ]);
 
   return c.json({
     registration,
     instance: metadata,
+    theme,
   });
 });
 
@@ -892,6 +894,52 @@ app.patch('/settings/instance', async (c) => {
 
   const metadata = await instanceSettingsService.getInstanceMetadata();
   return c.json(metadata);
+});
+
+/**
+ * Update Theme Settings
+ *
+ * PATCH /api/admin/settings/theme
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "primaryColor": "#3b82f6",
+ *   "darkMode": "system"
+ * }
+ * ```
+ */
+app.patch('/settings/theme', async (c) => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+  const admin = c.get('user');
+
+  const body = await c.req.json();
+
+  // Validate primaryColor is a valid hex color
+  if (body.primaryColor !== undefined) {
+    const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    if (!hexColorRegex.test(body.primaryColor)) {
+      return c.json({ error: 'primaryColor must be a valid hex color (e.g., #3b82f6)' }, 400);
+    }
+  }
+
+  // Validate darkMode
+  if (body.darkMode !== undefined) {
+    if (!['light', 'dark', 'system'].includes(body.darkMode)) {
+      return c.json({ error: 'darkMode must be "light", "dark", or "system"' }, 400);
+    }
+  }
+
+  await instanceSettingsService.updateThemeSettings(
+    {
+      primaryColor: body.primaryColor,
+      darkMode: body.darkMode,
+    },
+    admin?.id
+  );
+
+  const theme = await instanceSettingsService.getThemeSettings();
+  return c.json(theme);
 });
 
 // ============================================================================

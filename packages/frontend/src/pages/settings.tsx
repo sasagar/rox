@@ -24,6 +24,7 @@ export default function SettingsPage() {
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
+  const [customCss, setCustomCss] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +65,7 @@ export default function SettingsPage() {
     if (currentUser) {
       setDisplayName(currentUser.displayName || currentUser.name || '');
       setBio(currentUser.bio || '');
+      setCustomCss((currentUser as any).customCss || '');
     }
   }, [currentUser]);
 
@@ -82,6 +84,7 @@ export default function SettingsPage() {
       const updatedUser = await usersApi.updateMe({
         name: displayName.trim() || undefined,
         description: bio.trim() || undefined,
+        customCss: customCss.trim() || undefined,
       });
 
       // Update current user in state
@@ -193,6 +196,34 @@ export default function SettingsPage() {
               />
               <p className="mt-1 text-sm text-gray-500">
                 <Trans>Username cannot be changed</Trans>
+              </p>
+            </div>
+
+            {/* Custom CSS */}
+            <div>
+              <label htmlFor="customCss" className="block text-sm font-medium text-gray-700 mb-2">
+                <Trans>Custom CSS</Trans>
+              </label>
+              <textarea
+                id="customCss"
+                value={customCss}
+                onChange={(e) => setCustomCss(e.target.value)}
+                placeholder={t`/* Add custom styles for your profile page */\n.profile-header {\n  background: linear-gradient(...);\n}`}
+                maxLength={10240}
+                rows={6}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                disabled={isSubmitting}
+              />
+              <div className="mt-1 flex items-center justify-between text-sm text-gray-500">
+                <span>
+                  <Trans>Custom CSS for your profile page (max 10KB)</Trans>
+                </span>
+                <span className={customCss.length > 9000 ? 'text-orange-600 font-medium' : ''}>
+                  {customCss.length.toLocaleString()}/10,240
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-gray-400">
+                <Trans>Note: Custom CSS is sanitized and some properties may be restricted for security.</Trans>
               </p>
             </div>
 

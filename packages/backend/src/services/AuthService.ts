@@ -111,6 +111,7 @@ export class AuthService {
       isSuspended: false,
       publicKey,
       privateKey,
+      customCss: null, // Custom CSS for profile page
       // ActivityPub fields for local users
       inbox: `${baseUrl}/users/${input.username}/inbox`,
       outbox: `${baseUrl}/users/${input.username}/outbox`,

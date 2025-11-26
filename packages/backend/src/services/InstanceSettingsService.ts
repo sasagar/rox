@@ -33,6 +33,14 @@ export interface InstanceMetadata {
 }
 
 /**
+ * Theme settings
+ */
+export interface ThemeSettings {
+  primaryColor: string;
+  darkMode: 'light' | 'dark' | 'system';
+}
+
+/**
  * Default registration settings
  */
 const DEFAULT_REGISTRATION: RegistrationSettings = {
@@ -52,6 +60,15 @@ const DEFAULT_METADATA: InstanceMetadata = {
   bannerUrl: null,
   tosUrl: null,
   privacyPolicyUrl: null,
+};
+
+/**
+ * Default theme settings
+ * Primary color is in OKLCH format hue value (0-360)
+ */
+const DEFAULT_THEME: ThemeSettings = {
+  primaryColor: '#3b82f6', // Blue as default
+  darkMode: 'system',
 };
 
 export class InstanceSettingsService {
@@ -344,6 +361,68 @@ export class InstanceSettingsService {
   }
 
   // ================================
+  // Theme Settings
+  // ================================
+
+  /**
+   * Get theme primary color (hex format)
+   */
+  async getPrimaryColor(): Promise<string> {
+    const value = await this.settingsRepository.get<string>('theme.primaryColor');
+    return value ?? DEFAULT_THEME.primaryColor;
+  }
+
+  /**
+   * Set theme primary color
+   */
+  async setPrimaryColor(color: string, updatedById?: string): Promise<void> {
+    await this.settingsRepository.set('theme.primaryColor', color, updatedById);
+  }
+
+  /**
+   * Get dark mode preference
+   */
+  async getDarkMode(): Promise<'light' | 'dark' | 'system'> {
+    const value = await this.settingsRepository.get<string>('theme.darkMode');
+    return (value as 'light' | 'dark' | 'system') ?? DEFAULT_THEME.darkMode;
+  }
+
+  /**
+   * Set dark mode preference
+   */
+  async setDarkMode(mode: 'light' | 'dark' | 'system', updatedById?: string): Promise<void> {
+    await this.settingsRepository.set('theme.darkMode', mode, updatedById);
+  }
+
+  /**
+   * Get all theme settings
+   */
+  async getThemeSettings(): Promise<ThemeSettings> {
+    const keys: InstanceSettingKey[] = ['theme.primaryColor', 'theme.darkMode'];
+    const values = await this.settingsRepository.getMany(keys);
+
+    return {
+      primaryColor: (values.get('theme.primaryColor') as string) ?? DEFAULT_THEME.primaryColor,
+      darkMode: (values.get('theme.darkMode') as 'light' | 'dark' | 'system') ?? DEFAULT_THEME.darkMode,
+    };
+  }
+
+  /**
+   * Update theme settings
+   */
+  async updateThemeSettings(
+    settings: Partial<ThemeSettings>,
+    updatedById?: string
+  ): Promise<void> {
+    if (settings.primaryColor !== undefined) {
+      await this.settingsRepository.set('theme.primaryColor', settings.primaryColor, updatedById);
+    }
+    if (settings.darkMode !== undefined) {
+      await this.settingsRepository.set('theme.darkMode', settings.darkMode, updatedById);
+    }
+  }
+
+  // ================================
   // Public API for NodeInfo / Instance Info
   // ================================
 
@@ -361,10 +440,12 @@ export class InstanceSettingsService {
     registrationEnabled: boolean;
     inviteOnly: boolean;
     approvalRequired: boolean;
+    theme: ThemeSettings;
   }> {
-    const [metadata, registration] = await Promise.all([
+    const [metadata, registration, theme] = await Promise.all([
       this.getInstanceMetadata(),
       this.getRegistrationSettings(),
+      this.getThemeSettings(),
     ]);
 
     return {
@@ -372,6 +453,7 @@ export class InstanceSettingsService {
       registrationEnabled: registration.enabled,
       inviteOnly: registration.inviteOnly,
       approvalRequired: registration.approvalRequired,
+      theme,
     };
   }
 }

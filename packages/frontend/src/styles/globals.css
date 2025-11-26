@@ -1,24 +1,57 @@
 @import "tailwindcss";
 
 @theme {
-  /* Primary color palette based on #ff5b11 in OKLCH color space */
-  /* OKLCH provides better perceptual uniformity and wider gamut support */
-  --color-primary-50: oklch(98% 0.01 40);
-  --color-primary-100: oklch(95% 0.04 40);
-  --color-primary-200: oklch(90% 0.08 40);
-  --color-primary-300: oklch(83% 0.12 40);
-  --color-primary-400: oklch(75% 0.16 40);
-  --color-primary-500: oklch(68% 0.20 40);    /* Base: #ff5b11 */
-  --color-primary-600: oklch(58% 0.19 40);
-  --color-primary-700: oklch(48% 0.15 40);
-  --color-primary-800: oklch(38% 0.11 40);
-  --color-primary-900: oklch(30% 0.08 40);
-  --color-primary-950: oklch(20% 0.04 40);
+  /* Primary color palette - dynamically set by ThemeProvider */
+  /* Default: Blue (#3b82f6) in OKLCH color space */
+  --color-primary-50: oklch(98% 0.01 230);
+  --color-primary-100: oklch(95% 0.04 230);
+  --color-primary-200: oklch(90% 0.08 230);
+  --color-primary-300: oklch(83% 0.12 230);
+  --color-primary-400: oklch(75% 0.16 230);
+  --color-primary-500: oklch(68% 0.20 230);
+  --color-primary-600: oklch(58% 0.19 230);
+  --color-primary-700: oklch(48% 0.15 230);
+  --color-primary-800: oklch(38% 0.11 230);
+  --color-primary-900: oklch(30% 0.08 230);
+  --color-primary-950: oklch(20% 0.04 230);
 
   /* Animations */
   --animate-slide-in: slide-in 0.3s ease-out;
   --animate-spin: spin 1s linear infinite;
   --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
+}
+
+/* Light mode (default) */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode */
+.dark {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+  --card-bg: #1f2937;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+}
+
+/* Apply theme colors to common elements */
+body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Toast notification animations */

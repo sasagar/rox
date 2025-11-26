@@ -28,6 +28,13 @@ export interface User extends Omit<UserProfile, 'createdAt' | 'displayName' | 'h
   isBlocking?: boolean;
   isBlocked?: boolean;
   isMuted?: boolean;
+
+  // Admin status
+  isAdmin?: boolean;
+  isSuspended?: boolean;
+
+  // User customization
+  customCss?: string;
 }
 
 /**

@@ -216,23 +216,32 @@ function NoteCardComponent({
             />
           </a>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <a
-                href={`/${note.user.username}`}
-                className="font-semibold text-gray-900 truncate hover:underline"
+                href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
+                className="font-semibold text-[var(--text-primary)] truncate hover:underline"
               >
                 {note.user.name || note.user.username}
               </a>
               <a
-                href={`/${note.user.username}`}
-                className="text-sm text-gray-500 truncate hover:underline"
+                href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
+                className="text-sm text-[var(--text-muted)] truncate hover:underline"
               >
-                @{note.user.username}
+                @{note.user.username}{note.user.host && `@${note.user.host}`}
               </a>
+              {/* Remote instance badge */}
+              {note.user.host && (
+                <span
+                  className="inline-flex items-center px-1.5 py-0.5 text-xs rounded bg-[var(--bg-tertiary)] text-[var(--text-muted)] truncate max-w-[120px]"
+                  title={`From ${note.user.host}`}
+                >
+                  🌐 {note.user.host}
+                </span>
+              )}
             </div>
             <a
               href={`/notes/${note.id}`}
-              className="text-xs text-gray-500 hover:underline"
+              className="text-xs text-[var(--text-muted)] hover:underline"
               title={new Date(note.createdAt).toLocaleString()}
             >
               {new Date(note.createdAt).toLocaleString()}

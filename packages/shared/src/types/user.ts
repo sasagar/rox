@@ -21,6 +21,8 @@ export interface User extends Timestamps {
   followingUrl: string | null; // Following collection URL
   uri: string | null; // ActivityPub actor URI (for remote users)
   sharedInbox: string | null; // Shared inbox URL (for remote users, optional)
+  // User customization
+  customCss: string | null; // Custom CSS for profile page
 }
 
 export interface UserProfile {

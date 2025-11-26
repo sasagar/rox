@@ -1,11 +1,11 @@
 import '../styles/globals.css';
 
-import { I18nProvider } from '../components/I18nProvider.js';
+import { AppProviders } from '../components/AppProviders.js';
 import { ToastContainer } from '../components/ui/Toast';
 
 /**
  * Root layout component for the application.
- * Wraps all pages with basic HTML structure and i18n support.
+ * Wraps all pages with providers for i18n and theming.
  *
  * @param children - Child components to render
  * @returns Root HTML structure
@@ -20,10 +20,10 @@ export default async function RootLayout({
       <meta charSet="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>Rox - Lightweight ActivityPub Server</title>
-      <I18nProvider>
-        <div className="min-h-screen bg-gray-50">{children}</div>
+      <AppProviders>
+        {children}
         <ToastContainer />
-      </I18nProvider>
+      </AppProviders>
     </>
   );
 }

@@ -1,0 +1,591 @@
+'use client';
+
+/**
+ * Admin Settings Page
+ *
+ * Allows administrators to configure instance settings:
+ * - Instance metadata (name, description, contact)
+ * - Registration settings (enabled, invite-only, approval)
+ * - Theme settings (primary color, dark mode)
+ */
+
+import { useState, useEffect } from 'react';
+import { useAtom } from 'jotai';
+import { Trans } from '@lingui/react/macro';
+import { t } from '@lingui/core/macro';
+import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
+import { apiClient } from '../../lib/api/client';
+import { Button } from '../../components/ui/Button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Spinner } from '../../components/ui/Spinner';
+import { InlineError } from '../../components/ui/ErrorMessage';
+import { addToastAtom } from '../../lib/atoms/toast';
+import { Layout } from '../../components/layout/Layout';
+import { clearInstanceInfoCache } from '../../hooks/useInstanceInfo';
+
+interface AdminSettings {
+  registration: {
+    enabled: boolean;
+    inviteOnly: boolean;
+    approvalRequired: boolean;
+  };
+  instance: {
+    name: string;
+    description: string;
+    maintainerEmail: string;
+    iconUrl: string | null;
+    bannerUrl: string | null;
+    tosUrl: string | null;
+    privacyPolicyUrl: string | null;
+  };
+  theme: {
+    primaryColor: string;
+    darkMode: 'light' | 'dark' | 'system';
+  };
+}
+
+/**
+ * Color presets for quick selection
+ */
+const COLOR_PRESETS = [
+  { name: 'Blue', color: '#3b82f6' },
+  { name: 'Purple', color: '#8b5cf6' },
+  { name: 'Pink', color: '#ec4899' },
+  { name: 'Red', color: '#ef4444' },
+  { name: 'Orange', color: '#f97316' },
+  { name: 'Green', color: '#22c55e' },
+  { name: 'Teal', color: '#14b8a6' },
+  { name: 'Cyan', color: '#06b6d4' },
+];
+
+export default function AdminSettingsPage() {
+  const [currentUser] = useAtom(currentUserAtom);
+  const [token] = useAtom(tokenAtom);
+  const [, addToast] = useAtom(addToastAtom);
+
+  const [settings, setSettings] = useState<AdminSettings | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'instance' | 'registration' | 'theme'>('instance');
+
+  // Check admin access and load settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+
+      try {
+        apiClient.setToken(token);
+
+        // Check if user is admin
+        const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
+        if (!sessionResponse.user?.isAdmin) {
+          window.location.href = '/timeline';
+          return;
+        }
+
+        // Load admin settings
+        const settingsResponse = await apiClient.get<AdminSettings>('/api/admin/settings');
+        setSettings(settingsResponse);
+      } catch (err) {
+        console.error('Failed to load settings:', err);
+        setError('Failed to load settings');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [token]);
+
+  const handleSaveInstance = async () => {
+    if (!settings) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      await apiClient.patch('/api/admin/settings/instance', settings.instance);
+      clearInstanceInfoCache();
+      addToast({ type: 'success', message: t`Instance settings saved` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save';
+      setError(message);
+      addToast({ type: 'error', message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveRegistration = async () => {
+    if (!settings) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      await apiClient.patch('/api/admin/settings/registration', settings.registration);
+      clearInstanceInfoCache();
+      addToast({ type: 'success', message: t`Registration settings saved` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save';
+      setError(message);
+      addToast({ type: 'error', message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveTheme = async () => {
+    if (!settings) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      await apiClient.patch('/api/admin/settings/theme', settings.theme);
+      clearInstanceInfoCache();
+      addToast({ type: 'success', message: t`Theme settings saved` });
+      // Reload page to apply new theme
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save';
+      setError(message);
+      addToast({ type: 'error', message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-secondary)]">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!currentUser?.isAdmin) {
+    return null;
+  }
+
+  return (
+    <Layout>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          <Trans>Admin Settings</Trans>
+        </h1>
+        <p className="mt-2 text-[var(--text-secondary)]">
+          <Trans>Configure your instance settings</Trans>
+        </p>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="border-b border-[var(--border-color)] mb-6">
+        <nav className="flex gap-4">
+          <button
+            onClick={() => setActiveTab('instance')}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'instance'
+                ? 'border-primary-600 text-primary-600'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            <Trans>Instance</Trans>
+          </button>
+          <button
+            onClick={() => setActiveTab('registration')}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'registration'
+                ? 'border-primary-600 text-primary-600'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            <Trans>Registration</Trans>
+          </button>
+          <button
+            onClick={() => setActiveTab('theme')}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'theme'
+                ? 'border-primary-600 text-primary-600'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            <Trans>Theme</Trans>
+          </button>
+        </nav>
+      </div>
+
+      {error && <InlineError message={error} className="mb-4" />}
+
+      {/* Instance Settings */}
+      {activeTab === 'instance' && settings && (
+        <Card>
+          <CardHeader>
+            <CardTitle><Trans>Instance Information</Trans></CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <Trans>Instance Name</Trans>
+              </label>
+              <input
+                type="text"
+                value={settings.instance.name}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  instance: { ...settings.instance, name: e.target.value }
+                })}
+                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <Trans>Description</Trans>
+              </label>
+              <textarea
+                value={settings.instance.description}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  instance: { ...settings.instance, description: e.target.value }
+                })}
+                rows={3}
+                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                disabled={isSaving}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <Trans>Maintainer Email</Trans>
+              </label>
+              <input
+                type="email"
+                value={settings.instance.maintainerEmail}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  instance: { ...settings.instance, maintainerEmail: e.target.value }
+                })}
+                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <Trans>Icon URL</Trans>
+                </label>
+                <input
+                  type="url"
+                  value={settings.instance.iconUrl || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, iconUrl: e.target.value || null }
+                  })}
+                  placeholder="https://..."
+                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={isSaving}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <Trans>Banner URL</Trans>
+                </label>
+                <input
+                  type="url"
+                  value={settings.instance.bannerUrl || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, bannerUrl: e.target.value || null }
+                  })}
+                  placeholder="https://..."
+                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={isSaving}
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <Trans>Terms of Service URL</Trans>
+                </label>
+                <input
+                  type="url"
+                  value={settings.instance.tosUrl || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, tosUrl: e.target.value || null }
+                  })}
+                  placeholder="https://..."
+                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={isSaving}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <Trans>Privacy Policy URL</Trans>
+                </label>
+                <input
+                  type="url"
+                  value={settings.instance.privacyPolicyUrl || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null }
+                  })}
+                  placeholder="https://..."
+                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={isSaving}
+                />
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button variant="primary" onPress={handleSaveInstance} isDisabled={isSaving}>
+                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Instance Settings</Trans>}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Registration Settings */}
+      {activeTab === 'registration' && settings && (
+        <Card>
+          <CardHeader>
+            <CardTitle><Trans>Registration Settings</Trans></CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={settings.registration.enabled}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  registration: { ...settings.registration, enabled: e.target.checked }
+                })}
+                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <div>
+                <span className="font-medium text-[var(--text-primary)]">
+                  <Trans>Enable Registration</Trans>
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  <Trans>Allow new users to register accounts</Trans>
+                </p>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={settings.registration.inviteOnly}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  registration: { ...settings.registration, inviteOnly: e.target.checked }
+                })}
+                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                disabled={isSaving || !settings.registration.enabled}
+              />
+              <div>
+                <span className="font-medium text-[var(--text-primary)]">
+                  <Trans>Invite Only</Trans>
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  <Trans>Require an invitation code to register</Trans>
+                </p>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={settings.registration.approvalRequired}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  registration: { ...settings.registration, approvalRequired: e.target.checked }
+                })}
+                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                disabled={isSaving || !settings.registration.enabled}
+              />
+              <div>
+                <span className="font-medium text-[var(--text-primary)]">
+                  <Trans>Require Approval</Trans>
+                </span>
+                <p className="text-sm text-[var(--text-muted)]">
+                  <Trans>New accounts require admin approval</Trans>
+                </p>
+              </div>
+            </label>
+
+            <div className="pt-4">
+              <Button variant="primary" onPress={handleSaveRegistration} isDisabled={isSaving}>
+                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Registration Settings</Trans>}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Theme Settings */}
+      {activeTab === 'theme' && settings && (
+        <Card>
+          <CardHeader>
+            <CardTitle><Trans>Theme Settings</Trans></CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                <Trans>Primary Color</Trans>
+              </label>
+
+              {/* Color Presets */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {COLOR_PRESETS.map((preset) => (
+                  <button
+                    key={preset.color}
+                    onClick={() => setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, primaryColor: preset.color }
+                    })}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
+                      settings.theme.primaryColor === preset.color
+                        ? 'border-[var(--text-primary)] scale-110'
+                        : 'border-transparent hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: preset.color }}
+                    title={preset.name}
+                    disabled={isSaving}
+                  />
+                ))}
+              </div>
+
+              {/* Custom Color Picker */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={settings.theme.primaryColor}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    theme: { ...settings.theme, primaryColor: e.target.value }
+                  })}
+                  className="w-12 h-10 rounded cursor-pointer"
+                  disabled={isSaving}
+                />
+                <input
+                  type="text"
+                  value={settings.theme.primaryColor}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^#[0-9a-fA-F]{0,6}$/.test(value)) {
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, primaryColor: value }
+                      });
+                    }
+                  }}
+                  placeholder="#3b82f6"
+                  className="w-28 rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={isSaving}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+                <Trans>Default Color Mode</Trans>
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="darkMode"
+                    value="system"
+                    checked={settings.theme.darkMode === 'system'}
+                    onChange={() => setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, darkMode: 'system' }
+                    })}
+                    className="w-4 h-4 text-primary-600"
+                    disabled={isSaving}
+                  />
+                  <span className="text-[var(--text-primary)]"><Trans>System</Trans></span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="darkMode"
+                    value="light"
+                    checked={settings.theme.darkMode === 'light'}
+                    onChange={() => setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, darkMode: 'light' }
+                    })}
+                    className="w-4 h-4 text-primary-600"
+                    disabled={isSaving}
+                  />
+                  <span className="text-[var(--text-primary)]"><Trans>Light</Trans></span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="darkMode"
+                    value="dark"
+                    checked={settings.theme.darkMode === 'dark'}
+                    onChange={() => setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, darkMode: 'dark' }
+                    })}
+                    className="w-4 h-4 text-primary-600"
+                    disabled={isSaving}
+                  />
+                  <span className="text-[var(--text-primary)]"><Trans>Dark</Trans></span>
+                </label>
+              </div>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">
+                <Trans>Users can still override this with their own preference</Trans>
+              </p>
+            </div>
+
+            {/* Preview */}
+            <div className="border border-[var(--border-color)] rounded-lg p-4">
+              <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+                <Trans>Preview</Trans>
+              </h4>
+              <div className="flex gap-3">
+                <button
+                  className="px-4 py-2 rounded-lg text-white font-medium"
+                  style={{ backgroundColor: settings.theme.primaryColor }}
+                >
+                  <Trans>Primary Button</Trans>
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg font-medium border-2"
+                  style={{
+                    borderColor: settings.theme.primaryColor,
+                    color: settings.theme.primaryColor
+                  }}
+                >
+                  <Trans>Secondary</Trans>
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button variant="primary" onPress={handleSaveTheme} isDisabled={isSaving}>
+                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Theme Settings</Trans>}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </Layout>
+  );
+}

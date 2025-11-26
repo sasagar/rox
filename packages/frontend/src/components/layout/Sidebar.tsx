@@ -2,10 +2,11 @@
 
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
-import { Home, User, Settings } from 'lucide-react';
+import { Home, User, Settings, Shield } from 'lucide-react';
 import { currentUserAtom } from '../../lib/atoms/auth';
 import { Avatar } from '../ui/Avatar';
 import { LanguageSwitcher } from '../LanguageSwitcher';
+import { DarkModeToggle } from '../ui/DarkModeToggle';
 
 /**
  * Sidebar navigation component
@@ -48,10 +49,20 @@ export function Sidebar() {
     },
   ];
 
+  // Add admin link for admin users
+  if (currentUser.isAdmin) {
+    navItems.push({
+      icon: <Shield className="w-6 h-6" />,
+      label: <Trans>Admin</Trans>,
+      href: '/admin/settings',
+      key: 'admin',
+    });
+  }
+
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[var(--card-bg)] border-r border-[var(--border-color)] flex flex-col">
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-[var(--border-color)]">
         <a href="/" className="flex items-center gap-2">
           <span className="text-2xl font-bold text-primary-600">Rox</span>
         </a>
@@ -63,24 +74,25 @@ export function Sidebar() {
           <a
             key={item.key}
             href={item.href}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
           >
-            <span className="text-gray-600">{item.icon}</span>
+            <span className="text-[var(--text-muted)]">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
           </a>
         ))}
       </nav>
 
-      {/* Language Switcher */}
-      <div className="p-4 border-t border-gray-200">
+      {/* Language & Theme */}
+      <div className="p-4 border-t border-[var(--border-color)] flex items-center justify-between">
         <LanguageSwitcher />
+        <DarkModeToggle />
       </div>
 
       {/* User Profile at Bottom */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-[var(--border-color)]">
         <a
           href={`/${currentUser.username}`}
-          className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
         >
           <Avatar
             src={currentUser.avatarUrl}
@@ -89,10 +101,10 @@ export function Sidebar() {
             size="sm"
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-medium text-[var(--text-primary)] truncate">
               {(currentUser as any).displayName || currentUser.username}
             </p>
-            <p className="text-xs text-gray-500 truncate">@{currentUser.username}</p>
+            <p className="text-xs text-[var(--text-muted)] truncate">@{currentUser.username}</p>
           </div>
         </a>
       </div>
