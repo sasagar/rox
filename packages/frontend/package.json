@@ -24,7 +24,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.66.1",
     "react-server-dom-webpack": "^19.1.1",
-    "rox_shared": "workspace:*",
+    "shared": "workspace:*",
     "waku": "^0.27.1"
   },
   "devDependencies": {

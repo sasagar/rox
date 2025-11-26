@@ -1,4 +1,4 @@
-import type { NoteWithRelations, Visibility } from 'rox_shared';
+import type { NoteWithRelations, Visibility } from 'shared';
 
 /**
  * Note visibility types

@@ -1,4 +1,4 @@
-import type { UserProfile } from 'rox_shared';
+import type { UserProfile } from 'shared';
 
 /**
  * User entity from API responses

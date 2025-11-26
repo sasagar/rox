@@ -23,7 +23,7 @@
     "ioredis": "^5.8.2",
     "mysql2": "^3.11.5",
     "postgres": "^3.4.5",
-    "rox_shared": "workspace:*",
+    "shared": "workspace:*",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
