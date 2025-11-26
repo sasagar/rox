@@ -23,7 +23,7 @@ export function DarkModeToggle({ className = '' }: DarkModeToggleProps) {
     <button
       type="button"
       onClick={toggleColorMode}
-      className={`p-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors ${className}`}
+      className={`p-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors ${className}`}
       aria-label={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       title={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >

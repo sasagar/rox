@@ -213,10 +213,10 @@ export default function AdminInvitationsPage() {
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-(--text-primary)">
             <Trans>Invitation Codes</Trans>
           </h1>
-          <p className="text-[var(--text-secondary)] mt-2">
+          <p className="text-(--text-secondary) mt-2">
             <Trans>Manage invitation codes for new user registration</Trans>
           </p>
         </div>
@@ -225,8 +225,8 @@ export default function AdminInvitationsPage() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card>
             <CardContent className="p-4">
-              <div className="text-3xl font-bold text-[var(--text-primary)]">{total}</div>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-3xl font-bold text-(--text-primary)">{total}</div>
+              <div className="text-sm text-(--text-muted)">
                 <Trans>Total Codes</Trans>
               </div>
             </CardContent>
@@ -234,7 +234,7 @@ export default function AdminInvitationsPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-3xl font-bold text-green-500">{unused}</div>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-(--text-muted)">
                 <Trans>Available Codes</Trans>
               </div>
             </CardContent>
@@ -250,7 +250,7 @@ export default function AdminInvitationsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                 <Trans>Custom Code (optional)</Trans>
               </label>
               <input
@@ -258,20 +258,20 @@ export default function AdminInvitationsPage() {
                 value={customCode}
                 onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
                 placeholder={t`Leave empty for auto-generated code`}
-                className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 maxLength={20}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                   <Trans>Max Uses</Trans>
                 </label>
                 <select
                   value={maxUses}
                   onChange={(e) => setMaxUses(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="1">1</option>
                   <option value="5">5</option>
@@ -283,13 +283,13 @@ export default function AdminInvitationsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                   <Trans>Expires In</Trans>
                 </label>
                 <select
                   value={expiresIn}
                   onChange={(e) => setExpiresIn(e.target.value as any)}
-                  className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="never"><Trans>Never</Trans></option>
                   <option value="1d"><Trans>1 Day</Trans></option>
@@ -332,7 +332,7 @@ export default function AdminInvitationsPage() {
           </CardHeader>
           <CardContent>
             {invitations.length === 0 ? (
-              <p className="text-center text-[var(--text-muted)] py-8">
+              <p className="text-center text-(--text-muted) py-8">
                 <Trans>No invitation codes yet</Trans>
               </p>
             ) : (
@@ -347,13 +347,13 @@ export default function AdminInvitationsPage() {
                       key={invitation.id}
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         available
-                          ? 'border-[var(--border-color)] bg-[var(--bg-primary)]'
-                          : 'border-[var(--border-color)] bg-[var(--bg-tertiary)] opacity-60'
+                          ? 'border-(--border-color) bg-(--bg-primary)'
+                          : 'border-(--border-color) bg-(--bg-tertiary) opacity-60'
                       }`}
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <code className="text-lg font-mono font-bold text-[var(--text-primary)]">
+                          <code className="text-lg font-mono font-bold text-(--text-primary)">
                             {invitation.code}
                           </code>
                           {expired && (
@@ -372,7 +372,7 @@ export default function AdminInvitationsPage() {
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-[var(--text-muted)] mt-1">
+                        <div className="text-sm text-(--text-muted) mt-1">
                           <Trans>Uses: {invitation.useCount}/{invitation.maxUses}</Trans>
                           {invitation.expiresAt && (
                             <span className="ml-3">

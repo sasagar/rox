@@ -162,7 +162,7 @@ export default function AdminSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-secondary)]">
+      <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary)">
         <Spinner size="lg" />
       </div>
     );
@@ -175,23 +175,23 @@ export default function AdminSettingsPage() {
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-3xl font-bold text-(--text-primary)">
           <Trans>Admin Settings</Trans>
         </h1>
-        <p className="mt-2 text-[var(--text-secondary)]">
+        <p className="mt-2 text-(--text-secondary)">
           <Trans>Configure your instance settings</Trans>
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-[var(--border-color)] mb-6">
+      <div className="border-b border-(--border-color) mb-6">
         <nav className="flex gap-4">
           <button
             onClick={() => setActiveTab('instance')}
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'instance'
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
             }`}
           >
             <Trans>Instance</Trans>
@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'registration'
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
             }`}
           >
             <Trans>Registration</Trans>
@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'theme'
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
             }`}
           >
             <Trans>Theme</Trans>
@@ -229,7 +229,7 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
                 <Trans>Instance Name</Trans>
               </label>
               <input
@@ -239,13 +239,13 @@ export default function AdminSettingsPage() {
                   ...settings,
                   instance: { ...settings.instance, name: e.target.value }
                 })}
-                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSaving}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
                 <Trans>Description</Trans>
               </label>
               <textarea
@@ -255,13 +255,13 @@ export default function AdminSettingsPage() {
                   instance: { ...settings.instance, description: e.target.value }
                 })}
                 rows={3}
-                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
                 disabled={isSaving}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
                 <Trans>Maintainer Email</Trans>
               </label>
               <input
@@ -271,14 +271,14 @@ export default function AdminSettingsPage() {
                   ...settings,
                   instance: { ...settings.instance, maintainerEmail: e.target.value }
                 })}
-                className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSaving}
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2">
                   <Trans>Icon URL</Trans>
                 </label>
                 <input
@@ -289,12 +289,12 @@ export default function AdminSettingsPage() {
                     instance: { ...settings.instance, iconUrl: e.target.value || null }
                   })}
                   placeholder="https://..."
-                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2">
                   <Trans>Banner URL</Trans>
                 </label>
                 <input
@@ -305,7 +305,7 @@ export default function AdminSettingsPage() {
                     instance: { ...settings.instance, bannerUrl: e.target.value || null }
                   })}
                   placeholder="https://..."
-                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
@@ -313,7 +313,7 @@ export default function AdminSettingsPage() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2">
                   <Trans>Terms of Service URL</Trans>
                 </label>
                 <input
@@ -324,12 +324,12 @@ export default function AdminSettingsPage() {
                     instance: { ...settings.instance, tosUrl: e.target.value || null }
                   })}
                   placeholder="https://..."
-                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                <label className="block text-sm font-medium text-(--text-primary) mb-2">
                   <Trans>Privacy Policy URL</Trans>
                 </label>
                 <input
@@ -340,7 +340,7 @@ export default function AdminSettingsPage() {
                     instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null }
                   })}
                   placeholder="https://..."
-                  className="w-full rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
@@ -370,14 +370,14 @@ export default function AdminSettingsPage() {
                   ...settings,
                   registration: { ...settings.registration, enabled: e.target.checked }
                 })}
-                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving}
               />
               <div>
-                <span className="font-medium text-[var(--text-primary)]">
+                <span className="font-medium text-(--text-primary)">
                   <Trans>Enable Registration</Trans>
                 </span>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-sm text-(--text-muted)">
                   <Trans>Allow new users to register accounts</Trans>
                 </p>
               </div>
@@ -391,14 +391,14 @@ export default function AdminSettingsPage() {
                   ...settings,
                   registration: { ...settings.registration, inviteOnly: e.target.checked }
                 })}
-                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving || !settings.registration.enabled}
               />
               <div>
-                <span className="font-medium text-[var(--text-primary)]">
+                <span className="font-medium text-(--text-primary)">
                   <Trans>Invite Only</Trans>
                 </span>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-sm text-(--text-muted)">
                   <Trans>Require an invitation code to register</Trans>
                 </p>
               </div>
@@ -412,14 +412,14 @@ export default function AdminSettingsPage() {
                   ...settings,
                   registration: { ...settings.registration, approvalRequired: e.target.checked }
                 })}
-                className="w-5 h-5 rounded border-[var(--border-color)] text-primary-600 focus:ring-primary-500"
+                className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving || !settings.registration.enabled}
               />
               <div>
-                <span className="font-medium text-[var(--text-primary)]">
+                <span className="font-medium text-(--text-primary)">
                   <Trans>Require Approval</Trans>
                 </span>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-sm text-(--text-muted)">
                   <Trans>New accounts require admin approval</Trans>
                 </p>
               </div>
@@ -442,7 +442,7 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) mb-3">
                 <Trans>Primary Color</Trans>
               </label>
 
@@ -457,7 +457,7 @@ export default function AdminSettingsPage() {
                     })}
                     className={`w-10 h-10 rounded-lg border-2 transition-all ${
                       settings.theme.primaryColor === preset.color
-                        ? 'border-[var(--text-primary)] scale-110'
+                        ? 'border-(--text-primary) scale-110'
                         : 'border-transparent hover:scale-105'
                     }`}
                     style={{ backgroundColor: preset.color }}
@@ -492,14 +492,14 @@ export default function AdminSettingsPage() {
                     }
                   }}
                   placeholder="#3b82f6"
-                  className="w-28 rounded-md border border-[var(--border-color)] bg-[var(--card-bg)] px-3 py-2 text-[var(--text-primary)] font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-28 rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) mb-3">
                 <Trans>Default Color Mode</Trans>
               </label>
               <div className="flex gap-4">
@@ -516,7 +516,7 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-[var(--text-primary)]"><Trans>System</Trans></span>
+                  <span className="text-(--text-primary)"><Trans>System</Trans></span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -531,7 +531,7 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-[var(--text-primary)]"><Trans>Light</Trans></span>
+                  <span className="text-(--text-primary)"><Trans>Light</Trans></span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -546,17 +546,17 @@ export default function AdminSettingsPage() {
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-[var(--text-primary)]"><Trans>Dark</Trans></span>
+                  <span className="text-(--text-primary)"><Trans>Dark</Trans></span>
                 </label>
               </div>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">
+              <p className="mt-2 text-sm text-(--text-muted)">
                 <Trans>Users can still override this with their own preference</Trans>
               </p>
             </div>
 
             {/* Preview */}
-            <div className="border border-[var(--border-color)] rounded-lg p-4">
-              <h4 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+            <div className="border border-(--border-color) rounded-lg p-4">
+              <h4 className="text-sm font-medium text-(--text-primary) mb-3">
                 <Trans>Preview</Trans>
               </h4>
               <div className="flex gap-3">

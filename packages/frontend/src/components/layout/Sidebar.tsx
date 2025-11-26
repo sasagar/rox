@@ -60,9 +60,9 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[var(--card-bg)] border-r border-[var(--border-color)] flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-(--card-bg) border-r border-(--border-color) flex flex-col">
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-[var(--border-color)]">
+      <div className="p-6 border-b border-(--border-color)">
         <a href="/" className="flex items-center gap-2">
           <span className="text-2xl font-bold text-primary-600">Rox</span>
         </a>
@@ -74,25 +74,25 @@ export function Sidebar() {
           <a
             key={item.key}
             href={item.href}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
           >
-            <span className="text-[var(--text-muted)]">{item.icon}</span>
+            <span className="text-(--text-muted)">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
           </a>
         ))}
       </nav>
 
       {/* Language & Theme */}
-      <div className="p-4 border-t border-[var(--border-color)] flex items-center justify-between">
+      <div className="p-4 border-t border-(--border-color) flex items-center justify-between">
         <LanguageSwitcher />
         <DarkModeToggle />
       </div>
 
       {/* User Profile at Bottom */}
-      <div className="p-4 border-t border-[var(--border-color)]">
+      <div className="p-4 border-t border-(--border-color)">
         <a
           href={`/${currentUser.username}`}
-          className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] transition-colors"
+          className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors"
         >
           <Avatar
             src={currentUser.avatarUrl}
@@ -101,10 +101,10 @@ export function Sidebar() {
             size="sm"
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+            <p className="text-sm font-medium text-(--text-primary) truncate">
               {(currentUser as any).displayName || currentUser.username}
             </p>
-            <p className="text-xs text-[var(--text-muted)] truncate">@{currentUser.username}</p>
+            <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
           </div>
         </a>
       </div>

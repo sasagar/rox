@@ -226,7 +226,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                   {instanceInfo.maintainerEmail && (
                     <div>
                       <dt className="text-(--text-muted) mb-1"><Trans>Contact</Trans></dt>
-                      <dd className="text-[var(--text-primary)]">
+                      <dd className="text-(--text-primary)">
                         <a href={`mailto:${instanceInfo.maintainerEmail}`} className="text-primary-600 hover:underline">
                           {instanceInfo.maintainerEmail}
                         </a>
@@ -235,15 +235,15 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                   )}
                   {instanceInfo.software && (
                     <div>
-                      <dt className="text-[var(--text-muted)] mb-1"><Trans>Software</Trans></dt>
-                      <dd className="text-[var(--text-primary)]">
+                      <dt className="text-(--text-muted) mb-1"><Trans>Software</Trans></dt>
+                      <dd className="text-(--text-primary)">
                         {instanceInfo.software.name} v{instanceInfo.software.version}
                       </dd>
                     </div>
                   )}
                   {instanceInfo.tosUrl && (
                     <div>
-                      <dt className="text-[var(--text-muted)] mb-1"><Trans>Terms of Service</Trans></dt>
+                      <dt className="text-(--text-muted) mb-1"><Trans>Terms of Service</Trans></dt>
                       <dd>
                         <a href={instanceInfo.tosUrl} className="text-primary-600 hover:underline" target="_blank" rel="noopener noreferrer">
                           <Trans>View Terms</Trans>
@@ -253,7 +253,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                   )}
                   {instanceInfo.privacyPolicyUrl && (
                     <div>
-                      <dt className="text-[var(--text-muted)] mb-1"><Trans>Privacy Policy</Trans></dt>
+                      <dt className="text-(--text-muted) mb-1"><Trans>Privacy Policy</Trans></dt>
                       <dd>
                         <a href={instanceInfo.privacyPolicyUrl} className="text-primary-600 hover:underline" target="_blank" rel="noopener noreferrer">
                           <Trans>View Policy</Trans>
@@ -269,10 +269,10 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border-color)] bg-[var(--card-bg)]">
+      <footer className="border-t border-(--border-color) bg-(--card-bg)">
         <div className="container mx-auto px-4 py-8 max-w-5xl">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[var(--text-muted)] text-sm">
+            <p className="text-(--text-muted) text-sm">
               <Trans>Powered by</Trans>{' '}
               <a
                 href="https://github.com/Love-rox/rox"
@@ -283,14 +283,14 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                 Rox
               </a>
             </p>
-            <div className="flex gap-6 text-sm text-[var(--text-muted)]">
+            <div className="flex gap-6 text-sm text-(--text-muted)">
               {instanceInfo?.tosUrl && (
-                <a href={instanceInfo.tosUrl} className="hover:text-[var(--text-primary)]" target="_blank" rel="noopener noreferrer">
+                <a href={instanceInfo.tosUrl} className="hover:text-(--text-primary)" target="_blank" rel="noopener noreferrer">
                   <Trans>Terms</Trans>
                 </a>
               )}
               {instanceInfo?.privacyPolicyUrl && (
-                <a href={instanceInfo.privacyPolicyUrl} className="hover:text-[var(--text-primary)]" target="_blank" rel="noopener noreferrer">
+                <a href={instanceInfo.privacyPolicyUrl} className="hover:text-(--text-primary)" target="_blank" rel="noopener noreferrer">
                   <Trans>Privacy</Trans>
                 </a>
               )}

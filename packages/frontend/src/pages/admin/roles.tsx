@@ -305,10 +305,10 @@ export default function AdminRolesPage() {
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl font-bold text-(--text-primary)">
             <Trans>Role Management</Trans>
           </h1>
-          <p className="text-[var(--text-secondary)] mt-2">
+          <p className="text-(--text-secondary) mt-2">
             <Trans>Create and manage user roles with custom permissions</Trans>
           </p>
         </div>
@@ -317,8 +317,8 @@ export default function AdminRolesPage() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card>
             <CardContent className="p-4">
-              <div className="text-3xl font-bold text-[var(--text-primary)]">{total}</div>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-3xl font-bold text-(--text-primary)">{total}</div>
+              <div className="text-sm text-(--text-muted)">
                 <Trans>Total Roles</Trans>
               </div>
             </CardContent>
@@ -328,7 +328,7 @@ export default function AdminRolesPage() {
               <div className="text-3xl font-bold text-green-500">
                 {roles.filter(r => r.isDefault).length}
               </div>
-              <div className="text-sm text-[var(--text-muted)]">
+              <div className="text-sm text-(--text-muted)">
                 <Trans>Default Roles</Trans>
               </div>
             </CardContent>
@@ -345,7 +345,7 @@ export default function AdminRolesPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                   <Trans>Name</Trans>
                 </label>
                 <input
@@ -353,25 +353,25 @@ export default function AdminRolesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder={t`Role name`}
-                  className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   maxLength={50}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                   <Trans>Color</Trans>
                 </label>
                 <input
                   type="color"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  className="w-full h-10 px-1 py-1 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)]"
+                  className="w-full h-10 px-1 py-1 border border-(--border-color) rounded-lg bg-(--bg-primary)"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label className="block text-sm font-medium text-(--text-secondary) mb-1">
                 <Trans>Description</Trans>
               </label>
               <input
@@ -379,7 +379,7 @@ export default function AdminRolesPage() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder={t`Role description`}
-                className="w-full px-3 py-2 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
 
@@ -392,7 +392,7 @@ export default function AdminRolesPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   <Trans>Public (show on profiles)</Trans>
                 </span>
               </label>
@@ -403,7 +403,7 @@ export default function AdminRolesPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   <Trans>Default (auto-assign to new users)</Trans>
                 </span>
               </label>
@@ -414,7 +414,7 @@ export default function AdminRolesPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, isAdminRole: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   <Trans>Admin Role</Trans>
                 </span>
               </label>
@@ -425,15 +425,15 @@ export default function AdminRolesPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, isModeratorRole: e.target.checked }))}
                   className="rounded"
                 />
-                <span className="text-sm text-[var(--text-secondary)]">
+                <span className="text-sm text-(--text-secondary)">
                   <Trans>Moderator Role</Trans>
                 </span>
               </label>
             </div>
 
             {/* Permissions */}
-            <div className="border-t border-[var(--border-color)] pt-4">
-              <h3 className="text-sm font-medium text-[var(--text-primary)] mb-3">
+            <div className="border-t border-(--border-color) pt-4">
+              <h3 className="text-sm font-medium text-(--text-primary) mb-3">
                 <Trans>Permissions</Trans>
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -444,23 +444,23 @@ export default function AdminRolesPage() {
                     onChange={(e) => setFormData(prev => ({ ...prev, canInvite: e.target.checked }))}
                     className="rounded"
                   />
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-(--text-secondary)">
                     <Trans>Can invite users</Trans>
                   </span>
                 </label>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-[var(--text-secondary)]">
+                  <label className="text-sm text-(--text-secondary)">
                     <Trans>Invite limit:</Trans>
                   </label>
                   <input
                     type="number"
                     value={formData.inviteLimit}
                     onChange={(e) => setFormData(prev => ({ ...prev, inviteLimit: parseInt(e.target.value) || 0 }))}
-                    className="w-20 px-2 py-1 border border-[var(--border-color)] rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                    className="w-20 px-2 py-1 border border-(--border-color) rounded bg-(--bg-primary) text-(--text-primary)"
                     min={-1}
                     disabled={!formData.canInvite}
                   />
-                  <span className="text-xs text-[var(--text-muted)]">(-1 = unlimited)</span>
+                  <span className="text-xs text-(--text-muted)">(-1 = unlimited)</span>
                 </div>
                 <label className="flex items-center gap-2">
                   <input
@@ -469,7 +469,7 @@ export default function AdminRolesPage() {
                     onChange={(e) => setFormData(prev => ({ ...prev, canManageReports: e.target.checked }))}
                     className="rounded"
                   />
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-(--text-secondary)">
                     <Trans>Can manage reports</Trans>
                   </span>
                 </label>
@@ -480,7 +480,7 @@ export default function AdminRolesPage() {
                     onChange={(e) => setFormData(prev => ({ ...prev, canDeleteNotes: e.target.checked }))}
                     className="rounded"
                   />
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-(--text-secondary)">
                     <Trans>Can delete notes</Trans>
                   </span>
                 </label>
@@ -491,7 +491,7 @@ export default function AdminRolesPage() {
                     onChange={(e) => setFormData(prev => ({ ...prev, canSuspendUsers: e.target.checked }))}
                     className="rounded"
                   />
-                  <span className="text-sm text-[var(--text-secondary)]">
+                  <span className="text-sm text-(--text-secondary)">
                     <Trans>Can suspend users</Trans>
                   </span>
                 </label>
@@ -546,7 +546,7 @@ export default function AdminRolesPage() {
           </CardHeader>
           <CardContent>
             {roles.length === 0 ? (
-              <p className="text-center text-[var(--text-muted)] py-8">
+              <p className="text-center text-(--text-muted) py-8">
                 <Trans>No roles yet</Trans>
               </p>
             ) : (
@@ -557,7 +557,7 @@ export default function AdminRolesPage() {
                   return (
                     <div
                       key={role.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)]"
+                      className="flex items-center justify-between p-4 rounded-lg border border-(--border-color) bg-(--bg-primary)"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -580,11 +580,11 @@ export default function AdminRolesPage() {
                           )}
                         </div>
                         {role.description && (
-                          <p className="text-sm text-[var(--text-muted)] mt-1">
+                          <p className="text-sm text-(--text-muted) mt-1">
                             {role.description}
                           </p>
                         )}
-                        <div className="text-xs text-[var(--text-muted)] mt-2 flex flex-wrap gap-2">
+                        <div className="text-xs text-(--text-muted) mt-2 flex flex-wrap gap-2">
                           {role.policies.canInvite && (
                             <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">
                               <Trans>Invite</Trans>

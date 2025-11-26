@@ -54,7 +54,7 @@ export function AppProviders({ children }: AppProvidersProps) {
     <I18nProvider>
       <ThemeProvider theme={theme}>
         <div
-          className="min-h-screen bg-[var(--bg-secondary)] text-[var(--text-primary)] transition-colors duration-200"
+          className="min-h-screen bg-(--bg-secondary) text-(--text-primary) transition-colors duration-200"
           style={{ opacity: isLoaded ? 1 : 0.99 }}
         >
           {children}
