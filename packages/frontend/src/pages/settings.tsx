@@ -208,7 +208,7 @@ export default function SettingsPage() {
                 id="customCss"
                 value={customCss}
                 onChange={(e) => setCustomCss(e.target.value)}
-                placeholder={t`/* Add custom styles for your profile page */\n.profile-header {\n  background: linear-gradient(...);\n}`}
+                placeholder="/* Custom CSS */\n.profile-header {\n  background: #333;\n}"
                 maxLength={10240}
                 rows={6}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"

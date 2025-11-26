@@ -25,7 +25,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b bg-[var(--card-bg)]">
+      <header className="border-b bg-(--card-bg)">
         <div className="container mx-auto px-4 py-4 max-w-5xl flex justify-between items-center">
           <div className="flex items-center gap-3">
             {instanceInfo?.iconUrl && (
@@ -35,7 +35,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                 className="w-8 h-8 rounded-lg"
               />
             )}
-            <span className="font-semibold text-lg text-[var(--text-primary)]">
+            <span className="font-semibold text-lg text-(--text-primary)">
               {instanceName}
             </span>
           </div>
@@ -47,7 +47,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
       </header>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-primary-100 to-[var(--bg-secondary)] dark:from-primary-950 dark:to-[var(--bg-secondary)]">
+      <div className="bg-linear-to-b from-primary-100 to-(--bg-secondary) dark:from-primary-950 dark:to-(--bg-secondary)">
         {/* Banner Image */}
         {instanceInfo?.bannerUrl && (
           <div className="w-full h-48 md:h-64 overflow-hidden">
@@ -71,17 +71,17 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
             </div>
           )}
 
-          <h1 className="text-5xl md:text-6xl font-bold text-[var(--text-primary)] mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-(--text-primary) mb-4">
             {isLoading ? (
-              <span className="animate-pulse bg-[var(--bg-tertiary)] rounded h-16 w-64 inline-block" />
+              <span className="animate-pulse bg-(--bg-tertiary) rounded h-16 w-64 inline-block" />
             ) : (
               instanceName
             )}
           </h1>
 
-          <p className="text-xl text-[var(--text-secondary)] mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-(--text-secondary) mb-8 max-w-2xl mx-auto">
             {isLoading ? (
-              <span className="animate-pulse bg-[var(--bg-tertiary)] rounded h-6 w-96 inline-block" />
+              <span className="animate-pulse bg-(--bg-tertiary) rounded h-6 w-96 inline-block" />
             ) : (
               instanceDescription
             )}
@@ -138,7 +138,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                 )}
                 <Button
                   onPress={() => window.location.href = '/login'}
-                  className="bg-[var(--card-bg)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] px-8 py-3 rounded-lg font-semibold text-lg shadow hover:shadow-md transition-all"
+                  className="bg-(--card-bg) hover:bg-(--bg-tertiary)-[var(--text-primary)] border border-(--border-color) px-8 py-3 rounded-lg font-semibold text-lg shadow hover:shadow-md transition-all"
                 >
                   <Trans>Log In</Trans>
                 </Button>
@@ -150,46 +150,46 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
 
       {/* Features Section */}
       <div className="container mx-auto px-4 py-16 max-w-5xl">
-        <h2 className="text-3xl font-bold text-center text-[var(--text-primary)] mb-12">
+        <h2 className="text-3xl font-bold text-center text-(--text-primary) mb-12">
           <Trans>Why Join?</Trans>
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center p-6 rounded-xl bg-[var(--card-bg)] shadow-sm border border-[var(--border-color)]">
+          <div className="text-center p-6 rounded-xl bg-(--card-bg) shadow-sm border border-(--border-color)">
             <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
               <svg className="w-7 h-7 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+            <h3 className="text-xl font-semibold mb-2 text-(--text-primary)">
               <Trans>Federated</Trans>
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               <Trans>Connect with users across the fediverse using ActivityPub protocol</Trans>
             </p>
           </div>
-          <div className="text-center p-6 rounded-xl bg-[var(--card-bg)] shadow-sm border border-[var(--border-color)]">
+          <div className="text-center p-6 rounded-xl bg-(--card-bg) shadow-sm border border-(--border-color)">
             <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
               <svg className="w-7 h-7 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+            <h3 className="text-xl font-semibold mb-2 text-(--text-primary)">
               <Trans>Lightweight</Trans>
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               <Trans>Fast and efficient with minimal resource usage</Trans>
             </p>
           </div>
-          <div className="text-center p-6 rounded-xl bg-[var(--card-bg)] shadow-sm border border-[var(--border-color)]">
+          <div className="text-center p-6 rounded-xl bg-(--card-bg) shadow-sm border border-(--border-color)">
             <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
               <svg className="w-7 h-7 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-[var(--text-primary)]">
+            <h3 className="text-xl font-semibold mb-2 text-(--text-primary)">
               <Trans>Privacy First</Trans>
             </h3>
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-(--text-secondary)">
               <Trans>Control your data and choose who sees your posts</Trans>
             </p>
           </div>
@@ -197,13 +197,13 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
       </div>
 
       {/* About Section */}
-      <div className="bg-[var(--bg-tertiary)]">
+      <div className="bg-(--bg-tertiary)">
         <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <div className="bg-[var(--card-bg)] rounded-2xl shadow-lg p-8 border border-[var(--border-color)]">
-            <h2 className="text-3xl font-bold mb-6 text-[var(--text-primary)]">
+          <div className="bg-(--card-bg) rounded-2xl shadow-lg p-8 border border-(--border-color)">
+            <h2 className="text-3xl font-bold mb-6 text-(--text-primary)">
               <Trans>About This Instance</Trans>
             </h2>
-            <div className="space-y-4 text-[var(--text-secondary)]">
+            <div className="space-y-4 text-(--text-secondary)">
               <p>
                 <Trans>
                   This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network.
@@ -218,14 +218,14 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
 
             {/* Instance Details */}
             {instanceInfo && (
-              <div className="mt-8 pt-8 border-t border-[var(--border-color)]">
-                <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">
+              <div className="mt-8 pt-8 border-t border-(--border-color)">
+                <h3 className="text-lg font-semibold mb-4 text-(--text-primary)">
                   <Trans>Instance Details</Trans>
                 </h3>
                 <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   {instanceInfo.maintainerEmail && (
                     <div>
-                      <dt className="text-[var(--text-muted)] mb-1"><Trans>Contact</Trans></dt>
+                      <dt className="text-(--text-muted) mb-1"><Trans>Contact</Trans></dt>
                       <dd className="text-[var(--text-primary)]">
                         <a href={`mailto:${instanceInfo.maintainerEmail}`} className="text-primary-600 hover:underline">
                           {instanceInfo.maintainerEmail}

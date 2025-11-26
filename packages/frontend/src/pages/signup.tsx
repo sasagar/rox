@@ -91,7 +91,7 @@ export default function SignupPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-secondary)]">
+      <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary)">
         <Spinner size="lg" />
       </div>
     );
@@ -100,7 +100,7 @@ export default function SignupPage() {
   // Registration disabled
   if (settings && !settings.registrationEnabled) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-secondary)] px-4 py-8">
+      <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary) px-4 py-8">
         <Card className="w-full max-w-md" padding="lg">
           <CardHeader>
             <CardTitle className="text-center text-2xl">
@@ -123,7 +123,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--bg-secondary)] px-4 py-8">
+    <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary) px-4 py-8">
       <Card className="w-full max-w-md" padding="lg">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
@@ -220,7 +220,7 @@ export default function SignupPage() {
             </Button>
           </Form>
 
-          <div className="mt-4 text-center text-sm text-[var(--text-muted)]">
+          <div className="mt-4 text-center text-sm text-(--text-muted)">
             <Trans>Already have an account?</Trans>{' '}
             <a href="/login" className="font-medium text-primary-600 hover:text-primary-500">
               <Trans>Sign in</Trans>

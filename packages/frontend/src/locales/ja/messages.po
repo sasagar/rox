@@ -13,14 +13,6 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/settings.tsx:211
-msgid ""
-"/* Add custom styles for your profile page */\n"
-".profile-header {\n"
-"  background: linear-gradient(...);\n"
-"}"
-msgstr ""
-
 #: src/pages/admin/invitations.tsx:295
 msgid "1 Day"
 msgstr "1日"
@@ -56,6 +48,10 @@ msgstr "このインスタンスについて"
 #: src/components/layout/Sidebar.tsx:56
 msgid "Admin"
 msgstr "管理"
+
+#: src/pages/admin/roles.tsx:418
+msgid "Admin Role"
+msgstr "管理者ロール"
 
 #: src/pages/admin/settings.tsx:179
 msgid "Admin Settings"
@@ -105,6 +101,23 @@ msgstr "自己紹介"
 msgid "Bot"
 msgstr "Bot"
 
+#: src/pages/admin/roles.tsx:484
+msgid "Can delete notes"
+msgstr "ノートを削除可能"
+
+#: src/pages/admin/roles.tsx:448
+msgid "Can invite users"
+msgstr "ユーザーを招待可能"
+
+#: src/pages/admin/roles.tsx:473
+msgid "Can manage reports"
+msgstr "通報を管理可能"
+
+#: src/pages/admin/roles.tsx:495
+msgid "Can suspend users"
+msgstr "ユーザーを凍結可能"
+
+#: src/pages/admin/roles.tsx:526
 #: src/pages/settings.tsx:260
 msgid "Cancel"
 msgstr "キャンセル"
@@ -116,6 +129,10 @@ msgstr "サインイン方法を選択してください"
 #: src/pages/admin/invitations.tsx:173
 msgid "Code copied to clipboard"
 msgstr "コードをクリップボードにコピーしました"
+
+#: src/pages/admin/roles.tsx:362
+msgid "Color"
+msgstr "カラー"
 
 #: src/pages/admin/settings.tsx:182
 msgid "Configure your instance settings"
@@ -145,10 +162,19 @@ msgstr "会話スレッド"
 msgid "Copy code"
 msgstr "コードをコピー"
 
+#: src/pages/admin/roles.tsx:312
+msgid "Create and manage user roles with custom permissions"
+msgstr "カスタム権限を持つユーザーロールを作成・管理"
+
 #: src/pages/admin/invitations.tsx:248
 #: src/pages/admin/invitations.tsx:312
 msgid "Create Invitation Code"
 msgstr "招待コードを作成"
+
+#: src/pages/admin/roles.tsx:342
+#: src/pages/admin/roles.tsx:517
+msgid "Create Role"
+msgstr "ロールを作成"
 
 #: src/pages/signup.tsx:130
 msgid "Create your account"
@@ -179,14 +205,35 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 msgid "Dark"
 msgstr "ダーク"
 
+#: src/pages/admin/roles.tsx:573
+msgid "Default"
+msgstr "デフォルト"
+
+#: src/pages/admin/roles.tsx:407
+msgid "Default (auto-assign to new users)"
+msgstr "デフォルト（新規ユーザーに自動割り当て）"
+
 #: src/pages/admin/settings.tsx:503
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
+
+#: src/pages/admin/roles.tsx:332
+msgid "Default Roles"
+msgstr "デフォルトロール数"
 
 #: src/pages/admin/invitations.tsx:400
 msgid "Delete code"
 msgstr "コードを削除"
 
+#: src/pages/admin/roles.tsx:600
+msgid "Delete Notes"
+msgstr "ノート削除"
+
+#: src/pages/admin/roles.tsx:623
+msgid "Delete role"
+msgstr "ロールを削除"
+
+#: src/pages/admin/roles.tsx:375
 #: src/pages/admin/settings.tsx:249
 msgid "Description"
 msgstr "説明"
@@ -219,6 +266,14 @@ msgstr "下書きを復元しました"
 #: src/components/user/UserProfile.tsx:290
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
+
+#: src/pages/admin/roles.tsx:615
+msgid "Edit role"
+msgstr "ロールを編集"
+
+#: src/pages/admin/roles.tsx:342
+msgid "Edit Role"
+msgstr "ロールを編集"
 
 #: src/pages/signup.tsx:170
 msgid "Email"
@@ -273,6 +328,10 @@ msgstr "招待コードの作成に失敗しました"
 msgid "Failed to delete invitation code"
 msgstr "招待コードの削除に失敗しました"
 
+#: src/pages/admin/roles.tsx:272
+msgid "Failed to delete role"
+msgstr "ロールの削除に失敗しました"
+
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
@@ -280,6 +339,10 @@ msgstr "ノートの読み込みに失敗しました"
 #: src/components/note/NoteCard.tsx:152
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
+
+#: src/pages/admin/roles.tsx:212
+msgid "Failed to save role"
+msgstr "ロールの保存に失敗しました"
 
 #: src/components/note/NoteCard.tsx:180
 msgid "Failed to update follow status"
@@ -381,6 +444,14 @@ msgstr "招待コードを入力してください"
 msgid "Invitation Codes"
 msgstr "招待コード"
 
+#: src/pages/admin/roles.tsx:590
+msgid "Invite"
+msgstr "招待"
+
+#: src/pages/admin/roles.tsx:453
+msgid "Invite limit:"
+msgstr "招待上限:"
+
 #: src/components/LandingPage.tsx:99
 #: src/pages/admin/settings.tsx:399
 #: src/pages/signup.tsx:138
@@ -452,6 +523,14 @@ msgstr "最大使用回数"
 msgid "Minimum 8 characters"
 msgstr "最低8文字"
 
+#: src/pages/admin/roles.tsx:429
+msgid "Moderator Role"
+msgstr "モデレーターロール"
+
+#: src/pages/admin/roles.tsx:349
+msgid "Name"
+msgstr "名前"
+
 #: src/pages/admin/invitations.tsx:294
 msgid "Never"
 msgstr "無期限"
@@ -479,6 +558,10 @@ msgstr "まだ投稿がありません"
 #: src/components/pages/NoteDetailPageClient.tsx:178
 msgid "No replies yet"
 msgstr "まだ返信がありません"
+
+#: src/pages/admin/roles.tsx:550
+msgid "No roles yet"
+msgstr "ロールがまだありません"
 
 #: src/components/pages/NoteDetailPageClient.tsx:126
 msgid "Note"
@@ -529,6 +612,10 @@ msgstr "パスワード"
 #: src/pages/signup.tsx:184
 msgid "Password is required"
 msgstr "パスワードを入力してください"
+
+#: src/pages/admin/roles.tsx:437
+msgid "Permissions"
+msgstr "権限"
 
 #: src/app/page.tsx:57
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
@@ -596,8 +683,13 @@ msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
 #: src/components/note/NoteComposer.tsx:268
+#: src/pages/admin/roles.tsx:578
 msgid "Public"
 msgstr "公開"
+
+#: src/pages/admin/roles.tsx:396
+msgid "Public (show on profiles)"
+msgstr "公開（プロフィールに表示）"
 
 #: src/components/note/ReactionPicker.tsx:135
 #~ msgid "React"
@@ -649,6 +741,10 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
+#: src/pages/admin/roles.tsx:595
+msgid "Reports"
+msgstr "通報"
+
 #: src/pages/admin/settings.tsx:402
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
@@ -672,6 +768,34 @@ msgstr "再試行"
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retrying..."
 msgstr "再試行中..."
+
+#: src/pages/admin/roles.tsx:186
+msgid "Role created"
+msgstr "ロールを作成しました"
+
+#: src/pages/admin/roles.tsx:264
+msgid "Role deleted"
+msgstr "ロールを削除しました"
+
+#: src/pages/admin/roles.tsx:381
+msgid "Role description"
+msgstr "ロールの説明"
+
+#: src/pages/admin/roles.tsx:309
+msgid "Role Management"
+msgstr "ロール管理"
+
+#: src/pages/admin/roles.tsx:355
+msgid "Role name"
+msgstr "ロール名"
+
+#: src/pages/admin/roles.tsx:170
+msgid "Role updated"
+msgstr "ロールを更新しました"
+
+#: src/pages/admin/roles.tsx:537
+msgid "Roles"
+msgstr "ロール"
 
 #: src/pages/settings.tsx:248
 msgid "Save Changes"
@@ -748,6 +872,10 @@ msgstr "ソーシャル"
 msgid "Software"
 msgstr "ソフトウェア"
 
+#: src/pages/admin/roles.tsx:605
+msgid "Suspend Users"
+msgstr "ユーザー凍結"
+
 #: src/pages/admin/settings.tsx:519
 msgid "System"
 msgstr "システム"
@@ -805,6 +933,10 @@ msgstr "タイムライン"
 msgid "Total Codes"
 msgstr "コード総数"
 
+#: src/pages/admin/roles.tsx:322
+msgid "Total Roles"
+msgstr "ロール総数"
+
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr ""
@@ -816,6 +948,10 @@ msgstr "フォロー解除しました"
 #: src/components/user/UserProfile.tsx:301
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
+
+#: src/pages/admin/roles.tsx:512
+msgid "Update Role"
+msgstr "ロールを更新"
 
 #: src/components/note/NoteComposer.tsx:393
 msgid "Uploading files..."

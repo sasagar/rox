@@ -13,18 +13,6 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/settings.tsx:211
-msgid ""
-"/* Add custom styles for your profile page */\n"
-".profile-header {\n"
-"  background: linear-gradient(...);\n"
-"}"
-msgstr ""
-"/* Add custom styles for your profile page */\n"
-".profile-header {\n"
-"  background: linear-gradient(...);\n"
-"}"
-
 #: src/pages/admin/invitations.tsx:295
 msgid "1 Day"
 msgstr "1 Day"
@@ -60,6 +48,10 @@ msgstr "About This Instance"
 #: src/components/layout/Sidebar.tsx:56
 msgid "Admin"
 msgstr "Admin"
+
+#: src/pages/admin/roles.tsx:418
+msgid "Admin Role"
+msgstr "Admin Role"
 
 #: src/pages/admin/settings.tsx:179
 msgid "Admin Settings"
@@ -109,6 +101,23 @@ msgstr "Bio"
 msgid "Bot"
 msgstr "Bot"
 
+#: src/pages/admin/roles.tsx:484
+msgid "Can delete notes"
+msgstr "Can delete notes"
+
+#: src/pages/admin/roles.tsx:448
+msgid "Can invite users"
+msgstr "Can invite users"
+
+#: src/pages/admin/roles.tsx:473
+msgid "Can manage reports"
+msgstr "Can manage reports"
+
+#: src/pages/admin/roles.tsx:495
+msgid "Can suspend users"
+msgstr "Can suspend users"
+
+#: src/pages/admin/roles.tsx:526
 #: src/pages/settings.tsx:260
 msgid "Cancel"
 msgstr "Cancel"
@@ -120,6 +129,10 @@ msgstr "Choose your preferred sign-in method"
 #: src/pages/admin/invitations.tsx:173
 msgid "Code copied to clipboard"
 msgstr "Code copied to clipboard"
+
+#: src/pages/admin/roles.tsx:362
+msgid "Color"
+msgstr "Color"
 
 #: src/pages/admin/settings.tsx:182
 msgid "Configure your instance settings"
@@ -149,10 +162,19 @@ msgstr "Conversation thread"
 msgid "Copy code"
 msgstr "Copy code"
 
+#: src/pages/admin/roles.tsx:312
+msgid "Create and manage user roles with custom permissions"
+msgstr "Create and manage user roles with custom permissions"
+
 #: src/pages/admin/invitations.tsx:248
 #: src/pages/admin/invitations.tsx:312
 msgid "Create Invitation Code"
 msgstr "Create Invitation Code"
+
+#: src/pages/admin/roles.tsx:342
+#: src/pages/admin/roles.tsx:517
+msgid "Create Role"
+msgstr "Create Role"
 
 #: src/pages/signup.tsx:130
 msgid "Create your account"
@@ -183,14 +205,35 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 msgid "Dark"
 msgstr "Dark"
 
+#: src/pages/admin/roles.tsx:573
+msgid "Default"
+msgstr "Default"
+
+#: src/pages/admin/roles.tsx:407
+msgid "Default (auto-assign to new users)"
+msgstr "Default (auto-assign to new users)"
+
 #: src/pages/admin/settings.tsx:503
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
+
+#: src/pages/admin/roles.tsx:332
+msgid "Default Roles"
+msgstr "Default Roles"
 
 #: src/pages/admin/invitations.tsx:400
 msgid "Delete code"
 msgstr "Delete code"
 
+#: src/pages/admin/roles.tsx:600
+msgid "Delete Notes"
+msgstr "Delete Notes"
+
+#: src/pages/admin/roles.tsx:623
+msgid "Delete role"
+msgstr "Delete role"
+
+#: src/pages/admin/roles.tsx:375
 #: src/pages/admin/settings.tsx:249
 msgid "Description"
 msgstr "Description"
@@ -223,6 +266,14 @@ msgstr "Draft restored"
 #: src/components/user/UserProfile.tsx:290
 msgid "Edit Profile"
 msgstr "Edit Profile"
+
+#: src/pages/admin/roles.tsx:615
+msgid "Edit role"
+msgstr "Edit role"
+
+#: src/pages/admin/roles.tsx:342
+msgid "Edit Role"
+msgstr "Edit Role"
 
 #: src/pages/signup.tsx:170
 msgid "Email"
@@ -277,6 +328,10 @@ msgstr "Failed to create invitation code"
 msgid "Failed to delete invitation code"
 msgstr "Failed to delete invitation code"
 
+#: src/pages/admin/roles.tsx:272
+msgid "Failed to delete role"
+msgstr "Failed to delete role"
+
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
 msgstr "Failed to load note"
@@ -284,6 +339,10 @@ msgstr "Failed to load note"
 #: src/components/note/NoteCard.tsx:152
 msgid "Failed to renote"
 msgstr "Failed to renote"
+
+#: src/pages/admin/roles.tsx:212
+msgid "Failed to save role"
+msgstr "Failed to save role"
 
 #: src/components/note/NoteCard.tsx:180
 msgid "Failed to update follow status"
@@ -385,6 +444,14 @@ msgstr "Invitation code is required"
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
+#: src/pages/admin/roles.tsx:590
+msgid "Invite"
+msgstr "Invite"
+
+#: src/pages/admin/roles.tsx:453
+msgid "Invite limit:"
+msgstr "Invite limit:"
+
 #: src/components/LandingPage.tsx:99
 #: src/pages/admin/settings.tsx:399
 #: src/pages/signup.tsx:138
@@ -456,6 +523,14 @@ msgstr "Max Uses"
 msgid "Minimum 8 characters"
 msgstr "Minimum 8 characters"
 
+#: src/pages/admin/roles.tsx:429
+msgid "Moderator Role"
+msgstr "Moderator Role"
+
+#: src/pages/admin/roles.tsx:349
+msgid "Name"
+msgstr "Name"
+
 #: src/pages/admin/invitations.tsx:294
 msgid "Never"
 msgstr "Never"
@@ -483,6 +558,10 @@ msgstr "No posts yet"
 #: src/components/pages/NoteDetailPageClient.tsx:178
 msgid "No replies yet"
 msgstr "No replies yet"
+
+#: src/pages/admin/roles.tsx:550
+msgid "No roles yet"
+msgstr "No roles yet"
 
 #: src/components/pages/NoteDetailPageClient.tsx:126
 msgid "Note"
@@ -533,6 +612,10 @@ msgstr "Password"
 #: src/pages/signup.tsx:184
 msgid "Password is required"
 msgstr "Password is required"
+
+#: src/pages/admin/roles.tsx:437
+msgid "Permissions"
+msgstr "Permissions"
 
 #: src/app/page.tsx:57
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
@@ -600,8 +683,13 @@ msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
 #: src/components/note/NoteComposer.tsx:268
+#: src/pages/admin/roles.tsx:578
 msgid "Public"
 msgstr "Public"
+
+#: src/pages/admin/roles.tsx:396
+msgid "Public (show on profiles)"
+msgstr "Public (show on profiles)"
 
 #: src/components/note/ReactionPicker.tsx:135
 #~ msgid "React"
@@ -653,6 +741,10 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
+#: src/pages/admin/roles.tsx:595
+msgid "Reports"
+msgstr "Reports"
+
 #: src/pages/admin/settings.tsx:402
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
@@ -676,6 +768,34 @@ msgstr "Retry"
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retrying..."
 msgstr "Retrying..."
+
+#: src/pages/admin/roles.tsx:186
+msgid "Role created"
+msgstr "Role created"
+
+#: src/pages/admin/roles.tsx:264
+msgid "Role deleted"
+msgstr "Role deleted"
+
+#: src/pages/admin/roles.tsx:381
+msgid "Role description"
+msgstr "Role description"
+
+#: src/pages/admin/roles.tsx:309
+msgid "Role Management"
+msgstr "Role Management"
+
+#: src/pages/admin/roles.tsx:355
+msgid "Role name"
+msgstr "Role name"
+
+#: src/pages/admin/roles.tsx:170
+msgid "Role updated"
+msgstr "Role updated"
+
+#: src/pages/admin/roles.tsx:537
+msgid "Roles"
+msgstr "Roles"
 
 #: src/pages/settings.tsx:248
 msgid "Save Changes"
@@ -752,6 +872,10 @@ msgstr "Social"
 msgid "Software"
 msgstr "Software"
 
+#: src/pages/admin/roles.tsx:605
+msgid "Suspend Users"
+msgstr "Suspend Users"
+
 #: src/pages/admin/settings.tsx:519
 msgid "System"
 msgstr "System"
@@ -809,6 +933,10 @@ msgstr "Timeline"
 msgid "Total Codes"
 msgstr "Total Codes"
 
+#: src/pages/admin/roles.tsx:322
+msgid "Total Roles"
+msgstr "Total Roles"
+
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
@@ -820,6 +948,10 @@ msgstr "Unfollowed successfully"
 #: src/components/user/UserProfile.tsx:301
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
+
+#: src/pages/admin/roles.tsx:512
+msgid "Update Role"
+msgstr "Update Role"
 
 #: src/components/note/NoteComposer.tsx:393
 msgid "Uploading files..."
