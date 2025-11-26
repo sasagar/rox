@@ -51,9 +51,9 @@ bun.lockb
 *.db-wal
 .drizzle/
 
-# Local storage
-uploads/
-storage/
+# Local storage (root-level only)
+/uploads/
+/storage/
 
 # OS
 .DS_Store
