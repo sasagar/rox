@@ -1,84 +1,117 @@
-# Session Handoff - 2025-11-26
+# Session Handoff - 2025-11-26 (Updated)
 
-## Completed Work
+## Today's Session Summary
 
-### Phase 3: ActivityPub Federation - COMPLETE ✅
+### Phase 6: Production Readiness - COMPLETE ✅
 
-Federation testing with three implementations has been completed successfully:
+All sprints completed:
 
-| Implementation | Version | Status |
-|---------------|---------|--------|
-| GoToSocial | Latest | ✅ Fully Working |
-| Mastodon | v4.3.2 | ✅ Fully Working |
-| Misskey | v2025.11.1-alpha.2 | ✅ Fully Working |
+#### Sprint 3: Monitoring & Testing
+- ✅ ActivityDeliveryQueue unit tests (20 tests)
+- ✅ Total: 180 unit tests passing
 
-### Key Features Implemented
+#### Sprint 4: Polish & Documentation
+- ✅ Input validation with Zod schemas (`lib/validation.ts`)
+- ✅ Validation middleware (`middleware/validator.ts`)
+- ✅ Deployment documentation:
+  - [vps-docker.md](docs/deployment/vps-docker.md) - Docker deployment
+  - [bare-metal.md](docs/deployment/bare-metal.md) - Non-Docker deployment
+  - [environment-variables.md](docs/deployment/environment-variables.md)
+  - [troubleshooting.md](docs/deployment/troubleshooting.md)
+- ✅ Testing documentation ([testing.md](docs/development/testing.md))
+- ✅ CI workflow with PostgreSQL service (`.github/workflows/ci.yml`)
 
-1. **HTTP Signatures**: Both RSA-SHA256 and hs2019 (for GoToSocial compatibility)
-2. **Activity Types**: Follow/Accept/Undo, Create/Delete, Like/Unlike, Announce/Undo
-3. **Misskey Extensions**: `_misskey_reaction` custom emoji support with image display
-4. **Frontend**: Custom emoji rendering in NoteCard component
+### New Files Created
 
-### Documentation Updated
-
-- [federation-test-results.md](docs/testing/federation-test-results.md) - Version 1.19
-  - Tested ActivityPub Implementations table with Custom Emoji column
-  - Activity Types Verified table with Notes column
-  - Misskey Extension Support section
-
-## Test Environment Cleanup - COMPLETE ✅
-
-All federation test infrastructure has been removed:
-
-- ❌ Caddy reverse proxy - stopped
-- ❌ Misskey Docker containers - removed with volumes
-- ❌ Mastodon Docker containers - removed with volumes  
-- ❌ GoToSocial container - removed
-- ❌ /tmp/misskey, /tmp/mastodon, /tmp/gotosocial, /tmp/gts.db - deleted
-- ❌ ~/rox-testing - deleted
-
-**Note**: `/etc/hosts` still contains test entries that should be removed:
 ```
-# Rox Federation Testing
-127.0.0.1 rox.local
-127.0.0.1 misskey.local
-127.0.0.1 gts.local
-127.0.0.1 mastodon.local
+packages/backend/src/
+├── lib/validation.ts              # Zod validation schemas (20+)
+├── middleware/validator.ts        # Validation middleware
+└── tests/unit/
+    └── ActivityDeliveryQueue.test.ts  # Queue tests (20 tests)
+
+docs/
+├── deployment/
+│   ├── README.md                  # Deployment overview (updated)
+│   ├── vps-docker.md              # Docker deployment guide
+│   ├── bare-metal.md              # Bare metal deployment guide
+│   ├── environment-variables.md   # Env vars reference
+│   └── troubleshooting.md         # Troubleshooting guide
+└── development/
+    └── testing.md                 # Testing guide
+
+.github/workflows/ci.yml           # CI with 5 jobs
 ```
 
-## Remaining Development Work
+### CI Workflow Jobs
 
-### Next Phases (per project spec)
+| Job | Description | DB Required |
+|-----|-------------|-------------|
+| lint-and-typecheck | Lint + TypeScript | No |
+| unit-tests | 180 unit tests | No |
+| integration-tests | API tests with PostgreSQL | Yes |
+| all-tests | Full test suite | Yes |
+| build | Backend + Frontend build | No |
 
-- **Phase 4**: Performance optimization, caching
-- **Phase 5**: Plugin system, extensibility
-- **Phase 6**: Production deployment, monitoring
+### Dependencies Added
 
-### Potential Improvements
+- `zod` - Schema validation
+- `@hono/zod-validator` - Hono integration
 
-1. **Outgoing custom emoji reactions** - Currently only incoming Misskey reactions are supported
-2. **Rate limiting** - For ActivityPub inbox endpoints
-3. **Signature caching** - Optimize repeated signature verifications
-4. **Error handling** - More robust retry logic for failed deliveries
+## Project Status
+
+### Completed Phases
+- **Phase 0**: Foundation ✅
+- **Phase 1**: Misskey-Compatible API ✅
+- **Phase 2**: Frontend (Waku Client) ✅
+- **Phase 3**: ActivityPub Federation ✅
+- **Phase 6**: Production Readiness ✅
+
+### In Progress
+- **Phase 4**: Refactoring & Optimization
+- **Phase 5**: Administration & Security
 
 ## Git Status
 
 - Branch: `main`
-- Latest commit: `706be6a Phase 3: Done.`
-- Working tree: clean
-- All changes pushed to origin
+- Ahead of origin by 11 commits
+- Latest commits:
+  - `ci: improve test workflow with PostgreSQL service`
+  - `docs: add testing guide and improve documentation links`
+  - `docs: add bare metal deployment guide`
+  - `docs: add deployment documentation, complete Phase 6`
+  - `feat: add Zod validation schemas for API input validation`
+  - `feat: add ActivityDeliveryQueue unit tests, complete Sprint 3`
+
+## Test Coverage
+
+```
+packages/backend/src/tests/
+├── unit/                    # 17 files, 180 tests
+│   ├── *Service.test.ts     # Service tests
+│   ├── ActivityDeliveryQueue.test.ts
+│   └── inbox-handlers/      # 7 handler tests
+├── integration/             # API endpoint tests
+└── e2e/                     # Federation tests
+```
 
 ## Development Environment
 
-Rox development containers remain running:
-- `rox-postgres` - PostgreSQL database
-- `rox-dragonfly` - Redis-compatible queue (BullMQ)
-
-Start development server:
 ```bash
+# Start development
 DB_TYPE=postgres DATABASE_URL="postgresql://rox:rox_dev_password@localhost:5432/rox" \
 STORAGE_TYPE=local LOCAL_STORAGE_PATH=./uploads \
 PORT=3000 NODE_ENV=development URL=http://localhost:3000 \
-ENABLE_REGISTRATION=true SESSION_EXPIRY_DAYS=30 \
 bun run dev
+
+# Run tests
+bun test                           # All tests
+bun test src/tests/unit/           # Unit tests only
+bun test src/tests/integration/    # Integration tests
 ```
+
+## Next Steps
+
+1. Push commits to trigger CI
+2. Continue Phase 4 (Redis caching, image optimization)
+3. Start Phase 5 (moderation features)
