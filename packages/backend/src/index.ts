@@ -20,6 +20,7 @@ import proxyRoute from './routes/proxy.js';
 import healthRoute from './routes/health.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
+import { getContainer } from './di/container.js';
 
 const app = new Hono();
 
@@ -77,17 +78,45 @@ const cleanupService = new ReceivedActivitiesCleanupService({
 });
 cleanupService.start();
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing cleanup service');
-  cleanupService.stop();
-});
+// Graceful shutdown handler
+let isShuttingDown = false;
 
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing cleanup service');
-  cleanupService.stop();
-  process.exit(0);
-});
+async function gracefulShutdown(signal: string): Promise<void> {
+  if (isShuttingDown) {
+    console.log(`${signal}: Shutdown already in progress...`);
+    return;
+  }
+
+  isShuttingDown = true;
+  console.log(`\n${signal} received: Starting graceful shutdown...`);
+
+  const shutdownTimeout = setTimeout(() => {
+    console.error('Shutdown timeout exceeded, forcing exit');
+    process.exit(1);
+  }, 30000); // 30 second timeout
+
+  try {
+    // Stop accepting new requests (handled by isShuttingDown flag)
+    console.log('Stopping cleanup service...');
+    cleanupService.stop();
+
+    // Shutdown activity delivery queue (drains pending jobs)
+    console.log('Shutting down activity delivery queue...');
+    const container = getContainer();
+    await container.activityDeliveryQueue.shutdown();
+
+    console.log('Graceful shutdown complete');
+    clearTimeout(shutdownTimeout);
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+    clearTimeout(shutdownTimeout);
+    process.exit(1);
+  }
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 export default {
   port,

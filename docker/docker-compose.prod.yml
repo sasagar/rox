@@ -1,0 +1,195 @@
+# Rox Production Docker Compose Configuration
+#
+# Usage:
+#   1. Copy .env.production.example to .env.production
+#   2. Configure your domain and secrets
+#   3. Run: docker compose -f docker/docker-compose.prod.yml up -d
+#
+# Services:
+#   - rox: Backend API server
+#   - postgres: PostgreSQL database
+#   - dragonfly: Redis-compatible cache/queue
+#   - caddy: Reverse proxy with automatic HTTPS
+
+services:
+  # ============================================
+  # Rox Backend
+  # ============================================
+  rox:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: rox-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      dragonfly:
+        condition: service_started
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_TYPE=postgres
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-rox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-rox}
+      - DRAGONFLY_URL=redis://dragonfly:6379
+      - URL=${ROX_URL:-https://rox.example.com}
+      - STORAGE_TYPE=${STORAGE_TYPE:-local}
+      - LOCAL_STORAGE_PATH=/app/uploads
+      - ENABLE_REGISTRATION=${ENABLE_REGISTRATION:-false}
+      - SESSION_EXPIRY_DAYS=${SESSION_EXPIRY_DAYS:-30}
+      # S3 Configuration (optional)
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
+      - S3_REGION=${S3_REGION:-auto}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-}
+    volumes:
+      - rox-uploads:/app/uploads
+    networks:
+      - rox-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: rox-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-rox}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=${POSTGRES_DB:-rox}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - rox-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rox} -d ${POSTGRES_DB:-rox}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Dragonfly (Redis-compatible cache/queue)
+  # ============================================
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: rox-dragonfly
+    restart: unless-stopped
+    command: >
+      dragonfly
+      --maxmemory=256mb
+      --proactor_threads=2
+      --cache_mode=true
+    volumes:
+      - dragonfly-data:/data
+    networks:
+      - rox-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Caddy Reverse Proxy (Automatic HTTPS)
+  # ============================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: rox-caddy
+    restart: unless-stopped
+    depends_on:
+      - rox
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    environment:
+      - ROX_DOMAIN=${ROX_DOMAIN:-rox.example.com}
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - rox-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres-data:
+    name: rox-postgres-data
+  dragonfly-data:
+    name: rox-dragonfly-data
+  rox-uploads:
+    name: rox-uploads
+  caddy-data:
+    name: rox-caddy-data
+  caddy-config:
+    name: rox-caddy-config
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  rox-network:
+    name: rox-network
+    driver: bridge

@@ -1,0 +1,98 @@
+# Rox Caddy Configuration
+#
+# This Caddyfile provides:
+# - Automatic HTTPS via Let's Encrypt
+# - HTTP/2 and HTTP/3 support
+# - Reverse proxy to Rox backend
+# - Security headers
+# - Gzip compression
+
+{
+	# Global options
+	email {$ACME_EMAIL}
+
+	# Enable HTTP/3
+	servers {
+		protocol {
+			experimental_http3
+		}
+	}
+}
+
+# Main domain
+{$ROX_DOMAIN} {
+	# Enable compression
+	encode gzip zstd
+
+	# Logging
+	log {
+		output file /data/logs/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+		format json
+	}
+
+	# Health check endpoint (no rate limiting)
+	@health {
+		path /health*
+	}
+	handle @health {
+		reverse_proxy rox:3000
+	}
+
+	# ActivityPub endpoints (JSON-LD content type)
+	@activitypub {
+		path /users/* /.well-known/webfinger /.well-known/nodeinfo /nodeinfo/* /notes/*
+		header Accept *activity+json*
+	}
+	handle @activitypub {
+		header Content-Type "application/activity+json; charset=utf-8"
+		reverse_proxy rox:3000
+	}
+
+	# API endpoints
+	@api {
+		path /api/*
+	}
+	handle @api {
+		reverse_proxy rox:3000
+	}
+
+	# Media proxy
+	@proxy {
+		path /proxy/*
+	}
+	handle @proxy {
+		reverse_proxy rox:3000
+	}
+
+	# Static files (uploads)
+	@uploads {
+		path /uploads/*
+	}
+	handle @uploads {
+		# Cache static files
+		header Cache-Control "public, max-age=31536000, immutable"
+		reverse_proxy rox:3000
+	}
+
+	# All other requests (ActivityPub, etc.)
+	handle {
+		reverse_proxy rox:3000
+	}
+
+	# Security headers (additional to what backend sets)
+	header {
+		# Remove server identification
+		-Server
+
+		# Prevent information leakage
+		X-Robots-Tag "noindex, nofollow, nosnippet, noarchive"
+	}
+}
+
+# Redirect www to non-www
+www.{$ROX_DOMAIN} {
+	redir https://{$ROX_DOMAIN}{uri} permanent
+}

@@ -1,0 +1,57 @@
+# Rox Development Docker Compose Configuration
+#
+# Usage:
+#   docker compose -f docker/docker-compose.dev.yml up -d
+#
+# This starts PostgreSQL and Dragonfly for local development.
+# Run the Rox backend separately with: bun run dev
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: rox-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=rox
+      - POSTGRES_PASSWORD=rox_dev_password
+      - POSTGRES_DB=rox
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rox -d rox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Dragonfly (Redis-compatible cache/queue)
+  # ============================================
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: rox-dragonfly
+    restart: unless-stopped
+    command: >
+      dragonfly
+      --maxmemory=128mb
+      --proactor_threads=1
+      --cache_mode=true
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres-data:
+    name: rox-dev-postgres-data
+  dragonfly-data:
+    name: rox-dev-dragonfly-data
