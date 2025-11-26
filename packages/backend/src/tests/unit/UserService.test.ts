@@ -252,11 +252,13 @@ describe('UserService', () => {
       cacheStore.clear();
       mockCacheService = {
         isAvailable: mock(() => true),
-        get: mock((key: string) => Promise.resolve(cacheStore.get(key) ?? null)),
+        get: mock((key: string) =>
+          Promise.resolve(cacheStore.get(key) ?? null)
+        ) as MockCacheService['get'],
         set: mock((key: string, value: unknown) => {
           cacheStore.set(key, value);
           return Promise.resolve();
-        }),
+        }) as MockCacheService['set'],
         delete: mock((key: string) => {
           cacheStore.delete(key);
           return Promise.resolve();
