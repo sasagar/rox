@@ -102,7 +102,7 @@ describe('Admin Middleware', () => {
 
       // Suspended users have their session deleted, resulting in 401
       expect(res.status).toBe(401);
-      const data = await res.json();
+      const data = (await res.json()) as { error: string };
       expect(data.error).toBe('Invalid or expired token');
     });
 
@@ -158,7 +158,7 @@ describe('Admin Middleware', () => {
       });
 
       expect(res.status).toBe(200);
-      const data = await res.json();
+      const data = (await res.json()) as { admin: boolean };
       expect(data.admin).toBe(true);
     });
 
@@ -180,7 +180,7 @@ describe('Admin Middleware', () => {
       });
 
       expect(res.status).toBe(403);
-      const data = await res.json();
+      const data = (await res.json()) as { error: string };
       expect(data.error).toBe('Admin access required');
     });
 
@@ -205,7 +205,7 @@ describe('Admin Middleware', () => {
 
       // Suspended users have their session deleted, resulting in 401
       expect(res.status).toBe(401);
-      const data = await res.json();
+      const data = (await res.json()) as { error: string };
       expect(data.error).toBe('Invalid or expired token');
     });
 

@@ -4,3 +4,4 @@ export * from './securityHeaders.js';
 export * from './rateLimit.js';
 export * from './requestLogger.js';
 export * from './metrics.js';
+export * from './auth.js';

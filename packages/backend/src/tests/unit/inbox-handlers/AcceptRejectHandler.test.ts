@@ -121,9 +121,18 @@ describe('AcceptHandler', () => {
   });
 
   test('should handle actor resolution failure', async () => {
-    mockRemoteActorService.resolveActor = mock(() =>
-      Promise.reject(new Error('Actor resolution failed'))
-    );
+    // Create new context with failing mock
+    const failingRemoteActorService = {
+      resolveActor: mock(async () => {
+        throw new Error('Actor resolution failed');
+      }),
+    };
+
+    const failingContext: HandlerContext = {
+      c: createMockHonoContext(failingRemoteActorService) as Context,
+      recipientId: 'local-user-123',
+      baseUrl: 'http://localhost:3000',
+    };
 
     const activity: Activity = {
       '@context': 'https://www.w3.org/ns/activitystreams',
@@ -136,7 +145,7 @@ describe('AcceptHandler', () => {
       },
     };
 
-    const result = await handler.handle(activity, mockContext);
+    const result = await handler.handle(activity, failingContext);
 
     expect(result.success).toBe(false);
     expect(result.message).toContain('Failed to handle Accept activity');

@@ -1,5 +1,42 @@
 import { pgTable, text, timestamp, boolean, integer, jsonb, index, uniqueIndex } from 'drizzle-orm/pg-core';
 
+/**
+ * Role policies structure (Misskey-style)
+ * Defines permissions and limits that can be controlled by roles
+ */
+export interface RolePolicies {
+  // Timeline access
+  canViewGlobalTimeline?: boolean;
+  canViewLocalTimeline?: boolean;
+
+  // Note creation
+  canPublicNote?: boolean;
+  canCreateNote?: boolean;
+
+  // Invitations
+  canInvite?: boolean;
+  inviteLimit?: number; // -1 for unlimited
+  inviteLimitCycle?: number; // Hours between limit resets
+
+  // Rate limits (multiplier, 1.0 = default)
+  rateLimitFactor?: number;
+
+  // Drive/storage
+  driveCapacityMb?: number;
+  maxFileSizeMb?: number;
+
+  // Moderation permissions
+  canManageReports?: boolean;
+  canDeleteNotes?: boolean;
+  canSuspendUsers?: boolean;
+
+  // Instance management (admin only)
+  canManageRoles?: boolean;
+  canManageInstanceSettings?: boolean;
+  canManageInstanceBlocks?: boolean;
+  canManageUsers?: boolean;
+}
+
 // Users table
 export const users = pgTable(
   'users',
@@ -195,6 +232,113 @@ export const instanceBlocks = pgTable(
   })
 );
 
+// Invitation codes table (for invite-only registration)
+export const invitationCodes = pgTable(
+  'invitation_codes',
+  {
+    id: text('id').primaryKey(),
+    code: text('code').notNull().unique(), // The invitation code itself
+    createdById: text('created_by_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }), // User who created the code
+    usedById: text('used_by_id').references(() => users.id, { onDelete: 'set null' }), // User who used the code (null if unused)
+    usedAt: timestamp('used_at'), // When the code was used
+    expiresAt: timestamp('expires_at'), // Optional expiration date
+    maxUses: integer('max_uses').default(1), // Maximum number of times the code can be used
+    useCount: integer('use_count').notNull().default(0), // Current use count
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    codeIdx: uniqueIndex('invitation_code_idx').on(table.code),
+    createdByIdx: index('invitation_created_by_idx').on(table.createdById),
+  })
+);
+
+// Roles table (Misskey-style role system)
+export const roles = pgTable(
+  'roles',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull().unique(),
+    description: text('description'),
+    color: text('color'), // Hex color for UI display (e.g., "#ff0000")
+    iconUrl: text('icon_url'), // Optional icon URL
+    displayOrder: integer('display_order').notNull().default(0),
+    isPublic: boolean('is_public').notNull().default(false), // Show on user profiles
+    isDefault: boolean('is_default').notNull().default(false), // Auto-assign to new users
+    isAdminRole: boolean('is_admin_role').notNull().default(false), // Full admin access
+    isModeratorRole: boolean('is_moderator_role').notNull().default(false), // Moderation access
+    policies: jsonb('policies').$type<RolePolicies>().notNull().default({}),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    nameIdx: uniqueIndex('role_name_idx').on(table.name),
+    displayOrderIdx: index('role_display_order_idx').on(table.displayOrder),
+  })
+);
+
+// Role assignments table (user-role relationships)
+export const roleAssignments = pgTable(
+  'role_assignments',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    roleId: text('role_id')
+      .notNull()
+      .references(() => roles.id, { onDelete: 'cascade' }),
+    expiresAt: timestamp('expires_at'), // Optional expiry for temporary roles
+    assignedById: text('assigned_by_id').references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    userRoleIdx: uniqueIndex('role_assignment_user_role_idx').on(table.userId, table.roleId),
+    userIdx: index('role_assignment_user_idx').on(table.userId),
+    roleIdx: index('role_assignment_role_idx').on(table.roleId),
+  })
+);
+
+// Instance settings table (key-value store for instance configuration)
+export const instanceSettings = pgTable(
+  'instance_settings',
+  {
+    key: text('key').primaryKey(),
+    value: jsonb('value').notNull(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    updatedById: text('updated_by_id').references(() => users.id, { onDelete: 'set null' }),
+  }
+);
+
+// User reports table (for moderation)
+export const userReports = pgTable(
+  'user_reports',
+  {
+    id: text('id').primaryKey(),
+    reporterId: text('reporter_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }), // User who reported
+    targetUserId: text('target_user_id').references(() => users.id, { onDelete: 'set null' }), // Reported user (null if report is about a note only)
+    targetNoteId: text('target_note_id').references(() => notes.id, { onDelete: 'set null' }), // Reported note (optional)
+    reason: text('reason').notNull(), // Report reason/category
+    comment: text('comment'), // Additional details from reporter
+    status: text('status').notNull().default('pending'), // pending, resolved, rejected
+    resolvedById: text('resolved_by_id').references(() => users.id, { onDelete: 'set null' }), // Admin who resolved
+    resolvedAt: timestamp('resolved_at'),
+    resolution: text('resolution'), // Admin's resolution note
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    reporterIdx: index('report_reporter_idx').on(table.reporterId),
+    targetUserIdx: index('report_target_user_idx').on(table.targetUserId),
+    targetNoteIdx: index('report_target_note_idx').on(table.targetNoteId),
+    statusIdx: index('report_status_idx').on(table.status),
+    createdAtIdx: index('report_created_at_idx').on(table.createdAt),
+  })
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -212,3 +356,13 @@ export type ReceivedActivity = typeof receivedActivities.$inferSelect;
 export type NewReceivedActivity = typeof receivedActivities.$inferInsert;
 export type InstanceBlock = typeof instanceBlocks.$inferSelect;
 export type NewInstanceBlock = typeof instanceBlocks.$inferInsert;
+export type InvitationCode = typeof invitationCodes.$inferSelect;
+export type NewInvitationCode = typeof invitationCodes.$inferInsert;
+export type UserReport = typeof userReports.$inferSelect;
+export type NewUserReport = typeof userReports.$inferInsert;
+export type Role = typeof roles.$inferSelect;
+export type NewRole = typeof roles.$inferInsert;
+export type RoleAssignment = typeof roleAssignments.$inferSelect;
+export type NewRoleAssignment = typeof roleAssignments.$inferInsert;
+export type InstanceSetting = typeof instanceSettings.$inferSelect;
+export type NewInstanceSetting = typeof instanceSettings.$inferInsert;

@@ -210,18 +210,31 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Code refactoring (inbox handlers split into 11 dedicated handlers)
   - ✅ Redis caching (user profiles via CacheService)
   - ✅ Image optimization (WebP conversion via ImageProcessor)
-  - ✅ Test coverage improvement (180+ unit tests)
+  - ✅ Test coverage improvement (342 unit tests)
 - **Phase 5**: Administration & Security ✅ **Complete**
   - ✅ Admin role and permissions (`requireAdmin` middleware)
   - ✅ Instance block management (API + federation enforcement)
   - ✅ User suspension/moderation (API + auth enforcement)
   - ✅ Rate limiting (middleware implemented)
+  - ✅ Invite-only registration system (DB settings + env var fallback)
+  - ✅ Invitation code management API (create, list, delete, expiry, multi-use)
+  - ✅ User report system (8 report reasons)
+  - ✅ Moderation tools (report management, note deletion)
+  - ✅ **Role-based permission system** (Misskey-style policies)
+    - Role CRUD API (`/api/admin/roles`)
+    - Role assignment/unassignment
+    - Permission-based middleware (`requirePermission`, `requireAdminRole`, `requireModeratorRole`)
+    - Effective policy merging from multiple roles
+    - Per-role invite limits and rate limit factors
+  - ✅ **Instance settings management via API** (`/api/admin/settings`)
+    - Registration settings (enabled, invite-only, approval required)
+    - Instance metadata (name, description, maintainer email, icons, ToS, privacy policy)
 - **Phase 6**: Production Readiness ✅ **Complete**
   - ✅ Input validation (Zod schemas)
   - ✅ Health checks and metrics endpoints
   - ✅ Deployment documentation (Docker & Bare Metal)
   - ✅ CI/CD workflow (GitHub Actions)
-  - ✅ 180+ unit tests
+  - ✅ 342 unit tests
 - **Phase 7**: Plugin System (Planned)
   - Plugin architecture design
   - Extension points

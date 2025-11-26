@@ -331,6 +331,570 @@ app.delete('/instance-blocks/:host', async (c) => {
 });
 
 // ============================================================================
+// Invitation Code Management Endpoints
+// ============================================================================
+
+/**
+ * Generate a random invitation code
+ */
+const generateInvitationCode = (): string => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid confusing characters
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
+
+/**
+ * List Invitation Codes
+ *
+ * GET /api/admin/invitations
+ *
+ * Returns a paginated list of invitation codes.
+ */
+app.get('/invitations', async (c) => {
+  const invitationCodeRepository = c.get('invitationCodeRepository');
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+
+  const codes = await invitationCodeRepository.findAll(limit, offset);
+  const total = await invitationCodeRepository.count();
+  const unused = await invitationCodeRepository.countUnused();
+
+  return c.json({ codes, total, unused });
+});
+
+/**
+ * Create Invitation Code
+ *
+ * POST /api/admin/invitations
+ *
+ * Creates a new invitation code.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "code": "CUSTOM123", // optional, auto-generated if not provided
+ *   "expiresAt": "2025-12-31T23:59:59Z", // optional
+ *   "maxUses": 1 // optional, default 1
+ * }
+ * ```
+ */
+app.post('/invitations', async (c) => {
+  const invitationCodeRepository = c.get('invitationCodeRepository');
+  const admin = c.get('user');
+
+  const body = await c.req.json().catch(() => ({}));
+
+  const code = body.code?.toUpperCase() || generateInvitationCode();
+
+  // Check if code already exists
+  const existing = await invitationCodeRepository.findByCode(code);
+  if (existing) {
+    return c.json({ error: 'Invitation code already exists' }, 409);
+  }
+
+  const invitation = await invitationCodeRepository.create({
+    code,
+    createdById: admin!.id,
+    expiresAt: body.expiresAt ? new Date(body.expiresAt) : undefined,
+    maxUses: body.maxUses || 1,
+  });
+
+  return c.json(invitation, 201);
+});
+
+/**
+ * Delete Invitation Code
+ *
+ * DELETE /api/admin/invitations/:id
+ *
+ * Deletes an invitation code.
+ */
+app.delete('/invitations/:id', async (c) => {
+  const invitationCodeRepository = c.get('invitationCodeRepository');
+  const id = c.req.param('id');
+
+  const deleted = await invitationCodeRepository.delete(id);
+  if (!deleted) {
+    return c.json({ error: 'Invitation code not found' }, 404);
+  }
+
+  return c.json({ success: true, message: 'Invitation code deleted' });
+});
+
+// ============================================================================
+// User Report Management Endpoints
+// ============================================================================
+
+/**
+ * List Reports
+ *
+ * GET /api/admin/reports
+ *
+ * Returns a paginated list of user reports.
+ *
+ * Query Parameters:
+ * - status: Filter by status (pending, resolved, rejected)
+ * - limit: Maximum number of reports (default: 100)
+ * - offset: Number of reports to skip (default: 0)
+ */
+app.get('/reports', async (c) => {
+  const userReportRepository = c.get('userReportRepository');
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+  const status = c.req.query('status') as 'pending' | 'resolved' | 'rejected' | undefined;
+
+  const reports = await userReportRepository.findAll({ status, limit, offset });
+  const total = await userReportRepository.count({ status });
+  const pendingCount = await userReportRepository.count({ status: 'pending' });
+
+  return c.json({ reports, total, pendingCount });
+});
+
+/**
+ * Get Report Details
+ *
+ * GET /api/admin/reports/:id
+ *
+ * Returns detailed information about a specific report.
+ */
+app.get('/reports/:id', async (c) => {
+  const userReportRepository = c.get('userReportRepository');
+  const userRepository = c.get('userRepository');
+  const noteRepository = c.get('noteRepository');
+  const id = c.req.param('id');
+
+  const report = await userReportRepository.findById(id);
+  if (!report) {
+    return c.json({ error: 'Report not found' }, 404);
+  }
+
+  // Fetch related data
+  const [reporter, targetUser, targetNote] = await Promise.all([
+    userRepository.findById(report.reporterId),
+    report.targetUserId ? userRepository.findById(report.targetUserId) : null,
+    report.targetNoteId ? noteRepository.findById(report.targetNoteId) : null,
+  ]);
+
+  return c.json({
+    ...report,
+    reporter: reporter ? { id: reporter.id, username: reporter.username } : null,
+    targetUser: targetUser ? { id: targetUser.id, username: targetUser.username, host: targetUser.host } : null,
+    targetNote: targetNote ? { id: targetNote.id, text: targetNote.text } : null,
+  });
+});
+
+/**
+ * Resolve Report
+ *
+ * POST /api/admin/reports/:id/resolve
+ *
+ * Resolves or rejects a report.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "status": "resolved", // or "rejected"
+ *   "resolution": "User has been warned"
+ * }
+ * ```
+ */
+app.post('/reports/:id/resolve', async (c) => {
+  const userReportRepository = c.get('userReportRepository');
+  const admin = c.get('user');
+  const id = c.req.param('id');
+
+  const body = await c.req.json();
+
+  if (!['resolved', 'rejected'].includes(body.status)) {
+    return c.json({ error: 'status must be "resolved" or "rejected"' }, 400);
+  }
+
+  const report = await userReportRepository.findById(id);
+  if (!report) {
+    return c.json({ error: 'Report not found' }, 404);
+  }
+
+  if (report.status !== 'pending') {
+    return c.json({ error: 'Report has already been processed' }, 400);
+  }
+
+  const updated = await userReportRepository.resolve(
+    id,
+    admin!.id,
+    body.resolution || '',
+    body.status
+  );
+
+  return c.json(updated);
+});
+
+/**
+ * Delete Note (Moderation)
+ *
+ * DELETE /api/admin/notes/:id
+ *
+ * Deletes a note as a moderation action.
+ */
+app.delete('/notes/:id', async (c) => {
+  const noteRepository = c.get('noteRepository');
+  const id = c.req.param('id');
+
+  const note = await noteRepository.findById(id);
+  if (!note) {
+    return c.json({ error: 'Note not found' }, 404);
+  }
+
+  await noteRepository.delete(id);
+
+  return c.json({ success: true, message: 'Note deleted' });
+});
+
+// ============================================================================
+// Role Management Endpoints
+// ============================================================================
+
+/**
+ * List Roles
+ *
+ * GET /api/admin/roles
+ *
+ * Returns all roles.
+ */
+app.get('/roles', async (c) => {
+  const roleRepository = c.get('roleRepository');
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+
+  const roles = await roleRepository.findAll(limit, offset);
+  const total = await roleRepository.count();
+
+  return c.json({ roles, total });
+});
+
+/**
+ * Get Role Details
+ *
+ * GET /api/admin/roles/:id
+ */
+app.get('/roles/:id', async (c) => {
+  const roleRepository = c.get('roleRepository');
+  const id = c.req.param('id');
+
+  const role = await roleRepository.findById(id);
+  if (!role) {
+    return c.json({ error: 'Role not found' }, 404);
+  }
+
+  return c.json(role);
+});
+
+/**
+ * Create Role
+ *
+ * POST /api/admin/roles
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "name": "Inviter",
+ *   "description": "Can invite new users",
+ *   "color": "#3498db",
+ *   "policies": {
+ *     "canInvite": true,
+ *     "inviteLimit": 10
+ *   }
+ * }
+ * ```
+ */
+app.post('/roles', async (c) => {
+  const roleRepository = c.get('roleRepository');
+
+  const body = await c.req.json();
+
+  if (!body.name || typeof body.name !== 'string') {
+    return c.json({ error: 'name is required' }, 400);
+  }
+
+  // Check if name already exists
+  const existing = await roleRepository.findByName(body.name);
+  if (existing) {
+    return c.json({ error: 'Role with this name already exists' }, 409);
+  }
+
+  const role = await roleRepository.create({
+    name: body.name,
+    description: body.description,
+    color: body.color,
+    iconUrl: body.iconUrl,
+    displayOrder: body.displayOrder,
+    isPublic: body.isPublic ?? false,
+    isDefault: body.isDefault ?? false,
+    isAdminRole: body.isAdminRole ?? false,
+    isModeratorRole: body.isModeratorRole ?? false,
+    policies: body.policies ?? {},
+  });
+
+  return c.json(role, 201);
+});
+
+/**
+ * Update Role
+ *
+ * PATCH /api/admin/roles/:id
+ */
+app.patch('/roles/:id', async (c) => {
+  const roleRepository = c.get('roleRepository');
+  const id = c.req.param('id');
+
+  const role = await roleRepository.findById(id);
+  if (!role) {
+    return c.json({ error: 'Role not found' }, 404);
+  }
+
+  const body = await c.req.json();
+
+  // Check name uniqueness if changing name
+  if (body.name && body.name !== role.name) {
+    const existing = await roleRepository.findByName(body.name);
+    if (existing) {
+      return c.json({ error: 'Role with this name already exists' }, 409);
+    }
+  }
+
+  const updated = await roleRepository.update(id, {
+    name: body.name,
+    description: body.description,
+    color: body.color,
+    iconUrl: body.iconUrl,
+    displayOrder: body.displayOrder,
+    isPublic: body.isPublic,
+    isDefault: body.isDefault,
+    isAdminRole: body.isAdminRole,
+    isModeratorRole: body.isModeratorRole,
+    policies: body.policies,
+  });
+
+  return c.json(updated);
+});
+
+/**
+ * Delete Role
+ *
+ * DELETE /api/admin/roles/:id
+ */
+app.delete('/roles/:id', async (c) => {
+  const roleRepository = c.get('roleRepository');
+  const id = c.req.param('id');
+
+  const role = await roleRepository.findById(id);
+  if (!role) {
+    return c.json({ error: 'Role not found' }, 404);
+  }
+
+  // Don't allow deleting built-in roles
+  if (role.name === 'Admin' || role.name === 'Moderator') {
+    return c.json({ error: 'Cannot delete built-in roles' }, 400);
+  }
+
+  await roleRepository.delete(id);
+
+  return c.json({ success: true, message: `Role "${role.name}" deleted` });
+});
+
+/**
+ * Assign Role to User
+ *
+ * POST /api/admin/roles/:roleId/assign
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "userId": "user123",
+ *   "expiresAt": "2025-12-31T23:59:59Z" // optional
+ * }
+ * ```
+ */
+app.post('/roles/:roleId/assign', async (c) => {
+  const roleRepository = c.get('roleRepository');
+  const roleService = c.get('roleService');
+  const admin = c.get('user');
+  const roleId = c.req.param('roleId');
+
+  const role = await roleRepository.findById(roleId);
+  if (!role) {
+    return c.json({ error: 'Role not found' }, 404);
+  }
+
+  const body = await c.req.json();
+  if (!body.userId) {
+    return c.json({ error: 'userId is required' }, 400);
+  }
+
+  const expiresAt = body.expiresAt ? new Date(body.expiresAt) : undefined;
+
+  await roleService.assignRole(body.userId, roleId, admin?.id, expiresAt);
+
+  return c.json({ success: true, message: `Role "${role.name}" assigned to user` });
+});
+
+/**
+ * Unassign Role from User
+ *
+ * POST /api/admin/roles/:roleId/unassign
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "userId": "user123"
+ * }
+ * ```
+ */
+app.post('/roles/:roleId/unassign', async (c) => {
+  const roleRepository = c.get('roleRepository');
+  const roleService = c.get('roleService');
+  const roleId = c.req.param('roleId');
+
+  const role = await roleRepository.findById(roleId);
+  if (!role) {
+    return c.json({ error: 'Role not found' }, 404);
+  }
+
+  const body = await c.req.json();
+  if (!body.userId) {
+    return c.json({ error: 'userId is required' }, 400);
+  }
+
+  const removed = await roleService.unassignRole(body.userId, roleId);
+  if (!removed) {
+    return c.json({ error: 'User does not have this role' }, 404);
+  }
+
+  return c.json({ success: true, message: `Role "${role.name}" removed from user` });
+});
+
+/**
+ * Get User's Roles
+ *
+ * GET /api/admin/users/:userId/roles
+ */
+app.get('/users/:userId/roles', async (c) => {
+  const userRepository = c.get('userRepository');
+  const roleService = c.get('roleService');
+  const userId = c.req.param('userId');
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  const roles = await roleService.getUserRoles(userId);
+  const policies = await roleService.getEffectivePolicies(userId);
+
+  return c.json({ roles, effectivePolicies: policies });
+});
+
+// ============================================================================
+// Instance Settings Endpoints
+// ============================================================================
+
+/**
+ * Get Instance Settings
+ *
+ * GET /api/admin/settings
+ *
+ * Returns all instance settings.
+ */
+app.get('/settings', async (c) => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+
+  const [registration, metadata] = await Promise.all([
+    instanceSettingsService.getRegistrationSettings(),
+    instanceSettingsService.getInstanceMetadata(),
+  ]);
+
+  return c.json({
+    registration,
+    instance: metadata,
+  });
+});
+
+/**
+ * Update Registration Settings
+ *
+ * PATCH /api/admin/settings/registration
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "enabled": true,
+ *   "inviteOnly": false,
+ *   "approvalRequired": false
+ * }
+ * ```
+ */
+app.patch('/settings/registration', async (c) => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+  const admin = c.get('user');
+
+  const body = await c.req.json();
+
+  await instanceSettingsService.updateRegistrationSettings(
+    {
+      enabled: body.enabled,
+      inviteOnly: body.inviteOnly,
+      approvalRequired: body.approvalRequired,
+    },
+    admin?.id
+  );
+
+  const settings = await instanceSettingsService.getRegistrationSettings();
+  return c.json(settings);
+});
+
+/**
+ * Update Instance Metadata
+ *
+ * PATCH /api/admin/settings/instance
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "name": "My Instance",
+ *   "description": "A cool ActivityPub server",
+ *   "maintainerEmail": "admin@example.com"
+ * }
+ * ```
+ */
+app.patch('/settings/instance', async (c) => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+  const admin = c.get('user');
+
+  const body = await c.req.json();
+
+  await instanceSettingsService.updateInstanceMetadata(
+    {
+      name: body.name,
+      description: body.description,
+      maintainerEmail: body.maintainerEmail,
+      iconUrl: body.iconUrl,
+      bannerUrl: body.bannerUrl,
+      tosUrl: body.tosUrl,
+      privacyPolicyUrl: body.privacyPolicyUrl,
+    },
+    admin?.id
+  );
+
+  const metadata = await instanceSettingsService.getInstanceMetadata();
+  return c.json(metadata);
+});
+
+// ============================================================================
 // Instance Statistics
 // ============================================================================
 
@@ -345,17 +909,25 @@ app.get('/stats', async (c) => {
   const userRepository = c.get('userRepository');
   const noteRepository = c.get('noteRepository');
   const instanceBlockRepository = c.get('instanceBlockRepository');
+  const invitationCodeRepository = c.get('invitationCodeRepository');
+  const userReportRepository = c.get('userReportRepository');
 
   const [
     totalUsers,
     localUsers,
     totalNotes,
     blockedInstances,
+    totalInvitations,
+    unusedInvitations,
+    pendingReports,
   ] = await Promise.all([
     userRepository.count(false),
     userRepository.count(true),
     noteRepository.count(),
     instanceBlockRepository.count(),
+    invitationCodeRepository.count(),
+    invitationCodeRepository.countUnused(),
+    userReportRepository.count({ status: 'pending' }),
   ]);
 
   return c.json({
@@ -369,6 +941,13 @@ app.get('/stats', async (c) => {
     },
     federation: {
       blockedInstances,
+    },
+    invitations: {
+      total: totalInvitations,
+      unused: unusedInvitations,
+    },
+    moderation: {
+      pendingReports,
     },
   });
 });

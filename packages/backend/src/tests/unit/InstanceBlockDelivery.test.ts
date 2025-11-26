@@ -6,11 +6,8 @@
  * - Incoming inbox activities
  */
 
-import { describe, test, expect, mock, beforeEach } from 'bun:test';
+import { describe, test, expect, mock } from 'bun:test';
 import type { IInstanceBlockRepository } from '../../interfaces/repositories/IInstanceBlockRepository';
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository';
-import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository';
-import type { User } from '../../db/schema/pg.js';
 
 describe('Instance Block Delivery', () => {
   // Mock blocked hosts

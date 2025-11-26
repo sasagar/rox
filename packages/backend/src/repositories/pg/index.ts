@@ -5,3 +5,8 @@ export * from './PostgresSessionRepository.js';
 export * from './PostgresReactionRepository.js';
 export * from './PostgresFollowRepository.js';
 export * from './PostgresInstanceBlockRepository.js';
+export * from './PostgresInvitationCodeRepository.js';
+export * from './PostgresUserReportRepository.js';
+export * from './PostgresRoleRepository.js';
+export * from './PostgresRoleAssignmentRepository.js';
+export * from './PostgresInstanceSettingsRepository.js';

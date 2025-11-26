@@ -17,12 +17,19 @@ export function diMiddleware() {
     c.set('reactionRepository', container.reactionRepository);
     c.set('followRepository', container.followRepository);
     c.set('instanceBlockRepository', container.instanceBlockRepository);
+    c.set('invitationCodeRepository', container.invitationCodeRepository);
+    c.set('userReportRepository', container.userReportRepository);
+    c.set('roleRepository', container.roleRepository);
+    c.set('roleAssignmentRepository', container.roleAssignmentRepository);
+    c.set('instanceSettingsRepository', container.instanceSettingsRepository);
     c.set('fileStorage', container.fileStorage);
     c.set('cacheService', container.cacheService);
     c.set('activityDeliveryQueue', container.activityDeliveryQueue);
     c.set('remoteActorService', container.remoteActorService);
     c.set('remoteNoteService', container.remoteNoteService);
     c.set('activityPubDeliveryService', container.activityPubDeliveryService);
+    c.set('roleService', container.roleService);
+    c.set('instanceSettingsService', container.instanceSettingsService);
 
     await next();
   };

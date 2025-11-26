@@ -10,8 +10,68 @@ import { Hono } from 'hono';
 import { AuthService } from '../services/AuthService.js';
 import { requireAuth } from '../middleware/auth.js';
 import { rateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
+import type { Context } from 'hono';
 
 const app = new Hono();
+
+/**
+ * Check if registration requires an invitation code
+ * Uses DB setting first, falls back to environment variable
+ */
+const checkIsInviteOnly = async (c: Context): Promise<boolean> => {
+  // First check DB setting
+  const instanceSettingsService = c.get('instanceSettingsService');
+  const dbSetting = await instanceSettingsService.isInviteOnly();
+
+  // If DB says invite-only, use that
+  if (dbSetting) return true;
+
+  // Fall back to environment variable for backwards compatibility
+  const requireInvitation = process.env.REQUIRE_INVITATION;
+  return requireInvitation === 'true' || requireInvitation === '1';
+};
+
+/**
+ * Check if registration is enabled
+ * Uses DB setting first, falls back to environment variable
+ */
+const checkIsRegistrationEnabled = async (c: Context): Promise<boolean> => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+  const dbSetting = await instanceSettingsService.isRegistrationEnabled();
+
+  // If DB setting exists and is false, registration is disabled
+  // Fall back to env var ENABLE_REGISTRATION if DB doesn't have a setting
+  if (!dbSetting) {
+    const envSetting = process.env.ENABLE_REGISTRATION;
+    // If env var is explicitly 'false' or '0', registration is disabled
+    if (envSetting === 'false' || envSetting === '0') return false;
+  }
+
+  return dbSetting;
+};
+
+/**
+ * Registration Settings
+ *
+ * GET /api/auth/register/settings
+ *
+ * Returns registration settings (registration enabled, invite-only mode status)
+ */
+app.get('/register/settings', async (c) => {
+  const instanceSettingsService = c.get('instanceSettingsService');
+
+  const [registrationEnabled, inviteOnly, approvalRequired] = await Promise.all([
+    checkIsRegistrationEnabled(c),
+    checkIsInviteOnly(c),
+    instanceSettingsService.isApprovalRequired(),
+  ]);
+
+  return c.json({
+    registrationEnabled,
+    inviteOnly,
+    approvalRequired,
+  });
+});
 
 /**
  * User Registration
@@ -27,7 +87,8 @@ const app = new Hono();
  *   "username": "alice",
  *   "email": "alice@example.com",
  *   "password": "securePassword123",
- *   "name": "Alice Smith" // optional
+ *   "name": "Alice Smith", // optional
+ *   "invitationCode": "ABC123" // required if REQUIRE_INVITATION=true
  * }
  * ```
  *
@@ -41,10 +102,17 @@ const app = new Hono();
  *
  * Errors:
  * - 400: Missing or invalid fields
+ * - 403: Registration is invite-only or invalid invitation code
  * - 409: Username or email already exists
  */
 app.post('/register', rateLimit(RateLimitPresets.register), async (c) => {
   const body = await c.req.json();
+
+  // Check if registration is enabled
+  const registrationEnabled = await checkIsRegistrationEnabled(c);
+  if (!registrationEnabled) {
+    return c.json({ error: 'Registration is currently disabled' }, 403);
+  }
 
   // Validation
   if (!body.username || typeof body.username !== 'string') {
@@ -75,6 +143,20 @@ app.post('/register', rateLimit(RateLimitPresets.register), async (c) => {
     return c.json({ error: 'Invalid email address' }, 400);
   }
 
+  // Check invitation code if invite-only mode is enabled
+  const invitationCodeRepo = c.get('invitationCodeRepository');
+  const isInviteOnlyMode = await checkIsInviteOnly(c);
+  if (isInviteOnlyMode) {
+    if (!body.invitationCode || typeof body.invitationCode !== 'string') {
+      return c.json({ error: 'Invitation code is required for registration' }, 403);
+    }
+
+    const isValidCode = await invitationCodeRepo.isValid(body.invitationCode);
+    if (!isValidCode) {
+      return c.json({ error: 'Invalid or expired invitation code' }, 403);
+    }
+  }
+
   try {
     const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
     const { user, session } = await authService.register({
@@ -83,6 +165,11 @@ app.post('/register', rateLimit(RateLimitPresets.register), async (c) => {
       password: body.password,
       name: body.name,
     });
+
+    // Mark invitation code as used (if provided)
+    if (body.invitationCode) {
+      await invitationCodeRepo.use(body.invitationCode, user.id);
+    }
 
     // Remove sensitive data from response
     const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;

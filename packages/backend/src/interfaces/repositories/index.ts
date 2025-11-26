@@ -5,3 +5,8 @@ export * from './ISessionRepository.js';
 export * from './IReactionRepository.js';
 export * from './IFollowRepository.js';
 export * from './IInstanceBlockRepository.js';
+export * from './IInvitationCodeRepository.js';
+export * from './IUserReportRepository.js';
+export * from './IRoleRepository.js';
+export * from './IRoleAssignmentRepository.js';
+export * from './IInstanceSettingsRepository.js';

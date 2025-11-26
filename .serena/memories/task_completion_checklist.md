@@ -101,6 +101,32 @@ bun run lint && bun run typecheck && bun test
 - [ ] Delivery uses queue system (BullMQ)
 - [ ] Retry logic in place for failed deliveries
 
+## TypeScript Test File Requirements
+
+When writing test files, ensure:
+
+- [ ] **No unused imports**: Remove any imported types/functions not used in the file
+- [ ] **Proper type assertions**: Use `as { property: type }` when accessing `.json()` response properties
+- [ ] **No unused variables**: Remove or prefix with `_` any unused mock data
+
+**Common TypeScript errors in tests:**
+```typescript
+// ❌ Bad: 'data' is of type 'unknown'
+const data = await res.json();
+expect(data.error).toBe('Error');
+
+// ✅ Good: Type assertion
+const data = (await res.json()) as { error: string };
+expect(data.error).toBe('Error');
+
+// ❌ Bad: Unused imports cause TS6133 errors
+import { describe, test, expect, mock, beforeEach } from 'bun:test';
+import { Hono } from 'hono'; // Not used!
+
+// ✅ Good: Only import what you use
+import { describe, test, expect, mock, beforeEach } from 'bun:test';
+```
+
 ## Final Verification
 
 Before marking task as complete:

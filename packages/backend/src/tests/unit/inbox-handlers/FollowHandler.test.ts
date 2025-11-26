@@ -122,9 +122,22 @@ describe('FollowHandler', () => {
   });
 
   test('should handle actor resolution failure', async () => {
-    mockRemoteActorService.resolveActor = mock(() =>
-      Promise.reject(new Error('Actor resolution failed'))
-    );
+    // Create new context with failing mock
+    const contextMap = new Map<string, any>();
+    const failingRemoteActorService = {
+      resolveActor: mock(async () => {
+        throw new Error('Actor resolution failed');
+      }),
+    };
+    contextMap.set('followRepository', mockFollowRepository);
+    contextMap.set('userRepository', mockUserRepository);
+    contextMap.set('remoteActorService', failingRemoteActorService);
+
+    const failingContext: HandlerContext = {
+      c: { get: (key: string) => contextMap.get(key) } as Context,
+      recipientId: 'local-user-123',
+      baseUrl: 'http://localhost:3000',
+    };
 
     const activity: Activity = {
       '@context': 'https://www.w3.org/ns/activitystreams',
@@ -134,7 +147,7 @@ describe('FollowHandler', () => {
       object: 'http://localhost:3000/users/localuser',
     };
 
-    const result = await handler.handle(activity, mockContext);
+    const result = await handler.handle(activity, failingContext);
 
     expect(result.success).toBe(false);
     expect(result.message).toContain('Failed to handle Follow activity');

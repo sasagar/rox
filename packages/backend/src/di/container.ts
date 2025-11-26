@@ -8,6 +8,11 @@ import type {
   IReactionRepository,
   IFollowRepository,
   IInstanceBlockRepository,
+  IInvitationCodeRepository,
+  IUserReportRepository,
+  IRoleRepository,
+  IRoleAssignmentRepository,
+  IInstanceSettingsRepository,
 } from '../interfaces/repositories/index.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
 import type { ICacheService } from '../interfaces/ICacheService.js';
@@ -19,6 +24,11 @@ import {
   PostgresReactionRepository,
   PostgresFollowRepository,
   PostgresInstanceBlockRepository,
+  PostgresInvitationCodeRepository,
+  PostgresUserReportRepository,
+  PostgresRoleRepository,
+  PostgresRoleAssignmentRepository,
+  PostgresInstanceSettingsRepository,
 } from '../repositories/pg/index.js';
 import {
   LocalStorageAdapter,
@@ -29,6 +39,8 @@ import { DragonflyCacheAdapter } from '../adapters/cache/DragonflyCacheAdapter.j
 import { RemoteActorService } from '../services/ap/RemoteActorService.js';
 import { RemoteNoteService } from '../services/ap/RemoteNoteService.js';
 import { ActivityPubDeliveryService } from '../services/ap/ActivityPubDeliveryService.js';
+import { RoleService } from '../services/RoleService.js';
+import { InstanceSettingsService } from '../services/InstanceSettingsService.js';
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -38,12 +50,19 @@ export interface AppContainer {
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
   instanceBlockRepository: IInstanceBlockRepository;
+  invitationCodeRepository: IInvitationCodeRepository;
+  userReportRepository: IUserReportRepository;
+  roleRepository: IRoleRepository;
+  roleAssignmentRepository: IRoleAssignmentRepository;
+  instanceSettingsRepository: IInstanceSettingsRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
   remoteActorService: RemoteActorService;
   remoteNoteService: RemoteNoteService;
   activityPubDeliveryService: ActivityPubDeliveryService;
+  roleService: RoleService;
+  instanceSettingsService: InstanceSettingsService;
 }
 
 /**
@@ -95,6 +114,15 @@ export function createContainer(): AppContainer {
     repositories.instanceBlockRepository
   );
 
+  // Role and Instance Settings Services
+  const roleService = new RoleService(
+    repositories.roleRepository,
+    repositories.roleAssignmentRepository
+  );
+  const instanceSettingsService = new InstanceSettingsService(
+    repositories.instanceSettingsRepository
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -103,6 +131,8 @@ export function createContainer(): AppContainer {
     remoteActorService,
     remoteNoteService,
     activityPubDeliveryService,
+    roleService,
+    instanceSettingsService,
   };
 }
 
@@ -120,6 +150,11 @@ function createRepositories(db: any, dbType: string) {
         reactionRepository: new PostgresReactionRepository(db),
         followRepository: new PostgresFollowRepository(db),
         instanceBlockRepository: new PostgresInstanceBlockRepository(db),
+        invitationCodeRepository: new PostgresInvitationCodeRepository(db),
+        userReportRepository: new PostgresUserReportRepository(db),
+        roleRepository: new PostgresRoleRepository(db),
+        roleAssignmentRepository: new PostgresRoleAssignmentRepository(db),
+        instanceSettingsRepository: new PostgresInstanceSettingsRepository(db),
       };
 
     case 'mysql':
