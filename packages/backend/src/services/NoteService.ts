@@ -11,10 +11,12 @@ import type { INoteRepository } from '../interfaces/repositories/INoteRepository
 import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
 import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
 import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
+import type { ICacheService } from '../interfaces/ICacheService.js';
 import type { Note } from '../../../shared/src/types/note.js';
 import type { Visibility } from '../../../shared/src/types/common.js';
 import { generateId } from '../../../shared/src/utils/id.js';
-import { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
 
 /**
  * Note creation input data
@@ -71,28 +73,27 @@ export class NoteService {
   private readonly defaultTimelineLimit = 20;
   private readonly maxTimelineLimit = 100;
 
-  private readonly deliveryService: ActivityPubDeliveryService;
+  private readonly cacheService: ICacheService | null;
 
   /**
    * NoteService Constructor
    *
    * @param noteRepository - Note repository
    * @param driveFileRepository - Drive file repository
-   * @param followRepository - Follow repository
+   * @param followRepository - Follow repository for timeline queries
    * @param userRepository - User repository
+   * @param deliveryService - ActivityPub delivery service (injected via DI)
+   * @param cacheService - Optional cache service for timeline caching
    */
   constructor(
     private readonly noteRepository: INoteRepository,
     private readonly driveFileRepository: IDriveFileRepository,
     private readonly followRepository: IFollowRepository,
     private readonly userRepository: IUserRepository,
-    activityDeliveryQueue: any, // Import from DI container
+    private readonly deliveryService: ActivityPubDeliveryService,
+    cacheService?: ICacheService,
   ) {
-    this.deliveryService = new ActivityPubDeliveryService(
-      userRepository,
-      followRepository,
-      activityDeliveryQueue
-    );
+    this.cacheService = cacheService ?? null;
   }
 
   /**
@@ -214,6 +215,13 @@ export class NoteService {
       }
     }
 
+    // Invalidate timeline cache on new local note
+    if (this.cacheService?.isAvailable() && visibility === 'public') {
+      this.cacheService.deletePattern(`${CachePrefix.TIMELINE_LOCAL}:*`).catch((error) => {
+        console.warn('Failed to invalidate timeline cache:', error);
+      });
+    }
+
     return note;
   }
 
@@ -295,11 +303,30 @@ export class NoteService {
   async getLocalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
     const limit = this.normalizeLimit(options.limit);
 
-    return await this.noteRepository.getLocalTimeline({
+    // Cache only the first page (no cursor) for performance
+    const isFirstPage = !options.sinceId && !options.untilId;
+    const cacheKey = `${CachePrefix.TIMELINE_LOCAL}:${limit}`;
+
+    // Try cache for first page
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      const cached = await this.cacheService.get<Note[]>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    const notes = await this.noteRepository.getLocalTimeline({
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
     });
+
+    // Cache first page results
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      await this.cacheService.set(cacheKey, notes, { ttl: CacheTTL.SHORT });
+    }
+
+    return notes;
   }
 
   /**

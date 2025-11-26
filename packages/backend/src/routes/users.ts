@@ -9,7 +9,6 @@
 import { Hono } from 'hono';
 import { AuthService } from '../services/AuthService.js';
 import { UserService } from '../services/UserService.js';
-import { RemoteActorService } from '../services/ap/RemoteActorService.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const app = new Hono();
@@ -244,6 +243,7 @@ app.get('/show', async (c) => {
  */
 app.get('/resolve', async (c) => {
   const userRepository = c.get('userRepository');
+  const remoteActorService = c.get('remoteActorService');
   const acct = c.req.query('acct');
 
   if (!acct) {
@@ -257,12 +257,13 @@ app.get('/resolve', async (c) => {
     const instanceActor = await userRepository.findByUsername('alice', null);
 
     const baseUrl = process.env.URL || 'http://localhost:3000';
-    const signatureConfig = instanceActor?.privateKey ? {
-      keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
-      privateKey: instanceActor.privateKey,
-    } : undefined;
+    if (instanceActor?.privateKey) {
+      remoteActorService.setSignatureConfig({
+        keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
+        privateKey: instanceActor.privateKey,
+      });
+    }
 
-    const remoteActorService = new RemoteActorService(userRepository, signatureConfig);
     const user = await remoteActorService.resolveActorByAcct(acct);
 
     // パスワードハッシュとメールアドレスを除外
@@ -367,14 +368,12 @@ app.patch('/@me', requireAuth(), async (c) => {
 
   const body = await c.req.json();
   const userRepository = c.get('userRepository');
-  const followRepository = c.get('followRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
 
   // Initialize UserService with ActivityPub delivery support
   const userService = new UserService(
     userRepository,
-    followRepository,
-    activityDeliveryQueue,
+    deliveryService,
   );
 
   // 更新可能なフィールドのみを抽出

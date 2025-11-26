@@ -16,6 +16,7 @@ import followersRoute from './routes/ap/followers.js';
 import followingAPRoute from './routes/ap/following.js';
 import noteAPRoute from './routes/ap/note.js';
 import nodeinfoRoute from './routes/ap/nodeinfo.js';
+import proxyRoute from './routes/proxy.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 
@@ -52,6 +53,9 @@ app.route('/api/drive', driveRoute);
 app.route('/api/notes', notesRoute);
 app.route('/api/notes/reactions', reactionsRoute);
 app.route('/api/following', followingRoute);
+
+// Media Proxy
+app.route('/proxy', proxyRoute);
 
 // ActivityPubルート
 app.route('/', webfingerRoute); // /.well-known/webfinger

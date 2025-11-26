@@ -12,7 +12,7 @@ import type { INoteRepository } from '../interfaces/repositories/INoteRepository
 import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
 import type { Reaction } from '../../../shared/src/types/reaction.js';
 import { generateId } from '../../../shared/src/utils/id.js';
-import { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 
 /**
  * Reaction creation input data
@@ -43,7 +43,6 @@ export interface ReactionCreateInput {
  */
 export class ReactionService {
   private readonly maxReactionLength = 100;
-  private readonly deliveryService: ActivityPubDeliveryService;
 
   /**
    * ReactionService Constructor
@@ -51,22 +50,14 @@ export class ReactionService {
    * @param reactionRepository - Reaction repository
    * @param noteRepository - Note repository
    * @param userRepository - User repository
-   * @param followRepository - Follow repository
-   * @param activityDeliveryQueue - Activity delivery queue
+   * @param deliveryService - ActivityPub delivery service (injected via DI)
    */
   constructor(
     private readonly reactionRepository: IReactionRepository,
     private readonly noteRepository: INoteRepository,
     private readonly userRepository: IUserRepository,
-    followRepository: any, // IFollowRepository
-    activityDeliveryQueue: any,
-  ) {
-    this.deliveryService = new ActivityPubDeliveryService(
-      userRepository,
-      followRepository,
-      activityDeliveryQueue
-    );
-  }
+    private readonly deliveryService: ActivityPubDeliveryService,
+  ) {}
 
   /**
    * Create a reaction

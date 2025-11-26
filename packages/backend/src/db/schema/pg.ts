@@ -83,6 +83,9 @@ export const notes = pgTable(
     replyIdIdx: index('note_reply_id_idx').on(table.replyId),
     renoteIdIdx: index('note_renote_id_idx').on(table.renoteId),
     uriIdx: uniqueIndex('note_uri_idx').on(table.uri),
+    // Composite indexes for timeline queries
+    userTimelineIdx: index('note_user_timeline_idx').on(table.userId, table.createdAt),
+    localTimelineIdx: index('note_local_timeline_idx').on(table.visibility, table.localOnly, table.createdAt),
   })
 );
 

@@ -1,8 +1,8 @@
 /**
  * ActivityPub Delivery Service
  *
- * Handles ActivityPub activity delivery to followers' inboxes.
- * Creates activities and enqueues delivery jobs.
+ * Handles ActivityPub activity delivery to remote inboxes.
+ * Uses ActivityBuilder for activity construction and ActivityDeliveryQueue for async delivery.
  *
  * @module services/ap/ActivityPubDeliveryService
  */
@@ -12,622 +12,265 @@ import type { IFollowRepository } from '../../interfaces/repositories/IFollowRep
 import type { Note } from 'shared';
 import type { User } from '../../db/schema/pg.js';
 import { ActivityDeliveryQueue, JobPriority } from './ActivityDeliveryQueue.js';
+import { ActivityBuilder, type Activity } from './delivery/ActivityBuilder.js';
+
+/**
+ * Delivery options for enqueuing activities
+ */
+interface DeliveryOptions {
+  activity: Activity;
+  inboxUrl: string;
+  actor: User;
+  priority?: JobPriority;
+}
 
 /**
  * ActivityPub Delivery Service
  *
- * Provides methods to deliver ActivityPub activities to followers.
+ * Provides methods to deliver ActivityPub activities to remote servers.
  *
  * @example
  * ```typescript
- * const deliveryService = new ActivityPubDeliveryService(userRepo, followRepo);
+ * const deliveryService = new ActivityPubDeliveryService(userRepo, followRepo, queue);
  * await deliveryService.deliverCreateNote(note, author);
  * ```
  */
 export class ActivityPubDeliveryService {
-  private queue: ActivityDeliveryQueue;
+  private readonly queue: ActivityDeliveryQueue;
+  private readonly builder: ActivityBuilder;
 
-  /**
-   * Constructor
-   *
-   * @param userRepository - User repository
-   * @param followRepository - Follow repository
-   * @param activityDeliveryQueue - Activity delivery queue
-   */
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly followRepository: IFollowRepository,
     activityDeliveryQueue: ActivityDeliveryQueue,
   ) {
     this.queue = activityDeliveryQueue;
+    this.builder = new ActivityBuilder();
   }
 
   /**
    * Get unique inbox URLs from users, preferring shared inbox when available
-   *
-   * Groups users by their inbox URL (shared or individual) to minimize deliveries.
-   * When a user has a sharedInbox, that will be used instead of their individual inbox.
-   *
-   * @param users - Array of users to get inboxes from
-   * @returns Set of unique inbox URLs
-   * @private
-   *
-   * @example
-   * ```typescript
-   * const inboxes = this.getUniqueInboxUrls(followers);
-   * // Returns: Set(['https://mastodon.social/inbox', 'https://other.server/users/alice/inbox'])
-   * ```
    */
   private getUniqueInboxUrls(users: User[]): Set<string> {
     const inboxUrls = new Set<string>();
 
     for (const user of users) {
-      // Skip local users
-      if (!user.host) {
-        continue;
-      }
-
-      // Prefer sharedInbox over individual inbox
+      if (!user.host) continue;
       const inboxUrl = user.sharedInbox || user.inbox;
-
-      if (inboxUrl) {
-        inboxUrls.add(inboxUrl);
-      }
+      if (inboxUrl) inboxUrls.add(inboxUrl);
     }
 
     return inboxUrls;
   }
 
   /**
-   * Deliver Create activity for a note to all followers
-   *
-   * @param note - The created note
-   * @param author - The note author
-   *
-   * @example
-   * ```typescript
-   * await deliveryService.deliverCreateNote(note, author);
-   * ```
+   * Get remote followers for a user
    */
-  async deliverCreateNote(note: Note, author: User): Promise<void> {
-    // Skip delivery for remote notes or localOnly notes
-    if (author.host || note.localOnly) {
+  private async getRemoteFollowers(userId: string): Promise<User[]> {
+    const follows = await this.followRepository.findByFolloweeId(userId);
+    if (follows.length === 0) return [];
+
+    const followers = await Promise.all(
+      follows.map((follow) => this.userRepository.findById(follow.followerId))
+    );
+
+    return followers.filter((f): f is User => f !== null && f.host !== null);
+  }
+
+  /**
+   * Enqueue activity delivery to a single inbox
+   */
+  private async enqueueDelivery(options: DeliveryOptions): Promise<void> {
+    const { activity, inboxUrl, actor, priority = JobPriority.NORMAL } = options;
+
+    if (!actor.privateKey) {
+      console.log(`⚠️  Cannot deliver: actor has no private key`);
       return;
     }
 
-    const baseUrl = process.env.URL || 'http://localhost:3000';
+    await this.queue.enqueue({
+      activity,
+      inboxUrl,
+      keyId: this.builder.keyId(actor.username),
+      privateKey: actor.privateKey,
+      priority,
+    });
+  }
 
-    // Get author's followers
-    const follows = await this.followRepository.findByFolloweeId(author.id);
-    if (follows.length === 0) {
+  /**
+   * Deliver activity to multiple inboxes
+   */
+  private async deliverToInboxes(
+    activity: Activity,
+    inboxUrls: Set<string>,
+    actor: User,
+    priority: JobPriority = JobPriority.NORMAL
+  ): Promise<void> {
+    const deliveryPromises = Array.from(inboxUrls).map((inboxUrl) =>
+      this.enqueueDelivery({ activity, inboxUrl, actor, priority })
+    );
+    await Promise.all(deliveryPromises);
+  }
+
+  /**
+   * Deliver Create activity for a note to all followers
+   */
+  async deliverCreateNote(note: Note, author: User): Promise<void> {
+    if (author.host || note.localOnly) return;
+
+    const remoteFollowers = await this.getRemoteFollowers(author.id);
+    if (remoteFollowers.length === 0) {
       console.log(`📭 No followers to deliver to for note ${note.id}`);
       return;
     }
 
-    // Fetch all follower users
-    const followers = await Promise.all(
-      follows.map(follow => this.userRepository.findById(follow.followerId))
-    );
-    const remoteFollowers = followers.filter((f): f is User => f !== null && f.host !== null);
-
-    // Create ActivityPub Create activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Create',
-      id: `${baseUrl}/activities/create/${note.id}`,
-      actor: `${baseUrl}/users/${author.username}`,
-      published: note.createdAt.toISOString(),
-      to: ['https://www.w3.org/ns/activitystreams#Public'],
-      cc: [`${baseUrl}/users/${author.username}/followers`],
-      object: {
-        id: note.uri || `${baseUrl}/notes/${note.id}`,
-        type: 'Note',
-        attributedTo: `${baseUrl}/users/${author.username}`,
-        content: note.text || '',
-        published: note.createdAt.toISOString(),
-        to: ['https://www.w3.org/ns/activitystreams#Public'],
-        cc: [`${baseUrl}/users/${author.username}/followers`],
-      },
-    };
-
-    // Get unique inbox URLs (uses shared inbox when available)
+    const activity = this.builder.createNote(note, author);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
-    // Skip delivery if author has no private key
-    if (!author.privateKey) {
-      console.log(`⚠️  Cannot deliver note ${note.id}: author has no private key`);
-      return;
-    }
-
-    // Enqueue delivery to each inbox with normal priority
-    const deliveryPromises = Array.from(inboxUrls).map((inboxUrl) =>
-      this.queue.enqueue({
-        activity,
-        inboxUrl,
-        keyId: `${baseUrl}/users/${author.username}#main-key`,
-        privateKey: author.privateKey as string,
-        priority: JobPriority.NORMAL,
-      })
-    );
-
-    await Promise.all(deliveryPromises);
-
-    console.log(`📤 Enqueued Create activity delivery to ${inboxUrls.size} inboxes for note ${note.id}`);
+    await this.deliverToInboxes(activity, inboxUrls, author);
+    console.log(`📤 Enqueued Create activity to ${inboxUrls.size} inboxes for note ${note.id}`);
   }
 
   /**
-   * Deliver Like activity for a reaction to the note author
-   *
-   * @param noteId - Target note ID
-   * @param noteUri - Target note URI
-   * @param noteAuthorInbox - Note author's inbox URL
-   * @param reactor - User who created the reaction
-   *
-   * @example
-   * ```typescript
-   * await deliveryService.deliverLikeActivity(noteId, noteUri, authorInbox, reactor);
-   * ```
+   * Deliver Like activity to note author
    */
   async deliverLikeActivity(
     noteId: string,
     noteUri: string,
     noteAuthorInbox: string,
-    reactor: User,
+    reactor: User
   ): Promise<void> {
-    // Skip delivery for remote users
-    if (reactor.host) {
-      return;
-    }
+    if (reactor.host) return;
 
-    // Skip delivery if reactor has no private key
-    if (!reactor.privateKey) {
-      console.log(`⚠️  Cannot deliver Like for note ${noteId}: reactor has no private key`);
-      return;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-
-    // Create ActivityPub Like activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Like',
-      id: `${baseUrl}/activities/like/${noteId}/${Date.now()}`,
-      actor: `${baseUrl}/users/${reactor.username}`,
-      object: noteUri,
-    };
-
-    // Enqueue delivery with normal priority
-    await this.queue.enqueue({
+    const activity = this.builder.like(noteId, noteUri, reactor);
+    await this.enqueueDelivery({
       activity,
       inboxUrl: noteAuthorInbox,
-      keyId: `${baseUrl}/users/${reactor.username}#main-key`,
-      privateKey: reactor.privateKey,
-      priority: JobPriority.NORMAL,
+      actor: reactor,
     });
 
-    console.log(`📤 Enqueued Like activity delivery to ${noteAuthorInbox} for note ${noteId}`);
+    console.log(`📤 Enqueued Like activity to ${noteAuthorInbox} for note ${noteId}`);
   }
 
   /**
-   * Deliver Follow activity when following a remote user
-   *
-   * @param follower - Local user who is following
-   * @param followee - Remote user being followed
-   * @returns The Follow activity ID for tracking
-   *
-   * @example
-   * ```typescript
-   * const followId = await deliveryService.deliverFollow(follower, followee);
-   * ```
+   * Deliver Follow activity to remote user
    */
   async deliverFollow(follower: User, followee: User): Promise<string | null> {
-    // Skip delivery for remote follower (shouldn't happen, but safety check)
-    if (follower.host) {
-      console.log(`⚠️  Skipping Follow delivery: follower is remote`);
-      return null;
-    }
+    if (follower.host || !followee.host || !followee.inbox) return null;
 
-    // Skip if followee is not remote
-    if (!followee.host || !followee.inbox) {
-      return null;
-    }
+    const followeeUri = followee.uri || `https://${followee.host}/users/${followee.username}`;
+    const activity = this.builder.follow(follower, followeeUri);
 
-    // Skip delivery if follower has no private key
-    if (!follower.privateKey) {
-      console.log(`⚠️  Cannot deliver Follow: follower has no private key`);
-      return null;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const followActivityId = `${baseUrl}/activities/follow/${follower.id}/${followee.id}/${Date.now()}`;
-
-    // Create ActivityPub Follow activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Follow',
-      id: followActivityId,
-      actor: `${baseUrl}/users/${follower.username}`,
-      object: followee.uri || `https://${followee.host}/users/${followee.username}`,
-    };
-
-    // Enqueue delivery to followee's inbox with urgent priority (immediate user action)
-    await this.queue.enqueue({
+    await this.enqueueDelivery({
       activity,
       inboxUrl: followee.inbox,
-      keyId: `${baseUrl}/users/${follower.username}#main-key`,
-      privateKey: follower.privateKey,
+      actor: follower,
       priority: JobPriority.URGENT,
     });
 
-    console.log(`📤 Enqueued Follow activity delivery to ${followee.inbox} (${follower.username} following ${followee.username}@${followee.host})`);
-
-    return followActivityId;
+    console.log(`📤 Enqueued Follow activity to ${followee.inbox} (${follower.username} → ${followee.username}@${followee.host})`);
+    return activity.id;
   }
 
   /**
-   * Deliver Undo Follow activity when unfollowing a remote user
-   *
-   * @param follower - Local user who is unfollowing
-   * @param followee - Remote user being unfollowed
-   * @param originalFollowId - ID of the original Follow activity (optional)
-   *
-   * @example
-   * ```typescript
-   * await deliveryService.deliverUndoFollow(follower, followee);
-   * ```
+   * Deliver Undo Follow activity to remote user
    */
-  async deliverUndoFollow(
-    follower: User,
-    followee: User,
-    originalFollowId?: string,
-  ): Promise<void> {
-    // Skip delivery for remote follower (shouldn't happen, but safety check)
-    if (follower.host) {
-      console.log(`⚠️  Skipping Undo Follow delivery: follower is remote`);
-      return;
-    }
+  async deliverUndoFollow(follower: User, followee: User, originalFollowId?: string): Promise<void> {
+    if (follower.host || !followee.host || !followee.inbox) return;
 
-    // Skip if followee is not remote
-    if (!followee.host || !followee.inbox) {
-      return;
-    }
+    const followeeUri = followee.uri || `https://${followee.host}/users/${followee.username}`;
+    const activity = this.builder.undoFollow(follower, followeeUri, originalFollowId);
 
-    // Skip delivery if follower has no private key
-    if (!follower.privateKey) {
-      console.log(`⚠️  Cannot deliver Undo Follow: follower has no private key`);
-      return;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const followActivityId = originalFollowId || `${baseUrl}/activities/follow/${follower.id}/${followee.id}`;
-
-    // Create ActivityPub Undo { Follow } activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Undo',
-      id: `${baseUrl}/activities/undo/${Date.now()}`,
-      actor: `${baseUrl}/users/${follower.username}`,
-      object: {
-        type: 'Follow',
-        id: followActivityId,
-        actor: `${baseUrl}/users/${follower.username}`,
-        object: `${followee.uri}`,
-      },
-    };
-
-    // Enqueue delivery to followee's inbox with urgent priority (immediate user action)
-    await this.queue.enqueue({
+    await this.enqueueDelivery({
       activity,
       inboxUrl: followee.inbox,
-      keyId: `${baseUrl}/users/${follower.username}#main-key`,
-      privateKey: follower.privateKey,
+      actor: follower,
       priority: JobPriority.URGENT,
     });
 
-    console.log(`📤 Enqueued Undo Follow delivery to ${followee.inbox} (${follower.username} unfollowed ${followee.username}@${followee.host})`);
+    console.log(`📤 Enqueued Undo Follow activity to ${followee.inbox} (${follower.username} unfollowing ${followee.username}@${followee.host})`);
   }
 
   /**
-   * Delivers an Undo Like activity to a remote user's inbox
-   *
-   * @param reactor - The user who is removing their like (must be local)
-   * @param note - The note being unliked
-   * @param noteAuthor - The author of the note (must be remote)
-   * @param originalLikeId - Optional ID of the original Like activity
+   * Deliver Undo Like activity to note author
    */
   async deliverUndoLike(
     reactor: User,
     note: Note,
-    noteAuthor: User,
-    originalLikeId?: string,
+    noteAuthor: User
   ): Promise<void> {
-    // Skip delivery for remote reactor
-    if (reactor.host) {
-      console.log(`⚠️  Skipping Undo Like delivery: reactor is remote`);
-      return;
-    }
+    if (reactor.host) return;
+    if (!noteAuthor.host || !noteAuthor.inbox) return;
 
-    // Skip if note author is not remote
-    if (!noteAuthor.host || !noteAuthor.inbox) {
-      return;
-    }
+    const noteUri = note.uri || `https://${noteAuthor.host}/notes/${note.id}`;
+    const activity = this.builder.undoLike(note.id, noteUri, reactor);
 
-    // Skip delivery if reactor has no private key
-    if (!reactor.privateKey) {
-      console.log(`⚠️  Cannot deliver Undo Like: reactor has no private key`);
-      return;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const noteUrl = note.uri || `${baseUrl}/notes/${note.id}`;
-    const likeActivityId = originalLikeId || `${baseUrl}/activities/like/${reactor.id}/${note.id}`;
-
-    // Create ActivityPub Undo { Like } activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Undo',
-      id: `${baseUrl}/activities/undo/${Date.now()}`,
-      actor: `${baseUrl}/users/${reactor.username}`,
-      object: {
-        type: 'Like',
-        id: likeActivityId,
-        actor: `${baseUrl}/users/${reactor.username}`,
-        object: noteUrl,
-      },
-    };
-
-    // Enqueue delivery to note author's inbox with urgent priority (immediate user action)
-    await this.queue.enqueue({
+    await this.enqueueDelivery({
       activity,
       inboxUrl: noteAuthor.inbox,
-      keyId: `${baseUrl}/users/${reactor.username}#main-key`,
-      privateKey: reactor.privateKey,
-      priority: JobPriority.URGENT,
+      actor: reactor,
     });
 
-    console.log(`📤 Enqueued Undo Like delivery to ${noteAuthor.inbox} (${reactor.username} unliked note by ${noteAuthor.username}@${noteAuthor.host})`);
+    console.log(`📤 Enqueued Undo Like activity to ${noteAuthor.inbox} for note ${note.id}`);
   }
 
   /**
-   * Delivers a Delete activity to remote followers when a note is deleted
-   *
-   * @param note - The note being deleted
-   * @param author - The author of the note (must be local)
+   * Deliver Delete activity to followers
    */
   async deliverDelete(note: Note, author: User): Promise<void> {
-    // Skip delivery for remote author
-    if (author.host) {
-      console.log(`⚠️  Skipping Delete delivery: author is remote`);
-      return;
-    }
+    if (author.host || note.localOnly) return;
 
-    // Skip delivery if author has no private key
-    if (!author.privateKey) {
-      console.log(`⚠️  Cannot deliver Delete: author has no private key`);
-      return;
-    }
+    const remoteFollowers = await this.getRemoteFollowers(author.id);
+    if (remoteFollowers.length === 0) return;
 
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const noteUrl = note.uri || `${baseUrl}/notes/${note.id}`;
-
-    // Create ActivityPub Delete activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Delete',
-      id: `${baseUrl}/activities/delete/${note.id}`,
-      actor: `${baseUrl}/users/${author.username}`,
-      object: noteUrl,
-      to: ['https://www.w3.org/ns/activitystreams#Public'],
-      cc: [`${baseUrl}/users/${author.username}/followers`],
-    };
-
-    // Get all remote followers to deliver to
-    const followRelations = await this.followRepository.findByFolloweeId(author.id);
-    const followers = await Promise.all(
-      followRelations.map(async relation => {
-        const follower = await this.userRepository.findById(relation.followerId);
-        return follower;
-      })
-    );
-
-    // Filter for remote users only
-    const remoteFollowers = followers.filter((follower): follower is User =>
-      follower !== null &&
-      follower.host !== null &&
-      follower.inbox !== null
-    );
-
-    // Get unique inbox URLs (uses shared inbox when available)
+    const noteUri = note.uri || `${process.env.URL || 'http://localhost:3000'}/notes/${note.id}`;
+    const activity = this.builder.delete(noteUri, author);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
-    if (inboxUrls.size === 0) {
-      console.log(`ℹ️  No remote followers to deliver Delete activity for note ${note.id}`);
-      return;
-    }
-
-    // Enqueue delivery to each unique inbox with low priority
-    const deliveryPromises = Array.from(inboxUrls).map(async inboxUrl => {
-      await this.queue.enqueue({
-        activity,
-        inboxUrl,
-        keyId: `${baseUrl}/users/${author.username}#main-key`,
-        privateKey: author.privateKey!,
-        priority: JobPriority.LOW, // Delete activities have lower priority
-      });
-    });
-
-    await Promise.all(deliveryPromises);
-
-    console.log(`📤 Enqueued Delete delivery to ${inboxUrls.size} inboxes (${remoteFollowers.length} followers) for note ${note.id}`);
+    await this.deliverToInboxes(activity, inboxUrls, author, JobPriority.LOW);
+    console.log(`📤 Enqueued Delete activity to ${inboxUrls.size} inboxes for note ${note.id}`);
   }
 
   /**
-   * Delivers an Update activity to remote followers when a user updates their profile
-   *
-   * @param user - The user whose profile was updated (must be local)
+   * Deliver Update activity for actor profile
    */
-  async deliverUpdate(user: User): Promise<void> {
-    // Skip delivery for remote user
-    if (user.host) {
-      console.log(`⚠️  Skipping Update delivery: user is remote`);
+  async deliverUpdate(actor: User): Promise<void> {
+    if (actor.host) return;
+
+    const remoteFollowers = await this.getRemoteFollowers(actor.id);
+    if (remoteFollowers.length === 0) {
+      console.log(`📭 No followers to deliver Update to for user ${actor.username}`);
       return;
     }
 
-    // Skip delivery if user has no private key
-    if (!user.privateKey) {
-      console.log(`⚠️  Cannot deliver Update: user has no private key`);
-      return;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const actorUrl = `${baseUrl}/users/${user.username}`;
-
-    // Create complete Actor representation (Person object)
-    const actorObject = {
-      '@context': [
-        'https://www.w3.org/ns/activitystreams',
-        'https://w3id.org/security/v1',
-      ],
-      type: 'Person',
-      id: actorUrl,
-      url: actorUrl,
-      preferredUsername: user.username,
-      name: user.displayName || user.username,
-      summary: user.bio || '',
-      inbox: `${baseUrl}/users/${user.username}/inbox`,
-      outbox: `${baseUrl}/users/${user.username}/outbox`,
-      followers: `${baseUrl}/users/${user.username}/followers`,
-      following: `${baseUrl}/users/${user.username}/following`,
-      icon: user.avatarUrl ? {
-        type: 'Image',
-        mediaType: 'image/jpeg',
-        url: user.avatarUrl,
-      } : undefined,
-      image: user.bannerUrl ? {
-        type: 'Image',
-        mediaType: 'image/jpeg',
-        url: user.bannerUrl,
-      } : undefined,
-      publicKey: {
-        id: `${actorUrl}#main-key`,
-        owner: actorUrl,
-        publicKeyPem: user.publicKey,
-      },
-    };
-
-    // Create ActivityPub Update activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Update',
-      id: `${baseUrl}/activities/update/${user.id}/${Date.now()}`,
-      actor: actorUrl,
-      object: actorObject,
-      to: ['https://www.w3.org/ns/activitystreams#Public'],
-      cc: [`${baseUrl}/users/${user.username}/followers`],
-    };
-
-    // Get all remote followers to deliver to
-    const followRelations = await this.followRepository.findByFolloweeId(user.id);
-    const followers = await Promise.all(
-      followRelations.map(async relation => {
-        const follower = await this.userRepository.findById(relation.followerId);
-        return follower;
-      })
-    );
-
-    // Filter for remote users only
-    const remoteFollowers = followers.filter((follower): follower is User =>
-      follower !== null &&
-      follower.host !== null &&
-      follower.inbox !== null
-    );
-
-    // Get unique inbox URLs (uses shared inbox when available)
+    const activity = this.builder.updateActor(actor);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
-    if (inboxUrls.size === 0) {
-      console.log(`ℹ️  No remote followers to deliver Update activity for user ${user.id}`);
-      return;
-    }
-
-    // Enqueue delivery to each unique inbox with low priority
-    const deliveryPromises = Array.from(inboxUrls).map(async inboxUrl => {
-      await this.queue.enqueue({
-        activity,
-        inboxUrl,
-        keyId: `${baseUrl}/users/${user.username}#main-key`,
-        privateKey: user.privateKey!,
-        priority: JobPriority.LOW, // Update activities have lower priority
-      });
-    });
-
-    await Promise.all(deliveryPromises);
-
-    console.log(`📤 Enqueued Update delivery to ${inboxUrls.size} inboxes (${remoteFollowers.length} followers) for user ${user.username}`);
+    await this.deliverToInboxes(activity, inboxUrls, actor, JobPriority.LOW);
+    console.log(`📤 Enqueued Update activity to ${inboxUrls.size} inboxes for user ${actor.username}`);
   }
 
   /**
-   * Delivers an Announce activity to the remote note author's inbox when a local user renotes
-   *
-   * @param renoteId - The ID of the renote (the new note created by renoting)
-   * @param originalNote - The original note being renoted
-   * @param announcer - The local user who is renoting
-   * @param originalNoteAuthor - The author of the original note (must be remote)
-   *
-   * @example
-   * ```typescript
-   * await deliveryService.deliverAnnounceActivity(renote.id, originalNote, announcer, noteAuthor);
-   * ```
+   * Deliver Announce activity (boost/renote) to target note author
    */
   async deliverAnnounceActivity(
-    renoteId: string,
-    originalNote: Note,
-    announcer: User,
-    originalNoteAuthor: User,
+    noteId: string,
+    targetNote: Note,
+    actor: User,
+    targetNoteAuthor: User
   ): Promise<void> {
-    // Skip delivery for remote announcer
-    if (announcer.host) {
-      return;
-    }
+    if (actor.host) return;
+    if (!targetNoteAuthor.host || !targetNoteAuthor.inbox) return;
 
-    // Skip if original note author is not remote
-    if (!originalNoteAuthor.host || !originalNoteAuthor.inbox) {
-      return;
-    }
+    const targetNoteUri = targetNote.uri || `https://${targetNoteAuthor.host}/notes/${targetNote.id}`;
+    const activity = this.builder.announce(noteId, targetNoteUri, actor);
 
-    // Skip delivery if announcer has no private key
-    if (!announcer.privateKey) {
-      console.log(`⚠️  Cannot deliver Announce for renote ${renoteId}: announcer has no private key`);
-      return;
-    }
-
-    const baseUrl = process.env.URL || 'http://localhost:3000';
-    const originalNoteUri = originalNote.uri || `${baseUrl}/notes/${originalNote.id}`;
-
-    // Create ActivityPub Announce activity
-    const activity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Announce',
-      id: `${baseUrl}/activities/announce/${renoteId}`,
-      actor: `${baseUrl}/users/${announcer.username}`,
-      published: new Date().toISOString(),
-      to: ['https://www.w3.org/ns/activitystreams#Public'],
-      cc: [
-        `${baseUrl}/users/${announcer.username}/followers`,
-        originalNoteAuthor.uri || `https://${originalNoteAuthor.host}/users/${originalNoteAuthor.username}`,
-      ],
-      object: originalNoteUri,
-    };
-
-    // Enqueue delivery to note author's inbox with normal priority
-    await this.queue.enqueue({
+    await this.enqueueDelivery({
       activity,
-      inboxUrl: originalNoteAuthor.inbox,
-      keyId: `${baseUrl}/users/${announcer.username}#main-key`,
-      privateKey: announcer.privateKey,
-      priority: JobPriority.NORMAL,
+      inboxUrl: targetNoteAuthor.inbox,
+      actor,
     });
 
-    console.log(`📤 Enqueued Announce activity delivery to ${originalNoteAuthor.inbox} for renote ${renoteId}`);
+    console.log(`📤 Enqueued Announce activity to ${targetNoteAuthor.inbox} for note ${noteId}`);
   }
 }

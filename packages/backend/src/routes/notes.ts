@@ -32,16 +32,18 @@ notes.post('/create', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const body = await c.req.json();
@@ -66,30 +68,33 @@ notes.post('/create', requireAuth(), async (c: Context) => {
 });
 
 /**
- * GET /api/notes/show
+ * POST /api/notes/show
  *
- * Get note by ID
+ * Get note by ID (Misskey-compatible)
  *
  * @auth Optional
- * @query {string} noteId - Note ID
+ * @body {string} noteId - Note ID
  * @returns {Note} Note record
  */
-notes.get('/show', optionalAuth(), async (c: Context) => {
+notes.post('/show', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
-  const noteId = c.req.query('noteId');
+  const body = await c.req.json();
+  const noteId = body.noteId;
 
   if (!noteId) {
     return c.json({ error: 'noteId is required' }, 400);
@@ -117,16 +122,18 @@ notes.post('/delete', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const body = await c.req.json();
@@ -160,16 +167,18 @@ notes.post('/delete', requireAuth(), async (c: Context) => {
 notes.get('/local-timeline', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -202,16 +211,18 @@ notes.get('/timeline', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -244,16 +255,18 @@ notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
   const user = c.get('user');
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
@@ -286,16 +299,18 @@ notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
 notes.get('/user-notes', optionalAuth(), async (c: Context) => {
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');
-  const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
-  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+  const deliveryService = c.get('activityPubDeliveryService');
+  const cacheService = c.get('cacheService');
 
+  const followRepository = c.get('followRepository');
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
     followRepository,
     userRepository,
-    activityDeliveryQueue,
+    deliveryService,
+    cacheService,
   );
 
   const userId = c.req.query('userId');

@@ -33,7 +33,14 @@ export function createDatabase(): Database {
 
   switch (dbType) {
     case 'postgres': {
-      const client = postgres(databaseUrl);
+      // Connection pooling configuration
+      // postgres.js has built-in connection pooling
+      const client = postgres(databaseUrl, {
+        max: parseInt(process.env.DB_POOL_MAX || '10', 10),          // Max connections in pool
+        idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || '20', 10),  // Close idle connections after 20s
+        max_lifetime: parseInt(process.env.DB_MAX_LIFETIME || '1800', 10), // Max connection lifetime 30min
+        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || '30', 10), // Connection timeout 30s
+      });
       return drizzlePg(client, { schema: pgSchema }) as Database;
     }
     case 'mysql': {

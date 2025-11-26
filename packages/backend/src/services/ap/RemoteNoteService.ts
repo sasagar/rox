@@ -48,7 +48,8 @@ interface APNote {
 export class RemoteNoteService {
   constructor(
     private noteRepository: INoteRepository,
-    private userRepository: IUserRepository
+    private userRepository: IUserRepository,
+    private remoteActorService?: RemoteActorService
   ) {}
 
   /**
@@ -74,14 +75,14 @@ export class RemoteNoteService {
       return existing;
     }
 
-    // Resolve author
-    const remoteActorService = new RemoteActorService(this.userRepository);
+    // Resolve author (use injected service or create new instance for backward compatibility)
+    const actorService = this.remoteActorService ?? new RemoteActorService(this.userRepository);
     const authorUri =
       typeof noteObject.attributedTo === 'string'
         ? noteObject.attributedTo
         : noteObject.attributedTo.id;
 
-    const author = await remoteActorService.resolveActor(authorUri);
+    const author = await actorService.resolveActor(authorUri);
 
     // Extract text content (strip HTML tags for now)
     const text = noteObject.content ? this.stripHtml(noteObject.content) : null;

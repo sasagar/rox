@@ -7,9 +7,8 @@
  */
 
 import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
 import type { User } from '../db/schema/pg.js';
-import { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 
 /**
  * User profile update input data
@@ -37,26 +36,16 @@ export interface UserUpdateInput {
  * to all remote followers.
  */
 export class UserService {
-  private readonly deliveryService: ActivityPubDeliveryService;
-
   /**
    * UserService Constructor
    *
    * @param userRepository - User repository
-   * @param followRepository - Follow repository
-   * @param activityDeliveryQueue - Activity delivery queue
+   * @param deliveryService - ActivityPub delivery service (injected via DI)
    */
   constructor(
     private readonly userRepository: IUserRepository,
-    followRepository: IFollowRepository,
-    activityDeliveryQueue: any,
-  ) {
-    this.deliveryService = new ActivityPubDeliveryService(
-      userRepository,
-      followRepository,
-      activityDeliveryQueue
-    );
-  }
+    private readonly deliveryService: ActivityPubDeliveryService,
+  ) {}
 
   /**
    * Update user profile

@@ -17,7 +17,11 @@ export function diMiddleware() {
     c.set('reactionRepository', container.reactionRepository);
     c.set('followRepository', container.followRepository);
     c.set('fileStorage', container.fileStorage);
+    c.set('cacheService', container.cacheService);
     c.set('activityDeliveryQueue', container.activityDeliveryQueue);
+    c.set('remoteActorService', container.remoteActorService);
+    c.set('remoteNoteService', container.remoteNoteService);
+    c.set('activityPubDeliveryService', container.activityPubDeliveryService);
 
     await next();
   };

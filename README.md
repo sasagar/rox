@@ -206,6 +206,19 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Activity deduplication
   - ✅ Delivery metrics & monitoring
   - ✅ Federation tested with Mastodon, Misskey, GoToSocial
+- **Phase 4**: Refactoring & Optimization ⏳ **In Progress**
+  - Code refactoring (inbox handlers, delivery service)
+  - Redis caching (timeline, profiles)
+  - Image optimization (WebP conversion)
+  - Test coverage improvement
+- **Phase 5**: Administration & Security
+  - Instance block management UI
+  - Moderation features
+  - Rate limiting improvements
+- **Phase 6**: Plugin & Production
+  - Plugin system architecture
+  - Production Docker configuration
+  - Monitoring & alerting
 
 ## Contributing
 

@@ -9,6 +9,7 @@ import type {
   IFollowRepository,
 } from '../interfaces/repositories/index.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
+import type { ICacheService } from '../interfaces/ICacheService.js';
 import {
   PostgresUserRepository,
   PostgresNoteRepository,
@@ -22,6 +23,10 @@ import {
   S3StorageAdapter,
 } from '../adapters/storage/index.js';
 import { ActivityDeliveryQueue } from '../services/ap/ActivityDeliveryQueue.js';
+import { DragonflyCacheAdapter } from '../adapters/cache/DragonflyCacheAdapter.js';
+import { RemoteActorService } from '../services/ap/RemoteActorService.js';
+import { RemoteNoteService } from '../services/ap/RemoteNoteService.js';
+import { ActivityPubDeliveryService } from '../services/ap/ActivityPubDeliveryService.js';
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -31,7 +36,11 @@ export interface AppContainer {
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
   fileStorage: IFileStorage;
+  cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
+  remoteActorService: RemoteActorService;
+  remoteNoteService: RemoteNoteService;
+  activityPubDeliveryService: ActivityPubDeliveryService;
 }
 
 /**
@@ -48,6 +57,13 @@ export function createContainer(): AppContainer {
   // Storage Adapter選択
   const fileStorage = createStorageAdapter();
 
+  // Cache Service (Dragonfly/Redis)
+  const cacheService = new DragonflyCacheAdapter();
+  // Initialize in background (non-blocking)
+  cacheService.waitForInit().catch((error) => {
+    console.warn('Cache service initialization failed (caching disabled):', error);
+  });
+
   // Activity Delivery Queue
   const activityDeliveryQueue = new ActivityDeliveryQueue();
   // Initialize in background (non-blocking)
@@ -55,10 +71,29 @@ export function createContainer(): AppContainer {
     console.error('Failed to initialize ActivityDeliveryQueue:', error);
   });
 
+  // Remote Actor/Note Services for ActivityPub federation
+  const remoteActorService = new RemoteActorService(repositories.userRepository);
+  const remoteNoteService = new RemoteNoteService(
+    repositories.noteRepository,
+    repositories.userRepository,
+    remoteActorService
+  );
+
+  // ActivityPub Delivery Service
+  const activityPubDeliveryService = new ActivityPubDeliveryService(
+    repositories.userRepository,
+    repositories.followRepository,
+    activityDeliveryQueue
+  );
+
   return {
     ...repositories,
     fileStorage,
+    cacheService,
     activityDeliveryQueue,
+    remoteActorService,
+    remoteNoteService,
+    activityPubDeliveryService,
   };
 }
 

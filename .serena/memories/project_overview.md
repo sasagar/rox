@@ -37,10 +37,18 @@ rox/
   - Waku + Jotai setup, Tailwind CSS v4, React Aria Components
   - Lingui i18n (English/Japanese), Authentication (Passkey + Password)
   - Timeline, Note Composer, User interactions, File uploads
-- **Phase 3**: ActivityPub Federation ⏳ ~75% Complete
-  - ✅ WebFinger, Actor, HTTP Signatures, Inbox, Outbox, Collections
+- **Phase 3**: ActivityPub Federation ✅ Complete
+  - ✅ WebFinger, Actor, HTTP Signatures (RSA-SHA256 + hs2019)
   - ✅ BullMQ delivery queue, automatic note delivery to followers
-  - 🚧 Additional activity types, rate limiting, real-server testing
+  - ✅ Follow/Accept/Undo, Create/Delete, Like/Unlike, Announce/Undo
+  - ✅ Tested with GoToSocial, Mastodon, Misskey
+  - ✅ Misskey custom emoji reactions support
+- **Phase 4**: Refactoring & Optimization ⏳ In Progress
+  - Code refactoring (inbox handlers, delivery service)
+  - Redis caching, image optimization
+  - Test coverage improvement
+- **Phase 5**: Administration & Security (Planned)
+- **Phase 6**: Plugin & Production (Planned)
 
 ## Key Features Implemented
 

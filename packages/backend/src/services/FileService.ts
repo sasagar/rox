@@ -8,10 +8,12 @@
  */
 
 import { createHash } from 'node:crypto';
+import { extname } from 'node:path';
 import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
 import type { DriveFile } from '../../../shared/src/types/file.js';
 import { generateId } from '../../../shared/src/utils/id.js';
+import { getImageProcessor } from './ImageProcessor.js';
 
 /**
  * File upload input data
@@ -114,11 +116,46 @@ export class FileService {
     // MD5ハッシュ計算（将来の重複排除用）
     const md5 = createHash('md5').update(file).digest('hex');
 
+    const imageProcessor = getImageProcessor();
+    let fileToSave = file;
+    let fileType = type;
+    let fileName = name;
+    let thumbnailUrl: string | null = null;
+    let blurhash: string | null = null;
+
+    // Process images: convert to WebP and generate thumbnail
+    if (imageProcessor.isImage(type)) {
+      try {
+        const processed = await imageProcessor.process(file, type);
+
+        // Use WebP version as main file
+        fileToSave = processed.webp;
+        fileType = processed.webpType;
+        fileName = this.replaceExtension(name, '.webp');
+        blurhash = processed.blurhash;
+
+        // Save thumbnail
+        const thumbnailName = this.replaceExtension(name, '_thumb.webp');
+        const thumbnailKey = await this.storage.save(processed.thumbnail, {
+          name: thumbnailName,
+          type: processed.thumbnailType,
+          size: processed.thumbnail.byteLength,
+          userId,
+        });
+        thumbnailUrl = this.storage.getUrl(thumbnailKey);
+
+        console.log(`🖼️  Image processed: ${name} → WebP (${Math.round(processed.webp.byteLength / 1024)}KB)`);
+      } catch (error) {
+        // Fall back to original file if processing fails
+        console.warn(`⚠️  Image processing failed for ${name}, using original:`, error);
+      }
+    }
+
     // ストレージに保存
-    const storageKey = await this.storage.save(file, {
-      name,
-      type,
-      size: file.byteLength,
+    const storageKey = await this.storage.save(fileToSave, {
+      name: fileName,
+      type: fileType,
+      size: fileToSave.byteLength,
       userId,
     });
 
@@ -129,19 +166,34 @@ export class FileService {
     const driveFile = await this.driveFileRepository.create({
       id: generateId(),
       userId,
-      name,
-      type,
-      size: file.byteLength,
+      name: fileName,
+      type: fileType,
+      size: fileToSave.byteLength,
       md5,
       url,
-      thumbnailUrl: null, // Phase 1.1で実装予定
-      blurhash: null, // Phase 1.1で実装予定
+      thumbnailUrl,
+      blurhash,
       comment,
       isSensitive,
       storageKey,
     });
 
     return driveFile;
+  }
+
+  /**
+   * Replace file extension
+   *
+   * @param filename - Original filename
+   * @param newExt - New extension (including dot)
+   * @returns Filename with new extension
+   */
+  private replaceExtension(filename: string, newExt: string): string {
+    const ext = extname(filename);
+    if (ext) {
+      return filename.slice(0, -ext.length) + newExt;
+    }
+    return filename + newExt;
   }
 
   /**
