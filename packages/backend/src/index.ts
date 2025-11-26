@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
-import { diMiddleware, errorHandler, securityHeaders } from './middleware/index.js';
+import { diMiddleware, errorHandler, securityHeaders, requestLogger } from './middleware/index.js';
+import { logger } from './lib/logger.js';
 import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import driveRoute from './routes/drive.js';
@@ -25,7 +25,7 @@ import { getContainer } from './di/container.js';
 const app = new Hono();
 
 // Global middleware
-app.use('*', logger());
+app.use('*', requestLogger());
 app.use('*', errorHandler);
 app.use('*', securityHeaders());
 app.use('*', cors());
@@ -66,10 +66,12 @@ app.route('/', noteAPRoute); // /notes/:id
 
 const port = parseInt(process.env.PORT || '3000', 10);
 
-console.log(`🚀 Rox API server starting on port ${port}`);
-console.log(`📊 Database: ${process.env.DB_TYPE || 'postgres'}`);
-console.log(`💾 Storage: ${process.env.STORAGE_TYPE || 'local'}`);
-console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+logger.info({
+  port,
+  database: process.env.DB_TYPE || 'postgres',
+  storage: process.env.STORAGE_TYPE || 'local',
+  environment: process.env.NODE_ENV || 'development',
+}, 'Rox API server starting');
 
 // Start cleanup service for received activities
 const cleanupService = new ReceivedActivitiesCleanupService({
@@ -83,33 +85,33 @@ let isShuttingDown = false;
 
 async function gracefulShutdown(signal: string): Promise<void> {
   if (isShuttingDown) {
-    console.log(`${signal}: Shutdown already in progress...`);
+    logger.warn({ signal }, 'Shutdown already in progress');
     return;
   }
 
   isShuttingDown = true;
-  console.log(`\n${signal} received: Starting graceful shutdown...`);
+  logger.info({ signal }, 'Starting graceful shutdown');
 
   const shutdownTimeout = setTimeout(() => {
-    console.error('Shutdown timeout exceeded, forcing exit');
+    logger.error('Shutdown timeout exceeded, forcing exit');
     process.exit(1);
   }, 30000); // 30 second timeout
 
   try {
     // Stop accepting new requests (handled by isShuttingDown flag)
-    console.log('Stopping cleanup service...');
+    logger.info('Stopping cleanup service');
     cleanupService.stop();
 
     // Shutdown activity delivery queue (drains pending jobs)
-    console.log('Shutting down activity delivery queue...');
+    logger.info('Shutting down activity delivery queue');
     const container = getContainer();
     await container.activityDeliveryQueue.shutdown();
 
-    console.log('Graceful shutdown complete');
+    logger.info('Graceful shutdown complete');
     clearTimeout(shutdownTimeout);
     process.exit(0);
   } catch (error) {
-    console.error('Error during shutdown:', error);
+    logger.error({ err: error }, 'Error during shutdown');
     clearTimeout(shutdownTimeout);
     process.exit(1);
   }

@@ -96,18 +96,26 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 
 ## 2. Monitoring & Observability
 
-### 2.1 Structured Logging (High Priority)
-
-**Current State:**
-- Console.log statements throughout codebase
-- No log levels or structured format
+### 2.1 Structured Logging (High Priority) ✅ COMPLETE
 
 **Tasks:**
-- [ ] Choose logging library (pino recommended for Bun)
-- [ ] Implement structured JSON logging
-- [ ] Add log levels (debug, info, warn, error)
-- [ ] Add request ID tracking
-- [ ] Add correlation IDs for ActivityPub delivery
+- [x] Choose logging library (pino recommended for Bun)
+- [x] Implement structured JSON logging
+- [x] Add log levels (debug, info, warn, error)
+- [x] Add request ID tracking
+- [x] Add correlation IDs for ActivityPub delivery
+
+**Files Created:**
+- `packages/backend/src/lib/logger.ts` - Structured logger using pino
+- `packages/backend/src/middleware/requestLogger.ts` - Request logging middleware
+
+**Features:**
+- `createLogger()` - Create configurable pino logger
+- `createRequestLogger()` - Request-scoped logger with request ID, method, path, IP
+- `createActivityPubLogger()` - ActivityPub delivery logger with activity type and target
+- Request ID header (`X-Request-ID`) added to all responses
+- Pretty printing in development, JSON in production
+- Configurable log level via `LOG_LEVEL` environment variable
 
 **Log Format:**
 ```json
@@ -122,7 +130,7 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 }
 ```
 
-**Estimated Impact:** Essential for debugging production issues
+**Estimated Impact:** Essential for debugging production issues ✅ Achieved
 
 ---
 
@@ -322,15 +330,15 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
    - Protect public endpoints
    - Prevent abuse
 
-### Sprint 2: Deployment & Logging (Week 2) - IN PROGRESS
+### Sprint 2: Deployment & Logging (Week 2) ✅ COMPLETE
 
 4. **Docker Compose Production** (1.1) ✅
    - Complete production deployment setup
    - Environment configuration
 
-5. **Structured Logging** (2.1)
-   - Replace console.log
-   - Add request tracking
+5. **Structured Logging** (2.1) ✅
+   - Replace console.log with pino
+   - Add request tracking with X-Request-ID
 
 6. **Graceful Shutdown** (1.3) ✅
    - Handle signals properly
@@ -373,7 +381,7 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 | Health check endpoints | 2 endpoints | ✅ Complete (2/2) |
 | Security headers | All OWASP headers | ✅ Complete (7 headers) |
 | Rate limiting coverage | 100% public endpoints | ✅ Complete (4 presets) |
-| Structured logging | All log statements | Pending |
+| Structured logging | All log statements | ✅ Complete (pino + request logger) |
 | Inbox test coverage | 11 activity types | Pending |
 | Documentation | Complete deployment guide | Pending |
 
