@@ -7,12 +7,14 @@ import { usersApi, type User } from '../../lib/api/users';
 import { notesApi } from '../../lib/api/notes';
 import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
 import { apiClient } from '../../lib/api/client';
+import { Flag } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { NoteCard } from '../note/NoteCard';
 import { Spinner } from '../ui/Spinner';
 import { ErrorMessage } from '../ui/ErrorMessage';
 import { TimelineSkeleton } from '../ui/Skeleton';
 import { Layout } from '../layout/Layout';
+import { ReportDialog } from '../report/ReportDialog';
 
 /**
  * Sanitize and scope user custom CSS to prevent XSS and global style leakage
@@ -86,6 +88,7 @@ export function UserProfile({ username }: UserProfileProps) {
   const [followLoading, setFollowLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, '-');
@@ -276,8 +279,8 @@ export function UserProfile({ username }: UserProfileProps) {
               </div>
             </div>
 
-            {/* Action Button */}
-            <div className="flex-1 flex justify-end">
+            {/* Action Buttons */}
+            <div className="flex-1 flex justify-end gap-2">
               {isOwnProfile ? (
                 <Button
                   variant="secondary"
@@ -290,22 +293,32 @@ export function UserProfile({ username }: UserProfileProps) {
                   <Trans>Edit Profile</Trans>
                 </Button>
               ) : currentUser ? (
-                <Button
-                  variant={isFollowing ? 'secondary' : 'primary'}
-                  onPress={handleFollowToggle}
-                  isDisabled={followLoading}
-                >
-                  {followLoading ? (
-                    <div className="flex items-center gap-2">
-                      <Spinner size="xs" variant="white" />
-                      <span>{isFollowing ? <Trans>Unfollowing...</Trans> : <Trans>Following...</Trans>}</span>
-                    </div>
-                  ) : isFollowing ? (
-                    <Trans>Following</Trans>
-                  ) : (
-                    <Trans>Follow</Trans>
-                  )}
-                </Button>
+                <>
+                  <Button
+                    variant={isFollowing ? 'secondary' : 'primary'}
+                    onPress={handleFollowToggle}
+                    isDisabled={followLoading}
+                  >
+                    {followLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Spinner size="xs" variant="white" />
+                        <span>{isFollowing ? <Trans>Unfollowing...</Trans> : <Trans>Following...</Trans>}</span>
+                      </div>
+                    ) : isFollowing ? (
+                      <Trans>Following</Trans>
+                    ) : (
+                      <Trans>Follow</Trans>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onPress={() => setShowReportDialog(true)}
+                    aria-label="Report user"
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <Flag className="w-5 h-5" />
+                  </Button>
+                </>
               ) : null}
             </div>
           </div>
@@ -406,6 +419,15 @@ export function UserProfile({ username }: UserProfileProps) {
         )}
       </div>
       </div>
+
+      {/* Report Dialog */}
+      <ReportDialog
+        isOpen={showReportDialog}
+        onClose={() => setShowReportDialog(false)}
+        targetType="user"
+        targetUserId={user.id}
+        targetUsername={user.username}
+      />
     </Layout>
   );
 }

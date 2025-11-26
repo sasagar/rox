@@ -45,6 +45,18 @@ msgstr "このインスタンスについて"
 #~ msgid "About This Server"
 #~ msgstr "このサーバーについて"
 
+#: src/pages/admin/reports.tsx:518
+msgid "Add notes about the action taken..."
+msgstr "対応内容についてメモを追加..."
+
+#: src/pages/admin/reports.tsx:474
+msgid "Additional Comment"
+msgstr "追加コメント"
+
+#: src/components/report/ReportDialog.tsx:158
+msgid "Additional Details (optional)"
+msgstr "詳細（任意）"
+
 #: src/components/layout/Sidebar.tsx:56
 msgid "Admin"
 msgstr "管理"
@@ -56,6 +68,10 @@ msgstr "管理者ロール"
 #: src/pages/admin/settings.tsx:180
 msgid "Admin Settings"
 msgstr "管理設定"
+
+#: src/pages/admin/reports.tsx:299
+msgid "All"
+msgstr "すべて"
 
 #: src/pages/admin/blocks.tsx:311
 msgid "All instances can federate with this server"
@@ -124,7 +140,7 @@ msgstr "{0}にブロック"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:319
+#: src/components/user/UserProfile.tsx:332
 msgid "Bot"
 msgstr "Bot"
 
@@ -144,6 +160,7 @@ msgstr "通報を管理可能"
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
+#: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/roles.tsx:530
 #: src/pages/settings.tsx:260
 msgid "Cancel"
@@ -152,6 +169,11 @@ msgstr "キャンセル"
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
+
+#: src/components/report/ReportDialog.tsx:116
+#: src/pages/admin/reports.tsx:383
+msgid "Close"
+msgstr "閉じる"
 
 #: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
@@ -173,7 +195,7 @@ msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザー�
 msgid "Contact"
 msgstr "連絡先"
 
-#: src/components/note/NoteCard.tsx:279
+#: src/components/note/NoteCard.tsx:282
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -208,7 +230,9 @@ msgid "Create your account"
 msgstr "アカウントを作成"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
+#. placeholder {0}: formatDate(selectedReport.createdAt)
 #: src/pages/admin/invitations.tsx:387
+#: src/pages/admin/reports.tsx:487
 msgid "Created: {0}"
 msgstr "作成日: {0}"
 
@@ -290,7 +314,7 @@ msgstr "下書きを破棄しました"
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/user/UserProfile.tsx:290
+#: src/components/user/UserProfile.tsx:293
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -330,7 +354,7 @@ msgstr "登録には招待コードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:227
+#: src/components/user/UserProfile.tsx:230
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -351,7 +375,7 @@ msgstr "有効期限"
 msgid "Expires: {0}"
 msgstr "有効期限: {0}"
 
-#: src/components/note/NoteCard.tsx:134
+#: src/components/note/NoteCard.tsx:137
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
@@ -375,7 +399,15 @@ msgstr "ロールの削除に失敗しました"
 msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
 
-#: src/components/note/NoteCard.tsx:152
+#: src/pages/admin/reports.tsx:152
+msgid "Failed to load report details"
+msgstr "報告の詳細の読み込みに失敗しました"
+
+#: src/pages/admin/reports.tsx:180
+msgid "Failed to process report"
+msgstr "報告の処理に失敗しました"
+
+#: src/components/note/NoteCard.tsx:155
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
@@ -383,11 +415,15 @@ msgstr "リノートに失敗しました"
 msgid "Failed to save role"
 msgstr "ロールの保存に失敗しました"
 
+#: src/components/report/ReportDialog.tsx:86
+msgid "Failed to submit report"
+msgstr "報告の送信に失敗しました"
+
 #: src/pages/admin/blocks.tsx:155
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
-#: src/components/note/NoteCard.tsx:180
+#: src/components/note/NoteCard.tsx:183
 msgid "Failed to update follow status"
 msgstr "フォロー状態の更新に失敗しました"
 
@@ -404,27 +440,27 @@ msgstr "最小限のリソース使用で高速かつ効率的"
 msgid "Federated"
 msgstr "分散型"
 
-#: src/components/note/NoteCard.tsx:262
-#: src/components/user/UserProfile.tsx:306
+#: src/components/note/NoteCard.tsx:265
+#: src/components/user/UserProfile.tsx:310
 msgid "Follow"
 msgstr "フォロー"
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/components/user/UserProfile.tsx:340
+#: src/components/user/UserProfile.tsx:353
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/note/NoteCard.tsx:262
-#: src/components/user/UserProfile.tsx:304
-#: src/components/user/UserProfile.tsx:346
+#: src/components/note/NoteCard.tsx:265
+#: src/components/user/UserProfile.tsx:308
+#: src/components/user/UserProfile.tsx:359
 msgid "Following"
 msgstr "フォロー中"
 
-#: src/components/note/NoteCard.tsx:173
+#: src/components/note/NoteCard.tsx:176
 msgid "Following successfully"
 msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:301
+#: src/components/user/UserProfile.tsx:305
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -534,7 +570,7 @@ msgid "Lightweight"
 msgstr "軽量"
 
 #: src/components/timeline/Timeline.tsx:187
-#: src/components/user/UserProfile.tsx:395
+#: src/components/user/UserProfile.tsx:408
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -546,7 +582,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/user/UserProfile.tsx:391
+#: src/components/user/UserProfile.tsx:404
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -586,6 +622,10 @@ msgstr "最低8文字"
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
+#: src/components/note/NoteCard.tsx:460
+msgid "More options"
+msgstr "その他のオプション"
+
 #: src/pages/admin/roles.tsx:353
 msgid "Name"
 msgstr "名前"
@@ -614,7 +654,11 @@ msgstr "招待コードがまだありません"
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
-#: src/components/user/UserProfile.tsx:371
+#: src/pages/admin/reports.tsx:318
+msgid "No pending reports to review"
+msgstr "確認待ちの報告はありません"
+
+#: src/components/user/UserProfile.tsx:384
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -622,9 +666,17 @@ msgstr "まだ投稿がありません"
 msgid "No replies yet"
 msgstr "まだ返信がありません"
 
+#: src/pages/admin/reports.tsx:314
+msgid "No reports found"
+msgstr "報告が見つかりません"
+
 #: src/pages/admin/roles.tsx:554
 msgid "No roles yet"
 msgstr "ロールがまだありません"
+
+#: src/pages/admin/reports.tsx:462
+msgid "No text content"
+msgstr "テキストコンテンツなし"
 
 #: src/components/pages/NoteDetailPageClient.tsx:126
 msgid "Note"
@@ -642,9 +694,13 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:146
+#: src/components/note/NoteCard.tsx:149
 msgid "Note renoted"
 msgstr "リノートしました"
+
+#: src/pages/admin/reports.tsx:354
+msgid "Note Report"
+msgstr "ノートの報告"
 
 #: src/pages/settings.tsx:226
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -676,6 +732,14 @@ msgstr "パスワード"
 msgid "Password is required"
 msgstr "パスワードを入力してください"
 
+#: src/pages/admin/reports.tsx:300
+msgid "Pending"
+msgstr "保留中"
+
+#: src/pages/admin/reports.tsx:264
+msgid "Pending Reports"
+msgstr "保留中の報告"
+
 #: src/pages/admin/roles.tsx:441
 msgid "Permissions"
 msgstr "権限"
@@ -700,8 +764,8 @@ msgstr "投稿"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:334
-#: src/components/user/UserProfile.tsx:356
+#: src/components/user/UserProfile.tsx:347
+#: src/components/user/UserProfile.tsx:369
 msgid "Posts"
 msgstr "投稿"
 
@@ -745,6 +809,10 @@ msgstr "プロフィール"
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
+#: src/components/report/ReportDialog.tsx:163
+msgid "Provide more context about your report..."
+msgstr "報告についての詳細を入力してください..."
+
 #: src/components/note/NoteComposer.tsx:268
 #: src/pages/admin/roles.tsx:582
 msgid "Public"
@@ -758,9 +826,13 @@ msgstr "公開（プロフィールに表示）"
 #~ msgid "React"
 #~ msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:127
+#: src/components/note/NoteCard.tsx:130
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
+
+#: src/components/report/ReportDialog.tsx:135
+msgid "Reason"
+msgstr "報告理由"
 
 #: src/pages/admin/blocks.tsx:260
 msgid "Reason (optional)"
@@ -791,7 +863,15 @@ msgstr "登録設定"
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
-#: src/components/note/NoteCard.tsx:270
+#: src/pages/admin/reports.tsx:549
+msgid "Reject"
+msgstr "却下"
+
+#: src/pages/admin/reports.tsx:302
+msgid "Rejected"
+msgstr "却下済み"
+
+#: src/components/note/NoteCard.tsx:273
 msgid "Renoted"
 msgstr "リノート"
 
@@ -808,9 +888,67 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
+#: src/components/note/NoteCard.tsx:475
+msgid "Report"
+msgstr "報告"
+
+#: src/pages/admin/reports.tsx:377
+msgid "Report Details"
+msgstr "報告の詳細"
+
+#: src/pages/admin/reports.tsx:291
+msgid "Report List"
+msgstr "報告一覧"
+
+#: src/components/report/ReportDialog.tsx:108
+msgid "Report Note"
+msgstr "ノートを報告"
+
+#: src/pages/admin/reports.tsx:172
+msgid "Report rejected"
+msgstr "報告を却下しました"
+
+#: src/pages/admin/reports.tsx:172
+msgid "Report resolved"
+msgstr "報告を解決しました"
+
+#: src/components/report/ReportDialog.tsx:70
+msgid "Report submitted. Thank you for helping keep our community safe."
+msgstr "報告を送信しました。コミュニティの安全維持にご協力いただきありがとうございます。"
+
+#: src/components/report/ReportDialog.tsx:106
+msgid "Report User"
+msgstr "ユーザーを報告"
+
+#: src/pages/admin/reports.tsx:456
+msgid "Reported Note"
+msgstr "報告されたノート"
+
+#. placeholder {0}: formatDate(report.createdAt)
+#: src/pages/admin/reports.tsx:359
+msgid "Reported on {0}"
+msgstr "{0}に報告"
+
+#: src/pages/admin/reports.tsx:435
+msgid "Reported User"
+msgstr "報告されたユーザー"
+
+#: src/pages/admin/reports.tsx:410
+msgid "Reporter"
+msgstr "報告者"
+
+#: src/components/report/ReportDialog.tsx:126
+msgid "Reporting"
+msgstr "報告対象"
+
+#: src/pages/admin/reports.tsx:243
 #: src/pages/admin/roles.tsx:599
 msgid "Reports"
 msgstr "通報"
+
+#: src/components/report/ReportDialog.tsx:199
+msgid "Reports are reviewed by moderators. Your report will remain confidential."
+msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
 #: src/pages/admin/settings.tsx:406
 msgid "Require an invitation code to register"
@@ -824,6 +962,27 @@ msgstr "承認が必要"
 msgid "Reset"
 msgstr "リセット"
 
+#: src/pages/admin/reports.tsx:500
+msgid "Resolution"
+msgstr "対応内容"
+
+#: src/pages/admin/reports.tsx:513
+msgid "Resolution Notes"
+msgstr "対応メモ"
+
+#: src/pages/admin/reports.tsx:534
+msgid "Resolve"
+msgstr "解決"
+
+#: src/pages/admin/reports.tsx:301
+msgid "Resolved"
+msgstr "解決済み"
+
+#. placeholder {0}: formatDate(selectedReport.resolvedAt)
+#: src/pages/admin/reports.tsx:491
+msgid "Resolved: {0}"
+msgstr "解決: {0}"
+
 #: src/components/note/NoteComposer.tsx:309
 msgid "Restore"
 msgstr "復元"
@@ -835,6 +994,10 @@ msgstr "再試行"
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retrying..."
 msgstr "再試行中..."
+
+#: src/pages/admin/reports.tsx:246
+msgid "Review and manage user reports"
+msgstr "ユーザーからの報告を確認・管理"
 
 #: src/pages/admin/roles.tsx:187
 msgid "Role created"
@@ -901,7 +1064,7 @@ msgstr "設定"
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 msgstr "思いを共有し、友人とつながり、Fediverse全体での会話に参加しましょう。データはあなたのもので、誰が何を見るかを管理できます。"
 
-#: src/components/note/NoteCard.tsx:289
+#: src/components/note/NoteCard.tsx:292
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -938,6 +1101,10 @@ msgstr "ソーシャル"
 #: src/components/LandingPage.tsx:238
 msgid "Software"
 msgstr "ソフトウェア"
+
+#: src/components/report/ReportDialog.tsx:192
+msgid "Submit Report"
+msgstr "報告を送信"
 
 #: src/pages/admin/roles.tsx:609
 msgid "Suspend Users"
@@ -987,7 +1154,7 @@ msgstr "このインスタンスは現在新規登録を受け付けていませ
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
 
-#: src/components/user/UserProfile.tsx:377
+#: src/components/user/UserProfile.tsx:390
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -1000,9 +1167,17 @@ msgstr "タイムライン"
 msgid "Total Codes"
 msgstr "コード総数"
 
+#: src/pages/admin/reports.tsx:279
+msgid "Total Reports"
+msgstr "報告総数"
+
 #: src/pages/admin/roles.tsx:326
 msgid "Total Roles"
 msgstr "ロール総数"
+
+#: src/pages/admin/reports.tsx:320
+msgid "Try adjusting your filter"
+msgstr "フィルターを調整してみてください"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
@@ -1012,13 +1187,17 @@ msgstr "ロール総数"
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
-#: src/components/note/NoteCard.tsx:166
+#: src/components/note/NoteCard.tsx:169
 msgid "Unfollowed successfully"
 msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:301
+#: src/components/user/UserProfile.tsx:305
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
+
+#: src/pages/admin/reports.tsx:425
+msgid "Unknown"
+msgstr "不明"
 
 #: src/pages/admin/roles.tsx:516
 msgid "Update Role"
@@ -1036,9 +1215,13 @@ msgstr "アップロード中..."
 msgid "Used"
 msgstr "使用済み"
 
-#: src/components/user/UserProfile.tsx:228
+#: src/components/user/UserProfile.tsx:231
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
+
+#: src/pages/admin/reports.tsx:348
+msgid "User Report"
+msgstr "ユーザーの報告"
 
 #: src/pages/login.tsx:143
 #: src/pages/settings.tsx:187
@@ -1085,15 +1268,19 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
+#: src/components/report/ReportDialog.tsx:81
+msgid "You have already reported this"
+msgstr "既に報告済みです"
+
 #: src/components/note/NoteComposer.tsx:299
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
-#: src/components/user/UserProfile.tsx:375
+#: src/components/user/UserProfile.tsx:388
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
-#: src/components/user/UserProfile.tsx:404
+#: src/components/user/UserProfile.tsx:417
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 

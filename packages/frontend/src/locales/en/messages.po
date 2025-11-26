@@ -45,6 +45,18 @@ msgstr "About This Instance"
 #~ msgid "About This Server"
 #~ msgstr "About This Server"
 
+#: src/pages/admin/reports.tsx:518
+msgid "Add notes about the action taken..."
+msgstr "Add notes about the action taken..."
+
+#: src/pages/admin/reports.tsx:474
+msgid "Additional Comment"
+msgstr "Additional Comment"
+
+#: src/components/report/ReportDialog.tsx:158
+msgid "Additional Details (optional)"
+msgstr "Additional Details (optional)"
+
 #: src/components/layout/Sidebar.tsx:56
 msgid "Admin"
 msgstr "Admin"
@@ -56,6 +68,10 @@ msgstr "Admin Role"
 #: src/pages/admin/settings.tsx:180
 msgid "Admin Settings"
 msgstr "Admin Settings"
+
+#: src/pages/admin/reports.tsx:299
+msgid "All"
+msgstr "All"
 
 #: src/pages/admin/blocks.tsx:311
 msgid "All instances can federate with this server"
@@ -124,7 +140,7 @@ msgstr "Blocked on {0}"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/user/UserProfile.tsx:319
+#: src/components/user/UserProfile.tsx:332
 msgid "Bot"
 msgstr "Bot"
 
@@ -144,6 +160,7 @@ msgstr "Can manage reports"
 msgid "Can suspend users"
 msgstr "Can suspend users"
 
+#: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/roles.tsx:530
 #: src/pages/settings.tsx:260
 msgid "Cancel"
@@ -152,6 +169,11 @@ msgstr "Cancel"
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
+
+#: src/components/report/ReportDialog.tsx:116
+#: src/pages/admin/reports.tsx:383
+msgid "Close"
+msgstr "Close"
 
 #: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
@@ -173,7 +195,7 @@ msgstr "Connect with users across the fediverse using ActivityPub protocol"
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:279
+#: src/components/note/NoteCard.tsx:282
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -208,7 +230,9 @@ msgid "Create your account"
 msgstr "Create your account"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
+#. placeholder {0}: formatDate(selectedReport.createdAt)
 #: src/pages/admin/invitations.tsx:387
+#: src/pages/admin/reports.tsx:487
 msgid "Created: {0}"
 msgstr "Created: {0}"
 
@@ -290,7 +314,7 @@ msgstr "Draft discarded"
 msgid "Draft restored"
 msgstr "Draft restored"
 
-#: src/components/user/UserProfile.tsx:290
+#: src/components/user/UserProfile.tsx:293
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -330,7 +354,7 @@ msgstr "Enter your invitation code to register"
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:227
+#: src/components/user/UserProfile.tsx:230
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -351,7 +375,7 @@ msgstr "Expires In"
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
-#: src/components/note/NoteCard.tsx:134
+#: src/components/note/NoteCard.tsx:137
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -375,7 +399,15 @@ msgstr "Failed to delete role"
 msgid "Failed to load note"
 msgstr "Failed to load note"
 
-#: src/components/note/NoteCard.tsx:152
+#: src/pages/admin/reports.tsx:152
+msgid "Failed to load report details"
+msgstr "Failed to load report details"
+
+#: src/pages/admin/reports.tsx:180
+msgid "Failed to process report"
+msgstr "Failed to process report"
+
+#: src/components/note/NoteCard.tsx:155
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -383,11 +415,15 @@ msgstr "Failed to renote"
 msgid "Failed to save role"
 msgstr "Failed to save role"
 
+#: src/components/report/ReportDialog.tsx:86
+msgid "Failed to submit report"
+msgstr "Failed to submit report"
+
 #: src/pages/admin/blocks.tsx:155
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
 
-#: src/components/note/NoteCard.tsx:180
+#: src/components/note/NoteCard.tsx:183
 msgid "Failed to update follow status"
 msgstr "Failed to update follow status"
 
@@ -404,27 +440,27 @@ msgstr "Fast and efficient with minimal resource usage"
 msgid "Federated"
 msgstr "Federated"
 
-#: src/components/note/NoteCard.tsx:262
-#: src/components/user/UserProfile.tsx:306
+#: src/components/note/NoteCard.tsx:265
+#: src/components/user/UserProfile.tsx:310
 msgid "Follow"
 msgstr "Follow"
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/components/user/UserProfile.tsx:340
+#: src/components/user/UserProfile.tsx:353
 msgid "Followers"
 msgstr "Followers"
 
-#: src/components/note/NoteCard.tsx:262
-#: src/components/user/UserProfile.tsx:304
-#: src/components/user/UserProfile.tsx:346
+#: src/components/note/NoteCard.tsx:265
+#: src/components/user/UserProfile.tsx:308
+#: src/components/user/UserProfile.tsx:359
 msgid "Following"
 msgstr "Following"
 
-#: src/components/note/NoteCard.tsx:173
+#: src/components/note/NoteCard.tsx:176
 msgid "Following successfully"
 msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:301
+#: src/components/user/UserProfile.tsx:305
 msgid "Following..."
 msgstr "Following..."
 
@@ -534,7 +570,7 @@ msgid "Lightweight"
 msgstr "Lightweight"
 
 #: src/components/timeline/Timeline.tsx:187
-#: src/components/user/UserProfile.tsx:395
+#: src/components/user/UserProfile.tsx:408
 msgid "Load more"
 msgstr "Load more"
 
@@ -546,7 +582,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/user/UserProfile.tsx:391
+#: src/components/user/UserProfile.tsx:404
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -586,6 +622,10 @@ msgstr "Minimum 8 characters"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
+#: src/components/note/NoteCard.tsx:460
+msgid "More options"
+msgstr "More options"
+
 #: src/pages/admin/roles.tsx:353
 msgid "Name"
 msgstr "Name"
@@ -614,7 +654,11 @@ msgstr "No invitation codes yet"
 msgid "No notes yet"
 msgstr "No notes yet"
 
-#: src/components/user/UserProfile.tsx:371
+#: src/pages/admin/reports.tsx:318
+msgid "No pending reports to review"
+msgstr "No pending reports to review"
+
+#: src/components/user/UserProfile.tsx:384
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -622,9 +666,17 @@ msgstr "No posts yet"
 msgid "No replies yet"
 msgstr "No replies yet"
 
+#: src/pages/admin/reports.tsx:314
+msgid "No reports found"
+msgstr "No reports found"
+
 #: src/pages/admin/roles.tsx:554
 msgid "No roles yet"
 msgstr "No roles yet"
+
+#: src/pages/admin/reports.tsx:462
+msgid "No text content"
+msgstr "No text content"
 
 #: src/components/pages/NoteDetailPageClient.tsx:126
 msgid "Note"
@@ -642,9 +694,13 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:146
+#: src/components/note/NoteCard.tsx:149
 msgid "Note renoted"
 msgstr "Note renoted"
+
+#: src/pages/admin/reports.tsx:354
+msgid "Note Report"
+msgstr "Note Report"
 
 #: src/pages/settings.tsx:226
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -676,6 +732,14 @@ msgstr "Password"
 msgid "Password is required"
 msgstr "Password is required"
 
+#: src/pages/admin/reports.tsx:300
+msgid "Pending"
+msgstr "Pending"
+
+#: src/pages/admin/reports.tsx:264
+msgid "Pending Reports"
+msgstr "Pending Reports"
+
 #: src/pages/admin/roles.tsx:441
 msgid "Permissions"
 msgstr "Permissions"
@@ -700,8 +764,8 @@ msgstr "Post"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:334
-#: src/components/user/UserProfile.tsx:356
+#: src/components/user/UserProfile.tsx:347
+#: src/components/user/UserProfile.tsx:369
 msgid "Posts"
 msgstr "Posts"
 
@@ -745,6 +809,10 @@ msgstr "Profile"
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
+#: src/components/report/ReportDialog.tsx:163
+msgid "Provide more context about your report..."
+msgstr "Provide more context about your report..."
+
 #: src/components/note/NoteComposer.tsx:268
 #: src/pages/admin/roles.tsx:582
 msgid "Public"
@@ -758,9 +826,13 @@ msgstr "Public (show on profiles)"
 #~ msgid "React"
 #~ msgstr "React"
 
-#: src/components/note/NoteCard.tsx:127
+#: src/components/note/NoteCard.tsx:130
 msgid "Reaction added"
 msgstr "Reaction added"
+
+#: src/components/report/ReportDialog.tsx:135
+msgid "Reason"
+msgstr "Reason"
 
 #: src/pages/admin/blocks.tsx:260
 msgid "Reason (optional)"
@@ -791,7 +863,15 @@ msgstr "Registration Settings"
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
-#: src/components/note/NoteCard.tsx:270
+#: src/pages/admin/reports.tsx:549
+msgid "Reject"
+msgstr "Reject"
+
+#: src/pages/admin/reports.tsx:302
+msgid "Rejected"
+msgstr "Rejected"
+
+#: src/components/note/NoteCard.tsx:273
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -808,9 +888,67 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
+#: src/components/note/NoteCard.tsx:475
+msgid "Report"
+msgstr "Report"
+
+#: src/pages/admin/reports.tsx:377
+msgid "Report Details"
+msgstr "Report Details"
+
+#: src/pages/admin/reports.tsx:291
+msgid "Report List"
+msgstr "Report List"
+
+#: src/components/report/ReportDialog.tsx:108
+msgid "Report Note"
+msgstr "Report Note"
+
+#: src/pages/admin/reports.tsx:172
+msgid "Report rejected"
+msgstr "Report rejected"
+
+#: src/pages/admin/reports.tsx:172
+msgid "Report resolved"
+msgstr "Report resolved"
+
+#: src/components/report/ReportDialog.tsx:70
+msgid "Report submitted. Thank you for helping keep our community safe."
+msgstr "Report submitted. Thank you for helping keep our community safe."
+
+#: src/components/report/ReportDialog.tsx:106
+msgid "Report User"
+msgstr "Report User"
+
+#: src/pages/admin/reports.tsx:456
+msgid "Reported Note"
+msgstr "Reported Note"
+
+#. placeholder {0}: formatDate(report.createdAt)
+#: src/pages/admin/reports.tsx:359
+msgid "Reported on {0}"
+msgstr "Reported on {0}"
+
+#: src/pages/admin/reports.tsx:435
+msgid "Reported User"
+msgstr "Reported User"
+
+#: src/pages/admin/reports.tsx:410
+msgid "Reporter"
+msgstr "Reporter"
+
+#: src/components/report/ReportDialog.tsx:126
+msgid "Reporting"
+msgstr "Reporting"
+
+#: src/pages/admin/reports.tsx:243
 #: src/pages/admin/roles.tsx:599
 msgid "Reports"
 msgstr "Reports"
+
+#: src/components/report/ReportDialog.tsx:199
+msgid "Reports are reviewed by moderators. Your report will remain confidential."
+msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
 #: src/pages/admin/settings.tsx:406
 msgid "Require an invitation code to register"
@@ -824,6 +962,27 @@ msgstr "Require Approval"
 msgid "Reset"
 msgstr "Reset"
 
+#: src/pages/admin/reports.tsx:500
+msgid "Resolution"
+msgstr "Resolution"
+
+#: src/pages/admin/reports.tsx:513
+msgid "Resolution Notes"
+msgstr "Resolution Notes"
+
+#: src/pages/admin/reports.tsx:534
+msgid "Resolve"
+msgstr "Resolve"
+
+#: src/pages/admin/reports.tsx:301
+msgid "Resolved"
+msgstr "Resolved"
+
+#. placeholder {0}: formatDate(selectedReport.resolvedAt)
+#: src/pages/admin/reports.tsx:491
+msgid "Resolved: {0}"
+msgstr "Resolved: {0}"
+
 #: src/components/note/NoteComposer.tsx:309
 msgid "Restore"
 msgstr "Restore"
@@ -835,6 +994,10 @@ msgstr "Retry"
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retrying..."
 msgstr "Retrying..."
+
+#: src/pages/admin/reports.tsx:246
+msgid "Review and manage user reports"
+msgstr "Review and manage user reports"
 
 #: src/pages/admin/roles.tsx:187
 msgid "Role created"
@@ -901,7 +1064,7 @@ msgstr "Settings"
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 msgstr "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 
-#: src/components/note/NoteCard.tsx:289
+#: src/components/note/NoteCard.tsx:292
 msgid "Show content"
 msgstr "Show content"
 
@@ -938,6 +1101,10 @@ msgstr "Social"
 #: src/components/LandingPage.tsx:238
 msgid "Software"
 msgstr "Software"
+
+#: src/components/report/ReportDialog.tsx:192
+msgid "Submit Report"
+msgstr "Submit Report"
 
 #: src/pages/admin/roles.tsx:609
 msgid "Suspend Users"
@@ -987,7 +1154,7 @@ msgstr "This instance is not accepting new registrations at this time."
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 
-#: src/components/user/UserProfile.tsx:377
+#: src/components/user/UserProfile.tsx:390
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -1000,9 +1167,17 @@ msgstr "Timeline"
 msgid "Total Codes"
 msgstr "Total Codes"
 
+#: src/pages/admin/reports.tsx:279
+msgid "Total Reports"
+msgstr "Total Reports"
+
 #: src/pages/admin/roles.tsx:326
 msgid "Total Roles"
 msgstr "Total Roles"
+
+#: src/pages/admin/reports.tsx:320
+msgid "Try adjusting your filter"
+msgstr "Try adjusting your filter"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
@@ -1012,13 +1187,17 @@ msgstr "Total Roles"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
-#: src/components/note/NoteCard.tsx:166
+#: src/components/note/NoteCard.tsx:169
 msgid "Unfollowed successfully"
 msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:301
+#: src/components/user/UserProfile.tsx:305
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
+
+#: src/pages/admin/reports.tsx:425
+msgid "Unknown"
+msgstr "Unknown"
 
 #: src/pages/admin/roles.tsx:516
 msgid "Update Role"
@@ -1036,9 +1215,13 @@ msgstr "Uploading..."
 msgid "Used"
 msgstr "Used"
 
-#: src/components/user/UserProfile.tsx:228
+#: src/components/user/UserProfile.tsx:231
 msgid "User not found"
 msgstr "User not found"
+
+#: src/pages/admin/reports.tsx:348
+msgid "User Report"
+msgstr "User Report"
 
 #: src/pages/login.tsx:143
 #: src/pages/settings.tsx:187
@@ -1085,15 +1268,19 @@ msgstr "Why is this instance being blocked?"
 msgid "Why Join?"
 msgstr "Why Join?"
 
+#: src/components/report/ReportDialog.tsx:81
+msgid "You have already reported this"
+msgstr "You have already reported this"
+
 #: src/components/note/NoteComposer.tsx:299
 msgid "You have an unsaved draft"
 msgstr "You have an unsaved draft"
 
-#: src/components/user/UserProfile.tsx:375
+#: src/components/user/UserProfile.tsx:388
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
-#: src/components/user/UserProfile.tsx:404
+#: src/components/user/UserProfile.tsx:417
 msgid "You've reached the end"
 msgstr "You've reached the end"
 

@@ -5,7 +5,7 @@ import { useAtom } from 'jotai';
 import type { Note, NoteFile } from '../../lib/types/note';
 import { Trans } from '@lingui/react/macro';
 import { t } from '@lingui/core/macro';
-import { MessageCircle, Repeat2 } from 'lucide-react';
+import { MessageCircle, Repeat2, MoreHorizontal, Flag } from 'lucide-react';
 import { Card, CardContent } from '../ui/Card';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -13,6 +13,7 @@ import { ImageModal } from '../ui/ImageModal';
 import { notesApi } from '../../lib/api/notes';
 import { NoteComposer } from './NoteComposer';
 import { ReactionButton } from './ReactionPicker';
+import { ReportDialog } from '../report/ReportDialog';
 import { createReaction, deleteReaction, getMyReactions, getReactionCountsWithEmojis } from '../../lib/api/reactions';
 import { followUser, unfollowUser } from '../../lib/api/following';
 import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
@@ -54,6 +55,8 @@ function NoteCardComponent({
   const [showReplyComposer, setShowReplyComposer] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [token] = useAtom(tokenAtom);
   const [currentUser] = useAtom(currentUserAtom);
   const [, addToast] = useAtom(addToastAtom);
@@ -446,6 +449,35 @@ function NoteCardComponent({
               })}
             </div>
           )}
+          {/* More menu with report option */}
+          {currentUser && currentUser.id !== note.user.id && (
+            <div className="relative ml-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                onPress={() => setShowMoreMenu(!showMoreMenu)}
+                className="text-gray-600 hover:text-gray-800"
+                aria-label={t`More options`}
+                aria-expanded={showMoreMenu}
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+              {showMoreMenu && (
+                <div className="absolute right-0 top-full mt-1 w-40 rounded-lg border border-(--border-color) bg-(--bg-primary) shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      setShowReportDialog(true);
+                    }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-lg"
+                  >
+                    <Flag className="w-4 h-4" />
+                    <Trans>Report</Trans>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Reply Composer */}
@@ -461,6 +493,16 @@ function NoteCardComponent({
             />
           </div>
         )}
+
+        {/* Report Dialog */}
+        <ReportDialog
+          isOpen={showReportDialog}
+          onClose={() => setShowReportDialog(false)}
+          targetType="note"
+          targetNoteId={note.id}
+          targetUserId={note.user.id}
+          targetUsername={note.user.username}
+        />
       </CardContent>
     </Card>
   );
