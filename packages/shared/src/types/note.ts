@@ -14,6 +14,11 @@ export interface Note extends Timestamps {
   emojis: string[]; // JSON array of emoji names
   tags: string[]; // JSON array of hashtags
   uri: string | null; // ActivityPub URI for remote notes
+  // Soft delete fields for moderation
+  isDeleted: boolean;
+  deletedAt: Date | null;
+  deletedById: ID | null;
+  deletionReason: string | null;
 }
 
 export interface NoteWithRelations extends Note {

@@ -193,6 +193,10 @@ export class NoteService {
       emojis,
       tags,
       uri: `${baseUrl}/notes/${noteId}`, // ActivityPub URI for local notes
+      isDeleted: false,
+      deletedAt: null,
+      deletedById: null,
+      deletionReason: null,
     });
 
     // Deliver Create activity to followers (async, non-blocking)

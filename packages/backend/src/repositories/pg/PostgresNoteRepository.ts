@@ -56,6 +56,7 @@ export class PostgresNoteRepository implements INoteRepository {
       isNull(users.host), // ローカルユーザーのみ
       eq(notes.visibility, 'public'), // 公開投稿のみ
       eq(notes.localOnly, false), // localOnlyでない投稿
+      eq(notes.isDeleted, false), // ソフトデリートされていない
     ];
 
     if (sinceId) {
@@ -95,7 +96,10 @@ export class PostgresNoteRepository implements INoteRepository {
       return [];
     }
 
-    let conditions = [inArray(notes.userId, userIds)];
+    const conditions = [
+      inArray(notes.userId, userIds),
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
@@ -131,7 +135,9 @@ export class PostgresNoteRepository implements INoteRepository {
     const { limit = 20, sinceId, untilId, userIds = [] } = options;
 
     // ソーシャルタイムライン = ローカルの公開投稿 OR フォロー中のリモートユーザーの投稿
-    const conditions = [];
+    const conditions = [
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
 
     // ローカル公開投稿の条件（localOnlyではない、publicのみ）
     const localConditions = [
@@ -179,7 +185,10 @@ export class PostgresNoteRepository implements INoteRepository {
   ): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    let conditions = [eq(notes.userId, userId)];
+    const conditions = [
+      eq(notes.userId, userId),
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
@@ -215,7 +224,10 @@ export class PostgresNoteRepository implements INoteRepository {
   ): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    let conditions = [eq(notes.replyId, noteId)];
+    const conditions = [
+      eq(notes.replyId, noteId),
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
@@ -251,7 +263,10 @@ export class PostgresNoteRepository implements INoteRepository {
   ): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    let conditions = [eq(notes.renoteId, noteId)];
+    const conditions = [
+      eq(notes.renoteId, noteId),
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
@@ -311,15 +326,86 @@ export class PostgresNoteRepository implements INoteRepository {
         .select({ count: sql<number>`count(*)::int` })
         .from(notes)
         .innerJoin(users, eq(notes.userId, users.id))
-        .where(isNull(users.host));
+        .where(and(isNull(users.host), eq(notes.isDeleted, false)));
 
       return result?.count ?? 0;
     }
 
     const [result] = await this.db
       .select({ count: sql<number>`count(*)::int` })
-      .from(notes);
+      .from(notes)
+      .where(eq(notes.isDeleted, false));
 
     return result?.count ?? 0;
+  }
+
+  async softDelete(
+    id: string,
+    deletedById: string,
+    reason?: string
+  ): Promise<Note | null> {
+    const [result] = await this.db
+      .update(notes)
+      .set({
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedById,
+        deletionReason: reason ?? null,
+        updatedAt: new Date(),
+      })
+      .where(eq(notes.id, id))
+      .returning();
+
+    return (result as Note) ?? null;
+  }
+
+  async restore(id: string): Promise<Note | null> {
+    const [result] = await this.db
+      .update(notes)
+      .set({
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(notes.id, id))
+      .returning();
+
+    return (result as Note) ?? null;
+  }
+
+  async findDeletedNotes(options?: {
+    limit?: number;
+    offset?: number;
+    deletedById?: string;
+  }): Promise<Note[]> {
+    const { limit = 100, offset = 0, deletedById } = options ?? {};
+
+    const conditions = [eq(notes.isDeleted, true)];
+
+    if (deletedById) {
+      conditions.push(eq(notes.deletedById, deletedById));
+    }
+
+    const results = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(and(...conditions))
+      .orderBy(desc(notes.deletedAt))
+      .limit(limit)
+      .offset(offset);
+
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 }

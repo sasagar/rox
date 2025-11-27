@@ -18,6 +18,11 @@ msgstr ""
 msgid "{0} categories"
 msgstr "{0} categories"
 
+#. placeholder {0}: selectedUser.reports.total
+#: src/pages/mod/users.tsx:258
+msgid "{0} reports against this user"
+msgstr "{0} reports against this user"
+
 #: src/pages/admin/invitations.tsx:299
 msgid "1 Day"
 msgstr "1 Day"
@@ -63,6 +68,14 @@ msgstr "Account has been migrated"
 msgid "Account Migration"
 msgstr "Account Migration"
 
+#: src/pages/mod/audit-logs.tsx:232
+msgid "Action Log"
+msgstr "Action Log"
+
+#: src/pages/mod/users.tsx:290
+msgid "Actions"
+msgstr "Actions"
+
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
@@ -77,6 +90,7 @@ msgid "Add New Emoji"
 msgstr "Add New Emoji"
 
 #: src/pages/admin/reports.tsx:518
+#: src/pages/mod/reports.tsx:460
 msgid "Add notes about the action taken..."
 msgstr "Add notes about the action taken..."
 
@@ -85,6 +99,7 @@ msgid "Add your first custom emoji to get started"
 msgstr "Add your first custom emoji to get started"
 
 #: src/pages/admin/reports.tsx:474
+#: src/pages/mod/reports.tsx:427
 msgid "Additional Comment"
 msgstr "Additional Comment"
 
@@ -104,6 +119,10 @@ msgstr "Admin Role"
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
+#: src/pages/mod/users.tsx:346
+msgid "Admin users cannot be suspended"
+msgstr "Admin users cannot be suspended"
+
 #: src/components/settings/AccountMigrationSection.tsx:96
 msgid "Alias added successfully"
 msgstr "Alias added successfully"
@@ -117,8 +136,13 @@ msgid "Aliases"
 msgstr "Aliases"
 
 #: src/pages/admin/reports.tsx:299
+#: src/pages/mod/reports.tsx:286
 msgid "All"
 msgstr "All"
+
+#: src/pages/mod/audit-logs.tsx:240
+msgid "All Actions"
+msgstr "All Actions"
 
 #: src/pages/admin/emojis.tsx:578
 msgid "All Categories"
@@ -127,6 +151,10 @@ msgstr "All Categories"
 #: src/pages/admin/blocks.tsx:311
 msgid "All instances can federate with this server"
 msgstr "All instances can federate with this server"
+
+#: src/pages/mod/audit-logs.tsx:253
+msgid "All Types"
+msgstr "All Types"
 
 #: src/pages/admin/settings.tsx:385
 msgid "Allow new users to register accounts"
@@ -148,6 +176,10 @@ msgstr "Are you sure you want to delete \":{0}:\"?"
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
 msgstr "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
+
+#: src/pages/mod/audit-logs.tsx:202
+msgid "Audit Logs"
+msgstr "Audit Logs"
 
 #: src/components/note/NoteComposer.tsx:191
 msgid "Authentication required"
@@ -250,6 +282,7 @@ msgstr "Click to upload (PNG, GIF, WebP, max 256KB)"
 
 #: src/components/report/ReportDialog.tsx:116
 #: src/pages/admin/reports.tsx:383
+#: src/pages/mod/reports.tsx:357
 msgid "Close"
 msgstr "Close"
 
@@ -319,9 +352,12 @@ msgid "Create your account"
 msgstr "Create your account"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
+#. placeholder {0}: formatDate(note.createdAt)
 #. placeholder {0}: formatDate(selectedReport.createdAt)
 #: src/pages/admin/invitations.tsx:387
 #: src/pages/admin/reports.tsx:487
+#: src/pages/mod/notes.tsx:257
+#: src/pages/mod/reports.tsx:436
 msgid "Created: {0}"
 msgstr "Created: {0}"
 
@@ -383,6 +419,10 @@ msgstr "Delete"
 msgid "Delete code"
 msgstr "Delete code"
 
+#: src/pages/mod/audit-logs.tsx:241
+msgid "Delete Note"
+msgstr "Delete Note"
+
 #: src/pages/admin/roles.tsx:621
 msgid "Delete Notes"
 msgstr "Delete Notes"
@@ -390,6 +430,16 @@ msgstr "Delete Notes"
 #: src/pages/admin/roles.tsx:649
 msgid "Delete role"
 msgstr "Delete role"
+
+#: src/pages/mod/notes.tsx:177
+#: src/pages/mod/notes.tsx:188
+msgid "Deleted Notes"
+msgstr "Deleted Notes"
+
+#. placeholder {0}: formatDate(note.deletedAt)
+#: src/pages/mod/notes.tsx:260
+msgid "Deleted: {0}"
+msgstr "Deleted: {0}"
 
 #: src/pages/admin/roles.tsx:385
 #: src/pages/admin/settings.tsx:253
@@ -490,9 +540,17 @@ msgstr "Emojis"
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
+#: src/pages/mod/users.tsx:300
+msgid "Enter reason for action..."
+msgstr "Enter reason for action..."
+
 #: src/pages/admin/blocks.tsx:254
 msgid "Enter the domain without https:// prefix"
 msgstr "Enter the domain without https:// prefix"
+
+#: src/pages/mod/users.tsx:188
+msgid "Enter username (e.g., alice or alice@remote.server)"
+msgstr "Enter username (e.g., alice or alice@remote.server)"
 
 #: src/pages/signup.tsx:152
 msgid "Enter your invitation code to register"
@@ -560,6 +618,10 @@ msgstr "Failed to delete invitation code"
 msgid "Failed to delete role"
 msgstr "Failed to delete role"
 
+#: src/pages/mod/users.tsx:90
+msgid "Failed to find user"
+msgstr "Failed to find user"
+
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
 msgstr "Failed to initiate migration"
@@ -569,10 +631,12 @@ msgid "Failed to load note"
 msgstr "Failed to load note"
 
 #: src/pages/admin/reports.tsx:152
+#: src/pages/mod/reports.tsx:143
 msgid "Failed to load report details"
 msgstr "Failed to load report details"
 
 #: src/pages/admin/reports.tsx:180
+#: src/pages/mod/reports.tsx:171
 msgid "Failed to process report"
 msgstr "Failed to process report"
 
@@ -583,6 +647,10 @@ msgstr "Failed to remove alias"
 #: src/components/note/NoteCard.tsx:156
 msgid "Failed to renote"
 msgstr "Failed to renote"
+
+#: src/pages/mod/notes.tsx:121
+msgid "Failed to restore note"
+msgstr "Failed to restore note"
 
 #: src/pages/admin/roles.tsx:217
 msgid "Failed to save role"
@@ -596,9 +664,17 @@ msgstr "Failed to save UI settings"
 msgid "Failed to submit report"
 msgstr "Failed to submit report"
 
+#: src/pages/mod/users.tsx:119
+msgid "Failed to suspend user"
+msgstr "Failed to suspend user"
+
 #: src/pages/admin/blocks.tsx:155
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
+
+#: src/pages/mod/users.tsx:148
+msgid "Failed to unsuspend user"
+msgstr "Failed to unsuspend user"
 
 #: src/pages/admin/emojis.tsx:260
 msgid "Failed to update emoji"
@@ -777,6 +853,11 @@ msgstr "Invite Only"
 msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
 
+#. placeholder {0}: formatDate(selectedUser.user.createdAt)
+#: src/pages/mod/users.tsx:247
+msgid "Joined: {0}"
+msgstr "Joined: {0}"
+
 #: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
@@ -868,6 +949,14 @@ msgstr "Migration initiated successfully. Your followers will be transferred to 
 msgid "Minimum 8 characters"
 msgstr "Minimum 8 characters"
 
+#: src/pages/mod/reports.tsx:233
+msgid "Moderation Dashboard"
+msgstr "Moderation Dashboard"
+
+#: src/pages/mod/users.tsx:88
+msgid "Moderator access required"
+msgstr "Moderator access required"
+
 #: src/pages/admin/roles.tsx:439
 msgid "Moderator Role"
 msgstr "Moderator Role"
@@ -897,6 +986,10 @@ msgstr "New accounts require admin approval"
 msgid "No aliases configured"
 msgstr "No aliases configured"
 
+#: src/pages/mod/audit-logs.tsx:268
+msgid "No audit logs found"
+msgstr "No audit logs found"
+
 #: src/pages/admin/blocks.tsx:308
 msgid "No blocked instances"
 msgstr "No blocked instances"
@@ -904,6 +997,10 @@ msgstr "No blocked instances"
 #: src/pages/admin/emojis.tsx:593
 msgid "No custom emojis yet"
 msgstr "No custom emojis yet"
+
+#: src/pages/mod/notes.tsx:199
+msgid "No deleted notes"
+msgstr "No deleted notes"
 
 #: src/components/ui/EmojiPicker.tsx:427
 msgid "No emojis found"
@@ -935,6 +1032,7 @@ msgid "No replies yet"
 msgstr "No replies yet"
 
 #: src/pages/admin/reports.tsx:314
+#: src/pages/mod/reports.tsx:301
 msgid "No reports found"
 msgstr "No reports found"
 
@@ -943,6 +1041,8 @@ msgid "No roles yet"
 msgstr "No roles yet"
 
 #: src/pages/admin/reports.tsx:462
+#: src/pages/mod/notes.tsx:248
+#: src/pages/mod/reports.tsx:418
 msgid "No text content"
 msgstr "No text content"
 
@@ -953,6 +1053,10 @@ msgstr "Note"
 #: src/components/pages/NoteDetailPageClient.tsx:65
 msgid "Note deleted"
 msgstr "Note deleted"
+
+#: src/pages/mod/notes.tsx:158
+msgid "Note Moderation"
+msgstr "Note Moderation"
 
 #: src/components/pages/NoteDetailPageClient.tsx:95
 msgid "Note not found"
@@ -967,8 +1071,13 @@ msgid "Note renoted"
 msgstr "Note renoted"
 
 #: src/pages/admin/reports.tsx:354
+#: src/pages/mod/reports.tsx:332
 msgid "Note Report"
 msgstr "Note Report"
+
+#: src/pages/mod/notes.tsx:114
+msgid "Note restored successfully"
+msgstr "Note restored successfully"
 
 #: src/pages/settings.tsx:229
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -977,6 +1086,14 @@ msgstr "Note: Custom CSS is sanitized and some properties may be restricted for 
 #: src/components/settings/UISettingsSection.tsx:257
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "Note: Some CSS properties may be restricted for security."
+
+#: src/pages/mod/audit-logs.tsx:254
+msgid "Notes"
+msgstr "Notes"
+
+#: src/pages/mod/notes.tsx:202
+msgid "Notes deleted by moderators will appear here"
+msgstr "Notes deleted by moderators will appear here"
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -1005,10 +1122,12 @@ msgid "Password is required"
 msgstr "Password is required"
 
 #: src/pages/admin/reports.tsx:300
+#: src/pages/mod/reports.tsx:287
 msgid "Pending"
 msgstr "Pending"
 
 #: src/pages/admin/reports.tsx:264
+#: src/pages/mod/reports.tsx:252
 msgid "Pending Reports"
 msgstr "Pending Reports"
 
@@ -1110,8 +1229,22 @@ msgid "Reason"
 msgstr "Reason"
 
 #: src/pages/admin/blocks.tsx:260
+#: src/pages/mod/users.tsx:295
 msgid "Reason (optional)"
 msgstr "Reason (optional)"
+
+#: src/pages/mod/audit-logs.tsx:293
+msgid "Reason:"
+msgstr "Reason:"
+
+#. placeholder {0}: note.deletionReason
+#: src/pages/mod/notes.tsx:264
+msgid "Reason: {0}"
+msgstr "Reason: {0}"
+
+#: src/pages/mod/users.tsx:268
+msgid "Recent Moderation History"
+msgstr "Recent Moderation History"
 
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
@@ -1145,10 +1278,16 @@ msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
 #: src/pages/admin/reports.tsx:549
+#: src/pages/mod/reports.tsx:470
 msgid "Reject"
 msgstr "Reject"
 
+#: src/pages/mod/audit-logs.tsx:246
+msgid "Reject Report"
+msgstr "Reject Report"
+
 #: src/pages/admin/reports.tsx:302
+#: src/pages/mod/reports.tsx:289
 msgid "Rejected"
 msgstr "Rejected"
 
@@ -1178,10 +1317,12 @@ msgid "Report"
 msgstr "Report"
 
 #: src/pages/admin/reports.tsx:377
+#: src/pages/mod/reports.tsx:355
 msgid "Report Details"
 msgstr "Report Details"
 
 #: src/pages/admin/reports.tsx:291
+#: src/pages/mod/reports.tsx:278
 msgid "Report List"
 msgstr "Report List"
 
@@ -1190,10 +1331,12 @@ msgid "Report Note"
 msgstr "Report Note"
 
 #: src/pages/admin/reports.tsx:172
+#: src/pages/mod/reports.tsx:163
 msgid "Report rejected"
 msgstr "Report rejected"
 
 #: src/pages/admin/reports.tsx:172
+#: src/pages/mod/reports.tsx:163
 msgid "Report resolved"
 msgstr "Report resolved"
 
@@ -1206,6 +1349,7 @@ msgid "Report User"
 msgstr "Report User"
 
 #: src/pages/admin/reports.tsx:456
+#: src/pages/mod/reports.tsx:414
 msgid "Reported Note"
 msgstr "Reported Note"
 
@@ -1215,10 +1359,12 @@ msgid "Reported on {0}"
 msgstr "Reported on {0}"
 
 #: src/pages/admin/reports.tsx:435
+#: src/pages/mod/reports.tsx:394
 msgid "Reported User"
 msgstr "Reported User"
 
 #: src/pages/admin/reports.tsx:410
+#: src/pages/mod/reports.tsx:380
 msgid "Reporter"
 msgstr "Reporter"
 
@@ -1228,6 +1374,7 @@ msgstr "Reporting"
 
 #: src/pages/admin/reports.tsx:243
 #: src/pages/admin/roles.tsx:616
+#: src/pages/mod/audit-logs.tsx:256
 msgid "Reports"
 msgstr "Reports"
 
@@ -1252,29 +1399,43 @@ msgid "Reset to Default"
 msgstr "Reset to Default"
 
 #: src/pages/admin/reports.tsx:500
+#: src/pages/mod/reports.tsx:443
 msgid "Resolution"
 msgstr "Resolution"
 
 #: src/pages/admin/reports.tsx:513
+#: src/pages/mod/reports.tsx:455
 msgid "Resolution Notes"
 msgstr "Resolution Notes"
 
 #: src/pages/admin/reports.tsx:534
+#: src/pages/mod/reports.tsx:467
 msgid "Resolve"
 msgstr "Resolve"
 
+#: src/pages/mod/audit-logs.tsx:245
+msgid "Resolve Report"
+msgstr "Resolve Report"
+
 #: src/pages/admin/reports.tsx:301
+#: src/pages/mod/reports.tsx:288
 msgid "Resolved"
 msgstr "Resolved"
 
 #. placeholder {0}: formatDate(selectedReport.resolvedAt)
 #: src/pages/admin/reports.tsx:491
+#: src/pages/mod/reports.tsx:437
 msgid "Resolved: {0}"
 msgstr "Resolved: {0}"
 
 #: src/components/note/NoteComposer.tsx:311
+#: src/pages/mod/notes.tsx:282
 msgid "Restore"
 msgstr "Restore"
+
+#: src/pages/mod/audit-logs.tsx:242
+msgid "Restore Note"
+msgstr "Restore Note"
 
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retry"
@@ -1285,6 +1446,7 @@ msgid "Retrying..."
 msgstr "Retrying..."
 
 #: src/pages/admin/reports.tsx:246
+#: src/pages/mod/reports.tsx:236
 msgid "Review and manage user reports"
 msgstr "Review and manage user reports"
 
@@ -1341,6 +1503,10 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
+#: src/pages/mod/users.tsx:193
+msgid "Search"
+msgstr "Search"
+
 #: src/components/ui/EmojiPicker.tsx:322
 msgid "Search emoji..."
 msgstr "Search emoji..."
@@ -1348,6 +1514,14 @@ msgstr "Search emoji..."
 #: src/pages/admin/emojis.tsx:568
 msgid "Search emojis..."
 msgstr "Search emojis..."
+
+#: src/pages/mod/users.tsx:167
+msgid "Search for users and manage suspensions"
+msgstr "Search for users and manage suspensions"
+
+#: src/pages/mod/users.tsx:177
+msgid "Search User"
+msgstr "Search User"
 
 #: src/pages/admin/settings.tsx:580
 msgid "Secondary"
@@ -1369,6 +1543,12 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 #: src/components/note/NoteCard.tsx:297
 msgid "Show content"
 msgstr "Show content"
+
+#. placeholder {0}: offset + 1
+#. placeholder {1}: Math.min(offset + limit, total)
+#: src/pages/mod/audit-logs.tsx:313
+msgid "Showing {0} - {1} of {total}"
+msgstr "Showing {0} - {1} of {total}"
 
 #: src/pages/login.tsx:171
 #: src/pages/signup.tsx:226
@@ -1412,9 +1592,18 @@ msgstr "Standard Emojis"
 msgid "Submit Report"
 msgstr "Submit Report"
 
+#: src/pages/mod/audit-logs.tsx:243
+#: src/pages/mod/users.tsx:332
+msgid "Suspend User"
+msgstr "Suspend User"
+
 #: src/pages/admin/roles.tsx:626
 msgid "Suspend Users"
 msgstr "Suspend Users"
+
+#: src/pages/mod/users.tsx:238
+msgid "Suspended"
+msgstr "Suspended"
 
 #: src/pages/admin/settings.tsx:523
 msgid "System"
@@ -1427,6 +1616,10 @@ msgstr "Target account is valid"
 #: src/components/settings/AccountMigrationSection.tsx:327
 msgid "Target Account URI"
 msgstr "Target Account URI"
+
+#: src/pages/mod/audit-logs.tsx:298
+msgid "Target ID:"
+msgstr "Target ID:"
 
 #: src/pages/settings.tsx:171
 msgid "Tell us about yourself..."
@@ -1486,11 +1679,16 @@ msgstr "This user hasn't posted anything yet"
 msgid "Timeline"
 msgstr "Timeline"
 
+#: src/pages/mod/audit-logs.tsx:221
+msgid "Total Actions"
+msgstr "Total Actions"
+
 #: src/pages/admin/invitations.tsx:234
 msgid "Total Codes"
 msgstr "Total Codes"
 
 #: src/pages/admin/reports.tsx:279
+#: src/pages/mod/reports.tsx:267
 msgid "Total Reports"
 msgstr "Total Reports"
 
@@ -1531,6 +1729,15 @@ msgstr "Unfollowing..."
 msgid "Unknown"
 msgstr "Unknown"
 
+#: src/pages/mod/notes.tsx:232
+msgid "Unknown User"
+msgstr "Unknown User"
+
+#: src/pages/mod/audit-logs.tsx:244
+#: src/pages/mod/users.tsx:317
+msgid "Unsuspend User"
+msgstr "Unsuspend User"
+
 #: src/pages/admin/emojis.tsx:549
 msgid "Update Emoji"
 msgstr "Update Emoji"
@@ -1553,13 +1760,31 @@ msgstr "Uploading..."
 msgid "Used"
 msgstr "Used"
 
+#: src/pages/mod/users.tsx:210
+msgid "User Details"
+msgstr "User Details"
+
+#: src/pages/mod/users.tsx:164
+msgid "User Moderation"
+msgstr "User Moderation"
+
 #: src/components/user/UserProfile.tsx:263
+#: src/pages/mod/users.tsx:86
 msgid "User not found"
 msgstr "User not found"
 
 #: src/pages/admin/reports.tsx:348
+#: src/pages/mod/reports.tsx:326
 msgid "User Report"
 msgstr "User Report"
+
+#: src/pages/mod/users.tsx:109
+msgid "User suspended successfully"
+msgstr "User suspended successfully"
+
+#: src/pages/mod/users.tsx:138
+msgid "User unsuspended successfully"
+msgstr "User unsuspended successfully"
 
 #: src/pages/login.tsx:143
 #: src/pages/settings.tsx:190
@@ -1575,6 +1800,10 @@ msgstr "Username cannot be changed"
 #: src/pages/signup.tsx:165
 msgid "Username is required"
 msgstr "Username is required"
+
+#: src/pages/mod/audit-logs.tsx:255
+msgid "Users"
+msgstr "Users"
 
 #: src/pages/admin/settings.tsx:557
 msgid "Users can still override this with their own preference"
@@ -1596,6 +1825,14 @@ msgstr "Validate"
 #: src/components/settings/AccountMigrationSection.tsx:143
 msgid "Validation failed"
 msgstr "Validation failed"
+
+#: src/pages/mod/audit-logs.tsx:205
+msgid "View all moderation actions"
+msgstr "View all moderation actions"
+
+#: src/pages/mod/notes.tsx:161
+msgid "View and restore deleted notes"
+msgstr "View and restore deleted notes"
 
 #: src/components/LandingPage.tsx:259
 msgid "View Policy"

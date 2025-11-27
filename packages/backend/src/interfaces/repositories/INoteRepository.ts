@@ -62,9 +62,32 @@ export interface INoteRepository {
   update(id: string, data: Partial<Omit<Note, 'id' | 'createdAt'>>): Promise<Note>;
 
   /**
-   * ノートを削除
+   * ノートを削除（ハードデリート）
    */
   delete(id: string): Promise<void>;
+
+  /**
+   * ノートをソフトデリート（モデレーション用）
+   * @param id ノートID
+   * @param deletedById 削除を実行したモデレーターのID
+   * @param reason 削除理由
+   */
+  softDelete(id: string, deletedById: string, reason?: string): Promise<Note | null>;
+
+  /**
+   * ソフトデリートされたノートを復元
+   * @param id ノートID
+   */
+  restore(id: string): Promise<Note | null>;
+
+  /**
+   * ソフトデリートされたノートを取得（モデレーター用）
+   */
+  findDeletedNotes(options?: {
+    limit?: number;
+    offset?: number;
+    deletedById?: string;
+  }): Promise<Note[]>;
 
   /**
    * ノート数を取得

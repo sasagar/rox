@@ -76,6 +76,10 @@ export class AnnounceHandler extends BaseHandler {
         emojis: [],
         tags: [],
         uri: activity.id ?? null, // Use the Announce activity ID as the note URI
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       });
 
       this.log('✅', `Renote created: ${remoteActor.username}@${remoteActor.host} announced note ${targetNote.id}`);

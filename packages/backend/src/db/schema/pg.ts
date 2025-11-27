@@ -136,6 +136,11 @@ export const notes = pgTable(
     emojis: jsonb('emojis').$type<string[]>().notNull().default([]),
     tags: jsonb('tags').$type<string[]>().notNull().default([]),
     uri: text('uri'), // ActivityPub URI for remote notes
+    // Soft delete fields for moderation
+    isDeleted: boolean('is_deleted').notNull().default(false),
+    deletedAt: timestamp('deleted_at'),
+    deletedById: text('deleted_by_id').references(() => users.id, { onDelete: 'set null' }), // Moderator who deleted
+    deletionReason: text('deletion_reason'), // Reason for moderation deletion
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
@@ -148,6 +153,8 @@ export const notes = pgTable(
     // Composite indexes for timeline queries
     userTimelineIdx: index('note_user_timeline_idx').on(table.userId, table.createdAt),
     localTimelineIdx: index('note_local_timeline_idx').on(table.visibility, table.localOnly, table.createdAt),
+    // Index for soft delete queries
+    isDeletedIdx: index('note_is_deleted_idx').on(table.isDeleted),
   })
 );
 
@@ -364,6 +371,30 @@ export const userReports = pgTable(
   })
 );
 
+// Moderation audit log table (tracks all moderation actions)
+export const moderationAuditLogs = pgTable(
+  'moderation_audit_logs',
+  {
+    id: text('id').primaryKey(),
+    moderatorId: text('moderator_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'set null' }), // Moderator who performed the action
+    action: text('action').notNull(), // Action type: delete_note, suspend_user, unsuspend_user, resolve_report, etc.
+    targetType: text('target_type').notNull(), // note, user, report
+    targetId: text('target_id').notNull(), // ID of the target (note/user/report)
+    reason: text('reason'), // Reason for the action
+    details: jsonb('details').$type<Record<string, unknown>>(), // Additional details (e.g., original content for deleted notes)
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    moderatorIdx: index('audit_moderator_idx').on(table.moderatorId),
+    actionIdx: index('audit_action_idx').on(table.action),
+    targetTypeIdx: index('audit_target_type_idx').on(table.targetType),
+    targetIdIdx: index('audit_target_id_idx').on(table.targetId),
+    createdAtIdx: index('audit_created_at_idx').on(table.createdAt),
+  })
+);
+
 // Custom emojis table (instance-level custom emojis)
 export const customEmojis = pgTable(
   'custom_emojis',
@@ -417,3 +448,5 @@ export type InstanceSetting = typeof instanceSettings.$inferSelect;
 export type NewInstanceSetting = typeof instanceSettings.$inferInsert;
 export type CustomEmoji = typeof customEmojis.$inferSelect;
 export type NewCustomEmoji = typeof customEmojis.$inferInsert;
+export type ModerationAuditLog = typeof moderationAuditLogs.$inferSelect;
+export type NewModerationAuditLog = typeof moderationAuditLogs.$inferInsert;

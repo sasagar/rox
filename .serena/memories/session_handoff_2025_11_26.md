@@ -1,4 +1,4 @@
-# Session Handoff - 2025-11-26 (Updated)
+# Session Handoff - 2025-11-27 (Updated)
 
 ## Today's Session Summary
 
@@ -20,28 +20,6 @@ All sprints completed:
   - [troubleshooting.md](docs/deployment/troubleshooting.md)
 - ✅ Testing documentation ([testing.md](docs/development/testing.md))
 - ✅ CI workflow with PostgreSQL service (`.github/workflows/ci.yml`)
-
-### New Files Created
-
-```
-packages/backend/src/
-├── lib/validation.ts              # Zod validation schemas (20+)
-├── middleware/validator.ts        # Validation middleware
-└── tests/unit/
-    └── ActivityDeliveryQueue.test.ts  # Queue tests (20 tests)
-
-docs/
-├── deployment/
-│   ├── README.md                  # Deployment overview (updated)
-│   ├── vps-docker.md              # Docker deployment guide
-│   ├── bare-metal.md              # Bare metal deployment guide
-│   ├── environment-variables.md   # Env vars reference
-│   └── troubleshooting.md         # Troubleshooting guide
-└── development/
-    └── testing.md                 # Testing guide
-
-.github/workflows/ci.yml           # CI with 5 jobs
-```
 
 ### CI Workflow Jobs
 
@@ -68,32 +46,68 @@ docs/
 - **Phase 6**: Production Readiness ✅
 
 ### In Progress
-- **Phase 4**: Refactoring & Optimization
+- **Phase 4**: Refactoring & Optimization (Caching complete ✅)
 - **Phase 5**: Administration & Security
 
-## Git Status
+## Session Update - 2025-11-27
 
-- Branch: `main`
-- Ahead of origin by 11 commits
-- Latest commits:
-  - `ci: improve test workflow with PostgreSQL service`
-  - `docs: add testing guide and improve documentation links`
-  - `docs: add bare metal deployment guide`
-  - `docs: add deployment documentation, complete Phase 6`
-  - `feat: add Zod validation schemas for API input validation`
-  - `feat: add ActivityDeliveryQueue unit tests, complete Sprint 3`
+### Account Migration Feature ✅
 
-## Test Coverage
+Implemented ActivityPub account migration (Move activity):
 
-```
-packages/backend/src/tests/
-├── unit/                    # 17 files, 180 tests
-│   ├── *Service.test.ts     # Service tests
-│   ├── ActivityDeliveryQueue.test.ts
-│   └── inbox-handlers/      # 7 handler tests
-├── integration/             # API endpoint tests
-└── e2e/                     # Federation tests
-```
+**Backend:**
+- `MigrationService.ts` - Alias management, migration validation, initiation
+- `MoveHandler.ts` - Incoming Move activity processing
+- `migration.ts` - API routes (`/api/i/migration/*`)
+- Database fields: `alsoKnownAs`, `movedTo`, `movedAt`
+- Actor JSON-LD now includes `alsoKnownAs` and `movedTo`
+
+**Frontend:**
+- `AccountMigrationSection.tsx` - Migration UI in settings
+- Japanese translations (30 strings)
+- `TextField.tsx` - Added placeholder prop
+- `client.ts` - DELETE body support
+
+**Features:**
+- Bi-directional alias validation
+- 30-day cooldown between migrations
+- Maximum 10 aliases per account
+- Automatic follower transfer on Move receipt
+
+**Tests:**
+- `MigrationService.test.ts` (23 tests)
+- Updated `InboxService.test.ts` for MoveHandler
+
+### Phase 4: Redis Caching Optimization ✅
+
+Added Redis caching to improve performance:
+
+**InstanceSettingsService:**
+- Caching for registration settings, metadata, theme settings
+- TTL: 1 hour (LONG)
+- Automatic cache invalidation on updates
+
+**RoleService:**
+- Caching for user role policies
+- TTL: 5 minutes (MEDIUM)
+- Cache invalidation on role assignment/unassignment
+
+**HTTP Signature Verification:**
+- Migrated public key cache from in-memory to Redis
+- In-memory fallback when Redis unavailable
+- TTL: 1 hour (LONG)
+
+**New Cache Prefixes:**
+- `INSTANCE_SETTINGS` - Instance settings
+- `ROLE_POLICIES` - User role policies
+- `PUBLIC_KEY` - Remote actor public keys
+
+**Commits:**
+- `b977441` fix: remove unused variables in MigrationService tests
+- `541fa70` perf: add Redis caching to InstanceSettingsService, RoleService, and public key verification
+
+### Current Test Count
+- **365 unit tests** passing (0 failures)
 
 ## Development Environment
 
@@ -112,6 +126,6 @@ bun test src/tests/integration/    # Integration tests
 
 ## Next Steps
 
-1. Push commits to trigger CI
-2. Continue Phase 4 (Redis caching, image optimization)
-3. Start Phase 5 (moderation features)
+1. Wait for CI to pass
+2. Continue Phase 5 (moderation features)
+3. Image optimization (already implemented via ImageProcessor.ts)

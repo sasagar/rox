@@ -61,6 +61,10 @@ describe('NoteService', () => {
     emojis: [],
     tags: [],
     uri: null,
+    isDeleted: false,
+    deletedAt: null,
+    deletedById: null,
+    deletionReason: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

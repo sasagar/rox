@@ -18,6 +18,11 @@ msgstr ""
 msgid "{0} categories"
 msgstr "{0}カテゴリ"
 
+#. placeholder {0}: selectedUser.reports.total
+#: src/pages/mod/users.tsx:258
+msgid "{0} reports against this user"
+msgstr ""
+
 #: src/pages/admin/invitations.tsx:299
 msgid "1 Day"
 msgstr "1日"
@@ -63,6 +68,14 @@ msgstr "アカウントは移行済みです"
 msgid "Account Migration"
 msgstr "アカウント引っ越し"
 
+#: src/pages/mod/audit-logs.tsx:232
+msgid "Action Log"
+msgstr ""
+
+#: src/pages/mod/users.tsx:290
+msgid "Actions"
+msgstr ""
+
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "他のサーバーのアカウントとリンクするためにエイリアスを追加します。これにより、それらのアカウントのフォロワーがここであなたを見つけることができます。"
@@ -77,6 +90,7 @@ msgid "Add New Emoji"
 msgstr "新しい絵文字を追加"
 
 #: src/pages/admin/reports.tsx:518
+#: src/pages/mod/reports.tsx:460
 msgid "Add notes about the action taken..."
 msgstr "対応内容についてメモを追加..."
 
@@ -85,6 +99,7 @@ msgid "Add your first custom emoji to get started"
 msgstr "最初のカスタム絵文字を追加して始めましょう"
 
 #: src/pages/admin/reports.tsx:474
+#: src/pages/mod/reports.tsx:427
 msgid "Additional Comment"
 msgstr "追加コメント"
 
@@ -104,6 +119,10 @@ msgstr "管理者ロール"
 msgid "Admin Settings"
 msgstr "管理設定"
 
+#: src/pages/mod/users.tsx:346
+msgid "Admin users cannot be suspended"
+msgstr ""
+
 #: src/components/settings/AccountMigrationSection.tsx:96
 msgid "Alias added successfully"
 msgstr "エイリアスを追加しました"
@@ -117,8 +136,13 @@ msgid "Aliases"
 msgstr "エイリアス"
 
 #: src/pages/admin/reports.tsx:299
+#: src/pages/mod/reports.tsx:286
 msgid "All"
 msgstr "すべて"
+
+#: src/pages/mod/audit-logs.tsx:240
+msgid "All Actions"
+msgstr ""
 
 #: src/pages/admin/emojis.tsx:578
 msgid "All Categories"
@@ -127,6 +151,10 @@ msgstr "すべてのカテゴリ"
 #: src/pages/admin/blocks.tsx:311
 msgid "All instances can federate with this server"
 msgstr "すべてのインスタンスがこのサーバーと連携できます"
+
+#: src/pages/mod/audit-logs.tsx:253
+msgid "All Types"
+msgstr ""
 
 #: src/pages/admin/settings.tsx:385
 msgid "Allow new users to register accounts"
@@ -148,6 +176,10 @@ msgstr "\":{0}:\" を削除してもよろしいですか？"
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
 msgstr "アカウントを引っ越ししてもよろしいですか？この操作は元に戻せません。フォロワーに通知され、新しいアカウントに移行されます。"
+
+#: src/pages/mod/audit-logs.tsx:202
+msgid "Audit Logs"
+msgstr ""
 
 #: src/components/note/NoteComposer.tsx:191
 msgid "Authentication required"
@@ -250,6 +282,7 @@ msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）
 
 #: src/components/report/ReportDialog.tsx:116
 #: src/pages/admin/reports.tsx:383
+#: src/pages/mod/reports.tsx:357
 msgid "Close"
 msgstr "閉じる"
 
@@ -319,9 +352,12 @@ msgid "Create your account"
 msgstr "アカウントを作成"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
+#. placeholder {0}: formatDate(note.createdAt)
 #. placeholder {0}: formatDate(selectedReport.createdAt)
 #: src/pages/admin/invitations.tsx:387
 #: src/pages/admin/reports.tsx:487
+#: src/pages/mod/notes.tsx:257
+#: src/pages/mod/reports.tsx:436
 msgid "Created: {0}"
 msgstr "作成日: {0}"
 
@@ -383,6 +419,10 @@ msgstr "削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
+#: src/pages/mod/audit-logs.tsx:241
+msgid "Delete Note"
+msgstr ""
+
 #: src/pages/admin/roles.tsx:621
 msgid "Delete Notes"
 msgstr "ノート削除"
@@ -390,6 +430,16 @@ msgstr "ノート削除"
 #: src/pages/admin/roles.tsx:649
 msgid "Delete role"
 msgstr "ロールを削除"
+
+#: src/pages/mod/notes.tsx:177
+#: src/pages/mod/notes.tsx:188
+msgid "Deleted Notes"
+msgstr ""
+
+#. placeholder {0}: formatDate(note.deletedAt)
+#: src/pages/mod/notes.tsx:260
+msgid "Deleted: {0}"
+msgstr ""
 
 #: src/pages/admin/roles.tsx:385
 #: src/pages/admin/settings.tsx:253
@@ -490,9 +540,17 @@ msgstr "絵文字"
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
+#: src/pages/mod/users.tsx:300
+msgid "Enter reason for action..."
+msgstr ""
+
 #: src/pages/admin/blocks.tsx:254
 msgid "Enter the domain without https:// prefix"
 msgstr "https://を除いたドメインを入力してください"
+
+#: src/pages/mod/users.tsx:188
+msgid "Enter username (e.g., alice or alice@remote.server)"
+msgstr ""
 
 #: src/pages/signup.tsx:152
 msgid "Enter your invitation code to register"
@@ -560,6 +618,10 @@ msgstr "招待コードの削除に失敗しました"
 msgid "Failed to delete role"
 msgstr "ロールの削除に失敗しました"
 
+#: src/pages/mod/users.tsx:90
+msgid "Failed to find user"
+msgstr ""
+
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
 msgstr "引っ越しの開始に失敗しました"
@@ -569,10 +631,12 @@ msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
 
 #: src/pages/admin/reports.tsx:152
+#: src/pages/mod/reports.tsx:143
 msgid "Failed to load report details"
 msgstr "報告の詳細の読み込みに失敗しました"
 
 #: src/pages/admin/reports.tsx:180
+#: src/pages/mod/reports.tsx:171
 msgid "Failed to process report"
 msgstr "報告の処理に失敗しました"
 
@@ -583,6 +647,10 @@ msgstr "エイリアスの削除に失敗しました"
 #: src/components/note/NoteCard.tsx:156
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
+
+#: src/pages/mod/notes.tsx:121
+msgid "Failed to restore note"
+msgstr ""
 
 #: src/pages/admin/roles.tsx:217
 msgid "Failed to save role"
@@ -596,9 +664,17 @@ msgstr "表示設定の保存に失敗しました"
 msgid "Failed to submit report"
 msgstr "報告の送信に失敗しました"
 
+#: src/pages/mod/users.tsx:119
+msgid "Failed to suspend user"
+msgstr ""
+
 #: src/pages/admin/blocks.tsx:155
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
+
+#: src/pages/mod/users.tsx:148
+msgid "Failed to unsuspend user"
+msgstr ""
 
 #: src/pages/admin/emojis.tsx:260
 msgid "Failed to update emoji"
@@ -777,6 +853,11 @@ msgstr "招待制"
 msgid "Join Rox and start sharing"
 msgstr "Roxに参加して共有を始めましょう"
 
+#. placeholder {0}: formatDate(selectedUser.user.createdAt)
+#: src/pages/mod/users.tsx:247
+msgid "Joined: {0}"
+msgstr ""
+
 #: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
@@ -868,6 +949,14 @@ msgstr "引っ越しを開始しました。フォロワーは新しいアカウ
 msgid "Minimum 8 characters"
 msgstr "最低8文字"
 
+#: src/pages/mod/reports.tsx:233
+msgid "Moderation Dashboard"
+msgstr ""
+
+#: src/pages/mod/users.tsx:88
+msgid "Moderator access required"
+msgstr ""
+
 #: src/pages/admin/roles.tsx:439
 msgid "Moderator Role"
 msgstr "モデレーターロール"
@@ -897,6 +986,10 @@ msgstr "新規アカウントは管理者の承認が必要"
 msgid "No aliases configured"
 msgstr "エイリアスが設定されていません"
 
+#: src/pages/mod/audit-logs.tsx:268
+msgid "No audit logs found"
+msgstr ""
+
 #: src/pages/admin/blocks.tsx:308
 msgid "No blocked instances"
 msgstr "ブロック中のインスタンスはありません"
@@ -904,6 +997,10 @@ msgstr "ブロック中のインスタンスはありません"
 #: src/pages/admin/emojis.tsx:593
 msgid "No custom emojis yet"
 msgstr "カスタム絵文字がまだありません"
+
+#: src/pages/mod/notes.tsx:199
+msgid "No deleted notes"
+msgstr ""
 
 #: src/components/ui/EmojiPicker.tsx:427
 msgid "No emojis found"
@@ -935,6 +1032,7 @@ msgid "No replies yet"
 msgstr "まだ返信がありません"
 
 #: src/pages/admin/reports.tsx:314
+#: src/pages/mod/reports.tsx:301
 msgid "No reports found"
 msgstr "報告が見つかりません"
 
@@ -943,6 +1041,8 @@ msgid "No roles yet"
 msgstr "ロールがまだありません"
 
 #: src/pages/admin/reports.tsx:462
+#: src/pages/mod/notes.tsx:248
+#: src/pages/mod/reports.tsx:418
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
@@ -953,6 +1053,10 @@ msgstr "ノート"
 #: src/components/pages/NoteDetailPageClient.tsx:65
 msgid "Note deleted"
 msgstr "ノートを削除しました"
+
+#: src/pages/mod/notes.tsx:158
+msgid "Note Moderation"
+msgstr ""
 
 #: src/components/pages/NoteDetailPageClient.tsx:95
 msgid "Note not found"
@@ -967,8 +1071,13 @@ msgid "Note renoted"
 msgstr "リノートしました"
 
 #: src/pages/admin/reports.tsx:354
+#: src/pages/mod/reports.tsx:332
 msgid "Note Report"
 msgstr "ノートの報告"
+
+#: src/pages/mod/notes.tsx:114
+msgid "Note restored successfully"
+msgstr ""
 
 #: src/pages/settings.tsx:229
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -977,6 +1086,14 @@ msgstr "注意: カスタムCSSはセキュリティのため一部のプロパ�
 #: src/components/settings/UISettingsSection.tsx:257
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "注意: セキュリティのため一部のCSSプロパティは制限されます。"
+
+#: src/pages/mod/audit-logs.tsx:254
+msgid "Notes"
+msgstr ""
+
+#: src/pages/mod/notes.tsx:202
+msgid "Notes deleted by moderators will appear here"
+msgstr ""
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -1005,10 +1122,12 @@ msgid "Password is required"
 msgstr "パスワードを入力してください"
 
 #: src/pages/admin/reports.tsx:300
+#: src/pages/mod/reports.tsx:287
 msgid "Pending"
 msgstr "保留中"
 
 #: src/pages/admin/reports.tsx:264
+#: src/pages/mod/reports.tsx:252
 msgid "Pending Reports"
 msgstr "保留中の報告"
 
@@ -1110,8 +1229,22 @@ msgid "Reason"
 msgstr "報告理由"
 
 #: src/pages/admin/blocks.tsx:260
+#: src/pages/mod/users.tsx:295
 msgid "Reason (optional)"
 msgstr "理由（任意）"
+
+#: src/pages/mod/audit-logs.tsx:293
+msgid "Reason:"
+msgstr ""
+
+#. placeholder {0}: note.deletionReason
+#: src/pages/mod/notes.tsx:264
+msgid "Reason: {0}"
+msgstr ""
+
+#: src/pages/mod/users.tsx:268
+msgid "Recent Moderation History"
+msgstr ""
 
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
@@ -1145,10 +1278,16 @@ msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
 #: src/pages/admin/reports.tsx:549
+#: src/pages/mod/reports.tsx:470
 msgid "Reject"
 msgstr "却下"
 
+#: src/pages/mod/audit-logs.tsx:246
+msgid "Reject Report"
+msgstr ""
+
 #: src/pages/admin/reports.tsx:302
+#: src/pages/mod/reports.tsx:289
 msgid "Rejected"
 msgstr "却下済み"
 
@@ -1178,10 +1317,12 @@ msgid "Report"
 msgstr "報告"
 
 #: src/pages/admin/reports.tsx:377
+#: src/pages/mod/reports.tsx:355
 msgid "Report Details"
 msgstr "報告の詳細"
 
 #: src/pages/admin/reports.tsx:291
+#: src/pages/mod/reports.tsx:278
 msgid "Report List"
 msgstr "報告一覧"
 
@@ -1190,10 +1331,12 @@ msgid "Report Note"
 msgstr "ノートを報告"
 
 #: src/pages/admin/reports.tsx:172
+#: src/pages/mod/reports.tsx:163
 msgid "Report rejected"
 msgstr "報告を却下しました"
 
 #: src/pages/admin/reports.tsx:172
+#: src/pages/mod/reports.tsx:163
 msgid "Report resolved"
 msgstr "報告を解決しました"
 
@@ -1206,6 +1349,7 @@ msgid "Report User"
 msgstr "ユーザーを報告"
 
 #: src/pages/admin/reports.tsx:456
+#: src/pages/mod/reports.tsx:414
 msgid "Reported Note"
 msgstr "報告されたノート"
 
@@ -1215,10 +1359,12 @@ msgid "Reported on {0}"
 msgstr "{0}に報告"
 
 #: src/pages/admin/reports.tsx:435
+#: src/pages/mod/reports.tsx:394
 msgid "Reported User"
 msgstr "報告されたユーザー"
 
 #: src/pages/admin/reports.tsx:410
+#: src/pages/mod/reports.tsx:380
 msgid "Reporter"
 msgstr "報告者"
 
@@ -1228,6 +1374,7 @@ msgstr "報告対象"
 
 #: src/pages/admin/reports.tsx:243
 #: src/pages/admin/roles.tsx:616
+#: src/pages/mod/audit-logs.tsx:256
 msgid "Reports"
 msgstr "通報"
 
@@ -1252,29 +1399,43 @@ msgid "Reset to Default"
 msgstr "デフォルトに戻す"
 
 #: src/pages/admin/reports.tsx:500
+#: src/pages/mod/reports.tsx:443
 msgid "Resolution"
 msgstr "対応内容"
 
 #: src/pages/admin/reports.tsx:513
+#: src/pages/mod/reports.tsx:455
 msgid "Resolution Notes"
 msgstr "対応メモ"
 
 #: src/pages/admin/reports.tsx:534
+#: src/pages/mod/reports.tsx:467
 msgid "Resolve"
 msgstr "解決"
 
+#: src/pages/mod/audit-logs.tsx:245
+msgid "Resolve Report"
+msgstr ""
+
 #: src/pages/admin/reports.tsx:301
+#: src/pages/mod/reports.tsx:288
 msgid "Resolved"
 msgstr "解決済み"
 
 #. placeholder {0}: formatDate(selectedReport.resolvedAt)
 #: src/pages/admin/reports.tsx:491
+#: src/pages/mod/reports.tsx:437
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
 #: src/components/note/NoteComposer.tsx:311
+#: src/pages/mod/notes.tsx:282
 msgid "Restore"
 msgstr "復元"
+
+#: src/pages/mod/audit-logs.tsx:242
+msgid "Restore Note"
+msgstr ""
 
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retry"
@@ -1285,6 +1446,7 @@ msgid "Retrying..."
 msgstr "再試行中..."
 
 #: src/pages/admin/reports.tsx:246
+#: src/pages/mod/reports.tsx:236
 msgid "Review and manage user reports"
 msgstr "ユーザーからの報告を確認・管理"
 
@@ -1341,6 +1503,10 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
+#: src/pages/mod/users.tsx:193
+msgid "Search"
+msgstr ""
+
 #: src/components/ui/EmojiPicker.tsx:322
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
@@ -1348,6 +1514,14 @@ msgstr "絵文字を検索..."
 #: src/pages/admin/emojis.tsx:568
 msgid "Search emojis..."
 msgstr "絵文字を検索..."
+
+#: src/pages/mod/users.tsx:167
+msgid "Search for users and manage suspensions"
+msgstr ""
+
+#: src/pages/mod/users.tsx:177
+msgid "Search User"
+msgstr ""
 
 #: src/pages/admin/settings.tsx:580
 msgid "Secondary"
@@ -1369,6 +1543,12 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 #: src/components/note/NoteCard.tsx:297
 msgid "Show content"
 msgstr "内容を表示"
+
+#. placeholder {0}: offset + 1
+#. placeholder {1}: Math.min(offset + limit, total)
+#: src/pages/mod/audit-logs.tsx:313
+msgid "Showing {0} - {1} of {total}"
+msgstr ""
 
 #: src/pages/login.tsx:171
 #: src/pages/signup.tsx:226
@@ -1412,9 +1592,18 @@ msgstr "標準絵文字"
 msgid "Submit Report"
 msgstr "報告を送信"
 
+#: src/pages/mod/audit-logs.tsx:243
+#: src/pages/mod/users.tsx:332
+msgid "Suspend User"
+msgstr ""
+
 #: src/pages/admin/roles.tsx:626
 msgid "Suspend Users"
 msgstr "ユーザー凍結"
+
+#: src/pages/mod/users.tsx:238
+msgid "Suspended"
+msgstr ""
 
 #: src/pages/admin/settings.tsx:523
 msgid "System"
@@ -1427,6 +1616,10 @@ msgstr "移行先アカウントは有効です"
 #: src/components/settings/AccountMigrationSection.tsx:327
 msgid "Target Account URI"
 msgstr "移行先アカウントURI"
+
+#: src/pages/mod/audit-logs.tsx:298
+msgid "Target ID:"
+msgstr ""
 
 #: src/pages/settings.tsx:171
 msgid "Tell us about yourself..."
@@ -1486,11 +1679,16 @@ msgstr "このユーザーはまだ何も投稿していません"
 msgid "Timeline"
 msgstr "タイムライン"
 
+#: src/pages/mod/audit-logs.tsx:221
+msgid "Total Actions"
+msgstr ""
+
 #: src/pages/admin/invitations.tsx:234
 msgid "Total Codes"
 msgstr "コード総数"
 
 #: src/pages/admin/reports.tsx:279
+#: src/pages/mod/reports.tsx:267
 msgid "Total Reports"
 msgstr "報告総数"
 
@@ -1531,6 +1729,15 @@ msgstr "フォロー解除中..."
 msgid "Unknown"
 msgstr "不明"
 
+#: src/pages/mod/notes.tsx:232
+msgid "Unknown User"
+msgstr ""
+
+#: src/pages/mod/audit-logs.tsx:244
+#: src/pages/mod/users.tsx:317
+msgid "Unsuspend User"
+msgstr ""
+
 #: src/pages/admin/emojis.tsx:549
 msgid "Update Emoji"
 msgstr "絵文字を更新"
@@ -1553,13 +1760,31 @@ msgstr "アップロード中..."
 msgid "Used"
 msgstr "使用済み"
 
+#: src/pages/mod/users.tsx:210
+msgid "User Details"
+msgstr ""
+
+#: src/pages/mod/users.tsx:164
+msgid "User Moderation"
+msgstr ""
+
 #: src/components/user/UserProfile.tsx:263
+#: src/pages/mod/users.tsx:86
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
 #: src/pages/admin/reports.tsx:348
+#: src/pages/mod/reports.tsx:326
 msgid "User Report"
 msgstr "ユーザーの報告"
+
+#: src/pages/mod/users.tsx:109
+msgid "User suspended successfully"
+msgstr ""
+
+#: src/pages/mod/users.tsx:138
+msgid "User unsuspended successfully"
+msgstr ""
 
 #: src/pages/login.tsx:143
 #: src/pages/settings.tsx:190
@@ -1575,6 +1800,10 @@ msgstr "ユーザー名は変更できません"
 #: src/pages/signup.tsx:165
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
+
+#: src/pages/mod/audit-logs.tsx:255
+msgid "Users"
+msgstr ""
 
 #: src/pages/admin/settings.tsx:557
 msgid "Users can still override this with their own preference"
@@ -1596,6 +1825,14 @@ msgstr "検証"
 #: src/components/settings/AccountMigrationSection.tsx:143
 msgid "Validation failed"
 msgstr "検証に失敗しました"
+
+#: src/pages/mod/audit-logs.tsx:205
+msgid "View all moderation actions"
+msgstr ""
+
+#: src/pages/mod/notes.tsx:161
+msgid "View and restore deleted notes"
+msgstr ""
 
 #: src/components/LandingPage.tsx:259
 msgid "View Policy"

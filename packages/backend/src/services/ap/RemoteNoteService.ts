@@ -121,6 +121,10 @@ export class RemoteNoteService {
       emojis: [], // TODO: Extract custom emojis
       tags,
       uri: noteObject.id,
+      isDeleted: false,
+      deletedAt: null,
+      deletedById: null,
+      deletionReason: null,
     });
 
     console.log(
