@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { t } from '@lingui/core/macro';
-import { Image as ImageIcon, X, Globe, Home as HomeIcon, Lock, Mail, ChevronDown } from 'lucide-react';
+import { Image as ImageIcon, X, Globe, Home as HomeIcon, Lock, Mail, ChevronDown, Eye } from 'lucide-react';
+import { MfmRenderer } from '../mfm/MfmRenderer';
 import { Select, Button as RACButton, Popover, ListBox, ListBoxItem } from 'react-aria-components';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
@@ -61,6 +62,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -362,6 +364,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
               disabled={isSubmitting}
             />
 
+            {/* MFM Preview */}
+            {showPreview && text.trim() && (
+              <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
+                <div className="text-xs text-gray-500 mb-2 font-medium">
+                  <Trans>Preview</Trans>
+                </div>
+                <div className="text-gray-900 whitespace-pre-wrap wrap-break-word">
+                  <MfmRenderer text={text} />
+                </div>
+              </div>
+            )}
+
             {/* File previews */}
             {files.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
@@ -441,6 +455,21 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   onEmojiSelect={handleEmojiSelect}
                   isDisabled={isSubmitting}
                 />
+
+                {/* MFM Preview toggle */}
+                <button
+                  onClick={() => setShowPreview(!showPreview)}
+                  disabled={isSubmitting}
+                  className={`p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 ${
+                    showPreview ? 'bg-primary-50 text-primary-600' : 'text-gray-600'
+                  }`}
+                  type="button"
+                  title="Preview MFM"
+                  aria-label="Toggle MFM preview"
+                  aria-pressed={showPreview}
+                >
+                  <Eye className="w-5 h-5" />
+                </button>
 
                 {/* Visibility selector */}
                 <Select

@@ -18,7 +18,7 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { extname } from 'node:path';
-import type { IFileStorage, FileMetadata } from '../../interfaces/IFileStorage.js';
+import type { IFileStorage, FileMetadata, EmojiFileMetadata } from '../../interfaces/IFileStorage.js';
 import { generateId } from 'shared';
 
 /**
@@ -78,6 +78,38 @@ export class S3StorageAdapter implements IFileStorage {
     const key = `${metadata.userId}/${filename}`;
 
     // S3にアップロード
+    await this.s3Client.send(
+      new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: file,
+        ContentType: metadata.type,
+        ContentLength: metadata.size,
+      })
+    );
+
+    return key;
+  }
+
+  /**
+   * Upload Emoji File to S3
+   *
+   * Saves emoji files to a dedicated 'emojis/' prefix in S3.
+   * These files are not associated with any user - they are instance-owned resources.
+   *
+   * @param file - Buffer of the emoji file to upload
+   * @param metadata - Emoji file metadata (no userId)
+   * @returns S3 key (storage path)
+   */
+  async saveEmoji(file: Buffer, metadata: EmojiFileMetadata): Promise<string> {
+    const fileId = generateId();
+    const ext = extname(metadata.name);
+    const filename = `${fileId}${ext}`;
+
+    // S3 key: emojis/filename (not user-specific)
+    const key = `emojis/${filename}`;
+
+    // Upload to S3
     await this.s3Client.send(
       new PutObjectCommand({
         Bucket: this.bucketName,

@@ -5,6 +5,15 @@ export interface FileMetadata {
   userId: string;
 }
 
+/**
+ * Emoji file metadata (not associated with any user)
+ */
+export interface EmojiFileMetadata {
+  name: string;
+  type: string;
+  size: number;
+}
+
 export interface IFileStorage {
   /**
    * ファイルを保存
@@ -13,6 +22,15 @@ export interface IFileStorage {
    * @returns 保存されたファイルのパス（相対パスまたはキー）
    */
   save(file: Buffer, metadata: FileMetadata): Promise<string>;
+
+  /**
+   * Save emoji file to dedicated emoji directory
+   * Not associated with any user - instance-owned resource
+   * @param file File buffer
+   * @param metadata Emoji file metadata
+   * @returns Relative path of the saved file
+   */
+  saveEmoji(file: Buffer, metadata: EmojiFileMetadata): Promise<string>;
 
   /**
    * ファイルを削除

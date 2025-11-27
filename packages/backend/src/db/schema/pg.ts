@@ -52,6 +52,7 @@ export interface RolePolicies {
   canManageInstanceSettings?: boolean;
   canManageInstanceBlocks?: boolean;
   canManageUsers?: boolean;
+  canManageCustomEmojis?: boolean;
 }
 
 // Users table
@@ -359,6 +360,30 @@ export const userReports = pgTable(
   })
 );
 
+// Custom emojis table (instance-level custom emojis)
+export const customEmojis = pgTable(
+  'custom_emojis',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(), // Emoji shortcode without colons (e.g., 'blob_cat')
+    host: text('host'), // null for local, domain for remote
+    category: text('category'), // Optional category for organization
+    aliases: jsonb('aliases').$type<string[]>().notNull().default([]), // Alternative names
+    url: text('url').notNull(), // Image URL
+    publicUrl: text('public_url'), // Public URL for external access
+    license: text('license'), // License information
+    isSensitive: boolean('is_sensitive').notNull().default(false), // NSFW flag
+    localOnly: boolean('local_only').notNull().default(false), // Don't federate
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    nameHostIdx: uniqueIndex('emoji_name_host_idx').on(table.name, table.host),
+    hostIdx: index('emoji_host_idx').on(table.host),
+    categoryIdx: index('emoji_category_idx').on(table.category),
+  })
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -386,3 +411,5 @@ export type RoleAssignment = typeof roleAssignments.$inferSelect;
 export type NewRoleAssignment = typeof roleAssignments.$inferInsert;
 export type InstanceSetting = typeof instanceSettings.$inferSelect;
 export type NewInstanceSetting = typeof instanceSettings.$inferInsert;
+export type CustomEmoji = typeof customEmojis.$inferSelect;
+export type NewCustomEmoji = typeof customEmojis.$inferInsert;

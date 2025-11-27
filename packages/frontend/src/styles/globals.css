@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./mfm.css";
 
 @theme {
   /* Primary color palette - dynamically set by ThemeProvider */

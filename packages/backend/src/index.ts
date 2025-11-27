@@ -23,6 +23,7 @@ import adminRoute from './routes/admin.js';
 import reportsRoute from './routes/reports.js';
 import invitationsRoute from './routes/invitations.js';
 import instanceRoute from './routes/instance.js';
+import emojisRoute from './routes/emojis.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 import { getContainer } from './di/container.js';
@@ -61,6 +62,7 @@ app.route('/api/admin', adminRoute);
 app.route('/api/reports', reportsRoute);
 app.route('/api/invitations', invitationsRoute);
 app.route('/api/instance', instanceRoute);
+app.route('/api/emojis', emojisRoute);
 
 // Media Proxy
 app.route('/proxy', proxyRoute);

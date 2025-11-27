@@ -6,7 +6,7 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, Ticket, Shield, AlertTriangle } from 'lucide-react';
+import { Settings, Users, Ticket, Shield, AlertTriangle, Smile } from 'lucide-react';
 
 /**
  * Admin navigation items
@@ -14,6 +14,7 @@ import { Settings, Users, Ticket, Shield, AlertTriangle } from 'lucide-react';
 const ADMIN_NAV_ITEMS = [
   { href: '/admin/settings', icon: Settings, label: 'Settings' },
   { href: '/admin/roles', icon: Users, label: 'Roles' },
+  { href: '/admin/emojis', icon: Smile, label: 'Emojis' },
   { href: '/admin/invitations', icon: Ticket, label: 'Invitations' },
   { href: '/admin/blocks', icon: Shield, label: 'Blocks' },
   { href: '/admin/reports', icon: AlertTriangle, label: 'Reports' },

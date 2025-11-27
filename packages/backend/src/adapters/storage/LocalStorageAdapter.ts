@@ -1,7 +1,7 @@
 import { mkdir, unlink } from 'node:fs/promises';
 import { join, dirname, extname } from 'node:path';
 import { existsSync } from 'node:fs';
-import type { IFileStorage, FileMetadata } from '../../interfaces/IFileStorage.js';
+import type { IFileStorage, FileMetadata, EmojiFileMetadata } from '../../interfaces/IFileStorage.js';
 import { generateId } from 'shared';
 
 /**
@@ -78,6 +78,41 @@ export class LocalStorageAdapter implements IFileStorage {
         throw error;
       }
     }
+  }
+
+  /**
+   * Save Emoji File
+   *
+   * Saves emoji files to a dedicated 'emojis' directory.
+   * These files are not associated with any user - they are instance-owned resources.
+   *
+   * @param file - Buffer of the emoji file to save
+   * @param metadata - Emoji file metadata (no userId)
+   * @returns Relative path of the saved file
+   *
+   * @remarks
+   * - Files are saved in 'emojis/' directory
+   * - Not tied to any user, transferable when admin changes
+   */
+  async saveEmoji(file: Buffer, metadata: EmojiFileMetadata): Promise<string> {
+    const fileId = generateId();
+    const ext = extname(metadata.name);
+    const filename = `${fileId}${ext}`;
+
+    // Save to dedicated emojis directory (not user-specific)
+    const relativePath = join('emojis', filename);
+    const fullPath = join(this.basePath, relativePath);
+
+    // Create directory if it doesn't exist
+    const dir = dirname(fullPath);
+    if (!existsSync(dir)) {
+      await mkdir(dir, { recursive: true });
+    }
+
+    // Save file using Bun's native function (fast)
+    await Bun.write(fullPath, file);
+
+    return relativePath;
   }
 
   /**

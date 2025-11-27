@@ -10,3 +10,4 @@ export * from './IUserReportRepository.js';
 export * from './IRoleRepository.js';
 export * from './IRoleAssignmentRepository.js';
 export * from './IInstanceSettingsRepository.js';
+export * from './ICustomEmojiRepository.js';

@@ -18,6 +18,7 @@
     "babel-plugin-macros": "^3.1.0",
     "class-variance-authority": "^0.7.1",
     "jotai": "^2.10.3",
+    "mfm-js": "^0.24.0",
     "lucide-react": "^0.554.0",
     "react": "^19.0.0",
     "react-aria-components": "^1.13.0",

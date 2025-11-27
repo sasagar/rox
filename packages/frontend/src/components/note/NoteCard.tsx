@@ -17,6 +17,7 @@ import { ReportDialog } from '../report/ReportDialog';
 import { createReaction, deleteReaction, getMyReactions, getReactionCountsWithEmojis } from '../../lib/api/reactions';
 import { followUser, unfollowUser } from '../../lib/api/following';
 import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
+import { MfmRenderer } from '../mfm/MfmRenderer';
 import { addToastAtom } from '../../lib/atoms/toast';
 
 /**
@@ -224,7 +225,11 @@ function NoteCardComponent({
                 href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name || note.user.username}
+                {note.user.name ? (
+                  <MfmRenderer text={note.user.name} plain />
+                ) : (
+                  note.user.username
+                )}
               </a>
               <a
                 href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
@@ -301,7 +306,7 @@ function NoteCardComponent({
             {/* Text */}
             {note.text && (
               <div className="mb-3 whitespace-pre-wrap wrap-break-word text-gray-900">
-                {note.text}
+                <MfmRenderer text={note.text} />
               </div>
             )}
 
@@ -366,7 +371,11 @@ function NoteCardComponent({
                     href={`/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 hover:underline"
                   >
-                    {note.renote.user.name || note.renote.user.username}
+                    {note.renote.user.name ? (
+                      <MfmRenderer text={note.renote.user.name} plain />
+                    ) : (
+                      note.renote.user.username
+                    )}
                   </a>
                   <a
                     href={`/${note.renote.user.username}`}
@@ -377,7 +386,7 @@ function NoteCardComponent({
                 </div>
                 {note.renote.text && (
                   <div className="text-sm text-gray-700 whitespace-pre-wrap wrap-break-word">
-                    {note.renote.text}
+                    <MfmRenderer text={note.renote.text} />
                   </div>
                 )}
               </div>

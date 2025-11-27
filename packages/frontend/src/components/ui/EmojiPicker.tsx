@@ -1,11 +1,18 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
 import { t } from '@lingui/core/macro';
-import { Smile, X, Clock, Hand, Dog, Pizza, Plane, Lightbulb, Heart, Flag } from 'lucide-react';
+import { Smile, X, Clock, Hand, Dog, Pizza, Plane, Lightbulb, Heart, Flag, Sparkles } from 'lucide-react';
 import { Button } from './Button';
 import { Dialog, DialogTrigger, Modal, ModalOverlay } from 'react-aria-components';
+import {
+  emojiListAtom,
+  emojiCategoriesAtom,
+  fetchEmojisAtom,
+  type CustomEmoji,
+} from '../../lib/atoms/customEmoji';
 
 /**
  * Emoji categories with their emojis
@@ -175,11 +182,16 @@ export interface EmojiPickerProps {
  * ```
  */
 export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerProps) {
-  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory>('smileys');
+  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | 'custom'>('smileys');
   const [searchQuery, setSearchQuery] = useState('');
   const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Custom emoji state
+  const [customEmojis] = useAtom(emojiListAtom);
+  const [_customCategories] = useAtom(emojiCategoriesAtom); // Reserved for future category filtering
+  const fetchEmojis = useSetAtom(fetchEmojisAtom);
 
   // Load recent emojis from localStorage
   useEffect(() => {
@@ -192,6 +204,11 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
       console.error('Failed to load recent emojis:', error);
     }
   }, []);
+
+  // Fetch custom emojis on mount
+  useEffect(() => {
+    fetchEmojis();
+  }, [fetchEmojis]);
 
   // Save emoji to recent emojis
   const saveToRecent = (emoji: string) => {
@@ -213,12 +230,31 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     setIsOpen(false);
   };
 
+  // Handle custom emoji click (inserts :name: format)
+  const handleCustomEmojiClick = (emoji: CustomEmoji) => {
+    const emojiCode = `:${emoji.name}:`;
+    saveToRecent(emojiCode);
+    onEmojiSelect(emojiCode);
+    setIsOpen(false);
+  };
+
   // Get emojis for the selected category
-  const getEmojisForCategory = () => {
+  const getEmojisForCategory = (): string[] => {
     if (selectedCategory === 'recent') {
       return recentEmojis;
     }
-    return EMOJI_CATEGORIES[selectedCategory].emojis;
+    if (selectedCategory === 'custom') {
+      return []; // Custom emojis are handled separately
+    }
+    return [...EMOJI_CATEGORIES[selectedCategory].emojis];
+  };
+
+  // Get custom emojis for current view
+  const getCustomEmojisForCategory = (): CustomEmoji[] => {
+    if (selectedCategory !== 'custom') {
+      return [];
+    }
+    return customEmojis;
   };
 
   // Filter emojis by search query
@@ -227,6 +263,15 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         .flatMap((cat) => cat.emojis)
         .filter((emoji) => emoji.includes(searchQuery))
     : getEmojisForCategory();
+
+  // Filter custom emojis by search query
+  const filteredCustomEmojis = searchQuery
+    ? customEmojis.filter(
+        (emoji) =>
+          emoji.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emoji.aliases.some((alias) => alias.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : getCustomEmojisForCategory();
 
   // Focus search input when modal opens
   useEffect(() => {
@@ -282,6 +327,19 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                 {/* Category tabs */}
                 {!searchQuery && (
                   <div className="flex gap-1 px-4 py-2 border-b border-gray-200 overflow-x-auto">
+                    {/* Custom emojis tab (if available) */}
+                    {customEmojis.length > 0 && (
+                      <button
+                        onClick={() => setSelectedCategory('custom')}
+                        className={`px-3 py-2 rounded-md text-lg transition-colors ${
+                          selectedCategory === 'custom' ? 'bg-primary-100' : 'hover:bg-gray-100'
+                        }`}
+                        title="Custom Emojis"
+                        aria-label="Custom Emojis"
+                      >
+                        <Sparkles className="w-5 h-5" />
+                      </button>
+                    )}
                     {recentEmojis.length > 0 && (
                       <button
                         onClick={() => setSelectedCategory('recent')}
@@ -314,21 +372,55 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
                 {/* Emoji grid */}
                 <div className="flex-1 overflow-y-auto p-4">
-                  {filteredEmojis.length > 0 ? (
-                    <div className="grid grid-cols-8 gap-2">
-                      {filteredEmojis.map((emoji, index) => (
-                        <button
-                          key={`${emoji}-${index}`}
-                          onClick={() => handleEmojiClick(emoji)}
-                          className="text-2xl p-2 rounded-md hover:bg-gray-100 transition-colors"
-                          title={emoji}
-                          aria-label={`Select ${emoji}`}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
+                  {/* Custom emojis when searching or custom category selected */}
+                  {filteredCustomEmojis.length > 0 && (
+                    <>
+                      {searchQuery && <h3 className="text-sm font-medium text-gray-500 mb-2"><Trans>Custom Emojis</Trans></h3>}
+                      <div className="grid grid-cols-8 gap-2 mb-4">
+                        {filteredCustomEmojis.map((emoji) => (
+                          <button
+                            key={emoji.id}
+                            onClick={() => handleCustomEmojiClick(emoji)}
+                            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                            title={`:${emoji.name}:`}
+                            aria-label={`Select :${emoji.name}:`}
+                          >
+                            <img
+                              src={emoji.url}
+                              alt={`:${emoji.name}:`}
+                              className="w-6 h-6 object-contain"
+                              loading="lazy"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Unicode emojis */}
+                  {filteredEmojis.length > 0 && (
+                    <>
+                      {searchQuery && filteredCustomEmojis.length > 0 && (
+                        <h3 className="text-sm font-medium text-gray-500 mb-2"><Trans>Standard Emojis</Trans></h3>
+                      )}
+                      <div className="grid grid-cols-8 gap-2">
+                        {filteredEmojis.map((emoji, index) => (
+                          <button
+                            key={`${emoji}-${index}`}
+                            onClick={() => handleEmojiClick(emoji)}
+                            className="text-2xl p-2 rounded-md hover:bg-gray-100 transition-colors"
+                            title={emoji}
+                            aria-label={`Select ${emoji}`}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Empty state */}
+                  {filteredEmojis.length === 0 && filteredCustomEmojis.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-500">
                       <Smile className="w-12 h-12 mb-2" />
                       <p className="text-sm">

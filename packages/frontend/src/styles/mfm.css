@@ -1,0 +1,245 @@
+/**
+ * MFM (Misskey Flavored Markdown) Styles
+ *
+ * CSS animations and effects for MFM functions.
+ */
+
+/* Base MFM styles */
+.mfm {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+/* Tada - wobble animation */
+@keyframes mfm-tada {
+  0% { transform: scale(1) rotate(0deg); }
+  10%, 20% { transform: scale(0.9) rotate(-3deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+  40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.mfm-tada {
+  display: inline-block;
+  animation: mfm-tada 1s ease infinite;
+}
+
+/* Jelly - squish animation */
+@keyframes mfm-jelly {
+  0% { transform: scaleX(1) scaleY(1); }
+  25% { transform: scaleX(1.25) scaleY(0.75); }
+  50% { transform: scaleX(0.75) scaleY(1.25); }
+  75% { transform: scaleX(1.15) scaleY(0.85); }
+  100% { transform: scaleX(1) scaleY(1); }
+}
+
+.mfm-jelly {
+  display: inline-block;
+  animation: mfm-jelly 0.5s ease infinite;
+}
+
+/* Twitch - rapid shake */
+@keyframes mfm-twitch {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, 2px); }
+  20% { transform: translate(2px, -2px); }
+  30% { transform: translate(-2px, -2px); }
+  40% { transform: translate(2px, 2px); }
+  50% { transform: translate(-2px, 2px); }
+  60% { transform: translate(2px, -2px); }
+  70% { transform: translate(-2px, -2px); }
+  80% { transform: translate(2px, 2px); }
+  90% { transform: translate(-2px, 2px); }
+  100% { transform: translate(0, 0); }
+}
+
+.mfm-twitch {
+  display: inline-block;
+  animation: mfm-twitch 0.5s ease infinite;
+}
+
+/* Shake - horizontal shake */
+@keyframes mfm-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+.mfm-shake {
+  display: inline-block;
+  animation: mfm-shake 0.5s ease infinite;
+}
+
+/* Spin - rotation */
+@keyframes mfm-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes mfm-spin-reverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes mfm-spin-x {
+  0% { transform: perspective(200px) rotateX(0deg); }
+  100% { transform: perspective(200px) rotateX(360deg); }
+}
+
+@keyframes mfm-spin-y {
+  0% { transform: perspective(200px) rotateY(0deg); }
+  100% { transform: perspective(200px) rotateY(360deg); }
+}
+
+.mfm-spin {
+  display: inline-block;
+  animation: mfm-spin 1.5s linear infinite;
+}
+
+.mfm-spin-left {
+  animation-name: mfm-spin-reverse;
+}
+
+.mfm-spin-alternate {
+  animation-direction: alternate;
+}
+
+.mfm-spin-x {
+  animation-name: mfm-spin-x;
+}
+
+.mfm-spin-y {
+  animation-name: mfm-spin-y;
+}
+
+/* Jump - bounce up animation */
+@keyframes mfm-jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.mfm-jump {
+  display: inline-block;
+  animation: mfm-jump 0.75s ease infinite;
+}
+
+/* Bounce - elastic bounce */
+@keyframes mfm-bounce {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  25% { transform: translateY(-15px) scaleY(0.9); }
+  50% { transform: translateY(0) scaleY(1.1); }
+  75% { transform: translateY(-5px) scaleY(0.95); }
+}
+
+.mfm-bounce {
+  display: inline-block;
+  animation: mfm-bounce 0.75s ease infinite;
+}
+
+/* Rainbow - color cycling */
+@keyframes mfm-rainbow {
+  0% { color: #ff0000; }
+  16.67% { color: #ff8000; }
+  33.33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  66.67% { color: #0080ff; }
+  83.33% { color: #8000ff; }
+  100% { color: #ff0000; }
+}
+
+.mfm-rainbow {
+  animation: mfm-rainbow 2s linear infinite;
+}
+
+/* Sparkle - twinkle effect */
+@keyframes mfm-sparkle {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.6; filter: brightness(1.5); }
+}
+
+.mfm-sparkle {
+  animation: mfm-sparkle 1s ease infinite;
+}
+
+/* ========================================
+   Transforms
+   ======================================== */
+
+/* Flip */
+.mfm-flip {
+  display: inline-block;
+}
+
+.mfm-flip-h {
+  transform: scaleX(-1);
+}
+
+.mfm-flip-v {
+  transform: scaleY(-1);
+}
+
+.mfm-flip-h.mfm-flip-v {
+  transform: scale(-1, -1);
+}
+
+/* Scale */
+.mfm-x2 {
+  display: inline-block;
+  font-size: 200%;
+}
+
+.mfm-x3 {
+  display: inline-block;
+  font-size: 300%;
+}
+
+.mfm-x4 {
+  display: inline-block;
+  font-size: 400%;
+}
+
+/* ========================================
+   Effects
+   ======================================== */
+
+/* Blur - spoiler effect */
+.mfm-blur {
+  filter: blur(6px);
+  transition: filter 0.3s ease;
+}
+
+.mfm-blur:hover {
+  filter: blur(0);
+}
+
+/* ========================================
+   Typography
+   ======================================== */
+
+.mfm-font {
+  display: inline;
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .mfm-tada,
+  .mfm-jelly,
+  .mfm-twitch,
+  .mfm-shake,
+  .mfm-spin,
+  .mfm-jump,
+  .mfm-bounce,
+  .mfm-rainbow,
+  .mfm-sparkle {
+    animation: none !important;
+  }
+}

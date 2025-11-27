@@ -10,6 +10,7 @@ import { apiClient } from '../../lib/api/client';
 import { Flag } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { NoteCard } from '../note/NoteCard';
+import { MfmRenderer } from '../mfm/MfmRenderer';
 import { Spinner } from '../ui/Spinner';
 import { ErrorMessage } from '../ui/ErrorMessage';
 import { TimelineSkeleton } from '../ui/Skeleton';
@@ -357,7 +358,13 @@ export function UserProfile({ username }: UserProfileProps) {
           {/* User Info */}
           <div className="mt-4">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl font-bold text-gray-900">{user.displayName || user.username}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {user.displayName ? (
+                  <MfmRenderer text={user.displayName} plain />
+                ) : (
+                  user.username
+                )}
+              </h1>
               {user.isBot && (
                 <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded">
                   <Trans>Bot</Trans>
@@ -374,7 +381,11 @@ export function UserProfile({ username }: UserProfileProps) {
           </div>
 
           {/* Bio */}
-          {user.bio && <p className="mt-4 text-gray-700 whitespace-pre-wrap">{user.bio}</p>}
+          {user.bio && (
+            <div className="mt-4 text-gray-700 whitespace-pre-wrap profile-bio">
+              <MfmRenderer text={user.bio} />
+            </div>
+          )}
 
           {/* Stats */}
           <div className="mt-4 flex items-center gap-6 text-sm">

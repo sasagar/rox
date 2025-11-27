@@ -22,6 +22,7 @@ export function diMiddleware() {
     c.set('roleRepository', container.roleRepository);
     c.set('roleAssignmentRepository', container.roleAssignmentRepository);
     c.set('instanceSettingsRepository', container.instanceSettingsRepository);
+    c.set('customEmojiRepository', container.customEmojiRepository);
     c.set('fileStorage', container.fileStorage);
     c.set('cacheService', container.cacheService);
     c.set('activityDeliveryQueue', container.activityDeliveryQueue);

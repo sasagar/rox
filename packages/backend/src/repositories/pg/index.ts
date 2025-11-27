@@ -10,3 +10,4 @@ export * from './PostgresUserReportRepository.js';
 export * from './PostgresRoleRepository.js';
 export * from './PostgresRoleAssignmentRepository.js';
 export * from './PostgresInstanceSettingsRepository.js';
+export * from './PostgresCustomEmojiRepository.js';

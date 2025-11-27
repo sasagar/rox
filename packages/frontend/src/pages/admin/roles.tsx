@@ -39,6 +39,7 @@ interface RolePolicies {
   canManageInstanceSettings?: boolean;
   canManageInstanceBlocks?: boolean;
   canManageUsers?: boolean;
+  canManageCustomEmojis?: boolean;
 }
 
 interface Role {
@@ -88,6 +89,7 @@ export default function AdminRolesPage() {
     canManageReports: false,
     canDeleteNotes: false,
     canSuspendUsers: false,
+    canManageCustomEmojis: false,
   });
 
   const loadRoles = useCallback(async () => {
@@ -152,6 +154,7 @@ export default function AdminRolesPage() {
         canManageReports: formData.canManageReports,
         canDeleteNotes: formData.canDeleteNotes,
         canSuspendUsers: formData.canSuspendUsers,
+        canManageCustomEmojis: formData.canManageCustomEmojis,
       };
 
       if (editingRole) {
@@ -202,6 +205,7 @@ export default function AdminRolesPage() {
         canManageReports: false,
         canDeleteNotes: false,
         canSuspendUsers: false,
+        canManageCustomEmojis: false,
       });
       setEditingRole(null);
 
@@ -232,6 +236,7 @@ export default function AdminRolesPage() {
       canManageReports: role.policies.canManageReports || false,
       canDeleteNotes: role.policies.canDeleteNotes || false,
       canSuspendUsers: role.policies.canSuspendUsers || false,
+      canManageCustomEmojis: role.policies.canManageCustomEmojis || false,
     });
   };
 
@@ -250,6 +255,7 @@ export default function AdminRolesPage() {
       canManageReports: false,
       canDeleteNotes: false,
       canSuspendUsers: false,
+      canManageCustomEmojis: false,
     });
   };
 
@@ -499,6 +505,17 @@ export default function AdminRolesPage() {
                     <Trans>Can suspend users</Trans>
                   </span>
                 </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.canManageCustomEmojis}
+                    onChange={(e) => setFormData(prev => ({ ...prev, canManageCustomEmojis: e.target.checked }))}
+                    className="rounded"
+                  />
+                  <span className="text-sm text-(--text-secondary)">
+                    <Trans>Can manage custom emojis</Trans>
+                  </span>
+                </label>
               </div>
             </div>
 
@@ -607,6 +624,11 @@ export default function AdminRolesPage() {
                           {role.policies.canSuspendUsers && (
                             <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">
                               <Trans>Suspend Users</Trans>
+                            </span>
+                          )}
+                          {role.policies.canManageCustomEmojis && (
+                            <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">
+                              <Trans>Emojis</Trans>
                             </span>
                           )}
                         </div>
