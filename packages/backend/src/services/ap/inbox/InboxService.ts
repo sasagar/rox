@@ -19,6 +19,7 @@ import {
   LikeHandler,
   AnnounceHandler,
   UndoHandler,
+  MoveHandler,
 } from './handlers/index.js';
 
 /**
@@ -50,6 +51,7 @@ export class InboxService {
     this.registerHandler(new LikeHandler());
     this.registerHandler(new AnnounceHandler());
     this.registerHandler(new UndoHandler());
+    this.registerHandler(new MoveHandler());
   }
 
   /**

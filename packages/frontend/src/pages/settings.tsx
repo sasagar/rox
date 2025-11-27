@@ -14,6 +14,7 @@ import { addToastAtom } from '../lib/atoms/toast';
 import { Layout } from '../components/layout/Layout';
 import { InvitationCodeSection } from '../components/settings/InvitationCodeSection';
 import { UISettingsSection } from '../components/settings/UISettingsSection';
+import { AccountMigrationSection } from '../components/settings/AccountMigrationSection';
 
 /**
  * Settings page
@@ -274,6 +275,11 @@ export default function SettingsPage() {
       {/* Invitation Codes Section - only shown if user has permission */}
       <div className="mt-6">
         <InvitationCodeSection />
+      </div>
+
+      {/* Account Migration Section */}
+      <div className="mt-6">
+        <AccountMigrationSection />
       </div>
     </Layout>
   );

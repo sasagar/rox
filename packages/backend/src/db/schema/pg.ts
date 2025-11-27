@@ -79,6 +79,10 @@ export const users = pgTable(
     followingUrl: text('following_url'),
     uri: text('uri'), // ActivityPub actor URI (for remote users)
     sharedInbox: text('shared_inbox'), // Shared inbox URL (for remote users, optional)
+    // Account migration (ActivityPub Move)
+    alsoKnownAs: jsonb('also_known_as').$type<string[]>().default([]), // Alternative account URIs
+    movedTo: text('moved_to'), // URI of account this user moved to
+    movedAt: timestamp('moved_at'), // When migration was completed
     // User customization
     customCss: text('custom_css'), // User's custom CSS for profile page
     uiSettings: jsonb('ui_settings').$type<UISettings>(), // User's UI preferences

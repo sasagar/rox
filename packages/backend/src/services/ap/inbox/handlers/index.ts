@@ -16,3 +16,4 @@ export { DeleteHandler } from './DeleteHandler.js';
 export { LikeHandler } from './LikeHandler.js';
 export { AnnounceHandler } from './AnnounceHandler.js';
 export { UndoHandler } from './UndoHandler.js';
+export { MoveHandler } from './MoveHandler.js';

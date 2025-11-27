@@ -45,6 +45,9 @@ interface ActorDocument {
   endpoints?: {
     sharedInbox?: string;
   };
+  // Account migration fields
+  alsoKnownAs?: string[];
+  movedTo?: string;
 }
 
 /**
@@ -188,6 +191,10 @@ export class RemoteActorService {
       sharedInbox: actor.endpoints?.sharedInbox || null,
       customCss: null, // Remote users don't have custom CSS
       uiSettings: null, // Remote users don't have UI settings
+      // Account migration fields
+      alsoKnownAs: actor.alsoKnownAs || [],
+      movedTo: actor.movedTo || null,
+      movedAt: null,
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);

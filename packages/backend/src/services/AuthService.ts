@@ -120,6 +120,10 @@ export class AuthService {
       followingUrl: `${baseUrl}/users/${input.username}/following`,
       uri: `${baseUrl}/users/${input.username}`,
       sharedInbox: null, // Local users don't have shared inbox
+      // Account migration fields
+      alsoKnownAs: [],
+      movedTo: null,
+      movedAt: null,
     });
 
     // セッション作成

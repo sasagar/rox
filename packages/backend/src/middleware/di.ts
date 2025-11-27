@@ -31,6 +31,7 @@ export function diMiddleware() {
     c.set('activityPubDeliveryService', container.activityPubDeliveryService);
     c.set('roleService', container.roleService);
     c.set('instanceSettingsService', container.instanceSettingsService);
+    c.set('migrationService', container.migrationService);
 
     await next();
   };

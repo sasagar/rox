@@ -43,6 +43,7 @@ import { RemoteNoteService } from '../services/ap/RemoteNoteService.js';
 import { ActivityPubDeliveryService } from '../services/ap/ActivityPubDeliveryService.js';
 import { RoleService } from '../services/RoleService.js';
 import { InstanceSettingsService } from '../services/InstanceSettingsService.js';
+import { MigrationService } from '../services/MigrationService.js';
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -66,6 +67,7 @@ export interface AppContainer {
   activityPubDeliveryService: ActivityPubDeliveryService;
   roleService: RoleService;
   instanceSettingsService: InstanceSettingsService;
+  migrationService: MigrationService;
 }
 
 /**
@@ -126,6 +128,13 @@ export function createContainer(): AppContainer {
     repositories.instanceSettingsRepository
   );
 
+  // Migration Service for account migration
+  const migrationService = new MigrationService(
+    repositories.userRepository,
+    repositories.followRepository,
+    remoteActorService
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -136,6 +145,7 @@ export function createContainer(): AppContainer {
     activityPubDeliveryService,
     roleService,
     instanceSettingsService,
+    migrationService,
   };
 }
 

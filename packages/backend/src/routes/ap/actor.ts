@@ -50,7 +50,7 @@ actor.get('/:username', async (c: Context) => {
   const baseUrl = process.env.URL || 'http://localhost:3000';
 
   // Build ActivityPub Actor document
-  const actorDocument = {
+  const actorDocument: Record<string, unknown> = {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
       'https://w3id.org/security/v1',
@@ -84,6 +84,14 @@ actor.get('/:username', async (c: Context) => {
       publicKeyPem: user.publicKey,
     },
   };
+
+  // Add migration-related fields if present
+  if (user.alsoKnownAs && user.alsoKnownAs.length > 0) {
+    actorDocument.alsoKnownAs = user.alsoKnownAs;
+  }
+  if (user.movedTo) {
+    actorDocument.movedTo = user.movedTo;
+  }
 
   return c.json(actorDocument, 200, {
     'Content-Type': 'application/activity+json; charset=utf-8',

@@ -25,6 +25,10 @@ export interface User extends Timestamps {
   // User customization
   customCss: string | null; // Custom CSS for profile page
   uiSettings: UISettings | null; // UI display preferences
+  // Account migration fields
+  alsoKnownAs: string[] | null; // Alternative account URIs for migration
+  movedTo: string | null; // URI of account this user moved to
+  movedAt: Date | null; // When migration was completed
 }
 
 export interface UserProfile {

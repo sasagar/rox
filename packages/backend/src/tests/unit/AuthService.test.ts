@@ -42,6 +42,9 @@ describe('AuthService', () => {
     sharedInbox: null,
     customCss: null,
     uiSettings: null,
+    alsoKnownAs: [],
+    movedTo: null,
+    movedAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

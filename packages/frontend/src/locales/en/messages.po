@@ -50,6 +50,23 @@ msgstr "About This Instance"
 #~ msgid "About This Server"
 #~ msgstr "About This Server"
 
+#: src/components/settings/AccountMigrationSection.tsx:251
+msgid "Account Aliases"
+msgstr "Account Aliases"
+
+#: src/components/settings/AccountMigrationSection.tsx:217
+msgid "Account has been migrated"
+msgstr "Account has been migrated"
+
+#: src/components/settings/AccountMigrationSection.tsx:208
+#: src/components/settings/AccountMigrationSection.tsx:241
+msgid "Account Migration"
+msgstr "Account Migration"
+
+#: src/components/settings/AccountMigrationSection.tsx:254
+msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
+msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
+
 #: src/pages/admin/emojis.tsx:369
 #: src/pages/admin/emojis.tsx:551
 msgid "Add Emoji"
@@ -87,6 +104,14 @@ msgstr "Admin Role"
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
+#: src/components/settings/AccountMigrationSection.tsx:96
+msgid "Alias added successfully"
+msgstr "Alias added successfully"
+
+#: src/components/settings/AccountMigrationSection.tsx:118
+msgid "Alias removed successfully"
+msgstr "Alias removed successfully"
+
 #: src/pages/admin/emojis.tsx:482
 msgid "Aliases"
 msgstr "Aliases"
@@ -120,6 +145,10 @@ msgstr "Already have an account? Sign in"
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
+#: src/components/settings/AccountMigrationSection.tsx:154
+msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
+msgstr "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
+
 #: src/components/note/NoteComposer.tsx:191
 msgid "Authentication required"
 msgstr "Authentication required"
@@ -145,7 +174,11 @@ msgstr "Banner URL"
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
-#: src/pages/settings.tsx:164
+#: src/components/settings/AccountMigrationSection.tsx:407
+msgid "Before migrating, make sure to add this account as an alias on your target account."
+msgstr "Before migrating, make sure to add this account as an alias on your target account."
+
+#: src/pages/settings.tsx:165
 msgid "Bio"
 msgstr "Bio"
 
@@ -199,7 +232,7 @@ msgstr "Can suspend users"
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/emojis.tsx:555
 #: src/pages/admin/roles.tsx:547
-#: src/pages/settings.tsx:262
+#: src/pages/settings.tsx:263
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -300,7 +333,7 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:207
+#: src/pages/settings.tsx:208
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
@@ -312,7 +345,7 @@ msgstr "Custom CSS (App-wide)"
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "Custom CSS applied to the entire app (max 10KB)"
 
-#: src/pages/settings.tsx:221
+#: src/pages/settings.tsx:222
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -371,7 +404,7 @@ msgstr "Direct"
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:144
+#: src/pages/settings.tsx:145
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "Display Name"
@@ -493,6 +526,10 @@ msgstr "Expires In"
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
+#: src/components/settings/AccountMigrationSection.tsx:101
+msgid "Failed to add alias"
+msgstr "Failed to add alias"
+
 #: src/pages/admin/emojis.tsx:228
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
@@ -523,6 +560,10 @@ msgstr "Failed to delete invitation code"
 msgid "Failed to delete role"
 msgstr "Failed to delete role"
 
+#: src/components/settings/AccountMigrationSection.tsx:176
+msgid "Failed to initiate migration"
+msgstr "Failed to initiate migration"
+
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
 msgstr "Failed to load note"
@@ -534,6 +575,10 @@ msgstr "Failed to load report details"
 #: src/pages/admin/reports.tsx:180
 msgid "Failed to process report"
 msgstr "Failed to process report"
+
+#: src/components/settings/AccountMigrationSection.tsx:123
+msgid "Failed to remove alias"
+msgstr "Failed to remove alias"
 
 #: src/components/note/NoteCard.tsx:156
 msgid "Failed to renote"
@@ -630,6 +675,14 @@ msgstr "Go to Timeline"
 msgid "Home"
 msgstr "Home"
 
+#: src/components/settings/AccountMigrationSection.tsx:265
+msgid "https://example.com/users/username"
+msgstr "https://example.com/users/username"
+
+#: src/components/settings/AccountMigrationSection.tsx:336
+msgid "https://newserver.com/users/newusername"
+msgstr "https://newserver.com/users/newusername"
+
 #: src/pages/admin/settings.tsx:286
 msgid "Icon URL"
 msgstr "Icon URL"
@@ -637,6 +690,10 @@ msgstr "Icon URL"
 #: src/pages/admin/emojis.tsx:408
 msgid "Image"
 msgstr "Image"
+
+#: src/components/settings/AccountMigrationSection.tsx:401
+msgid "Initiate Migration"
+msgstr "Initiate Migration"
 
 #: src/pages/admin/settings.tsx:201
 msgid "Instance"
@@ -781,13 +838,31 @@ msgstr "Maintainer Email"
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
 
-#: src/pages/settings.tsx:134
+#: src/pages/settings.tsx:135
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
 #: src/pages/admin/invitations.tsx:273
 msgid "Max Uses"
 msgstr "Max Uses"
+
+#: src/components/settings/AccountMigrationSection.tsx:307
+msgid "Migrate your account to a new server. Your followers will be automatically transferred to the new account. This action is irreversible."
+msgstr "Migrate your account to a new server. Your followers will be automatically transferred to the new account. This action is irreversible."
+
+#. placeholder {0}: formatDate(status.movedAt)
+#: src/components/settings/AccountMigrationSection.tsx:226
+msgid "Migrated on: {0}"
+msgstr "Migrated on: {0}"
+
+#. placeholder {0}: formatDate(status.cooldownEndsAt)
+#: src/components/settings/AccountMigrationSection.tsx:318
+msgid "Migration cooldown active until {0}"
+msgstr "Migration cooldown active until {0}"
+
+#: src/components/settings/AccountMigrationSection.tsx:171
+msgid "Migration initiated successfully. Your followers will be transferred to the new account."
+msgstr "Migration initiated successfully. Your followers will be transferred to the new account."
 
 #: src/pages/signup.tsx:183
 msgid "Minimum 8 characters"
@@ -801,6 +876,10 @@ msgstr "Moderator Role"
 msgid "More options"
 msgstr "More options"
 
+#: src/components/settings/AccountMigrationSection.tsx:304
+msgid "Move to a Different Account"
+msgstr "Move to a Different Account"
+
 #: src/pages/admin/emojis.tsx:391
 #: src/pages/admin/roles.tsx:359
 msgid "Name"
@@ -813,6 +892,10 @@ msgstr "Never"
 #: src/pages/admin/settings.tsx:427
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
+
+#: src/components/settings/AccountMigrationSection.tsx:296
+msgid "No aliases configured"
+msgstr "No aliases configured"
 
 #: src/pages/admin/blocks.tsx:308
 msgid "No blocked instances"
@@ -887,7 +970,7 @@ msgstr "Note renoted"
 msgid "Note Report"
 msgstr "Note Report"
 
-#: src/pages/settings.tsx:228
+#: src/pages/settings.tsx:229
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
 
@@ -941,7 +1024,7 @@ msgstr "Permissions"
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:78
+#: src/pages/settings.tsx:79
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -997,7 +1080,7 @@ msgstr "Privacy Policy URL"
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/settings.tsx:98
+#: src/pages/settings.tsx:99
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -1034,6 +1117,7 @@ msgstr "Reason (optional)"
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
+#: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:178
 #: src/pages/admin/emojis.tsx:358
 msgid "Refresh"
@@ -1067,6 +1151,10 @@ msgstr "Reject"
 #: src/pages/admin/reports.tsx:302
 msgid "Rejected"
 msgstr "Rejected"
+
+#: src/components/settings/AccountMigrationSection.tsx:286
+msgid "Remove alias"
+msgstr "Remove alias"
 
 #: src/components/note/NoteCard.tsx:278
 msgid "Renoted"
@@ -1228,7 +1316,7 @@ msgstr "Role updated"
 msgid "Roles"
 msgstr "Roles"
 
-#: src/pages/settings.tsx:250
+#: src/pages/settings.tsx:251
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -1249,7 +1337,7 @@ msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
 #: src/components/settings/UISettingsSection.tsx:299
-#: src/pages/settings.tsx:246
+#: src/pages/settings.tsx:247
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -1270,7 +1358,7 @@ msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
 #: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:131
+#: src/pages/settings.tsx:132
 msgid "Settings"
 msgstr "Settings"
 
@@ -1332,7 +1420,15 @@ msgstr "Suspend Users"
 msgid "System"
 msgstr "System"
 
-#: src/pages/settings.tsx:170
+#: src/components/settings/AccountMigrationSection.tsx:374
+msgid "Target account is valid"
+msgstr "Target account is valid"
+
+#: src/components/settings/AccountMigrationSection.tsx:327
+msgid "Target Account URI"
+msgstr "Target Account URI"
+
+#: src/pages/settings.tsx:171
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -1364,6 +1460,10 @@ msgstr "Theme Settings"
 #: src/pages/admin/settings.tsx:152
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
+
+#: src/components/settings/AccountMigrationSection.tsx:220
+msgid "This account was migrated to:"
+msgstr "This account was migrated to:"
 
 #: src/pages/signup.tsx:110
 msgid "This instance is not accepting new registrations at this time."
@@ -1462,12 +1562,12 @@ msgid "User Report"
 msgstr "User Report"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:189
+#: src/pages/settings.tsx:190
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:200
+#: src/pages/settings.tsx:201
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -1488,6 +1588,14 @@ msgstr "Users can still override this with their own preference"
 #: src/pages/admin/invitations.tsx:380
 msgid "Uses: {0}/{1}"
 msgstr "Uses: {0}/{1}"
+
+#: src/components/settings/AccountMigrationSection.tsx:349
+msgid "Validate"
+msgstr "Validate"
+
+#: src/components/settings/AccountMigrationSection.tsx:143
+msgid "Validation failed"
+msgstr "Validation failed"
 
 #: src/components/LandingPage.tsx:259
 msgid "View Policy"
@@ -1547,10 +1655,10 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:178
+#: src/pages/settings.tsx:179
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
-#: src/pages/settings.tsx:157
+#: src/pages/settings.tsx:158
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"

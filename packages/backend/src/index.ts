@@ -24,6 +24,7 @@ import reportsRoute from './routes/reports.js';
 import invitationsRoute from './routes/invitations.js';
 import instanceRoute from './routes/instance.js';
 import emojisRoute from './routes/emojis.js';
+import migrationRoute from './routes/migration.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 import { getContainer } from './di/container.js';
@@ -63,6 +64,7 @@ app.route('/api/reports', reportsRoute);
 app.route('/api/invitations', invitationsRoute);
 app.route('/api/instance', instanceRoute);
 app.route('/api/emojis', emojisRoute);
+app.route('/api/i/migration', migrationRoute);
 
 // Media Proxy
 app.route('/proxy', proxyRoute);
