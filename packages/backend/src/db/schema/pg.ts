@@ -395,6 +395,31 @@ export const moderationAuditLogs = pgTable(
   })
 );
 
+// User warnings table (tracks warnings issued to users)
+export const userWarnings = pgTable(
+  'user_warnings',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }), // User who received the warning
+    moderatorId: text('moderator_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'set null' }), // Moderator who issued the warning
+    reason: text('reason').notNull(), // Reason for the warning
+    isRead: boolean('is_read').notNull().default(false), // Whether the user has acknowledged the warning
+    readAt: timestamp('read_at'), // When the user acknowledged the warning
+    expiresAt: timestamp('expires_at'), // Optional expiration date (null = permanent record)
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index('warning_user_idx').on(table.userId),
+    moderatorIdx: index('warning_moderator_idx').on(table.moderatorId),
+    isReadIdx: index('warning_is_read_idx').on(table.isRead),
+    createdAtIdx: index('warning_created_at_idx').on(table.createdAt),
+  })
+);
+
 // Custom emojis table (instance-level custom emojis)
 export const customEmojis = pgTable(
   'custom_emojis',
@@ -450,3 +475,5 @@ export type CustomEmoji = typeof customEmojis.$inferSelect;
 export type NewCustomEmoji = typeof customEmojis.$inferInsert;
 export type ModerationAuditLog = typeof moderationAuditLogs.$inferSelect;
 export type NewModerationAuditLog = typeof moderationAuditLogs.$inferInsert;
+export type UserWarning = typeof userWarnings.$inferSelect;
+export type NewUserWarning = typeof userWarnings.$inferInsert;

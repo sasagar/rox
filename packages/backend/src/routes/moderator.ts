@@ -426,14 +426,188 @@ app.get('/users/:id', async (c) => {
 
   const { passwordHash: _p, privateKey: _pk, ...userData } = user;
 
+  // Get warnings for this user
+  const userWarningRepository = c.get('userWarningRepository');
+  const warnings = await userWarningRepository.findByUserId(userId, { limit: 10 });
+  const warningsCount = await userWarningRepository.countByUserId(userId);
+
   return c.json({
     user: userData,
     reports: {
       items: reportsAgainst,
       total: reportsAgainstCount,
     },
+    warnings: {
+      items: warnings,
+      total: warningsCount,
+    },
     moderationHistory,
   });
+});
+
+// ============================================================================
+// User Warning Endpoints
+// ============================================================================
+
+/**
+ * Issue Warning to User
+ *
+ * POST /api/mod/users/:id/warn
+ *
+ * Issues a warning to a user.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "reason": "Violation of community guidelines",
+ *   "expiresAt": "2025-12-31T23:59:59Z" // Optional
+ * }
+ * ```
+ */
+app.post('/users/:id/warn', async (c) => {
+  const userRepository = c.get('userRepository');
+  const userWarningRepository = c.get('userWarningRepository');
+  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
+  const moderator = c.get('user');
+  const userId = c.req.param('id');
+
+  // Prevent self-warning
+  if (userId === moderator?.id) {
+    return c.json({ error: 'Cannot warn yourself' }, 400);
+  }
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  // Cannot warn admins
+  if (user.isAdmin) {
+    return c.json({ error: 'Cannot warn an admin user' }, 400);
+  }
+
+  const body = await c.req.json();
+
+  if (!body.reason || typeof body.reason !== 'string' || body.reason.trim().length === 0) {
+    return c.json({ error: 'reason is required' }, 400);
+  }
+
+  const expiresAt = body.expiresAt ? new Date(body.expiresAt) : undefined;
+
+  const warning = await userWarningRepository.create({
+    userId,
+    moderatorId: moderator!.id,
+    reason: body.reason.trim(),
+    expiresAt,
+  });
+
+  // Log moderation action
+  await moderationAuditLogRepository.create({
+    moderatorId: moderator!.id,
+    action: 'warn_user',
+    targetType: 'user',
+    targetId: userId,
+    reason: body.reason.trim(),
+    details: {
+      username: user.username,
+      host: user.host,
+      warningId: warning.id,
+      expiresAt: expiresAt?.toISOString(),
+    },
+  });
+
+  return c.json(warning, 201);
+});
+
+/**
+ * List User Warnings
+ *
+ * GET /api/mod/users/:id/warnings
+ *
+ * Returns all warnings for a specific user.
+ *
+ * Query Parameters:
+ * - limit: Maximum number of warnings (default: 100)
+ * - offset: Number of warnings to skip (default: 0)
+ * - includeExpired: Include expired warnings (default: false)
+ */
+app.get('/users/:id/warnings', async (c) => {
+  const userWarningRepository = c.get('userWarningRepository');
+  const userRepository = c.get('userRepository');
+  const userId = c.req.param('id');
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+  const includeExpired = c.req.query('includeExpired') === 'true';
+
+  const warnings = await userWarningRepository.findByUserId(userId, { limit, offset, includeExpired });
+  const total = await userWarningRepository.countByUserId(userId, { includeExpired });
+
+  return c.json({ warnings, total });
+});
+
+/**
+ * List All Warnings
+ *
+ * GET /api/mod/warnings
+ *
+ * Returns a paginated list of all user warnings.
+ *
+ * Query Parameters:
+ * - userId: Filter by user
+ * - moderatorId: Filter by moderator
+ * - limit: Maximum number of warnings (default: 100)
+ * - offset: Number of warnings to skip (default: 0)
+ * - includeExpired: Include expired warnings (default: false)
+ */
+app.get('/warnings', async (c) => {
+  const userWarningRepository = c.get('userWarningRepository');
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+  const userId = c.req.query('userId');
+  const moderatorId = c.req.query('moderatorId');
+  const includeExpired = c.req.query('includeExpired') === 'true';
+
+  const warnings = await userWarningRepository.findAll({
+    userId,
+    moderatorId,
+    limit,
+    offset,
+    includeExpired,
+  });
+  const total = await userWarningRepository.count();
+
+  return c.json({ warnings, total });
+});
+
+/**
+ * Delete Warning
+ *
+ * DELETE /api/mod/warnings/:id
+ *
+ * Deletes a warning.
+ */
+app.delete('/warnings/:id', async (c) => {
+  const userWarningRepository = c.get('userWarningRepository');
+  const id = c.req.param('id');
+
+  const warning = await userWarningRepository.findById(id);
+  if (!warning) {
+    return c.json({ error: 'Warning not found' }, 404);
+  }
+
+  const deleted = await userWarningRepository.delete(id);
+  if (!deleted) {
+    return c.json({ error: 'Failed to delete warning' }, 500);
+  }
+
+  return c.json({ success: true, message: 'Warning deleted' });
 });
 
 // ============================================================================

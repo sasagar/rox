@@ -120,6 +120,13 @@
       "when": 1764255452090,
       "tag": "0016_add_soft_delete_to_notes",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1764284763743,
+      "tag": "0017_wakeful_sunset_bain",
+      "breakpoints": true
     }
   ]
 }

@@ -15,6 +15,7 @@ import type {
   IInstanceSettingsRepository,
   ICustomEmojiRepository,
   IModerationAuditLogRepository,
+  IUserWarningRepository,
 } from '../interfaces/repositories/index.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
 import type { ICacheService } from '../interfaces/ICacheService.js';
@@ -33,6 +34,7 @@ import {
   PostgresInstanceSettingsRepository,
   PostgresCustomEmojiRepository,
   PostgresModerationAuditLogRepository,
+  PostgresUserWarningRepository,
 } from '../repositories/pg/index.js';
 import {
   LocalStorageAdapter,
@@ -62,6 +64,7 @@ export interface AppContainer {
   instanceSettingsRepository: IInstanceSettingsRepository;
   customEmojiRepository: ICustomEmojiRepository;
   moderationAuditLogRepository: IModerationAuditLogRepository;
+  userWarningRepository: IUserWarningRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -175,6 +178,7 @@ function createRepositories(db: any, dbType: string) {
         instanceSettingsRepository: new PostgresInstanceSettingsRepository(db),
         customEmojiRepository: new PostgresCustomEmojiRepository(db),
         moderationAuditLogRepository: new PostgresModerationAuditLogRepository(db),
+        userWarningRepository: new PostgresUserWarningRepository(db),
       };
 
     case 'mysql':

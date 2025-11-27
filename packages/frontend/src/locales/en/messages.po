@@ -29,7 +29,7 @@ msgid "{0} is not blocked"
 msgstr "{0} is not blocked"
 
 #. placeholder {0}: selectedUser.reports.total
-#: src/pages/mod/users.tsx:258
+#: src/pages/mod/users.tsx:346
 msgid "{0} reports against this user"
 msgstr "{0} reports against this user"
 
@@ -82,7 +82,7 @@ msgstr "Account Migration"
 msgid "Action Log"
 msgstr "Action Log"
 
-#: src/pages/mod/users.tsx:290
+#: src/pages/mod/users.tsx:437
 msgid "Actions"
 msgstr "Actions"
 
@@ -129,7 +129,7 @@ msgstr "Admin Role"
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
-#: src/pages/mod/users.tsx:346
+#: src/pages/mod/users.tsx:567
 msgid "Admin users cannot be suspended"
 msgstr "Admin users cannot be suspended"
 
@@ -291,6 +291,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/emojis.tsx:555
 #: src/pages/admin/roles.tsx:547
 #: src/pages/mod/instances.tsx:374
+#: src/pages/mod/users.tsx:545
 #: src/pages/settings.tsx:263
 msgid "Cancel"
 msgstr "Cancel"
@@ -466,6 +467,10 @@ msgstr "Delete Notes"
 msgid "Delete role"
 msgstr "Delete role"
 
+#: src/pages/mod/users.tsx:396
+msgid "Delete warning"
+msgstr "Delete warning"
+
 #: src/pages/mod/notes.tsx:177
 #: src/pages/mod/notes.tsx:188
 msgid "Deleted Notes"
@@ -475,6 +480,10 @@ msgstr "Deleted Notes"
 #: src/pages/mod/notes.tsx:260
 msgid "Deleted: {0}"
 msgstr "Deleted: {0}"
+
+#: src/pages/mod/users.tsx:502
+msgid "Describe the reason for this warning..."
+msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:385
 #: src/pages/admin/settings.tsx:253
@@ -579,7 +588,7 @@ msgstr "Enable Registration"
 msgid "Enter instance hostname (e.g., spam.example.com)"
 msgstr "Enter instance hostname (e.g., spam.example.com)"
 
-#: src/pages/mod/users.tsx:300
+#: src/pages/mod/users.tsx:448
 msgid "Enter reason for action..."
 msgstr "Enter reason for action..."
 
@@ -587,7 +596,7 @@ msgstr "Enter reason for action..."
 msgid "Enter the domain without https:// prefix"
 msgstr "Enter the domain without https:// prefix"
 
-#: src/pages/mod/users.tsx:188
+#: src/pages/mod/users.tsx:276
 msgid "Enter username (e.g., alice or alice@remote.server)"
 msgstr "Enter username (e.g., alice or alice@remote.server)"
 
@@ -607,8 +616,13 @@ msgstr "Error loading user profile"
 msgid "example.com"
 msgstr "example.com"
 
+#: src/pages/mod/users.tsx:509
+msgid "Expiration Date (optional)"
+msgstr "Expiration Date (optional)"
+
 #: src/components/settings/InvitationCodeSection.tsx:240
 #: src/pages/admin/invitations.tsx:365
+#: src/pages/mod/users.tsx:378
 msgid "Expired"
 msgstr "Expired"
 
@@ -618,8 +632,10 @@ msgstr "Expires In"
 
 #. placeholder {0}: formatDate(code.expiresAt)
 #. placeholder {0}: formatDate(invitation.expiresAt)
+#. placeholder {0}: formatDate(warning.expiresAt)
 #: src/components/settings/InvitationCodeSection.tsx:258
 #: src/pages/admin/invitations.tsx:383
+#: src/pages/mod/users.tsx:380
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
@@ -662,13 +678,21 @@ msgstr "Failed to delete invitation code"
 msgid "Failed to delete role"
 msgstr "Failed to delete role"
 
-#: src/pages/mod/users.tsx:90
+#: src/pages/mod/users.tsx:231
+msgid "Failed to delete warning"
+msgstr "Failed to delete warning"
+
+#: src/pages/mod/users.tsx:115
 msgid "Failed to find user"
 msgstr "Failed to find user"
 
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
 msgstr "Failed to initiate migration"
+
+#: src/pages/mod/users.tsx:205
+msgid "Failed to issue warning"
+msgstr "Failed to issue warning"
 
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
@@ -708,7 +732,7 @@ msgstr "Failed to save UI settings"
 msgid "Failed to submit report"
 msgstr "Failed to submit report"
 
-#: src/pages/mod/users.tsx:119
+#: src/pages/mod/users.tsx:144
 msgid "Failed to suspend user"
 msgstr "Failed to suspend user"
 
@@ -717,7 +741,7 @@ msgstr "Failed to suspend user"
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
 
-#: src/pages/mod/users.tsx:148
+#: src/pages/mod/users.tsx:173
 msgid "Failed to unsuspend user"
 msgstr "Failed to unsuspend user"
 
@@ -907,14 +931,23 @@ msgstr "Invite limit:"
 msgid "Invite Only"
 msgstr "Invite Only"
 
+#: src/pages/mod/users.tsx:491
+#: src/pages/mod/users.tsx:532
+msgid "Issue Warning"
+msgstr "Issue Warning"
+
 #: src/pages/signup.tsx:133
 msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
 
 #. placeholder {0}: formatDate(selectedUser.user.createdAt)
-#: src/pages/mod/users.tsx:247
+#: src/pages/mod/users.tsx:335
 msgid "Joined: {0}"
 msgstr "Joined: {0}"
+
+#: src/pages/mod/users.tsx:518
+msgid "Leave empty for a permanent warning"
+msgstr "Leave empty for a permanent warning"
 
 #: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
@@ -1015,7 +1048,7 @@ msgstr "Minimum 8 characters"
 msgid "Moderation Dashboard"
 msgstr "Moderation Dashboard"
 
-#: src/pages/mod/users.tsx:88
+#: src/pages/mod/users.tsx:113
 msgid "Moderator access required"
 msgstr "Moderator access required"
 
@@ -1290,13 +1323,17 @@ msgstr "Public (show on profiles)"
 msgid "Reaction added"
 msgstr "Reaction added"
 
+#: src/pages/mod/users.tsx:386
+msgid "Read"
+msgstr "Read"
+
 #: src/components/report/ReportDialog.tsx:135
 msgid "Reason"
 msgstr "Reason"
 
 #: src/pages/admin/blocks.tsx:260
 #: src/pages/mod/instances.tsx:362
-#: src/pages/mod/users.tsx:295
+#: src/pages/mod/users.tsx:443
 msgid "Reason (optional)"
 msgstr "Reason (optional)"
 
@@ -1314,7 +1351,7 @@ msgstr "Reason:"
 msgid "Reason: {0}"
 msgstr "Reason: {0}"
 
-#: src/pages/mod/users.tsx:268
+#: src/pages/mod/users.tsx:415
 msgid "Recent Moderation History"
 msgstr "Recent Moderation History"
 
@@ -1575,7 +1612,7 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
-#: src/pages/mod/users.tsx:193
+#: src/pages/mod/users.tsx:281
 msgid "Search"
 msgstr "Search"
 
@@ -1587,11 +1624,11 @@ msgstr "Search emoji..."
 msgid "Search emojis..."
 msgstr "Search emojis..."
 
-#: src/pages/mod/users.tsx:167
+#: src/pages/mod/users.tsx:255
 msgid "Search for users and manage suspensions"
 msgstr "Search for users and manage suspensions"
 
-#: src/pages/mod/users.tsx:177
+#: src/pages/mod/users.tsx:265
 msgid "Search User"
 msgstr "Search User"
 
@@ -1670,7 +1707,7 @@ msgid "Submit Report"
 msgstr "Submit Report"
 
 #: src/pages/mod/audit-logs.tsx:243
-#: src/pages/mod/users.tsx:332
+#: src/pages/mod/users.tsx:480
 msgid "Suspend User"
 msgstr "Suspend User"
 
@@ -1678,7 +1715,7 @@ msgstr "Suspend User"
 msgid "Suspend Users"
 msgstr "Suspend Users"
 
-#: src/pages/mod/users.tsx:238
+#: src/pages/mod/users.tsx:326
 msgid "Suspended"
 msgstr "Suspended"
 
@@ -1815,7 +1852,7 @@ msgid "Unknown User"
 msgstr "Unknown User"
 
 #: src/pages/mod/audit-logs.tsx:244
-#: src/pages/mod/users.tsx:317
+#: src/pages/mod/users.tsx:465
 msgid "Unsuspend User"
 msgstr "Unsuspend User"
 
@@ -1841,16 +1878,16 @@ msgstr "Uploading..."
 msgid "Used"
 msgstr "Used"
 
-#: src/pages/mod/users.tsx:210
+#: src/pages/mod/users.tsx:298
 msgid "User Details"
 msgstr "User Details"
 
-#: src/pages/mod/users.tsx:164
+#: src/pages/mod/users.tsx:252
 msgid "User Moderation"
 msgstr "User Moderation"
 
 #: src/components/user/UserProfile.tsx:263
-#: src/pages/mod/users.tsx:86
+#: src/pages/mod/users.tsx:111
 msgid "User not found"
 msgstr "User not found"
 
@@ -1859,11 +1896,11 @@ msgstr "User not found"
 msgid "User Report"
 msgstr "User Report"
 
-#: src/pages/mod/users.tsx:109
+#: src/pages/mod/users.tsx:134
 msgid "User suspended successfully"
 msgstr "User suspended successfully"
 
-#: src/pages/mod/users.tsx:138
+#: src/pages/mod/users.tsx:163
 msgid "User unsuspended successfully"
 msgstr "User unsuspended successfully"
 
@@ -1922,6 +1959,27 @@ msgstr "View Policy"
 #: src/components/LandingPage.tsx:249
 msgid "View Terms"
 msgstr "View Terms"
+
+#: src/pages/mod/users.tsx:555
+msgid "Warn User"
+msgstr "Warn User"
+
+#: src/pages/mod/users.tsx:222
+msgid "Warning deleted successfully"
+msgstr "Warning deleted successfully"
+
+#: src/pages/mod/users.tsx:193
+msgid "Warning issued successfully"
+msgstr "Warning issued successfully"
+
+#: src/pages/mod/users.tsx:497
+msgid "Warning Reason (required)"
+msgstr "Warning Reason (required)"
+
+#. placeholder {0}: selectedUser.warnings.total
+#: src/pages/mod/users.tsx:357
+msgid "Warnings ({0})"
+msgstr "Warnings ({0})"
 
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"

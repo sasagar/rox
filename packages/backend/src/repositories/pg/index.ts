@@ -12,3 +12,4 @@ export * from './PostgresRoleAssignmentRepository.js';
 export * from './PostgresInstanceSettingsRepository.js';
 export * from './PostgresCustomEmojiRepository.js';
 export * from './PostgresModerationAuditLogRepository.js';
+export * from './PostgresUserWarningRepository.js';

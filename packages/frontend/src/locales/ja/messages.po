@@ -29,7 +29,7 @@ msgid "{0} is not blocked"
 msgstr "{0}はブロックされていません"
 
 #. placeholder {0}: selectedUser.reports.total
-#: src/pages/mod/users.tsx:258
+#: src/pages/mod/users.tsx:346
 msgid "{0} reports against this user"
 msgstr "このユーザーに対する通報: {0}件"
 
@@ -82,7 +82,7 @@ msgstr "アカウント引っ越し"
 msgid "Action Log"
 msgstr "アクションログ"
 
-#: src/pages/mod/users.tsx:290
+#: src/pages/mod/users.tsx:437
 msgid "Actions"
 msgstr "アクション"
 
@@ -129,7 +129,7 @@ msgstr "管理者ロール"
 msgid "Admin Settings"
 msgstr "管理設定"
 
-#: src/pages/mod/users.tsx:346
+#: src/pages/mod/users.tsx:567
 msgid "Admin users cannot be suspended"
 msgstr "管理者ユーザーは停止できません"
 
@@ -291,6 +291,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:555
 #: src/pages/admin/roles.tsx:547
 #: src/pages/mod/instances.tsx:374
+#: src/pages/mod/users.tsx:545
 #: src/pages/settings.tsx:263
 msgid "Cancel"
 msgstr "キャンセル"
@@ -470,6 +471,10 @@ msgstr "ノート削除"
 msgid "Delete role"
 msgstr "ロールを削除"
 
+#: src/pages/mod/users.tsx:396
+msgid "Delete warning"
+msgstr "警告を削除"
+
 #: src/pages/mod/notes.tsx:177
 #: src/pages/mod/notes.tsx:188
 msgid "Deleted Notes"
@@ -488,6 +493,10 @@ msgstr "削除日時: {0}"
 #: src/pages/mod/notes.tsx:260
 #~ msgid "Deleted: {0}PLACEHOLDER"
 #~ msgstr ""
+
+#: src/pages/mod/users.tsx:502
+msgid "Describe the reason for this warning..."
+msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:385
 #: src/pages/admin/settings.tsx:253
@@ -596,7 +605,7 @@ msgstr "インスタンスのホスト名を入力（例: spam.example.com）"
 #~ msgid "Enter instance hostname (e.g., spam.example.com)PLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:300
+#: src/pages/mod/users.tsx:448
 msgid "Enter reason for action..."
 msgstr "アクションの理由を入力..."
 
@@ -608,7 +617,7 @@ msgstr "アクションの理由を入力..."
 msgid "Enter the domain without https:// prefix"
 msgstr "https://を除いたドメインを入力してください"
 
-#: src/pages/mod/users.tsx:188
+#: src/pages/mod/users.tsx:276
 msgid "Enter username (e.g., alice or alice@remote.server)"
 msgstr "ユーザー名を入力（例: alice または alice@remote.server）"
 
@@ -632,8 +641,13 @@ msgstr "ユーザープロフィールの読み込みに失敗しました"
 msgid "example.com"
 msgstr "example.com"
 
+#: src/pages/mod/users.tsx:509
+msgid "Expiration Date (optional)"
+msgstr "有効期限（任意）"
+
 #: src/components/settings/InvitationCodeSection.tsx:240
 #: src/pages/admin/invitations.tsx:365
+#: src/pages/mod/users.tsx:378
 msgid "Expired"
 msgstr "期限切れ"
 
@@ -643,8 +657,10 @@ msgstr "有効期限"
 
 #. placeholder {0}: formatDate(code.expiresAt)
 #. placeholder {0}: formatDate(invitation.expiresAt)
+#. placeholder {0}: formatDate(warning.expiresAt)
 #: src/components/settings/InvitationCodeSection.tsx:258
 #: src/pages/admin/invitations.tsx:383
+#: src/pages/mod/users.tsx:380
 msgid "Expires: {0}"
 msgstr "有効期限: {0}"
 
@@ -691,7 +707,11 @@ msgstr "招待コードの削除に失敗しました"
 msgid "Failed to delete role"
 msgstr "ロールの削除に失敗しました"
 
-#: src/pages/mod/users.tsx:90
+#: src/pages/mod/users.tsx:231
+msgid "Failed to delete warning"
+msgstr "警告の削除に失敗しました"
+
+#: src/pages/mod/users.tsx:115
 msgid "Failed to find user"
 msgstr "ユーザーが見つかりませんでした"
 
@@ -702,6 +722,10 @@ msgstr "ユーザーが見つかりませんでした"
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
 msgstr "引っ越しの開始に失敗しました"
+
+#: src/pages/mod/users.tsx:205
+msgid "Failed to issue warning"
+msgstr "警告の発行に失敗しました"
 
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
@@ -745,7 +769,7 @@ msgstr "表示設定の保存に失敗しました"
 msgid "Failed to submit report"
 msgstr "報告の送信に失敗しました"
 
-#: src/pages/mod/users.tsx:119
+#: src/pages/mod/users.tsx:144
 msgid "Failed to suspend user"
 msgstr "ユーザーの停止に失敗しました"
 
@@ -758,7 +782,7 @@ msgstr "ユーザーの停止に失敗しました"
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
-#: src/pages/mod/users.tsx:148
+#: src/pages/mod/users.tsx:173
 msgid "Failed to unsuspend user"
 msgstr "ユーザーの停止解除に失敗しました"
 
@@ -964,18 +988,27 @@ msgstr "招待上限:"
 msgid "Invite Only"
 msgstr "招待制"
 
+#: src/pages/mod/users.tsx:491
+#: src/pages/mod/users.tsx:532
+msgid "Issue Warning"
+msgstr "警告を発行"
+
 #: src/pages/signup.tsx:133
 msgid "Join Rox and start sharing"
 msgstr "Roxに参加して共有を始めましょう"
 
 #. placeholder {0}: formatDate(selectedUser.user.createdAt)
-#: src/pages/mod/users.tsx:247
+#: src/pages/mod/users.tsx:335
 msgid "Joined: {0}"
 msgstr "登録日: {0}"
 
 #: src/pages/mod/users.tsx:247
 #~ msgid "Joined: {0}PLACEHOLDER"
 #~ msgstr ""
+
+#: src/pages/mod/users.tsx:518
+msgid "Leave empty for a permanent warning"
+msgstr "永続的な警告の場合は空のままにしてください"
 
 #: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
@@ -1084,7 +1117,7 @@ msgstr "モデレーションダッシュボード"
 #~ msgid "Moderation DashboardPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:88
+#: src/pages/mod/users.tsx:113
 msgid "Moderator access required"
 msgstr "モデレーター権限が必要です"
 
@@ -1391,13 +1424,17 @@ msgstr "公開（プロフィールに表示）"
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
+#: src/pages/mod/users.tsx:386
+msgid "Read"
+msgstr "既読"
+
 #: src/components/report/ReportDialog.tsx:135
 msgid "Reason"
 msgstr "報告理由"
 
 #: src/pages/admin/blocks.tsx:260
 #: src/pages/mod/instances.tsx:362
-#: src/pages/mod/users.tsx:295
+#: src/pages/mod/users.tsx:443
 msgid "Reason (optional)"
 msgstr "理由（任意）"
 
@@ -1428,7 +1465,7 @@ msgstr "理由: {0}"
 #~ msgid "Reason:PLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:268
+#: src/pages/mod/users.tsx:415
 msgid "Recent Moderation History"
 msgstr "最近のモデレーション履歴"
 
@@ -1705,7 +1742,7 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/pages/mod/users.tsx:193
+#: src/pages/mod/users.tsx:281
 msgid "Search"
 msgstr "検索"
 
@@ -1717,7 +1754,7 @@ msgstr "絵文字を検索..."
 msgid "Search emojis..."
 msgstr "絵文字を検索..."
 
-#: src/pages/mod/users.tsx:167
+#: src/pages/mod/users.tsx:255
 msgid "Search for users and manage suspensions"
 msgstr "ユーザーを検索して停止を管理"
 
@@ -1725,7 +1762,7 @@ msgstr "ユーザーを検索して停止を管理"
 #~ msgid "Search for users and manage suspensionsPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:177
+#: src/pages/mod/users.tsx:265
 msgid "Search User"
 msgstr "ユーザーを検索"
 
@@ -1821,7 +1858,7 @@ msgid "Submit Report"
 msgstr "報告を送信"
 
 #: src/pages/mod/audit-logs.tsx:243
-#: src/pages/mod/users.tsx:332
+#: src/pages/mod/users.tsx:480
 msgid "Suspend User"
 msgstr "ユーザーを停止"
 
@@ -1834,7 +1871,7 @@ msgstr "ユーザーを停止"
 msgid "Suspend Users"
 msgstr "ユーザー凍結"
 
-#: src/pages/mod/users.tsx:238
+#: src/pages/mod/users.tsx:326
 msgid "Suspended"
 msgstr "停止中"
 
@@ -1991,7 +2028,7 @@ msgstr "不明なユーザー"
 #~ msgstr ""
 
 #: src/pages/mod/audit-logs.tsx:244
-#: src/pages/mod/users.tsx:317
+#: src/pages/mod/users.tsx:465
 msgid "Unsuspend User"
 msgstr "ユーザーの停止を解除"
 
@@ -2022,7 +2059,7 @@ msgstr "アップロード中..."
 msgid "Used"
 msgstr "使用済み"
 
-#: src/pages/mod/users.tsx:210
+#: src/pages/mod/users.tsx:298
 msgid "User Details"
 msgstr "ユーザー詳細"
 
@@ -2030,7 +2067,7 @@ msgstr "ユーザー詳細"
 #~ msgid "User DetailsPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:164
+#: src/pages/mod/users.tsx:252
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
@@ -2039,7 +2076,7 @@ msgstr "ユーザーのモデレーション"
 #~ msgstr ""
 
 #: src/components/user/UserProfile.tsx:263
-#: src/pages/mod/users.tsx:86
+#: src/pages/mod/users.tsx:111
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
@@ -2048,7 +2085,7 @@ msgstr "ユーザーが見つかりません"
 msgid "User Report"
 msgstr "ユーザーの報告"
 
-#: src/pages/mod/users.tsx:109
+#: src/pages/mod/users.tsx:134
 msgid "User suspended successfully"
 msgstr "ユーザーを停止しました"
 
@@ -2056,7 +2093,7 @@ msgstr "ユーザーを停止しました"
 #~ msgid "User suspended successfullyPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/mod/users.tsx:138
+#: src/pages/mod/users.tsx:163
 msgid "User unsuspended successfully"
 msgstr "ユーザーの停止を解除しました"
 
@@ -2131,6 +2168,27 @@ msgstr "ポリシーを見る"
 #: src/components/LandingPage.tsx:249
 msgid "View Terms"
 msgstr "規約を見る"
+
+#: src/pages/mod/users.tsx:555
+msgid "Warn User"
+msgstr "ユーザーに警告"
+
+#: src/pages/mod/users.tsx:222
+msgid "Warning deleted successfully"
+msgstr "警告を削除しました"
+
+#: src/pages/mod/users.tsx:193
+msgid "Warning issued successfully"
+msgstr "警告を発行しました"
+
+#: src/pages/mod/users.tsx:497
+msgid "Warning Reason (required)"
+msgstr "警告理由（必須）"
+
+#. placeholder {0}: selectedUser.warnings.total
+#: src/pages/mod/users.tsx:357
+msgid "Warnings ({0})"
+msgstr "警告 ({0})"
 
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"

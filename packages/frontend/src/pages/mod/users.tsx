@@ -3,7 +3,7 @@
 /**
  * Moderator Users Page
  *
- * Allows moderators to suspend and unsuspend users.
+ * Allows moderators to suspend, unsuspend, and warn users.
  */
 
 import { useState, useEffect } from 'react';
@@ -17,6 +17,9 @@ import {
   UserCheck,
   AlertTriangle,
   Shield,
+  AlertCircle,
+  Trash2,
+  Clock,
 } from 'lucide-react';
 import { tokenAtom } from '../../lib/atoms/auth';
 import { apiClient } from '../../lib/api/client';
@@ -39,10 +42,25 @@ interface UserData {
   createdAt: string;
 }
 
+interface UserWarning {
+  id: string;
+  userId: string;
+  moderatorId: string;
+  reason: string;
+  isRead: boolean;
+  readAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
 interface UserDetailResponse {
   user: UserData;
   reports: {
     items: any[];
+    total: number;
+  };
+  warnings: {
+    items: UserWarning[];
     total: number;
   };
   moderationHistory: any[];
@@ -58,6 +76,13 @@ export default function ModeratorUsersPage() {
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [suspendReason, setSuspendReason] = useState('');
+
+  // Warning state
+  const [showWarningForm, setShowWarningForm] = useState(false);
+  const [warningReason, setWarningReason] = useState('');
+  const [warningExpiresAt, setWarningExpiresAt] = useState('');
+  const [isWarning, setIsWarning] = useState(false);
+  const [isDeletingWarning, setIsDeletingWarning] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
@@ -152,8 +177,71 @@ export default function ModeratorUsersPage() {
     }
   };
 
+  const handleWarnUser = async () => {
+    if (!token || !selectedUser || !warningReason.trim()) return;
+
+    setIsWarning(true);
+    try {
+      apiClient.setToken(token);
+      await apiClient.post(`/api/mod/users/${selectedUser.user.id}/warn`, {
+        reason: warningReason.trim(),
+        expiresAt: warningExpiresAt || undefined,
+      });
+
+      addToast({
+        type: 'success',
+        message: t`Warning issued successfully`,
+      });
+
+      // Refresh user data
+      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      setSelectedUser(userDetail);
+      setWarningReason('');
+      setWarningExpiresAt('');
+      setShowWarningForm(false);
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        message: err.message || t`Failed to issue warning`,
+      });
+    } finally {
+      setIsWarning(false);
+    }
+  };
+
+  const handleDeleteWarning = async (warningId: string) => {
+    if (!token || !selectedUser) return;
+
+    setIsDeletingWarning(warningId);
+    try {
+      apiClient.setToken(token);
+      await apiClient.delete(`/api/mod/warnings/${warningId}`);
+
+      addToast({
+        type: 'success',
+        message: t`Warning deleted successfully`,
+      });
+
+      // Refresh user data
+      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      setSelectedUser(userDetail);
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        message: err.message || t`Failed to delete warning`,
+      });
+    } finally {
+      setIsDeletingWarning(null);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
+  };
+
+  const isWarningExpired = (expiresAt: string | null) => {
+    if (!expiresAt) return false;
+    return new Date(expiresAt) < new Date();
   };
 
   return (
@@ -261,6 +349,65 @@ export default function ModeratorUsersPage() {
                   </div>
                 )}
 
+                {/* Warnings */}
+                {selectedUser.warnings && selectedUser.warnings.total > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-(--text-secondary) mb-2 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      <Trans>Warnings ({selectedUser.warnings.total})</Trans>
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedUser.warnings.items.map((warning) => (
+                        <div
+                          key={warning.id}
+                          className={`p-3 rounded-lg border text-sm ${
+                            isWarningExpired(warning.expiresAt)
+                              ? 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700 opacity-60'
+                              : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <p className="text-(--text-primary)">{warning.reason}</p>
+                              <div className="flex items-center gap-3 mt-1 text-xs text-(--text-muted)">
+                                <span>{formatDate(warning.createdAt)}</span>
+                                {warning.expiresAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {isWarningExpired(warning.expiresAt) ? (
+                                      <Trans>Expired</Trans>
+                                    ) : (
+                                      <Trans>Expires: {formatDate(warning.expiresAt)}</Trans>
+                                    )}
+                                  </span>
+                                )}
+                                {warning.isRead && (
+                                  <span className="text-green-600 dark:text-green-400">
+                                    <Trans>Read</Trans>
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteWarning(warning.id)}
+                              disabled={isDeletingWarning === warning.id}
+                              className="p-1 text-(--text-muted) hover:text-red-500 disabled:opacity-50"
+                              title={t`Delete warning`}
+                            >
+                              {isDeletingWarning === warning.id ? (
+                                <Spinner size="sm" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Moderation History */}
                 {selectedUser.moderationHistory.length > 0 && (
                   <div>
@@ -290,6 +437,7 @@ export default function ModeratorUsersPage() {
                       <Trans>Actions</Trans>
                     </h4>
                     <div className="space-y-4">
+                      {/* Suspend/Unsuspend Section */}
                       <div>
                         <label className="block text-sm text-(--text-muted) mb-1">
                           <Trans>Reason (optional)</Trans>
@@ -332,6 +480,79 @@ export default function ModeratorUsersPage() {
                                 <Trans>Suspend User</Trans>
                               </>
                             )}
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Warning Section */}
+                      <div className="pt-4 border-t border-(--border-color)">
+                        <h5 className="text-sm font-medium text-(--text-secondary) mb-3 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4" />
+                          <Trans>Issue Warning</Trans>
+                        </h5>
+                        {showWarningForm ? (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-sm text-(--text-muted) mb-1">
+                                <Trans>Warning Reason (required)</Trans>
+                              </label>
+                              <textarea
+                                value={warningReason}
+                                onChange={(e) => setWarningReason(e.target.value)}
+                                placeholder={t`Describe the reason for this warning...`}
+                                className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                                rows={3}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-(--text-muted) mb-1">
+                                <Trans>Expiration Date (optional)</Trans>
+                              </label>
+                              <input
+                                type="datetime-local"
+                                value={warningExpiresAt}
+                                onChange={(e) => setWarningExpiresAt(e.target.value)}
+                                className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              />
+                              <p className="text-xs text-(--text-muted) mt-1">
+                                <Trans>Leave empty for a permanent warning</Trans>
+                              </p>
+                            </div>
+                            <div className="flex gap-3">
+                              <Button
+                                variant="primary"
+                                onPress={handleWarnUser}
+                                isDisabled={isWarning || !warningReason.trim()}
+                              >
+                                {isWarning ? (
+                                  <Spinner size="sm" />
+                                ) : (
+                                  <>
+                                    <AlertCircle className="w-4 h-4 mr-2" />
+                                    <Trans>Issue Warning</Trans>
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                onPress={() => {
+                                  setShowWarningForm(false);
+                                  setWarningReason('');
+                                  setWarningExpiresAt('');
+                                }}
+                                isDisabled={isWarning}
+                              >
+                                <Trans>Cancel</Trans>
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="secondary"
+                            onPress={() => setShowWarningForm(true)}
+                          >
+                            <AlertCircle className="w-4 h-4 mr-2" />
+                            <Trans>Warn User</Trans>
                           </Button>
                         )}
                       </div>
