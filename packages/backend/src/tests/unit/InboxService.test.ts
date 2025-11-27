@@ -33,13 +33,14 @@ describe('InboxService', () => {
       expect(supportedTypes).toContain('Like');
       expect(supportedTypes).toContain('Announce');
       expect(supportedTypes).toContain('Undo');
+      expect(supportedTypes).toContain('Move');
     });
 
-    test('should have 9 default handlers', () => {
+    test('should have 10 default handlers', () => {
       const service = new InboxService();
       const supportedTypes = service.getSupportedActivityTypes();
 
-      expect(supportedTypes.length).toBe(9);
+      expect(supportedTypes.length).toBe(10);
     });
   });
 
