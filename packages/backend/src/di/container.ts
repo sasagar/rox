@@ -122,10 +122,12 @@ export function createContainer(): AppContainer {
   // Role and Instance Settings Services
   const roleService = new RoleService(
     repositories.roleRepository,
-    repositories.roleAssignmentRepository
+    repositories.roleAssignmentRepository,
+    cacheService
   );
   const instanceSettingsService = new InstanceSettingsService(
-    repositories.instanceSettingsRepository
+    repositories.instanceSettingsRepository,
+    cacheService
   );
 
   // Migration Service for account migration

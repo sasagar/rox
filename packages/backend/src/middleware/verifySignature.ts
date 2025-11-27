@@ -2,7 +2,7 @@
  * HTTP Signature Verification Middleware
  *
  * Verifies ActivityPub HTTP Signatures on incoming requests.
- * Fetches and caches remote actor public keys.
+ * Fetches and caches remote actor public keys using Redis (with in-memory fallback).
  *
  * @module middleware/verifySignature
  */
@@ -15,28 +15,40 @@ import {
   verifyDigest,
   verifyDateHeader,
 } from '../utils/httpSignature.js';
+import type { ICacheService } from '../interfaces/ICacheService.js';
+import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
 
 /**
- * Simple in-memory cache for public keys
- * TODO: Replace with Redis/database for production
+ * In-memory cache fallback for public keys when Redis is unavailable
  */
-const publicKeyCache = new Map<string, { key: string; expires: number }>();
+const publicKeyMemoryCache = new Map<string, { key: string; expires: number }>();
 
 /**
  * Fetch remote actor's public key
  *
  * Retrieves the public key from the remote actor's document.
- * Results are cached for 1 hour to reduce network requests.
+ * Results are cached in Redis (1 hour) with in-memory fallback.
  *
  * @param keyId - Public key identifier URL
+ * @param cacheService - Optional cache service for Redis caching
  * @returns PEM-formatted public key
  * @throws Error if key cannot be fetched
  */
-async function fetchPublicKey(keyId: string): Promise<string> {
-  // Check cache
-  const cached = publicKeyCache.get(keyId);
-  if (cached && cached.expires > Date.now()) {
-    return cached.key;
+async function fetchPublicKey(keyId: string, cacheService?: ICacheService): Promise<string> {
+  const cacheKey = `${CachePrefix.PUBLIC_KEY}:${keyId}`;
+
+  // Check Redis cache first
+  if (cacheService?.isAvailable()) {
+    const cached = await cacheService.get<string>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+  } else {
+    // Fallback to in-memory cache
+    const cached = publicKeyMemoryCache.get(keyId);
+    if (cached && cached.expires > Date.now()) {
+      return cached.key;
+    }
   }
 
   // Fetch actor document
@@ -73,11 +85,16 @@ async function fetchPublicKey(keyId: string): Promise<string> {
       throw new Error('Public key not found in actor document');
     }
 
-    // Cache for 1 hour
-    publicKeyCache.set(keyId, {
-      key: publicKey,
-      expires: Date.now() + 3600 * 1000,
-    });
+    // Cache in Redis (1 hour)
+    if (cacheService?.isAvailable()) {
+      await cacheService.set(cacheKey, publicKey, { ttl: CacheTTL.LONG });
+    } else {
+      // Fallback to in-memory cache
+      publicKeyMemoryCache.set(keyId, {
+        key: publicKey,
+        expires: Date.now() + CacheTTL.LONG * 1000,
+      });
+    }
 
     return publicKey;
   } catch (error) {
@@ -115,8 +132,11 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     // Parse signature header
     const params = parseSignatureHeader(signatureHeader);
 
-    // Fetch public key
-    const publicKey = await fetchPublicKey(params.keyId);
+    // Get cache service from context (if available)
+    const cacheService = c.get('cacheService') as ICacheService | undefined;
+
+    // Fetch public key (with Redis caching)
+    const publicKey = await fetchPublicKey(params.keyId, cacheService);
 
     // Get request details
     const method = c.req.method;
@@ -185,8 +205,9 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
 /**
  * Clear public key cache
  *
- * Utility function to clear the cache (e.g., for testing).
+ * Utility function to clear the in-memory cache (e.g., for testing).
+ * Note: Does not clear Redis cache - use cache service directly for that.
  */
 export function clearPublicKeyCache(): void {
-  publicKeyCache.clear();
+  publicKeyMemoryCache.clear();
 }

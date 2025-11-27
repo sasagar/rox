@@ -35,6 +35,9 @@ export const CachePrefix = {
   USER_BY_USERNAME: 'user:username',
   NOTE: 'note',
   REMOTE_ACTOR: 'remote:actor',
+  INSTANCE_SETTINGS: 'instance:settings',
+  ROLE_POLICIES: 'role:policies',
+  PUBLIC_KEY: 'pubkey',
 } as const;
 
 /**

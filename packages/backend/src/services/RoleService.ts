@@ -3,11 +3,14 @@
  *
  * Service for role management and permission checking.
  * Computes effective policies by merging all assigned role policies.
+ * Supports Redis caching for improved performance.
  */
 
 import type { IRoleRepository } from '../interfaces/repositories/IRoleRepository.js';
 import type { IRoleAssignmentRepository } from '../interfaces/repositories/IRoleAssignmentRepository.js';
 import type { RolePolicies, Role } from '../db/schema/pg.js';
+import type { ICacheService } from '../interfaces/ICacheService.js';
+import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
 
 /**
  * Default policies applied to all users (base permissions)
@@ -102,10 +105,32 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
 export class RoleService {
   private readonly roleRepository: IRoleRepository;
   private readonly roleAssignmentRepository: IRoleAssignmentRepository;
+  private readonly cacheService: ICacheService | null;
 
-  constructor(roleRepository: IRoleRepository, roleAssignmentRepository: IRoleAssignmentRepository) {
+  constructor(
+    roleRepository: IRoleRepository,
+    roleAssignmentRepository: IRoleAssignmentRepository,
+    cacheService?: ICacheService
+  ) {
     this.roleRepository = roleRepository;
     this.roleAssignmentRepository = roleAssignmentRepository;
+    this.cacheService = cacheService ?? null;
+  }
+
+  /**
+   * Get cache key for user policies
+   */
+  private getPoliciesCacheKey(userId: string): string {
+    return `${CachePrefix.ROLE_POLICIES}:${userId}`;
+  }
+
+  /**
+   * Invalidate cached policies for a user
+   */
+  private async invalidateUserPolicies(userId: string): Promise<void> {
+    if (this.cacheService?.isAvailable()) {
+      await this.cacheService.delete(this.getPoliciesCacheKey(userId));
+    }
   }
 
   /**
@@ -119,18 +144,37 @@ export class RoleService {
    * Get effective policies for a user by merging all assigned role policies
    */
   async getEffectivePolicies(userId: string): Promise<RolePolicies> {
+    const cacheKey = this.getPoliciesCacheKey(userId);
+
+    // Try cache first
+    if (this.cacheService?.isAvailable()) {
+      const cached = await this.cacheService.get<RolePolicies>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
     const roles = await this.getUserRoles(userId);
+    let result: RolePolicies;
 
     if (roles.length === 0) {
       // User has no roles, check for default roles
       const defaultRoles = await this.roleRepository.findDefaultRoles();
       if (defaultRoles.length > 0) {
-        return mergePolicies(...defaultRoles.map((r) => r.policies));
+        result = mergePolicies(...defaultRoles.map((r) => r.policies));
+      } else {
+        result = { ...DEFAULT_POLICIES };
       }
-      return { ...DEFAULT_POLICIES };
+    } else {
+      result = mergePolicies(...roles.map((r) => r.policies));
     }
 
-    return mergePolicies(...roles.map((r) => r.policies));
+    // Cache the result (5 minutes - policies can change but not frequently)
+    if (this.cacheService?.isAvailable()) {
+      await this.cacheService.set(cacheKey, result, { ttl: CacheTTL.MEDIUM });
+    }
+
+    return result;
   }
 
   /**
@@ -224,13 +268,18 @@ export class RoleService {
     expiresAt?: Date
   ): Promise<void> {
     await this.roleAssignmentRepository.assign(userId, roleId, assignedById, expiresAt);
+    // Invalidate cached policies for the user
+    await this.invalidateUserPolicies(userId);
   }
 
   /**
    * Remove a role from a user
    */
   async unassignRole(userId: string, roleId: string): Promise<boolean> {
-    return this.roleAssignmentRepository.unassign(userId, roleId);
+    const result = await this.roleAssignmentRepository.unassign(userId, roleId);
+    // Invalidate cached policies for the user
+    await this.invalidateUserPolicies(userId);
+    return result;
   }
 
   /**
