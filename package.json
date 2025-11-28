@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter '*' build",
-    "start": "bun run scripts/start-production.ts",
+    "start": "bun scripts/start-production.ts",
     "test": "bun test",
     "lint": "oxlint",
     "format": "oxlint --fix",
