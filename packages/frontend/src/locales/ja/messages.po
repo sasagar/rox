@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: categories.length
-#: src/pages/admin/emojis.tsx:657
+#: src/pages/admin/emojis.tsx:660
 msgid "{0} categories"
 msgstr "{0}カテゴリ"
 
@@ -33,7 +33,7 @@ msgstr "{0}はブロックされていません"
 msgid "{0} reports against this user"
 msgstr "このユーザーに対する通報: {0}件"
 
-#: src/pages/admin/invitations.tsx:299
+#: src/pages/admin/invitations.tsx:302
 msgid "1 Day"
 msgstr "1日"
 
@@ -41,11 +41,11 @@ msgstr "1日"
 msgid "3-20 characters, letters, numbers, and underscores only"
 msgstr "3-20文字、英数字とアンダースコアのみ"
 
-#: src/pages/admin/invitations.tsx:301
+#: src/pages/admin/invitations.tsx:304
 msgid "30 Days"
 msgstr "30日"
 
-#: src/pages/admin/invitations.tsx:300
+#: src/pages/admin/invitations.tsx:303
 msgid "7 Days"
 msgstr "7日"
 
@@ -94,25 +94,25 @@ msgstr "アクション"
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "他のサーバーのアカウントとリンクするためにエイリアスを追加します。これにより、それらのアカウントのフォロワーがここであなたを見つけることができます。"
 
-#: src/pages/admin/emojis.tsx:369
-#: src/pages/admin/emojis.tsx:551
+#: src/pages/admin/emojis.tsx:372
+#: src/pages/admin/emojis.tsx:554
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
-#: src/pages/admin/emojis.tsx:381
+#: src/pages/admin/emojis.tsx:384
 msgid "Add New Emoji"
 msgstr "新しい絵文字を追加"
 
-#: src/pages/admin/reports.tsx:518
+#: src/pages/admin/reports.tsx:521
 #: src/pages/mod/reports.tsx:460
 msgid "Add notes about the action taken..."
 msgstr "対応内容についてメモを追加..."
 
-#: src/pages/admin/emojis.tsx:596
+#: src/pages/admin/emojis.tsx:599
 msgid "Add your first custom emoji to get started"
 msgstr "最初のカスタム絵文字を追加して始めましょう"
 
-#: src/pages/admin/reports.tsx:474
+#: src/pages/admin/reports.tsx:477
 #: src/pages/mod/reports.tsx:427
 msgid "Additional Comment"
 msgstr "追加コメント"
@@ -121,15 +121,15 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:63
+#: src/components/layout/Sidebar.tsx:69
 msgid "Admin"
 msgstr "管理"
 
-#: src/pages/admin/roles.tsx:428
+#: src/pages/admin/roles.tsx:431
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:180
+#: src/pages/admin/settings.tsx:183
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -145,12 +145,13 @@ msgstr "エイリアスを追加しました"
 msgid "Alias removed successfully"
 msgstr "エイリアスを削除しました"
 
-#: src/pages/admin/emojis.tsx:482
+#: src/pages/admin/emojis.tsx:485
 msgid "Aliases"
 msgstr "エイリアス"
 
-#: src/pages/admin/reports.tsx:299
+#: src/pages/admin/reports.tsx:302
 #: src/pages/mod/reports.tsx:286
+#: src/pages/search.tsx:268
 msgid "All"
 msgstr "すべて"
 
@@ -158,11 +159,11 @@ msgstr "すべて"
 msgid "All Actions"
 msgstr "すべてのアクション"
 
-#: src/pages/admin/emojis.tsx:578
+#: src/pages/admin/emojis.tsx:581
 msgid "All Categories"
 msgstr "すべてのカテゴリ"
 
-#: src/pages/admin/blocks.tsx:311
+#: src/pages/admin/blocks.tsx:314
 msgid "All instances can federate with this server"
 msgstr "すべてのインスタンスがこのサーバーと連携できます"
 
@@ -170,7 +171,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 msgid "All Types"
 msgstr "すべてのタイプ"
 
-#: src/pages/admin/settings.tsx:385
+#: src/pages/admin/settings.tsx:388
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -183,7 +184,7 @@ msgid "Already have an account? Sign in"
 msgstr "すでにアカウントをお持ちですか？サインイン"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:269
+#: src/pages/admin/emojis.tsx:272
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
@@ -200,11 +201,11 @@ msgid "Authentication required"
 msgstr "認証が必要です"
 
 #: src/components/settings/InvitationCodeSection.tsx:250
-#: src/pages/admin/invitations.tsx:375
+#: src/pages/admin/invitations.tsx:378
 msgid "Available"
 msgstr "利用可能"
 
-#: src/pages/admin/invitations.tsx:242
+#: src/pages/admin/invitations.tsx:245
 msgid "Available Codes"
 msgstr "利用可能なコード"
 
@@ -212,7 +213,7 @@ msgstr "利用可能なコード"
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
-#: src/pages/admin/settings.tsx:302
+#: src/pages/admin/settings.tsx:305
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -228,14 +229,14 @@ msgstr "引っ越し前に、移行先アカウントでこのアカウントを
 msgid "Bio"
 msgstr "自己紹介"
 
-#: src/pages/admin/blocks.tsx:223
-#: src/pages/admin/blocks.tsx:282
+#: src/pages/admin/blocks.tsx:226
+#: src/pages/admin/blocks.tsx:285
 #: src/pages/mod/instances.tsx:325
 #: src/pages/mod/instances.tsx:381
 msgid "Block Instance"
 msgstr "インスタンスをブロック"
 
-#: src/pages/admin/blocks.tsx:193
+#: src/pages/admin/blocks.tsx:196
 msgid "Block instances from federating with this server"
 msgstr "インスタンスの連携をブロックします"
 
@@ -247,15 +248,15 @@ msgstr "新しいインスタンスをブロック"
 msgid "Blocked at:"
 msgstr "ブロック日時:"
 
-#: src/pages/admin/blocks.tsx:211
-#: src/pages/admin/blocks.tsx:293
+#: src/pages/admin/blocks.tsx:214
+#: src/pages/admin/blocks.tsx:296
 #: src/pages/mod/instances.tsx:252
 #: src/pages/mod/instances.tsx:320
 msgid "Blocked Instances"
 msgstr "ブロック中のインスタンス"
 
 #. placeholder {0}: formatDate(block.createdAt)
-#: src/pages/admin/blocks.tsx:334
+#: src/pages/admin/blocks.tsx:337
 msgid "Blocked on {0}"
 msgstr "{0}にブロック"
 
@@ -263,7 +264,7 @@ msgstr "{0}にブロック"
 msgid "Blocked:"
 msgstr "ブロック:"
 
-#: src/pages/admin/blocks.tsx:231
+#: src/pages/admin/blocks.tsx:234
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
@@ -275,36 +276,36 @@ msgstr "Bot"
 msgid "By type"
 msgstr "タイプ別"
 
-#: src/pages/admin/roles.tsx:494
+#: src/pages/admin/roles.tsx:497
 msgid "Can delete notes"
 msgstr "ノートを削除可能"
 
-#: src/pages/admin/roles.tsx:458
+#: src/pages/admin/roles.tsx:461
 msgid "Can invite users"
 msgstr "ユーザーを招待可能"
 
-#: src/pages/admin/roles.tsx:516
+#: src/pages/admin/roles.tsx:519
 msgid "Can manage custom emojis"
 msgstr "カスタム絵文字を管理可能"
 
-#: src/pages/admin/roles.tsx:483
+#: src/pages/admin/roles.tsx:486
 msgid "Can manage reports"
 msgstr "通報を管理可能"
 
-#: src/pages/admin/roles.tsx:505
+#: src/pages/admin/roles.tsx:508
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
 #: src/components/report/ReportDialog.tsx:181
-#: src/pages/admin/emojis.tsx:555
-#: src/pages/admin/roles.tsx:547
+#: src/pages/admin/emojis.tsx:558
+#: src/pages/admin/roles.tsx:550
 #: src/pages/mod/instances.tsx:374
 #: src/pages/mod/users.tsx:545
 #: src/pages/settings.tsx:264
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/pages/admin/emojis.tsx:463
+#: src/pages/admin/emojis.tsx:466
 msgid "Category"
 msgstr "カテゴリ"
 
@@ -324,30 +325,30 @@ msgstr "サインイン方法を選択してください"
 msgid "Clear all"
 msgstr "すべてクリア"
 
-#: src/pages/admin/emojis.tsx:443
+#: src/pages/admin/emojis.tsx:446
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
 msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）"
 
 #: src/components/report/ReportDialog.tsx:116
-#: src/pages/admin/reports.tsx:383
+#: src/pages/admin/reports.tsx:386
 #: src/pages/mod/reports.tsx:357
 msgid "Close"
 msgstr "閉じる"
 
 #: src/components/settings/InvitationCodeSection.tsx:131
-#: src/pages/admin/invitations.tsx:174
+#: src/pages/admin/invitations.tsx:177
 msgid "Code copied to clipboard"
 msgstr "コードをクリップボードにコピーしました"
 
-#: src/pages/admin/roles.tsx:372
+#: src/pages/admin/roles.tsx:375
 msgid "Color"
 msgstr "カラー"
 
-#: src/pages/admin/emojis.tsx:488
+#: src/pages/admin/emojis.tsx:491
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
-#: src/pages/admin/settings.tsx:183
+#: src/pages/admin/settings.tsx:186
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -376,22 +377,22 @@ msgid "Conversation thread"
 msgstr "会話スレッド"
 
 #: src/components/settings/InvitationCodeSection.tsx:268
-#: src/pages/admin/invitations.tsx:396
+#: src/pages/admin/invitations.tsx:399
 msgid "Copy code"
 msgstr "コードをコピー"
 
-#: src/pages/admin/roles.tsx:319
+#: src/pages/admin/roles.tsx:322
 msgid "Create and manage user roles with custom permissions"
 msgstr "カスタム権限を持つユーザーロールを作成・管理"
 
 #: src/components/settings/InvitationCodeSection.tsx:207
-#: src/pages/admin/invitations.tsx:252
-#: src/pages/admin/invitations.tsx:316
+#: src/pages/admin/invitations.tsx:255
+#: src/pages/admin/invitations.tsx:319
 msgid "Create Invitation Code"
 msgstr "招待コードを作成"
 
-#: src/pages/admin/roles.tsx:352
-#: src/pages/admin/roles.tsx:538
+#: src/pages/admin/roles.tsx:355
+#: src/pages/admin/roles.tsx:541
 msgid "Create Role"
 msgstr "ロールを作成"
 
@@ -402,8 +403,8 @@ msgstr "アカウントを作成"
 #. placeholder {0}: formatDate(invitation.createdAt)
 #. placeholder {0}: formatDate(note.createdAt)
 #. placeholder {0}: formatDate(selectedReport.createdAt)
-#: src/pages/admin/invitations.tsx:387
-#: src/pages/admin/reports.tsx:487
+#: src/pages/admin/invitations.tsx:390
+#: src/pages/admin/reports.tsx:490
 #: src/pages/mod/notes.tsx:257
 #: src/pages/mod/reports.tsx:436
 msgid "Created: {0}"
@@ -413,7 +414,7 @@ msgstr "作成日: {0}"
 msgid "Creating account..."
 msgstr "アカウント作成中..."
 
-#: src/pages/admin/invitations.tsx:258
+#: src/pages/admin/invitations.tsx:261
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
@@ -434,36 +435,36 @@ msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
 #: src/components/ui/EmojiPicker.tsx:378
-#: src/pages/admin/emojis.tsx:353
+#: src/pages/admin/emojis.tsx:356
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
-#: src/pages/admin/settings.tsx:553
+#: src/pages/admin/settings.tsx:556
 msgid "Dark"
 msgstr "ダーク"
 
-#: src/pages/admin/roles.tsx:594
+#: src/pages/admin/roles.tsx:597
 msgid "Default"
 msgstr "デフォルト"
 
-#: src/pages/admin/roles.tsx:417
+#: src/pages/admin/roles.tsx:420
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:507
+#: src/pages/admin/settings.tsx:510
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
-#: src/pages/admin/roles.tsx:342
+#: src/pages/admin/roles.tsx:345
 msgid "Default Roles"
 msgstr "デフォルトロール数"
 
-#: src/pages/admin/emojis.tsx:639
+#: src/pages/admin/emojis.tsx:642
 msgid "Delete"
 msgstr "削除"
 
 #: src/components/settings/InvitationCodeSection.tsx:276
-#: src/pages/admin/invitations.tsx:404
+#: src/pages/admin/invitations.tsx:407
 msgid "Delete code"
 msgstr "コードを削除"
 
@@ -475,11 +476,11 @@ msgstr "ノートを削除"
 #~ msgid "Delete NotePLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/roles.tsx:621
+#: src/pages/admin/roles.tsx:624
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/pages/admin/roles.tsx:649
+#: src/pages/admin/roles.tsx:652
 msgid "Delete role"
 msgstr "ロールを削除"
 
@@ -510,8 +511,8 @@ msgstr "削除日時: {0}"
 msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
-#: src/pages/admin/roles.tsx:385
-#: src/pages/admin/settings.tsx:253
+#: src/pages/admin/roles.tsx:388
+#: src/pages/admin/settings.tsx:256
 msgid "Description"
 msgstr "説明"
 
@@ -548,19 +549,19 @@ msgstr "下書きを破棄しました"
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/pages/admin/emojis.tsx:501
+#: src/pages/admin/emojis.tsx:504
 msgid "e.g., CC BY 4.0"
 msgstr "例: CC BY 4.0"
 
-#: src/pages/admin/emojis.tsx:469
+#: src/pages/admin/emojis.tsx:472
 msgid "e.g., reactions, animals"
 msgstr "例: リアクション、動物"
 
-#: src/pages/admin/emojis.tsx:632
+#: src/pages/admin/emojis.tsx:635
 msgid "Edit"
 msgstr "編集"
 
-#: src/pages/admin/emojis.tsx:381
+#: src/pages/admin/emojis.tsx:384
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
@@ -568,11 +569,11 @@ msgstr "絵文字を編集"
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
-#: src/pages/admin/roles.tsx:641
+#: src/pages/admin/roles.tsx:644
 msgid "Edit role"
 msgstr "ロールを編集"
 
-#: src/pages/admin/roles.tsx:352
+#: src/pages/admin/roles.tsx:355
 msgid "Edit Role"
 msgstr "ロールを編集"
 
@@ -585,11 +586,11 @@ msgid "Email is required"
 msgstr "メールアドレスを入力してください"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:277
+#: src/pages/admin/emojis.tsx:280
 msgid "Emoji \":{0}:\" deleted"
 msgstr "絵文字 \":{0}:\" を削除しました"
 
-#: src/pages/admin/emojis.tsx:219
+#: src/pages/admin/emojis.tsx:222
 msgid "Emoji \":{name}:\" added successfully"
 msgstr "絵文字 \":{name}:\" を追加しました"
 
@@ -597,15 +598,15 @@ msgstr "絵文字 \":{name}:\" を追加しました"
 msgid "Emoji Picker"
 msgstr "絵文字ピッカー"
 
-#: src/pages/admin/emojis.tsx:251
+#: src/pages/admin/emojis.tsx:254
 msgid "Emoji updated successfully"
 msgstr "絵文字を更新しました"
 
-#: src/pages/admin/emojis.tsx:397
+#: src/pages/admin/emojis.tsx:400
 msgid "emoji_name"
 msgstr "絵文字名"
 
-#: src/pages/admin/roles.tsx:631
+#: src/pages/admin/roles.tsx:634
 msgid "Emojis"
 msgstr "絵文字"
 
@@ -613,13 +614,17 @@ msgstr "絵文字"
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:382
+#: src/pages/admin/settings.tsx:385
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
 #: src/components/settings/PushNotificationSection.tsx:167
 msgid "Enable to receive notifications in the background."
 msgstr "バックグラウンドで通知を受け取るには有効にしてください。"
+
+#: src/pages/search.tsx:314
+msgid "Enter a username or display name to get started"
+msgstr "ユーザー名または表示名を入力して検索を開始"
 
 #: src/pages/mod/instances.tsx:276
 msgid "Enter instance hostname (e.g., spam.example.com)"
@@ -637,7 +642,7 @@ msgstr "アクションの理由を入力..."
 #~ msgid "Enter reason for action...PLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/blocks.tsx:254
+#: src/pages/admin/blocks.tsx:257
 msgid "Enter the domain without https:// prefix"
 msgstr "https://を除いたドメインを入力してください"
 
@@ -661,7 +666,7 @@ msgstr "タイムラインの読み込みに失敗しました"
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
-#: src/pages/admin/blocks.tsx:249
+#: src/pages/admin/blocks.tsx:252
 msgid "example.com"
 msgstr "example.com"
 
@@ -670,12 +675,12 @@ msgid "Expiration Date (optional)"
 msgstr "有効期限（任意）"
 
 #: src/components/settings/InvitationCodeSection.tsx:240
-#: src/pages/admin/invitations.tsx:365
+#: src/pages/admin/invitations.tsx:368
 #: src/pages/mod/users.tsx:378
 msgid "Expired"
 msgstr "期限切れ"
 
-#: src/pages/admin/invitations.tsx:291
+#: src/pages/admin/invitations.tsx:294
 msgid "Expires In"
 msgstr "有効期限"
 
@@ -683,7 +688,7 @@ msgstr "有効期限"
 #. placeholder {0}: formatDate(invitation.expiresAt)
 #. placeholder {0}: formatDate(warning.expiresAt)
 #: src/components/settings/InvitationCodeSection.tsx:258
-#: src/pages/admin/invitations.tsx:383
+#: src/pages/admin/invitations.tsx:386
 #: src/pages/mod/users.tsx:380
 msgid "Expires: {0}"
 msgstr "有効期限: {0}"
@@ -692,7 +697,7 @@ msgstr "有効期限: {0}"
 msgid "Failed to add alias"
 msgstr "エイリアスの追加に失敗しました"
 
-#: src/pages/admin/emojis.tsx:228
+#: src/pages/admin/emojis.tsx:231
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
@@ -700,7 +705,7 @@ msgstr "絵文字の追加に失敗しました"
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
-#: src/pages/admin/blocks.tsx:131
+#: src/pages/admin/blocks.tsx:134
 #: src/pages/mod/instances.tsx:148
 msgid "Failed to block instance"
 msgstr "インスタンスのブロックに失敗しました"
@@ -714,20 +719,20 @@ msgstr "インスタンスの確認に失敗しました"
 #~ msgstr ""
 
 #: src/components/settings/InvitationCodeSection.tsx:99
-#: src/pages/admin/invitations.tsx:141
+#: src/pages/admin/invitations.tsx:144
 msgid "Failed to create invitation code"
 msgstr "招待コードの作成に失敗しました"
 
-#: src/pages/admin/emojis.tsx:285
+#: src/pages/admin/emojis.tsx:288
 msgid "Failed to delete emoji"
 msgstr "絵文字の削除に失敗しました"
 
 #: src/components/settings/InvitationCodeSection.tsx:122
-#: src/pages/admin/invitations.tsx:165
+#: src/pages/admin/invitations.tsx:168
 msgid "Failed to delete invitation code"
 msgstr "招待コードの削除に失敗しました"
 
-#: src/pages/admin/roles.tsx:279
+#: src/pages/admin/roles.tsx:282
 msgid "Failed to delete role"
 msgstr "ロールの削除に失敗しました"
 
@@ -755,12 +760,12 @@ msgstr "警告の発行に失敗しました"
 msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
 
-#: src/pages/admin/reports.tsx:152
+#: src/pages/admin/reports.tsx:155
 #: src/pages/mod/reports.tsx:143
 msgid "Failed to load report details"
 msgstr "報告の詳細の読み込みに失敗しました"
 
-#: src/pages/admin/reports.tsx:180
+#: src/pages/admin/reports.tsx:183
 #: src/pages/mod/reports.tsx:171
 msgid "Failed to process report"
 msgstr "報告の処理に失敗しました"
@@ -781,7 +786,7 @@ msgstr "ノートの復元に失敗しました"
 #~ msgid "Failed to restore notePLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/roles.tsx:217
+#: src/pages/admin/roles.tsx:220
 msgid "Failed to save role"
 msgstr "ロールの保存に失敗しました"
 
@@ -801,7 +806,7 @@ msgstr "ユーザーの停止に失敗しました"
 #~ msgid "Failed to suspend userPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/blocks.tsx:155
+#: src/pages/admin/blocks.tsx:158
 #: src/pages/mod/instances.tsx:171
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
@@ -814,7 +819,7 @@ msgstr "ユーザーの停止解除に失敗しました"
 #~ msgid "Failed to unsuspend userPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/emojis.tsx:260
+#: src/pages/admin/emojis.tsx:263
 msgid "Failed to update emoji"
 msgstr "絵文字の更新に失敗しました"
 
@@ -827,7 +832,7 @@ msgstr "フォロー状態の更新に失敗しました"
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
-#: src/pages/admin/emojis.tsx:194
+#: src/pages/admin/emojis.tsx:197
 msgid "Failed to upload file"
 msgstr "ファイルのアップロードに失敗しました"
 
@@ -839,11 +844,11 @@ msgstr "最小限のリソース使用で高速かつ効率的"
 msgid "Federated"
 msgstr "分散型"
 
-#: src/pages/admin/emojis.tsx:155
+#: src/pages/admin/emojis.tsx:158
 msgid "File too large. Maximum size: 256KB"
 msgstr "ファイルが大きすぎます。最大サイズ: 256KB"
 
-#: src/pages/admin/emojis.tsx:188
+#: src/pages/admin/emojis.tsx:191
 msgid "File uploaded successfully"
 msgstr "ファイルをアップロードしました"
 
@@ -854,6 +859,10 @@ msgstr "フィルター"
 #: src/pages/notifications.tsx:216
 msgid "Filter notifications"
 msgstr "通知をフィルター"
+
+#: src/pages/search.tsx:222
+msgid "Find users by username or display name"
+msgstr "ユーザー名または表示名でユーザーを検索"
 
 #: src/components/note/NoteCard.tsx:270
 #: src/components/user/UserProfile.tsx:342
@@ -888,6 +897,10 @@ msgstr "フォロー中..."
 msgid "Font Size"
 msgstr "文字サイズ"
 
+#: src/pages/search.tsx:343
+msgid "Found on remote server"
+msgstr "リモートサーバーで見つかりました"
+
 #: src/components/LandingPage.tsx:136
 msgid "Get Started"
 msgstr "始める"
@@ -910,11 +923,11 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:286
+#: src/pages/admin/settings.tsx:289
 msgid "Icon URL"
 msgstr "アイコンURL"
 
-#: src/pages/admin/emojis.tsx:408
+#: src/pages/admin/emojis.tsx:411
 msgid "Image"
 msgstr "画像"
 
@@ -922,11 +935,11 @@ msgstr "画像"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:201
+#: src/pages/admin/settings.tsx:204
 msgid "Instance"
 msgstr "インスタンス"
 
-#: src/pages/admin/blocks.tsx:119
+#: src/pages/admin/blocks.tsx:122
 msgid "Instance blocked"
 msgstr "インスタンスをブロックしました"
 
@@ -938,7 +951,7 @@ msgstr "インスタンスをブロックしました"
 #~ msgid "Instance blocked successfullyPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/blocks.tsx:190
+#: src/pages/admin/blocks.tsx:193
 #: src/pages/mod/instances.tsx:232
 msgid "Instance Blocks"
 msgstr "インスタンスブロック"
@@ -947,7 +960,7 @@ msgstr "インスタンスブロック"
 msgid "Instance Details"
 msgstr "インスタンス詳細"
 
-#: src/pages/admin/blocks.tsx:241
+#: src/pages/admin/blocks.tsx:244
 msgid "Instance Domain"
 msgstr "インスタンスドメイン"
 
@@ -959,19 +972,19 @@ msgstr "インスタンスのホスト名"
 #~ msgid "Instance HostnamePLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/settings.tsx:232
+#: src/pages/admin/settings.tsx:235
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:237
+#: src/pages/admin/settings.tsx:240
 msgid "Instance Name"
 msgstr "インスタンス名"
 
-#: src/pages/admin/settings.tsx:114
+#: src/pages/admin/settings.tsx:117
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
 
-#: src/pages/admin/blocks.tsx:147
+#: src/pages/admin/blocks.tsx:150
 msgid "Instance unblocked"
 msgstr "インスタンスのブロックを解除しました"
 
@@ -983,7 +996,7 @@ msgstr "インスタンスのブロックを解除しました"
 #~ msgid "Instance unblocked successfullyPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/emojis.tsx:146
+#: src/pages/admin/emojis.tsx:149
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "無効なファイル形式です。PNG、GIF、WebP、APNGのみ対応"
 
@@ -992,12 +1005,12 @@ msgid "Invitation Code"
 msgstr "招待コード"
 
 #: src/components/settings/InvitationCodeSection.tsx:88
-#: src/pages/admin/invitations.tsx:128
+#: src/pages/admin/invitations.tsx:131
 msgid "Invitation code created"
 msgstr "招待コードを作成しました"
 
 #: src/components/settings/InvitationCodeSection.tsx:117
-#: src/pages/admin/invitations.tsx:157
+#: src/pages/admin/invitations.tsx:160
 msgid "Invitation code deleted"
 msgstr "招待コードを削除しました"
 
@@ -1006,21 +1019,21 @@ msgid "Invitation code is required"
 msgstr "招待コードを入力してください"
 
 #: src/components/settings/InvitationCodeSection.tsx:172
-#: src/pages/admin/invitations.tsx:218
-#: src/pages/admin/invitations.tsx:327
+#: src/pages/admin/invitations.tsx:221
+#: src/pages/admin/invitations.tsx:330
 msgid "Invitation Codes"
 msgstr "招待コード"
 
-#: src/pages/admin/roles.tsx:611
+#: src/pages/admin/roles.tsx:614
 msgid "Invite"
 msgstr "招待"
 
-#: src/pages/admin/roles.tsx:463
+#: src/pages/admin/roles.tsx:466
 msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:99
-#: src/pages/admin/settings.tsx:403
+#: src/pages/admin/settings.tsx:406
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1047,15 +1060,15 @@ msgstr "登録日: {0}"
 msgid "Leave empty for a permanent warning"
 msgstr "永続的な警告の場合は空のままにしてください"
 
-#: src/pages/admin/invitations.tsx:264
+#: src/pages/admin/invitations.tsx:267
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/pages/admin/emojis.tsx:495
+#: src/pages/admin/emojis.tsx:498
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:538
+#: src/pages/admin/settings.tsx:541
 msgid "Light"
 msgstr "ライト"
 
@@ -1088,6 +1101,10 @@ msgstr "読み込み中..."
 msgid "Local"
 msgstr "ローカル"
 
+#: src/pages/search.tsx:280
+msgid "Local only"
+msgstr "ローカルのみ"
+
 #: src/components/LandingPage.tsx:143
 msgid "Log In"
 msgstr "ログイン"
@@ -1096,11 +1113,15 @@ msgstr "ログイン"
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/pages/admin/emojis.tsx:402
+#: src/pages/search.tsx:379
+msgid "Looking up remote user..."
+msgstr "リモートユーザーを検索中..."
+
+#: src/pages/admin/emojis.tsx:405
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:269
+#: src/pages/admin/settings.tsx:272
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1112,7 +1133,7 @@ msgstr "ブロック済みインスタンスを管理"
 #~ msgid "Manage blocked instancesPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/invitations.tsx:221
+#: src/pages/admin/invitations.tsx:224
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
 
@@ -1125,7 +1146,7 @@ msgstr "プロフィール情報を管理"
 msgid "Mark all as read"
 msgstr "すべて既読にする"
 
-#: src/pages/admin/invitations.tsx:273
+#: src/pages/admin/invitations.tsx:276
 msgid "Max Uses"
 msgstr "最大使用回数"
 
@@ -1175,7 +1196,7 @@ msgstr "モデレーター権限が必要です"
 #~ msgid "Moderator access requiredPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/roles.tsx:439
+#: src/pages/admin/roles.tsx:442
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
@@ -1187,16 +1208,16 @@ msgstr "その他のオプション"
 msgid "Move to a Different Account"
 msgstr "別のアカウントに引っ越す"
 
-#: src/pages/admin/emojis.tsx:391
-#: src/pages/admin/roles.tsx:359
+#: src/pages/admin/emojis.tsx:394
+#: src/pages/admin/roles.tsx:362
 msgid "Name"
 msgstr "名前"
 
-#: src/pages/admin/invitations.tsx:298
+#: src/pages/admin/invitations.tsx:301
 msgid "Never"
 msgstr "無期限"
 
-#: src/pages/admin/settings.tsx:427
+#: src/pages/admin/settings.tsx:430
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
@@ -1216,11 +1237,11 @@ msgstr "監査ログがありません"
 #~ msgid "No audit logs foundPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/blocks.tsx:308
+#: src/pages/admin/blocks.tsx:311
 msgid "No blocked instances"
 msgstr "ブロック中のインスタンスはありません"
 
-#: src/pages/admin/emojis.tsx:593
+#: src/pages/admin/emojis.tsx:596
 msgid "No custom emojis yet"
 msgstr "カスタム絵文字がまだありません"
 
@@ -1236,7 +1257,7 @@ msgstr "削除されたノートはありません"
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
-#: src/pages/admin/emojis.tsx:601
+#: src/pages/admin/emojis.tsx:604
 msgid "No emojis match your search"
 msgstr "検索に一致する絵文字がありません"
 
@@ -1249,7 +1270,7 @@ msgstr "ブロック済みのインスタンスはありません"
 #~ msgstr ""
 
 #: src/components/settings/InvitationCodeSection.tsx:215
-#: src/pages/admin/invitations.tsx:340
+#: src/pages/admin/invitations.tsx:343
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
@@ -1266,7 +1287,7 @@ msgstr "まだ投稿がありません"
 msgid "No notifications"
 msgstr "通知はありません"
 
-#: src/pages/admin/reports.tsx:318
+#: src/pages/admin/reports.tsx:321
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
@@ -1278,20 +1299,24 @@ msgstr "まだ投稿がありません"
 msgid "No replies yet"
 msgstr "まだ返信がありません"
 
-#: src/pages/admin/reports.tsx:314
+#: src/pages/admin/reports.tsx:317
 #: src/pages/mod/reports.tsx:301
 msgid "No reports found"
 msgstr "報告が見つかりません"
 
-#: src/pages/admin/roles.tsx:571
+#: src/pages/admin/roles.tsx:574
 msgid "No roles yet"
 msgstr "ロールがまだありません"
 
-#: src/pages/admin/reports.tsx:462
+#: src/pages/admin/reports.tsx:465
 #: src/pages/mod/notes.tsx:248
 #: src/pages/mod/reports.tsx:418
 msgid "No text content"
 msgstr "テキストコンテンツなし"
+
+#: src/pages/search.tsx:325
+msgid "No users found"
+msgstr "ユーザーが見つかりませんでした"
 
 #: src/components/pages/NoteDetailPageClient.tsx:126
 msgid "Note"
@@ -1321,7 +1346,7 @@ msgstr "投稿しました"
 msgid "Note renoted"
 msgstr "リノートしました"
 
-#: src/pages/admin/reports.tsx:354
+#: src/pages/admin/reports.tsx:357
 #: src/pages/mod/reports.tsx:332
 msgid "Note Report"
 msgstr "ノートの報告"
@@ -1337,6 +1362,10 @@ msgstr "ノートを復元しました"
 #: src/pages/settings.tsx:230
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
+
+#: src/pages/search.tsx:426
+msgid "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
+msgstr "注意: リモートユーザーは、このサーバーに以前キャッシュされていない限り、ユーザー名でのみ検索できます（表示名では検索できません）。"
 
 #: src/components/settings/UISettingsSection.tsx:315
 msgid "Note: Some CSS properties may be restricted for security."
@@ -1362,7 +1391,7 @@ msgstr "モデレーターが削除したノートがここに表示されます
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:41
+#: src/components/layout/Sidebar.tsx:47
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:181
 msgid "Notifications"
@@ -1398,17 +1427,17 @@ msgstr "パスワード"
 msgid "Password is required"
 msgstr "パスワードを入力してください"
 
-#: src/pages/admin/reports.tsx:300
+#: src/pages/admin/reports.tsx:303
 #: src/pages/mod/reports.tsx:287
 msgid "Pending"
 msgstr "保留中"
 
-#: src/pages/admin/reports.tsx:264
+#: src/pages/admin/reports.tsx:267
 #: src/pages/mod/reports.tsx:252
 msgid "Pending Reports"
 msgstr "保留中の報告"
 
-#: src/pages/admin/roles.tsx:447
+#: src/pages/admin/roles.tsx:450
 msgid "Permissions"
 msgstr "権限"
 
@@ -1428,11 +1457,11 @@ msgstr "テキストを入力するかファイルを添付してください"
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
-#: src/components/note/NoteComposer.tsx:558
+#: src/components/note/NoteComposer.tsx:559
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:554
+#: src/components/note/NoteComposer.tsx:555
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -1447,16 +1476,16 @@ msgstr "Powered by"
 
 #: src/components/note/NoteComposer.tsx:371
 #: src/components/settings/UISettingsSection.tsx:322
-#: src/pages/admin/emojis.tsx:524
-#: src/pages/admin/settings.tsx:564
+#: src/pages/admin/emojis.tsx:527
+#: src/pages/admin/settings.tsx:567
 msgid "Preview"
 msgstr "プレビュー"
 
-#: src/pages/admin/settings.tsx:571
+#: src/pages/admin/settings.tsx:574
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:450
+#: src/pages/admin/settings.tsx:453
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -1472,11 +1501,11 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:337
+#: src/pages/admin/settings.tsx:340
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:47
+#: src/components/layout/Sidebar.tsx:53
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -1489,11 +1518,11 @@ msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/pages/admin/roles.tsx:599
+#: src/pages/admin/roles.tsx:602
 msgid "Public"
 msgstr "公開"
 
-#: src/pages/admin/roles.tsx:406
+#: src/pages/admin/roles.tsx:409
 msgid "Public (show on profiles)"
 msgstr "公開（プロフィールに表示）"
 
@@ -1547,7 +1576,7 @@ msgstr "既読"
 msgid "Reason"
 msgstr "報告理由"
 
-#: src/pages/admin/blocks.tsx:260
+#: src/pages/admin/blocks.tsx:263
 #: src/pages/mod/instances.tsx:362
 #: src/pages/mod/users.tsx:443
 msgid "Reason (optional)"
@@ -1594,7 +1623,7 @@ msgstr "コミュニティの最新投稿"
 
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:178
-#: src/pages/admin/emojis.tsx:358
+#: src/pages/admin/emojis.tsx:361
 msgid "Refresh"
 msgstr "更新"
 
@@ -1602,7 +1631,7 @@ msgstr "更新"
 msgid "Registered devices"
 msgstr "登録済みデバイス"
 
-#: src/pages/admin/settings.tsx:211
+#: src/pages/admin/settings.tsx:214
 msgid "Registration"
 msgstr "登録"
 
@@ -1615,15 +1644,15 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:366
+#: src/pages/admin/settings.tsx:369
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:133
+#: src/pages/admin/settings.tsx:136
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
-#: src/pages/admin/reports.tsx:549
+#: src/pages/admin/reports.tsx:552
 #: src/pages/mod/reports.tsx:470
 msgid "Reject"
 msgstr "却下"
@@ -1636,7 +1665,7 @@ msgstr "通報を却下"
 #~ msgid "Reject ReportPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/reports.tsx:302
+#: src/pages/admin/reports.tsx:305
 #: src/pages/mod/reports.tsx:289
 msgid "Rejected"
 msgstr "却下済み"
@@ -1666,7 +1695,7 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:556
+#: src/components/note/NoteComposer.tsx:557
 #: src/pages/notifications.tsx:248
 msgid "Reply"
 msgstr "返信"
@@ -1679,12 +1708,12 @@ msgstr "返信先:"
 msgid "Report"
 msgstr "報告"
 
-#: src/pages/admin/reports.tsx:377
+#: src/pages/admin/reports.tsx:380
 #: src/pages/mod/reports.tsx:355
 msgid "Report Details"
 msgstr "報告の詳細"
 
-#: src/pages/admin/reports.tsx:291
+#: src/pages/admin/reports.tsx:294
 #: src/pages/mod/reports.tsx:278
 msgid "Report List"
 msgstr "報告一覧"
@@ -1693,12 +1722,12 @@ msgstr "報告一覧"
 msgid "Report Note"
 msgstr "ノートを報告"
 
-#: src/pages/admin/reports.tsx:172
+#: src/pages/admin/reports.tsx:175
 #: src/pages/mod/reports.tsx:163
 msgid "Report rejected"
 msgstr "報告を却下しました"
 
-#: src/pages/admin/reports.tsx:172
+#: src/pages/admin/reports.tsx:175
 #: src/pages/mod/reports.tsx:163
 msgid "Report resolved"
 msgstr "報告を解決しました"
@@ -1711,22 +1740,22 @@ msgstr "報告を送信しました。コミュニティの安全維持にご協
 msgid "Report User"
 msgstr "ユーザーを報告"
 
-#: src/pages/admin/reports.tsx:456
+#: src/pages/admin/reports.tsx:459
 #: src/pages/mod/reports.tsx:414
 msgid "Reported Note"
 msgstr "報告されたノート"
 
 #. placeholder {0}: formatDate(report.createdAt)
-#: src/pages/admin/reports.tsx:359
+#: src/pages/admin/reports.tsx:362
 msgid "Reported on {0}"
 msgstr "{0}に報告"
 
-#: src/pages/admin/reports.tsx:435
+#: src/pages/admin/reports.tsx:438
 #: src/pages/mod/reports.tsx:394
 msgid "Reported User"
 msgstr "報告されたユーザー"
 
-#: src/pages/admin/reports.tsx:410
+#: src/pages/admin/reports.tsx:413
 #: src/pages/mod/reports.tsx:380
 msgid "Reporter"
 msgstr "報告者"
@@ -1735,8 +1764,8 @@ msgstr "報告者"
 msgid "Reporting"
 msgstr "報告対象"
 
-#: src/pages/admin/reports.tsx:243
-#: src/pages/admin/roles.tsx:616
+#: src/pages/admin/reports.tsx:246
+#: src/pages/admin/roles.tsx:619
 #: src/pages/mod/audit-logs.tsx:256
 msgid "Reports"
 msgstr "通報"
@@ -1745,11 +1774,11 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
-#: src/pages/admin/settings.tsx:406
+#: src/pages/admin/settings.tsx:409
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:424
+#: src/pages/admin/settings.tsx:427
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -1761,17 +1790,17 @@ msgstr "リセット"
 msgid "Reset to Default"
 msgstr "デフォルトに戻す"
 
-#: src/pages/admin/reports.tsx:500
+#: src/pages/admin/reports.tsx:503
 #: src/pages/mod/reports.tsx:443
 msgid "Resolution"
 msgstr "対応内容"
 
-#: src/pages/admin/reports.tsx:513
+#: src/pages/admin/reports.tsx:516
 #: src/pages/mod/reports.tsx:455
 msgid "Resolution Notes"
 msgstr "対応メモ"
 
-#: src/pages/admin/reports.tsx:534
+#: src/pages/admin/reports.tsx:537
 #: src/pages/mod/reports.tsx:467
 msgid "Resolve"
 msgstr "解決"
@@ -1784,13 +1813,13 @@ msgstr "通報を解決"
 #~ msgid "Resolve ReportPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/reports.tsx:301
+#: src/pages/admin/reports.tsx:304
 #: src/pages/mod/reports.tsx:288
 msgid "Resolved"
 msgstr "解決済み"
 
 #. placeholder {0}: formatDate(selectedReport.resolvedAt)
-#: src/pages/admin/reports.tsx:491
+#: src/pages/admin/reports.tsx:494
 #: src/pages/mod/reports.tsx:437
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
@@ -1816,36 +1845,36 @@ msgstr "再試行"
 msgid "Retrying..."
 msgstr "再試行中..."
 
-#: src/pages/admin/reports.tsx:246
+#: src/pages/admin/reports.tsx:249
 #: src/pages/mod/reports.tsx:236
 msgid "Review and manage user reports"
 msgstr "ユーザーからの報告を確認・管理"
 
-#: src/pages/admin/roles.tsx:190
+#: src/pages/admin/roles.tsx:193
 msgid "Role created"
 msgstr "ロールを作成しました"
 
-#: src/pages/admin/roles.tsx:271
+#: src/pages/admin/roles.tsx:274
 msgid "Role deleted"
 msgstr "ロールを削除しました"
 
-#: src/pages/admin/roles.tsx:391
+#: src/pages/admin/roles.tsx:394
 msgid "Role description"
 msgstr "ロールの説明"
 
-#: src/pages/admin/roles.tsx:316
+#: src/pages/admin/roles.tsx:319
 msgid "Role Management"
 msgstr "ロール管理"
 
-#: src/pages/admin/roles.tsx:365
+#: src/pages/admin/roles.tsx:368
 msgid "Role name"
 msgstr "ロール名"
 
-#: src/pages/admin/roles.tsx:174
+#: src/pages/admin/roles.tsx:177
 msgid "Role updated"
 msgstr "ロールを更新しました"
 
-#: src/pages/admin/roles.tsx:558
+#: src/pages/admin/roles.tsx:561
 msgid "Roles"
 msgstr "ロール"
 
@@ -1853,11 +1882,11 @@ msgstr "ロール"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/pages/admin/settings.tsx:355
+#: src/pages/admin/settings.tsx:358
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:434
+#: src/pages/admin/settings.tsx:437
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -1865,7 +1894,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:587
+#: src/pages/admin/settings.tsx:590
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -1874,7 +1903,10 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
+#: src/components/layout/Sidebar.tsx:41
 #: src/pages/mod/users.tsx:281
+#: src/pages/search.tsx:218
+#: src/pages/search.tsx:247
 msgid "Search"
 msgstr "検索"
 
@@ -1882,9 +1914,13 @@ msgstr "検索"
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
 
-#: src/pages/admin/emojis.tsx:568
+#: src/pages/admin/emojis.tsx:571
 msgid "Search emojis..."
 msgstr "絵文字を検索..."
+
+#: src/pages/search.tsx:311
+msgid "Search for users"
+msgstr "ユーザーを検索"
 
 #: src/pages/mod/users.tsx:255
 msgid "Search for users and manage suspensions"
@@ -1894,6 +1930,10 @@ msgstr "ユーザーを検索して停止を管理"
 #~ msgid "Search for users and manage suspensionsPLACEHOLDER"
 #~ msgstr ""
 
+#: src/pages/search.tsx:255
+msgid "Search in:"
+msgstr "検索対象:"
+
 #: src/pages/mod/users.tsx:265
 msgid "Search User"
 msgstr "ユーザーを検索"
@@ -1902,11 +1942,15 @@ msgstr "ユーザーを検索"
 #~ msgid "Search UserPLACEHOLDER"
 #~ msgstr ""
 
+#: src/pages/search.tsx:235
+msgid "Search users... (e.g., alice or alice@mastodon.social)"
+msgstr ""
+
 #: src/pages/mod/users.tsx:193
 #~ msgid "SearchPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/settings.tsx:580
+#: src/pages/admin/settings.tsx:583
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -1918,11 +1962,11 @@ msgstr "テスト通知を送信して、設定を確認します。"
 msgid "Send test"
 msgstr "テスト送信"
 
-#: src/pages/admin/emojis.tsx:515
+#: src/pages/admin/emojis.tsx:518
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/components/layout/Sidebar.tsx:53
+#: src/components/layout/Sidebar.tsx:59
 #: src/pages/settings.tsx:133
 msgid "Settings"
 msgstr "設定"
@@ -2011,7 +2055,7 @@ msgstr "ユーザーを停止"
 #~ msgid "Suspend UserPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/roles.tsx:626
+#: src/pages/admin/roles.tsx:629
 msgid "Suspend Users"
 msgstr "ユーザー凍結"
 
@@ -2023,7 +2067,7 @@ msgstr "停止中"
 #~ msgid "SuspendedPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/settings.tsx:523
+#: src/pages/admin/settings.tsx:526
 msgid "System"
 msgstr "システム"
 
@@ -2055,7 +2099,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:321
+#: src/pages/admin/settings.tsx:324
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -2072,15 +2116,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
 #: src/components/settings/UISettingsSection.tsx:242
-#: src/pages/admin/settings.tsx:221
+#: src/pages/admin/settings.tsx:224
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:445
+#: src/pages/admin/settings.tsx:448
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:152
+#: src/pages/admin/settings.tsx:155
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
@@ -2109,6 +2153,10 @@ msgstr "このユーザーはまだ何も投稿していません"
 msgid "Timeline"
 msgstr "タイムライン"
 
+#: src/pages/search.tsx:289
+msgid "Tip: To find users on other servers, enter their full address like @user@example.com"
+msgstr "ヒント: 他のサーバーのユーザーを見つけるには、@user@example.com のようにフルアドレスを入力してください"
+
 #: src/pages/mod/audit-logs.tsx:221
 msgid "Total Actions"
 msgstr "合計アクション数"
@@ -2117,31 +2165,39 @@ msgstr "合計アクション数"
 #~ msgid "Total ActionsPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/invitations.tsx:234
+#: src/pages/admin/invitations.tsx:237
 msgid "Total Codes"
 msgstr "コード総数"
 
-#: src/pages/admin/reports.tsx:279
+#: src/pages/admin/reports.tsx:282
 #: src/pages/mod/reports.tsx:267
 msgid "Total Reports"
 msgstr "報告総数"
 
-#: src/pages/admin/roles.tsx:332
+#: src/pages/admin/roles.tsx:335
 msgid "Total Roles"
 msgstr "ロール総数"
 
 #. placeholder {0}: emojis.length
-#: src/pages/admin/emojis.tsx:654
+#: src/pages/admin/emojis.tsx:657
 msgid "Total: {0} emojis"
 msgstr "合計: {0}個の絵文字"
 
-#: src/pages/admin/reports.tsx:320
+#: src/pages/search.tsx:328
+msgid "Try a different search term or check the spelling"
+msgstr "別の検索語を試すか、スペルを確認してください"
+
+#: src/pages/admin/reports.tsx:323
 msgid "Try adjusting your filter"
 msgstr "フィルターを調整してみてください"
 
 #: src/pages/notifications.tsx:288
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
+
+#: src/pages/search.tsx:332
+msgid "Try searching \"All\" to include remote users"
+msgstr "「すべて」で検索するとリモートユーザーも含まれます"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
@@ -2155,7 +2211,7 @@ msgstr "表示設定を保存しました"
 msgid "Unblock"
 msgstr "ブロック解除"
 
-#: src/pages/admin/blocks.tsx:341
+#: src/pages/admin/blocks.tsx:344
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
@@ -2171,7 +2227,7 @@ msgstr "フォロー解除しました"
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
-#: src/pages/admin/reports.tsx:425
+#: src/pages/admin/reports.tsx:428
 msgid "Unknown"
 msgstr "不明"
 
@@ -2193,11 +2249,11 @@ msgstr "ユーザーの停止を解除"
 #~ msgid "Unsuspend UserPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/admin/emojis.tsx:549
+#: src/pages/admin/emojis.tsx:552
 msgid "Update Emoji"
 msgstr "絵文字を更新"
 
-#: src/pages/admin/roles.tsx:533
+#: src/pages/admin/roles.tsx:536
 msgid "Update Role"
 msgstr "ロールを更新"
 
@@ -2205,13 +2261,13 @@ msgstr "ロールを更新"
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:552
-#: src/pages/admin/emojis.tsx:428
+#: src/components/note/NoteComposer.tsx:553
+#: src/pages/admin/emojis.tsx:431
 msgid "Uploading..."
 msgstr "アップロード中..."
 
 #: src/components/settings/InvitationCodeSection.tsx:245
-#: src/pages/admin/invitations.tsx:370
+#: src/pages/admin/invitations.tsx:373
 msgid "Used"
 msgstr "使用済み"
 
@@ -2236,7 +2292,7 @@ msgstr "ユーザーのモデレーション"
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
-#: src/pages/admin/reports.tsx:348
+#: src/pages/admin/reports.tsx:351
 #: src/pages/mod/reports.tsx:326
 msgid "User Report"
 msgstr "ユーザーの報告"
@@ -2276,7 +2332,7 @@ msgstr "ユーザー名を入力してください"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:557
+#: src/pages/admin/settings.tsx:560
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
@@ -2289,7 +2345,7 @@ msgstr "ユーザーは自分の設定で上書きできます"
 #. placeholder {1}: code.maxUses
 #. placeholder {1}: invitation.maxUses
 #: src/components/settings/InvitationCodeSection.tsx:255
-#: src/pages/admin/invitations.tsx:380
+#: src/pages/admin/invitations.tsx:383
 msgid "Uses: {0}/{1}"
 msgstr "使用回数: {0}/{1}"
 
@@ -2358,7 +2414,7 @@ msgstr "警告 ({0})"
 #~ msgid "Welcome to Rox"
 #~ msgstr ""
 
-#: src/pages/admin/blocks.tsx:265
+#: src/pages/admin/blocks.tsx:268
 msgid "Why is this instance being blocked?"
 msgstr "このインスタンスをブロックする理由は？"
 

@@ -157,6 +157,75 @@ app.get('/@me', requireAuth(), async (c) => {
 });
 
 /**
+ * Search Users
+ *
+ * GET /api/users/search
+ *
+ * Searches for users by username or display name.
+ * Performs case-insensitive partial matching.
+ *
+ * @remarks
+ * Query Parameters:
+ * - q: Search query (required, min 1 character)
+ * - limit: Maximum results to return (default: 20, max: 50)
+ * - offset: Number of results to skip (default: 0)
+ * - localOnly: If "true", only search local users (default: false)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "users": [
+ *     {
+ *       "id": "...",
+ *       "username": "alice",
+ *       "host": null,
+ *       "displayName": "Alice Smith",
+ *       "avatarUrl": "https://...",
+ *       ...
+ *     }
+ *   ]
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: Query parameter is required or too short
+ *
+ * Note:
+ * - Remote users may not be searchable by display name if not cached locally
+ * - Suspended users are excluded from results
+ */
+app.get('/search', async (c) => {
+  const userRepository = c.get('userRepository');
+  const query = c.req.query('q');
+  const limitParam = c.req.query('limit');
+  const offsetParam = c.req.query('offset');
+  const localOnlyParam = c.req.query('localOnly');
+
+  if (!query || query.trim().length === 0) {
+    return c.json({ error: 'Search query is required' }, 400);
+  }
+
+  const limit = Math.min(Math.max(parseInt(limitParam || '20', 10) || 20, 1), 50);
+  const offset = Math.max(parseInt(offsetParam || '0', 10) || 0, 0);
+  const localOnly = localOnlyParam === 'true';
+
+  const searchResults = await userRepository.search({
+    query: query.trim(),
+    limit,
+    offset,
+    localOnly,
+  });
+
+  // Remove sensitive fields
+  const publicUsers = searchResults.map((user) => {
+    const { passwordHash: _passwordHash, email: _email, privateKey: _privateKey, ...publicUser } = user;
+    return publicUser;
+  });
+
+  return c.json({ users: publicUsers });
+});
+
+/**
  * Get User Information (Misskey-compatible)
  *
  * GET /api/users/show
