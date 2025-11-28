@@ -108,21 +108,21 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
     <Layout>
       <div className="max-w-2xl mx-auto">
         {/* Breadcrumb navigation */}
-        <nav className="px-4 py-2 border-b border-gray-200" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2 text-sm text-gray-600">
+        <nav className="px-4 py-2 border-b border-gray-200 dark:border-gray-700" aria-label="Breadcrumb">
+          <ol className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <li>
-              <a href="/timeline" className="hover:text-primary-600">
+              <a href="/timeline" className="hover:text-primary-600 dark:hover:text-primary-400">
                 <Trans>Timeline</Trans>
               </a>
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <a href={`/@${note.user.username}`} className="hover:text-primary-600">
+              <a href={`/@${note.user.username}`} className="hover:text-primary-600 dark:hover:text-primary-400">
                 @{note.user.username}
               </a>
             </li>
             <li aria-hidden="true">/</li>
-            <li className="text-gray-900 font-medium" aria-current="page">
+            <li className="text-gray-900 dark:text-gray-100 font-medium" aria-current="page">
               <Trans>Note</Trans>
             </li>
           </ol>
@@ -130,12 +130,12 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
 
         {/* Ancestor notes (conversation context) */}
         {ancestors.length > 0 && (
-          <div className="border-b border-gray-200">
-            <div className="px-4 py-2 bg-gray-50 text-sm text-gray-600">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400">
               <Trans>Conversation thread</Trans>
             </div>
             {ancestors.map((ancestorNote) => (
-              <div key={ancestorNote.id} className="border-b border-gray-100">
+              <div key={ancestorNote.id} className="border-b border-gray-100 dark:border-gray-700">
                 <NoteCard note={ancestorNote} onNoteDeleted={handleNoteDeleted} />
               </div>
             ))}
@@ -143,7 +143,7 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
         )}
 
         {/* Main note (highlighted) */}
-        <div className="border-b-4 border-primary-500 bg-primary-50/30">
+        <div className="border-b-4 border-primary-500 bg-primary-50/30 dark:bg-primary-900/20">
           <NoteCard
             note={note}
             onNoteDeleted={handleNoteDeleted}
@@ -155,13 +155,13 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
         {/* Descendant notes (replies) */}
         {descendants.length > 0 && (
           <div>
-            <div className="px-4 py-2 bg-gray-50 text-sm text-gray-600 border-b border-gray-200">
+            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
               <Trans>
                 Replies ({descendants.length})
               </Trans>
             </div>
             {descendants.map((descendantNote) => (
-              <div key={descendantNote.id} className="border-b border-gray-100">
+              <div key={descendantNote.id} className="border-b border-gray-100 dark:border-gray-700">
                 <NoteCard
                   note={descendantNote}
                   onNoteDeleted={handleNoteDeleted}
@@ -174,7 +174,7 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
 
         {/* No replies message */}
         {descendants.length === 0 && (
-          <div className="px-4 py-8 text-center text-gray-500">
+          <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
             <Trans>No replies yet</Trans>
           </div>
         )}

@@ -157,7 +157,7 @@ export function PushNotificationSection() {
             ) : (
               <>
                 <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <BellOff className="w-5 h-5 text-gray-500" />
+                  <BellOff className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </div>
                 <div>
                   <p className="font-medium text-(--text-primary)">

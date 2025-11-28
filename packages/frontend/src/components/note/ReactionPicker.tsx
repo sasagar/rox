@@ -57,7 +57,7 @@ export function ReactionPicker({
   selectedReactions = [],
 }: ReactionPickerProps) {
   return (
-    <div className="flex flex-wrap gap-1 p-2 bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="flex flex-wrap gap-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
       {reactions.map((reaction) => {
         const isSelected = selectedReactions.includes(reaction);
 
@@ -67,8 +67,8 @@ export function ReactionPicker({
             onPress={() => onReactionSelect(reaction)}
             className={`
               w-10 h-10 flex items-center justify-center text-2xl rounded-md
-              transition-all hover:scale-110 hover:bg-gray-100
-              ${isSelected ? 'bg-primary-100 ring-2 ring-primary-500' : 'bg-gray-50'}
+              transition-all hover:scale-110 hover:bg-gray-100 dark:hover:bg-gray-700
+              ${isSelected ? 'bg-primary-100 dark:bg-primary-900/30 ring-2 ring-primary-500' : 'bg-gray-50 dark:bg-gray-700'}
             `}
           >
             {reaction}
@@ -126,7 +126,7 @@ export function ReactionButton({
         isDisabled={isDisabled}
         className="
           flex items-center gap-1 px-3 py-1.5 rounded-full text-sm
-          text-gray-600 hover:text-primary-600 hover:bg-primary-50
+          text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30
           transition-colors disabled:opacity-50 disabled:cursor-not-allowed
         "
         aria-label="Add reaction"

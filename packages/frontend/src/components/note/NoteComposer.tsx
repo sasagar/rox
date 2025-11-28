@@ -291,13 +291,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       <CardContent className="p-4">
         {/* Draft banner */}
         {showDraftBanner && !replyId && (
-          <div className="mb-4 rounded-md bg-blue-50 p-3 border border-blue-200">
+          <div className="mb-4 rounded-md bg-blue-50 dark:bg-blue-900/30 p-3 border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="text-sm font-medium text-blue-900">
+                <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
                   <Trans>You have an unsaved draft</Trans>
                 </span>
               </div>
@@ -306,7 +306,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   variant="ghost"
                   size="sm"
                   onPress={handleRestoreDraft}
-                  className="text-blue-700 hover:text-blue-800"
+                  className="text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   <Trans>Restore</Trans>
                 </Button>
@@ -314,7 +314,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   variant="ghost"
                   size="sm"
                   onPress={handleDiscardDraft}
-                  className="text-gray-600 hover:text-gray-700"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 >
                   <Trans>Discard</Trans>
                 </Button>
@@ -334,8 +334,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           <div className="flex-1 space-y-3">
             {/* Reply indicator */}
             {replyTo && (
-              <div className="text-sm text-gray-600">
-                <Trans>Replying to</Trans> <span className="text-primary-600 font-medium">{replyTo}</span>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                <Trans>Replying to</Trans> <span className="text-primary-600 dark:text-primary-400 font-medium">{replyTo}</span>
               </div>
             )}
 
@@ -403,7 +403,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {isUploading && uploadProgress > 0 && (
               <div className="space-y-1">
                 <ProgressBar value={uploadProgress} showPercent size="md" />
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   <Trans>Uploading files...</Trans> {uploadProgress}%
                 </p>
               </div>
@@ -419,12 +419,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isSubmitting || files.length >= 4}
-                  className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
                   title="Add images"
                   aria-label="Add images"
                 >
-                  <ImageIcon className="w-5 h-5 text-gray-600" />
+                  <ImageIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
                 <input
                   ref={fileInputRef}
@@ -439,8 +439,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 <button
                   onClick={() => setShowCw(!showCw)}
                   disabled={isSubmitting}
-                  className={`p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 ${
-                    showCw ? 'bg-primary-50 text-primary-600' : 'text-gray-600'
+                  className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
+                    showCw ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
                   }`}
                   type="button"
                   title="Content Warning"
@@ -460,8 +460,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 <button
                   onClick={() => setShowPreview(!showPreview)}
                   disabled={isSubmitting}
-                  className={`p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 ${
-                    showPreview ? 'bg-primary-50 text-primary-600' : 'text-gray-600'
+                  className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
+                    showPreview ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
                   }`}
                   type="button"
                   title="Preview MFM"
@@ -477,20 +477,20 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   onSelectionChange={(key) => setVisibility(key as NoteVisibility)}
                   isDisabled={isSubmitting}
                 >
-                  <RACButton className="flex items-center gap-1 px-2 py-1 rounded-md border border-gray-300 text-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white">
+                  <RACButton className="flex items-center gap-1 px-2 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-gray-800">
                     {visibilityOptions.find((opt) => opt.value === visibility)?.icon}
-                    <span className="text-sm text-gray-900">
+                    <span className="text-sm text-gray-900 dark:text-gray-100">
                       {visibilityOptions.find((opt) => opt.value === visibility)?.label}
                     </span>
-                    <ChevronDown className="w-3 h-3 text-gray-500 ml-1" />
+                    <ChevronDown className="w-3 h-3 text-gray-500 dark:text-gray-400 ml-1" />
                   </RACButton>
-                  <Popover className="mt-1 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden min-w-[140px]">
+                  <Popover className="mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden min-w-[140px]">
                     <ListBox className="outline-none py-1">
                       {visibilityOptions.map((option) => (
                         <ListBoxItem
                           key={option.value}
                           id={option.value}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-900 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:outline-none data-selected:bg-primary-50 data-selected:text-primary-900"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none data-selected:bg-primary-50 dark:data-selected:bg-primary-900/30 data-selected:text-primary-900 dark:data-selected:text-primary-100"
                         >
                           {option.icon}
                           <span>{option.label}</span>
@@ -511,7 +511,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       cy="16"
                       r="14"
                       fill="none"
-                      stroke={remainingChars < 0 ? '#ef4444' : '#e5e7eb'}
+                      className="stroke-gray-200 dark:stroke-gray-600"
+                      stroke={remainingChars < 0 ? '#ef4444' : undefined}
                       strokeWidth="2"
                     />
                     <circle
@@ -532,7 +533,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                         ? 'text-red-600'
                         : remainingChars < 100
                         ? 'text-orange-600'
-                        : 'text-gray-500'
+                        : 'text-gray-500 dark:text-gray-400'
                     }`}
                   >
                     {text.length > maxLength - 100 ? remainingChars : ''}

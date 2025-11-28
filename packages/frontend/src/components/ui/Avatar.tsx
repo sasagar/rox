@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
  * Defines visual variants for size
  */
 const avatarVariants = cva(
-  'rounded-full bg-gray-200 object-cover',
+  'rounded-full bg-gray-200 dark:bg-gray-700 object-cover',
   {
     variants: {
       size: {
@@ -71,7 +71,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   if (fallback) {
     return (
       <div
-        className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-primary-100! text-primary-700 font-semibold ' + (className || '')}
+        className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-primary-100! dark:bg-primary-900/30! text-primary-700 dark:text-primary-300 font-semibold ' + (className || '')}
         aria-label={alt}
       >
         {fallback}
@@ -82,7 +82,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   // Default fallback: user icon
   return (
     <div
-      className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-gray-300! text-gray-600 ' + (className || '')}
+      className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-gray-300! dark:bg-gray-600! text-gray-600 dark:text-gray-300 ' + (className || '')}
       aria-label={alt}
     >
       <svg
