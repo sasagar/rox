@@ -194,6 +194,23 @@ sudo -u rox /opt/rox/.bun/bin/bun --version
 
 > **Note**: Bun is installed to `/opt/rox/.bun/bin/bun` because the rox user's home directory is `/opt/rox`.
 
+### 6. Install Node.js (Required for Frontend)
+
+The Waku frontend framework requires Node.js. We use Volta for Node.js version management:
+
+```bash
+# Install Volta for the rox user
+sudo -u rox bash -c 'curl https://get.volta.sh | bash'
+
+# Install Node.js LTS
+sudo -u rox /opt/rox/.volta/bin/volta install node@lts
+
+# Verify node installation
+sudo -u rox /opt/rox/.volta/bin/node --version
+```
+
+> **Note**: Node.js is installed to `/opt/rox/.volta/bin/node`.
+
 ---
 
 ## Database Setup
@@ -688,11 +705,13 @@ Type=simple
 User=rox
 Group=rox
 WorkingDirectory=/opt/rox/app
-ExecStart=/opt/rox/.bun/bin/bun run start
+ExecStart=/opt/rox/.bun/bin/bun scripts/start-production.ts
 Restart=always
 RestartSec=5
 EnvironmentFile=/opt/rox/app/.env
-EnvironmentFile=/opt/rox/app/.env
+
+# PATH for Volta (Node.js) and Bun
+Environment=PATH=/opt/rox/.volta/bin:/opt/rox/.bun/bin:/usr/local/bin:/usr/bin:/bin
 
 # Resource limits
 MemoryMax=1.5G
@@ -701,8 +720,8 @@ CPUQuota=300%
 # Security
 NoNewPrivileges=true
 ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/opt/rox/uploads
+ProtectHome=false
+ReadWritePaths=/opt/rox/uploads /opt/rox/.volta /opt/rox/.bun
 
 [Install]
 WantedBy=multi-user.target

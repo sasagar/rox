@@ -113,6 +113,9 @@ process.on('SIGINT', () => {
   shutdown(0);
 });
 
+// Check if frontend should be started
+const ENABLE_FRONTEND = process.env.ENABLE_FRONTEND !== 'false';
+
 // Main startup sequence
 async function main(): Promise<void> {
   console.log('═'.repeat(50));
@@ -120,6 +123,8 @@ async function main(): Promise<void> {
   console.log('═'.repeat(50));
   console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
   console.log(`Working directory: ${ROOT_DIR}`);
+  console.log(`Bun executable: ${BUN_PATH}`);
+  console.log(`Frontend enabled: ${ENABLE_FRONTEND}`);
   console.log('');
 
   // Start backend (API server on port 3000)
@@ -129,21 +134,25 @@ async function main(): Promise<void> {
     'src/index.ts',
   ]);
 
-  // Small delay to let backend start first
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (ENABLE_FRONTEND) {
+    // Small delay to let backend start first
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Start frontend (Waku on port 3001)
-  startProcess('Frontend (Waku)', join(ROOT_DIR, 'packages/frontend'), [
-    BUN_PATH,
-    'run',
-    'start',
-  ]);
+    // Start frontend (Waku on port 3001)
+    startProcess('Frontend (Waku)', join(ROOT_DIR, 'packages/frontend'), [
+      BUN_PATH,
+      'run',
+      'start',
+    ]);
+  }
 
   console.log('');
   console.log('═'.repeat(50));
   console.log('✅ All services started');
   console.log('   Backend:  http://localhost:3000');
-  console.log('   Frontend: http://localhost:3001');
+  if (ENABLE_FRONTEND) {
+    console.log('   Frontend: http://localhost:3001');
+  }
   console.log('═'.repeat(50));
   console.log('');
   console.log('Press Ctrl+C to stop all services');

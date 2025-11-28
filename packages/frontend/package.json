@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "waku dev",
     "build": "waku build",
-    "start": "waku start",
+    "start": "waku start -p ${FRONTEND_PORT:-3001}",
     "typecheck": "tsc --noEmit",
     "lingui:extract": "lingui extract",
     "lingui:compile": "lingui compile"
