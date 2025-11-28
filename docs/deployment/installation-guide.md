@@ -692,6 +692,7 @@ ExecStart=/opt/rox/.bun/bin/bun run start
 Restart=always
 RestartSec=5
 EnvironmentFile=/opt/rox/app/.env
+EnvironmentFile=/opt/rox/app/.env
 
 # Resource limits
 MemoryMax=1.5G
