@@ -95,6 +95,10 @@ export class AuthService {
     // ActivityPub用の鍵ペア生成（ローカルユーザー用）
     const { publicKey, privateKey } = generateKeyPair();
 
+    // Check if this is the first local user (make them admin)
+    const localUserCount = await this.userRepository.count(true);
+    const isFirstUser = localUserCount === 0;
+
     // ユーザー作成
     const baseUrl = process.env.URL || 'http://localhost:3000';
     const user = await this.userRepository.create({
@@ -107,7 +111,7 @@ export class AuthService {
       avatarUrl: null,
       bannerUrl: null,
       bio: null,
-      isAdmin: false,
+      isAdmin: isFirstUser, // First user becomes admin
       isSuspended: false,
       publicKey,
       privateKey,

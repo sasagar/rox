@@ -15,7 +15,7 @@ import type { Session } from 'shared';
 /**
  * Partial mock types that only include the methods we actually use in tests
  */
-type MockUserRepo = Pick<IUserRepository, 'findByUsername' | 'findByEmail' | 'findById' | 'create'>;
+type MockUserRepo = Pick<IUserRepository, 'findByUsername' | 'findByEmail' | 'findById' | 'create' | 'count'>;
 type MockSessionRepo = Pick<ISessionRepository, 'create' | 'findByToken' | 'delete' | 'deleteByToken'>;
 
 describe('AuthService', () => {
@@ -70,6 +70,7 @@ describe('AuthService', () => {
       findByEmail: mock(() => Promise.resolve(null)),
       findById: mock(() => Promise.resolve(mockUser)),
       create: mock(() => Promise.resolve(mockUser)),
+      count: mock(() => Promise.resolve(1)), // Default: not the first user
     };
 
     mockSessionRepo = {
@@ -157,6 +158,52 @@ describe('AuthService', () => {
       const createMock = mockUserRepo.create as ReturnType<typeof mock>;
       const createCall = createMock.mock.calls[0]?.[0] as Partial<User> | undefined;
       expect(createCall?.displayName).toBe('newuser');
+    });
+
+    test('should make first user an admin', async () => {
+      const mockUserRepoFirstUser: MockUserRepo = {
+        ...mockUserRepo,
+        count: mock(() => Promise.resolve(0)), // No existing users
+      };
+
+      const service = new AuthService(
+        mockUserRepoFirstUser as IUserRepository,
+        mockSessionRepo as ISessionRepository
+      );
+
+      await service.register({
+        username: 'firstuser',
+        email: 'first@example.com',
+        password: 'securePassword123',
+      });
+
+      // Check that create was called with isAdmin = true
+      const createMock = mockUserRepoFirstUser.create as ReturnType<typeof mock>;
+      const createCall = createMock.mock.calls[0]?.[0] as Partial<User> | undefined;
+      expect(createCall?.isAdmin).toBe(true);
+    });
+
+    test('should not make subsequent users admin', async () => {
+      const mockUserRepoSubsequentUser: MockUserRepo = {
+        ...mockUserRepo,
+        count: mock(() => Promise.resolve(1)), // Already has users
+      };
+
+      const service = new AuthService(
+        mockUserRepoSubsequentUser as IUserRepository,
+        mockSessionRepo as ISessionRepository
+      );
+
+      await service.register({
+        username: 'seconduser',
+        email: 'second@example.com',
+        password: 'securePassword123',
+      });
+
+      // Check that create was called with isAdmin = false
+      const createMock = mockUserRepoSubsequentUser.create as ReturnType<typeof mock>;
+      const createCall = createMock.mock.calls[0]?.[0] as Partial<User> | undefined;
+      expect(createCall?.isAdmin).toBe(false);
     });
   });
 
