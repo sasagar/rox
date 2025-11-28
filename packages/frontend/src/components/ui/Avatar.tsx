@@ -106,10 +106,13 @@ function isLocalDevelopmentUrl(url: string): boolean {
  * In development/local environments, return the original URL to avoid proxy restrictions
  */
 function getProxiedUrl(url: string): string {
-  if (!url || !isExternalUrl(url)) return url;
-  // Don't proxy local development URLs - they would be blocked by the proxy anyway
-  if (isLocalDevelopmentUrl(url)) return url;
-  return `/proxy?url=${encodeURIComponent(url)}`;
+  // Temporarily disabled proxying to debug image loading issues
+  // TODO: Re-enable proxy for production
+  return url;
+  // if (!url || !isExternalUrl(url)) return url;
+  // // Don't proxy local development URLs - they would be blocked by the proxy anyway
+  // if (isLocalDevelopmentUrl(url)) return url;
+  // return `/proxy?url=${encodeURIComponent(url)}`;
 }
 
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
