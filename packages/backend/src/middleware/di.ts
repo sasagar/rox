@@ -36,6 +36,10 @@ export function diMiddleware() {
     c.set('instanceSettingsService', container.instanceSettingsService);
     c.set('migrationService', container.migrationService);
     c.set('notificationService', container.notificationService);
+    c.set('webPushService', container.webPushService);
+
+    // Also set the container itself for routes that need multiple services
+    c.set('container', container);
 
     await next();
   };
@@ -43,5 +47,7 @@ export function diMiddleware() {
 
 // Hono Context型の拡張
 declare module 'hono' {
-  interface ContextVariableMap extends AppContainer {}
+  interface ContextVariableMap extends AppContainer {
+    container: AppContainer;
+  }
 }
