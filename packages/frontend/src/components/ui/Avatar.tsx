@@ -103,16 +103,14 @@ function isLocalDevelopmentUrl(url: string): boolean {
 
 /**
  * Get proxied URL for external images
- * In development/local environments, return the original URL to avoid proxy restrictions
+ * External images are proxied through our server to avoid CORS issues
+ * Local development URLs are not proxied as they would be blocked by the proxy
  */
 function getProxiedUrl(url: string): string {
-  // Temporarily disabled proxying to debug image loading issues
-  // TODO: Re-enable proxy for production
-  return url;
-  // if (!url || !isExternalUrl(url)) return url;
-  // // Don't proxy local development URLs - they would be blocked by the proxy anyway
-  // if (isLocalDevelopmentUrl(url)) return url;
-  // return `/proxy?url=${encodeURIComponent(url)}`;
+  if (!url || !isExternalUrl(url)) return url;
+  // Don't proxy local development URLs - they would be blocked by the proxy anyway
+  if (isLocalDevelopmentUrl(url)) return url;
+  return `/proxy?url=${encodeURIComponent(url)}`;
 }
 
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
@@ -127,11 +125,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
         src={imageUrl}
         alt={alt}
         className={'inline-block ' + avatarVariants({ size, className })}
-        onError={(e) => {
-          console.error('Avatar image load error:', imageUrl, e);
-          setHasError(true);
-        }}
-        crossOrigin="anonymous"
+        onError={() => setHasError(true)}
       />
     );
   }
