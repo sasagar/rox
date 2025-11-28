@@ -7,6 +7,7 @@ import { usersApi, type User } from '../../lib/api/users';
 import { notesApi } from '../../lib/api/notes';
 import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
 import { apiClient } from '../../lib/api/client';
+import { getProxiedImageUrl } from '../../lib/utils/imageProxy';
 import { Flag } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { NoteCard } from '../note/NoteCard';
@@ -289,7 +290,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
         {/* Banner */}
         {user.bannerUrl && (
           <div className="h-48 bg-linear-to-r from-primary-500 to-primary-600">
-            <img src={user.bannerUrl} alt="" className="w-full h-full object-cover" />
+            <img src={getProxiedImageUrl(user.bannerUrl) || ''} alt="" className="w-full h-full object-cover" />
           </div>
         )}
         {!user.bannerUrl && (
@@ -303,7 +304,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
             <div className="-mt-16">
               <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                 {user.avatarUrl && (
-                  <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
+                  <img src={getProxiedImageUrl(user.avatarUrl) || ''} alt={user.username} className="w-full h-full object-cover" />
                 )}
                 {!user.avatarUrl && (
                   <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-500 dark:text-gray-400">

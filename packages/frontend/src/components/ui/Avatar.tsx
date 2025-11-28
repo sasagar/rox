@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { getProxiedImageUrl } from '../../lib/utils/imageProxy';
 
 /**
  * Avatar variant styles using Class Variance Authority
@@ -60,65 +61,11 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
  * <Avatar src="/avatar.jpg" alt="Jane" size="sm" />
  * ```
  */
-/**
- * Check if URL is external (not on the same origin)
- */
-function isExternalUrl(url: string): boolean {
-  if (!url) return false;
-  // Relative URLs are not external
-  if (url.startsWith('/') && !url.startsWith('//')) return false;
-  // Data URLs are not external
-  if (url.startsWith('data:')) return false;
-
-  try {
-    const parsed = new URL(url, window.location.origin);
-    return parsed.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check if URL points to a local/development domain that shouldn't be proxied
- */
-function isLocalDevelopmentUrl(url: string): boolean {
-  if (!url) return false;
-  try {
-    const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
-    return (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '::1' ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.localhost') ||
-      hostname.startsWith('192.168.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('172.')
-    );
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Get proxied URL for external images
- * External images are proxied through our server to avoid CORS issues
- * Local development URLs are not proxied as they would be blocked by the proxy
- */
-function getProxiedUrl(url: string): string {
-  if (!url || !isExternalUrl(url)) return url;
-  // Don't proxy local development URLs - they would be blocked by the proxy anyway
-  if (isLocalDevelopmentUrl(url)) return url;
-  // Use /api/proxy to ensure the request is routed to the backend API
-  return `/api/proxy?url=${encodeURIComponent(url)}`;
-}
-
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   // Get the image URL (proxied if external)
-  const imageUrl = src ? getProxiedUrl(src) : null;
+  const imageUrl = getProxiedImageUrl(src);
 
   if (imageUrl && !hasError) {
     return (

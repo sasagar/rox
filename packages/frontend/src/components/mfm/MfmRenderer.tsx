@@ -20,6 +20,7 @@ import { useMemo, useState, useEffect, type ReactNode } from 'react';
 import * as mfm from 'mfm-js';
 import type { MfmNode } from 'mfm-js';
 import { lookupEmojis } from '../../lib/atoms/customEmoji';
+import { containsHtml, htmlToMfm } from '../../lib/utils/htmlToText';
 
 /**
  * Props for MfmRenderer component
@@ -66,16 +67,26 @@ export function MfmRenderer({
   // State for fetched custom emojis
   const [fetchedEmojis, setFetchedEmojis] = useState<Record<string, string>>({});
 
+  // Convert HTML to MFM if needed (for remote ActivityPub content)
+  const processedText = useMemo(() => {
+    if (!text) return '';
+    // If text contains HTML tags, convert to MFM-compatible format
+    if (containsHtml(text)) {
+      return htmlToMfm(text);
+    }
+    return text;
+  }, [text]);
+
   // Parse MFM text into AST
   const nodes = useMemo(() => {
-    if (!text) return [];
+    if (!processedText) return [];
     try {
-      return plain ? mfm.parseSimple(text) : mfm.parse(text, { nestLimit });
+      return plain ? mfm.parseSimple(processedText) : mfm.parse(processedText, { nestLimit });
     } catch (error) {
       console.error('MFM parse error:', error);
-      return [{ type: 'text', props: { text } } as MfmNode];
+      return [{ type: 'text', props: { text: processedText } } as MfmNode];
     }
-  }, [text, plain, nestLimit]);
+  }, [processedText, plain, nestLimit]);
 
   // Extract custom emoji names from AST
   const emojiNames = useMemo(() => {
