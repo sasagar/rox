@@ -56,7 +56,7 @@ export function SpinnerWithLabel({
   return (
     <div className="flex items-center gap-2">
       <Spinner size={size} variant={variant} />
-      <span className="text-sm text-gray-600">{label}</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400">{label}</span>
     </div>
   );
 }

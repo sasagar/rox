@@ -347,7 +347,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   value={cw}
                   onChange={(e) => setCw(e.target.value)}
                   placeholder="Content Warning"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             )}
@@ -360,17 +360,17 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-              className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
               disabled={isSubmitting}
             />
 
             {/* MFM Preview */}
             {showPreview && text.trim() && (
-              <div className="rounded-md border border-gray-200 bg-gray-50 p-3">
-                <div className="text-xs text-gray-500 mb-2 font-medium">
+              <div className="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
                   <Trans>Preview</Trans>
                 </div>
-                <div className="text-gray-900 whitespace-pre-wrap wrap-break-word">
+                <div className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap wrap-break-word">
                   <MfmRenderer text={text} />
                 </div>
               </div>

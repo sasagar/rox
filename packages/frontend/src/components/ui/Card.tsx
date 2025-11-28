@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
  * Defines visual variants for card appearance
  */
 const cardVariants = cva(
-  'rounded-lg border bg-white',
+  'rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
   {
     variants: {
       padding: {
@@ -137,7 +137,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3 className={`text-lg font-semibold text-gray-900 ${className || ''}`}>
+    <h3 className={`text-lg font-semibold text-gray-900 dark:text-gray-100 ${className || ''}`}>
       {children}
     </h3>
   );
@@ -154,7 +154,7 @@ export function CardDescription({
   className?: string;
 }) {
   return (
-    <p className={`text-sm text-gray-600 ${className || ''}`}>
+    <p className={`text-sm text-gray-600 dark:text-gray-400 ${className || ''}`}>
       {children}
     </p>
   );

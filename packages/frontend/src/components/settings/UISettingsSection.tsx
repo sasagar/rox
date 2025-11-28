@@ -58,7 +58,7 @@ function SelectGroup<T extends string>({
 }: SelectGroupProps<T>) {
   return (
     <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
         {icon}
         {label}
       </label>
@@ -72,7 +72,7 @@ function SelectGroup<T extends string>({
             className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
               value === option.value
                 ? 'bg-primary-500 text-white border-primary-500'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-primary-300'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {option.label}
@@ -261,7 +261,7 @@ export function UISettingsSection() {
           {/* Volume Slider */}
           {localSettings.notificationSound !== 'none' && (
             <div className="flex items-center gap-3">
-              <label className="text-sm text-gray-600 w-16">
+              <label className="text-sm text-gray-600 dark:text-gray-400 w-16">
                 <Trans>Volume</Trans>
               </label>
               <input
@@ -271,16 +271,16 @@ export function UISettingsSection() {
                 value={localSettings.notificationVolume ?? defaultUISettings.notificationVolume}
                 onChange={(e) => handleSettingChange('notificationVolume', parseInt(e.target.value, 10))}
                 disabled={isSaving}
-                className="grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                className="grow h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
-              <span className="text-sm text-gray-600 w-10 text-right">
+              <span className="text-sm text-gray-600 dark:text-gray-400 w-10 text-right">
                 {localSettings.notificationVolume ?? defaultUISettings.notificationVolume}%
               </span>
               <button
                 type="button"
                 onClick={handleTestSound}
                 disabled={isSaving}
-                className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trans>Test</Trans>
               </button>
@@ -290,7 +290,7 @@ export function UISettingsSection() {
 
         {/* Custom CSS */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <Code className="w-4 h-4" />
             <Trans>Custom CSS (App-wide)</Trans>
           </label>
@@ -301,9 +301,9 @@ export function UISettingsSection() {
             maxLength={10240}
             rows={5}
             disabled={isSaving}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
           />
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>
               <Trans>Custom CSS applied to the entire app (max 10KB)</Trans>
             </span>
@@ -311,14 +311,14 @@ export function UISettingsSection() {
               {appCustomCss.length.toLocaleString()}/10,240
             </span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 dark:text-gray-500">
             <Trans>Note: Some CSS properties may be restricted for security.</Trans>
           </p>
         </div>
 
         {/* Preview */}
-        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-sm font-medium text-gray-700 mb-2">
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             <Trans>Preview</Trans>
           </p>
           <div
@@ -338,7 +338,7 @@ export function UISettingsSection() {
                     ? '1.8'
                     : '1.6',
             }}
-            className="text-gray-600"
+            className="text-gray-600 dark:text-gray-400"
           >
             <Trans>
               This is a preview of how text will appear with your selected settings. Adjust the

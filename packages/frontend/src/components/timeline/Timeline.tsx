@@ -158,19 +158,19 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
 
       {/* End of Timeline */}
       {!hasMore && notes.length > 0 && (
-        <div className="py-8 text-center text-gray-500" role="status" aria-live="polite">
+        <div className="py-8 text-center text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
           <Trans>You've reached the end of the timeline</Trans>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && notes.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center" role="status">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center" role="status">
           <div className="text-4xl mb-4" aria-hidden="true">📭</div>
-          <h3 className="mb-2 text-lg font-semibold text-gray-900">
+          <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
             <Trans>No notes yet</Trans>
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             <Trans>Be the first to post something!</Trans>
           </p>
         </div>

@@ -263,7 +263,7 @@ function NoteCardComponent({
               onPress={handleFollow}
               className={`${
                 isFollowing
-                  ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                   : 'bg-primary-500 text-white hover:bg-primary-600'
               }`}
             >
@@ -274,7 +274,7 @@ function NoteCardComponent({
 
         {/* Renote Indicator */}
         {note.renote && (
-          <div className="mb-2 text-sm text-gray-600">
+          <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
             <Trans>Renoted</Trans>
           </div>
         )}
@@ -282,8 +282,8 @@ function NoteCardComponent({
         {/* Content Warning */}
         {note.cw && !showCw && (
           <div className="mb-3">
-            <div className="rounded-md bg-yellow-50 p-3" role="alert">
-              <div className="text-sm font-medium text-yellow-800">
+            <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/30 p-3" role="alert">
+              <div className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                 <Trans>Content Warning</Trans>: {note.cw}
               </div>
               <Button
@@ -305,7 +305,7 @@ function NoteCardComponent({
           <>
             {/* Text */}
             {note.text && (
-              <div className="mb-3 whitespace-pre-wrap wrap-break-word text-gray-900">
+              <div className="mb-3 whitespace-pre-wrap wrap-break-word text-gray-900 dark:text-gray-100">
                 <MfmRenderer text={note.text} />
               </div>
             )}
@@ -358,7 +358,7 @@ function NoteCardComponent({
 
             {/* Renoted Note */}
             {note.renote && (
-              <div className="mb-3 rounded-lg border border-gray-200 p-3">
+              <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                 <div className="mb-2 flex items-center gap-2">
                   <a href={`/${note.renote.user.username}`} className="shrink-0">
                     <Avatar
@@ -369,7 +369,7 @@ function NoteCardComponent({
                   </a>
                   <a
                     href={`/${note.renote.user.username}`}
-                    className="text-sm font-medium text-gray-700 hover:underline"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
                       <MfmRenderer text={note.renote.user.name} plain />
@@ -379,13 +379,13 @@ function NoteCardComponent({
                   </a>
                   <a
                     href={`/${note.renote.user.username}`}
-                    className="text-xs text-gray-500 hover:underline"
+                    className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                   >
                     @{note.renote.user.username}
                   </a>
                 </div>
                 {note.renote.text && (
-                  <div className="text-sm text-gray-700 whitespace-pre-wrap wrap-break-word">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap wrap-break-word">
                     <MfmRenderer text={note.renote.text} />
                   </div>
                 )}
@@ -395,12 +395,12 @@ function NoteCardComponent({
         )}
 
         {/* Interaction Buttons */}
-        <div className="flex items-center gap-2 border-t border-gray-100 pt-3" role="group" aria-label="Post actions">
+        <div className="flex items-center gap-2 border-t border-gray-100 dark:border-gray-700 pt-3" role="group" aria-label="Post actions">
           <Button
             variant="ghost"
             size="sm"
             onPress={() => setShowReplyComposer(!showReplyComposer)}
-            className="text-gray-600 hover:text-primary-600 min-w-[60px] flex items-center gap-1"
+            className="text-gray-600 dark:text-gray-400 hover:text-primary-600 min-w-[60px] flex items-center gap-1"
             aria-label={`Reply to post. ${note.repliesCount || 0} ${note.repliesCount === 1 ? 'reply' : 'replies'}`}
             aria-expanded={showReplyComposer}
           >
@@ -411,7 +411,7 @@ function NoteCardComponent({
             variant="ghost"
             size="sm"
             onPress={handleRenote}
-            className="text-gray-600 hover:text-green-600 min-w-[60px] flex items-center gap-1"
+            className="text-gray-600 dark:text-gray-400 hover:text-green-600 min-w-[60px] flex items-center gap-1"
             aria-label={`Renote post. ${note.renoteCount || 0} ${note.renoteCount === 1 ? 'renote' : 'renotes'}`}
           >
             <Repeat2 className="w-4 h-4" />
@@ -423,7 +423,7 @@ function NoteCardComponent({
             isDisabled={isReacting}
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
-            <div className="flex items-center gap-1 text-sm text-gray-600" role="group" aria-label="Reactions">
+            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400" role="group" aria-label="Reactions">
               {Object.entries(localReactions).map(([emoji, count]) => {
                 // Check if this is a custom emoji (format: :emoji_name:)
                 const isCustomEmoji = emoji.startsWith(':') && emoji.endsWith(':');
@@ -436,8 +436,8 @@ function NoteCardComponent({
                     disabled={isReacting}
                     className={`
                       flex items-center gap-1 px-2 py-1 rounded-full
-                      transition-all hover:bg-gray-100
-                      ${myReactions.includes(emoji) ? 'bg-primary-100 ring-1 ring-primary-500' : 'bg-gray-50'}
+                      transition-all hover:bg-gray-100 dark:hover:bg-gray-700
+                      ${myReactions.includes(emoji) ? 'bg-primary-100 dark:bg-primary-900/30 ring-1 ring-primary-500' : 'bg-gray-50 dark:bg-gray-800'}
                     `}
                     aria-label={`${myReactions.includes(emoji) ? 'Remove' : 'Add'} ${emoji} reaction. ${count} ${count === 1 ? 'reaction' : 'reactions'}`}
                     aria-pressed={myReactions.includes(emoji)}
@@ -465,7 +465,7 @@ function NoteCardComponent({
                 variant="ghost"
                 size="sm"
                 onPress={() => setShowMoreMenu(!showMoreMenu)}
-                className="text-gray-600 hover:text-gray-800"
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 aria-label={t`More options`}
                 aria-expanded={showMoreMenu}
               >
@@ -491,7 +491,7 @@ function NoteCardComponent({
 
         {/* Reply Composer */}
         {showReplyComposer && currentUser && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <NoteComposer
               replyId={note.id}
               replyTo={`@${note.user.username}`}

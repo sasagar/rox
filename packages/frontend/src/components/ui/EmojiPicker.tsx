@@ -287,29 +287,29 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
           variant="ghost"
           size="sm"
           isDisabled={isDisabled}
-          className="p-2 rounded-md hover:bg-gray-100"
+          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
           aria-label="Add emoji"
         >
-          <Smile className="w-5 h-5 text-gray-600" />
+          <Smile className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </Button>
       )}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-        <Modal className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[600px] flex flex-col">
+        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[600px] flex flex-col">
           <Dialog className="flex flex-col h-full outline-none">
             {({ close }) => (
               <>
                 {/* Header */}
-                <div className="p-4 border-b border-gray-200">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       <Trans>Emoji Picker</Trans>
                     </h2>
                     <button
                       onClick={close}
-                      className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+                      className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       aria-label="Close"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     </button>
                   </div>
 
@@ -320,19 +320,19 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={t`Search emoji...`}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                   />
                 </div>
 
                 {/* Category tabs */}
                 {!searchQuery && (
-                  <div className="flex gap-1 px-4 py-2 border-b border-gray-200 overflow-x-auto">
+                  <div className="flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                     {/* Custom emojis tab (if available) */}
                     {customEmojis.length > 0 && (
                       <button
                         onClick={() => setSelectedCategory('custom')}
                         className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === 'custom' ? 'bg-primary-100' : 'hover:bg-gray-100'
+                          selectedCategory === 'custom' ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                         title="Custom Emojis"
                         aria-label="Custom Emojis"
@@ -344,7 +344,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                       <button
                         onClick={() => setSelectedCategory('recent')}
                         className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === 'recent' ? 'bg-primary-100' : 'hover:bg-gray-100'
+                          selectedCategory === 'recent' ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                         title={EMOJI_CATEGORIES.recent.name}
                         aria-label={EMOJI_CATEGORIES.recent.name}
@@ -359,7 +359,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           key={category}
                           onClick={() => setSelectedCategory(category)}
                           className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                            selectedCategory === category ? 'bg-primary-100' : 'hover:bg-gray-100'
+                            selectedCategory === category ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title={EMOJI_CATEGORIES[category].name}
                           aria-label={EMOJI_CATEGORIES[category].name}
@@ -375,13 +375,13 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   {/* Custom emojis when searching or custom category selected */}
                   {filteredCustomEmojis.length > 0 && (
                     <>
-                      {searchQuery && <h3 className="text-sm font-medium text-gray-500 mb-2"><Trans>Custom Emojis</Trans></h3>}
+                      {searchQuery && <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"><Trans>Custom Emojis</Trans></h3>}
                       <div className="grid grid-cols-8 gap-2 mb-4">
                         {filteredCustomEmojis.map((emoji) => (
                           <button
                             key={emoji.id}
                             onClick={() => handleCustomEmojiClick(emoji)}
-                            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             title={`:${emoji.name}:`}
                             aria-label={`Select :${emoji.name}:`}
                           >
@@ -401,14 +401,14 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   {filteredEmojis.length > 0 && (
                     <>
                       {searchQuery && filteredCustomEmojis.length > 0 && (
-                        <h3 className="text-sm font-medium text-gray-500 mb-2"><Trans>Standard Emojis</Trans></h3>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"><Trans>Standard Emojis</Trans></h3>
                       )}
                       <div className="grid grid-cols-8 gap-2">
                         {filteredEmojis.map((emoji, index) => (
                           <button
                             key={`${emoji}-${index}`}
                             onClick={() => handleEmojiClick(emoji)}
-                            className="text-2xl p-2 rounded-md hover:bg-gray-100 transition-colors"
+                            className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             title={emoji}
                             aria-label={`Select ${emoji}`}
                           >
@@ -421,7 +421,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
                   {/* Empty state */}
                   {filteredEmojis.length === 0 && filteredCustomEmojis.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                    <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                       <Smile className="w-12 h-12 mb-2" />
                       <p className="text-sm">
                         <Trans>No emojis found</Trans>

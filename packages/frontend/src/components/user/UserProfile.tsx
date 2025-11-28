@@ -283,7 +283,7 @@ export function UserProfile({ username }: UserProfileProps) {
       {/* Profile Container with ID for CSS scoping */}
       <div id={profileContainerId} className="user-profile-container">
       {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
         {/* Banner */}
         {user.bannerUrl && (
           <div className="h-48 bg-linear-to-r from-primary-500 to-primary-600">
@@ -299,12 +299,12 @@ export function UserProfile({ username }: UserProfileProps) {
           <div className="flex items-start gap-4">
             {/* Avatar */}
             <div className="-mt-16">
-              <div className="w-24 h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden">
+              <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                 {user.avatarUrl && (
                   <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
                 )}
                 {!user.avatarUrl && (
-                  <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-500">
+                  <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-500 dark:text-gray-400">
                     {user.username[0]?.toUpperCase()}
                   </div>
                 )}
@@ -346,7 +346,7 @@ export function UserProfile({ username }: UserProfileProps) {
                     variant="ghost"
                     onPress={() => setShowReportDialog(true)}
                     aria-label="Report user"
-                    className="text-gray-500 hover:text-red-500"
+                    className="text-gray-500 dark:text-gray-400 hover:text-red-500"
                   >
                     <Flag className="w-5 h-5" />
                   </Button>
@@ -358,7 +358,7 @@ export function UserProfile({ username }: UserProfileProps) {
           {/* User Info */}
           <div className="mt-4">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {user.displayName ? (
                   <MfmRenderer text={user.displayName} plain />
                 ) : (
@@ -366,12 +366,12 @@ export function UserProfile({ username }: UserProfileProps) {
                 )}
               </h1>
               {user.isBot && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded">
+                <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
                   <Trans>Bot</Trans>
                 </span>
               )}
             </div>
-            <p className="text-gray-600">@{user.username}</p>
+            <p className="text-gray-600 dark:text-gray-400">@{user.username}</p>
             {/* Public Role Badges */}
             {publicRoles.length > 0 && (
               <div className="mt-2">
@@ -382,7 +382,7 @@ export function UserProfile({ username }: UserProfileProps) {
 
           {/* Bio */}
           {user.bio && (
-            <div className="mt-4 text-gray-700 whitespace-pre-wrap profile-bio">
+            <div className="mt-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap profile-bio">
               <MfmRenderer text={user.bio} />
             </div>
           )}
@@ -390,20 +390,20 @@ export function UserProfile({ username }: UserProfileProps) {
           {/* Stats */}
           <div className="mt-4 flex items-center gap-6 text-sm">
             <div>
-              <span className="font-bold text-gray-900">{user.notesCount ?? 0}</span>{' '}
-              <span className="text-gray-600">
+              <span className="font-bold text-gray-900 dark:text-gray-100">{user.notesCount ?? 0}</span>{' '}
+              <span className="text-gray-600 dark:text-gray-400">
                 <Trans>Posts</Trans>
               </span>
             </div>
             <div>
-              <span className="font-bold text-gray-900">{user.followersCount ?? 0}</span>{' '}
-              <span className="text-gray-600">
+              <span className="font-bold text-gray-900 dark:text-gray-100">{user.followersCount ?? 0}</span>{' '}
+              <span className="text-gray-600 dark:text-gray-400">
                 <Trans>Followers</Trans>
               </span>
             </div>
             <div>
-              <span className="font-bold text-gray-900">{user.followingCount ?? 0}</span>{' '}
-              <span className="text-gray-600">
+              <span className="font-bold text-gray-900 dark:text-gray-100">{user.followingCount ?? 0}</span>{' '}
+              <span className="text-gray-600 dark:text-gray-400">
                 <Trans>Following</Trans>
               </span>
             </div>
@@ -413,7 +413,7 @@ export function UserProfile({ username }: UserProfileProps) {
 
       {/* User's Notes */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
           <Trans>Posts</Trans>
         </h2>
 
@@ -426,12 +426,12 @@ export function UserProfile({ username }: UserProfileProps) {
 
         {/* Empty state */}
         {!notesLoading && notes.length === 0 && (
-          <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
+          <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center">
             <div className="text-4xl mb-4">📭</div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
               <Trans>No posts yet</Trans>
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               {isOwnProfile ? (
                 <Trans>You haven't posted anything yet</Trans>
               ) : (
@@ -461,7 +461,7 @@ export function UserProfile({ username }: UserProfileProps) {
 
         {/* End of posts */}
         {!notesLoading && !hasMore && notes.length > 0 && (
-          <div className="py-4 text-center text-gray-500 text-sm">
+          <div className="py-4 text-center text-gray-500 dark:text-gray-400 text-sm">
             <Trans>You've reached the end</Trans>
           </div>
         )}

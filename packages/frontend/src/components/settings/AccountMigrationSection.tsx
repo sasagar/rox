@@ -209,20 +209,20 @@ export function AccountMigrationSection() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-yellow-800">
+                <p className="font-medium text-yellow-800 dark:text-yellow-200">
                   <Trans>Account has been migrated</Trans>
                 </p>
-                <p className="text-sm text-yellow-700 mt-1">
+                <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                   <Trans>This account was migrated to:</Trans>
                 </p>
-                <code className="block mt-2 text-sm bg-yellow-100 px-2 py-1 rounded">
+                <code className="block mt-2 text-sm bg-yellow-100 dark:bg-yellow-800/50 px-2 py-1 rounded">
                   {status.movedTo}
                 </code>
-                <p className="text-xs text-yellow-600 mt-2">
+                <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
                   <Trans>Migrated on: {formatDate(status.movedAt)}</Trans>
                 </p>
               </div>
@@ -247,10 +247,10 @@ export function AccountMigrationSection() {
       <CardContent className="p-6 pt-0 space-y-6">
         {/* Account Aliases Section */}
         <div>
-          <h3 className="text-sm font-medium text-gray-900 mb-2">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             <Trans>Account Aliases</Trans>
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             <Trans>
               Add aliases to link this account with your accounts on other servers. This allows
               followers from those accounts to find you here.
@@ -276,9 +276,9 @@ export function AccountMigrationSection() {
               {status.aliases.map((alias) => (
                 <div
                   key={alias}
-                  className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white"
+                  className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
                 >
-                  <code className="text-sm text-gray-900 truncate">{alias}</code>
+                  <code className="text-sm text-gray-900 dark:text-gray-100 truncate">{alias}</code>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -292,18 +292,18 @@ export function AccountMigrationSection() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-4 text-sm">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-4 text-sm">
               <Trans>No aliases configured</Trans>
             </p>
           )}
         </div>
 
         {/* Migration Section */}
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-2">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             <Trans>Move to a Different Account</Trans>
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             <Trans>
               Migrate your account to a new server. Your followers will be automatically transferred
               to the new account. This action is irreversible.
@@ -312,8 +312,8 @@ export function AccountMigrationSection() {
 
           {/* Cooldown warning */}
           {!status?.canMigrate && status?.cooldownEndsAt && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-              <div className="flex items-center gap-2 text-yellow-800 text-sm">
+            <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-4">
+              <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200 text-sm">
                 <AlertTriangle className="w-4 h-4" />
                 <Trans>Migration cooldown active until {formatDate(status.cooldownEndsAt)}</Trans>
               </div>
@@ -323,7 +323,7 @@ export function AccountMigrationSection() {
           {/* Migration form */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 <Trans>Target Account URI</Trans>
               </label>
               <div className="flex gap-2">
@@ -403,7 +403,7 @@ export function AccountMigrationSection() {
               )}
             </Button>
 
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
               <Trans>
                 Before migrating, make sure to add this account as an alias on your target account.
               </Trans>

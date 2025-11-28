@@ -182,7 +182,7 @@ export function InvitationCodeSection() {
       </CardHeader>
       <CardContent className="p-6 pt-0">
         {/* Limit info */}
-        <div className="mb-4 text-sm text-gray-600">
+        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
           {permissions.inviteLimit === -1 ? (
             <Trans>You can create unlimited invitation codes</Trans>
           ) : (
@@ -211,7 +211,7 @@ export function InvitationCodeSection() {
 
         {/* Code list */}
         {codes.length === 0 ? (
-          <p className="text-center text-gray-500 py-4">
+          <p className="text-center text-gray-500 dark:text-gray-400 py-4">
             <Trans>No invitation codes yet</Trans>
           </p>
         ) : (
@@ -226,32 +226,32 @@ export function InvitationCodeSection() {
                   key={code.id}
                   className={`flex items-center justify-between p-3 rounded-lg border ${
                     available
-                      ? 'border-gray-200 bg-white'
-                      : 'border-gray-200 bg-gray-50 opacity-60'
+                      ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+                      : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60'
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <code className="text-sm font-mono font-bold text-gray-900">
+                      <code className="text-sm font-mono font-bold text-gray-900 dark:text-gray-100">
                         {code.code}
                       </code>
                       {expired && (
-                        <span className="px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded">
+                        <span className="px-2 py-0.5 text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
                           <Trans>Expired</Trans>
                         </span>
                       )}
                       {used && !expired && (
-                        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded">
+                        <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
                           <Trans>Used</Trans>
                         </span>
                       )}
                       {available && (
-                        <span className="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded">
+                        <span className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">
                           <Trans>Available</Trans>
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <Trans>Uses: {code.useCount}/{code.maxUses}</Trans>
                       {code.expiresAt && (
                         <span className="ml-2">

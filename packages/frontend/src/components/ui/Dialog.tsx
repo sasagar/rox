@@ -58,17 +58,17 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
     <DialogTrigger>
       {trigger}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <Modal className="w-full max-w-md rounded-lg bg-white shadow-xl">
+        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>
                 {/* Header */}
                 <div className="mb-4 flex items-start justify-between">
-                  <Heading className="text-xl font-bold text-gray-900">
+                  <Heading className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     {title}
                   </Heading>
                   <button
-                    className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                    className="rounded-md p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300"
                     onClick={() => {
                       close();
                       onClose?.();
@@ -80,7 +80,7 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
                 </div>
 
                 {/* Content */}
-                <div className="mb-6 text-gray-700">
+                <div className="mb-6 text-gray-700 dark:text-gray-300">
                   {children}
                 </div>
 
@@ -148,14 +148,14 @@ export function ConfirmDialog({
     <DialogTrigger>
       {trigger}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <Modal className="w-full max-w-md rounded-lg bg-white shadow-xl">
+        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>
-                <Heading className="mb-4 text-xl font-bold text-gray-900">
+                <Heading className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
                   {title}
                 </Heading>
-                <p className="mb-6 text-gray-700">{message}</p>
+                <p className="mb-6 text-gray-700 dark:text-gray-300">{message}</p>
                 <div className="flex justify-end gap-2">
                   <Button variant="secondary" onPress={close}>
                     {cancelText}

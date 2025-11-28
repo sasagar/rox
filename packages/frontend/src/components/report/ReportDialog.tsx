@@ -161,7 +161,7 @@ export function ReportDialog({
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={t`Provide more context about your report...`}
-              className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+              className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
               rows={3}
               maxLength={1000}
             />
