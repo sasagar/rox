@@ -10,6 +10,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { MigrationService } from '../services/MigrationService.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const app = new Hono();
 
@@ -23,12 +24,8 @@ const app = new Hono();
  *
  * Requires authentication.
  */
-app.get('/', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.get('/', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -49,12 +46,8 @@ app.get('/', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.get('/aliases', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.get('/aliases', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -77,12 +70,8 @@ app.get('/aliases', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/aliases', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.post('/aliases', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -114,12 +103,8 @@ app.post('/aliases', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.delete('/aliases', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.delete('/aliases', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -152,12 +137,8 @@ app.delete('/aliases', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/validate', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.post('/validate', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -189,12 +170,8 @@ app.post('/validate', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/initiate', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.post('/initiate', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
@@ -227,12 +204,8 @@ app.post('/initiate', async (c: Context) => {
  *
  * Requires authentication.
  */
-app.get('/can-migrate', async (c: Context) => {
-  const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
-
+app.get('/can-migrate', requireAuth(), async (c: Context) => {
+  const user = c.get('user')!;
   const migrationService = c.get('migrationService') as MigrationService;
 
   try {
