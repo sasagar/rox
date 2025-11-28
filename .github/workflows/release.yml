@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  # 1. 既存のCIワークフローを再利用して実行
+  call-ci:
+    uses: ./.github/workflows/ci.yml
+    # もしCIでsecretsを使っている場合は以下を追加
+    # secrets: inherit
+
+  # 2. テストが成功したらリリースを実行
+  create-release:
+    needs: call-ci # ★ここが重要：CIが終わるのを待つ
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Release Type
+        id: check
+        run: |
+          git fetch origin main dev
+          # mainブランチに含まれるコミットなら正式版
+          if git merge-base --is-ancestor HEAD origin/main; then
+            echo "Main branch detected. Official Release."
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          else
+            echo "Not on main branch. Pre-release."
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ steps.check.outputs.is_prerelease }}
+          draft: false

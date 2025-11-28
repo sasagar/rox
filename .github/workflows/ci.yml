@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # branches: [main]
   pull_request:
-    branches: [main]
+    # branches: [main]
+  workflow_call:
 
 env:
   # Default environment for tests (no real DB needed for unit tests)
@@ -96,7 +97,6 @@ jobs:
         run: bun run build
         working-directory: packages/frontend
         continue-on-error: true
-
 # NOTE: Integration and E2E tests require a running server.
 # These tests should be run manually or in a dedicated staging environment.
 # To run locally:
