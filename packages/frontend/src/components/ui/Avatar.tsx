@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 /**
@@ -57,13 +60,45 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
  * <Avatar src="/avatar.jpg" alt="Jane" size="sm" />
  * ```
  */
+/**
+ * Check if URL is external (not on the same origin)
+ */
+function isExternalUrl(url: string): boolean {
+  if (!url) return false;
+  // Relative URLs are not external
+  if (url.startsWith('/') && !url.startsWith('//')) return false;
+  // Data URLs are not external
+  if (url.startsWith('data:')) return false;
+
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get proxied URL for external images
+ */
+function getProxiedUrl(url: string): string {
+  if (!url || !isExternalUrl(url)) return url;
+  return `/proxy/avatar?url=${encodeURIComponent(url)}`;
+}
+
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
-  if (src) {
+  const [hasError, setHasError] = useState(false);
+
+  // Get the image URL (proxied if external)
+  const imageUrl = src ? getProxiedUrl(src) : null;
+
+  if (imageUrl && !hasError) {
     return (
       <img
-        src={src}
+        src={imageUrl}
         alt={alt}
         className={'inline-block ' + avatarVariants({ size, className })}
+        onError={() => setHasError(true)}
       />
     );
   }

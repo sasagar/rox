@@ -14,6 +14,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { Search, Users, Globe, Home, Loader2, AlertCircle, UserPlus } from 'lucide-react';
 import { Layout } from '../components/layout/Layout';
 import { Avatar } from '../components/ui/Avatar';
+import { MfmRenderer } from '../components/mfm/MfmRenderer';
 import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
 import { apiClient } from '../lib/api/client';
 
@@ -361,9 +362,9 @@ export default function SearchPage() {
                         {formatHandle(resolvedRemoteUser)}
                       </p>
                       {resolvedRemoteUser.bio && (
-                        <p className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
-                          {resolvedRemoteUser.bio}
-                        </p>
+                        <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
+                          <MfmRenderer text={resolvedRemoteUser.bio} />
+                        </div>
                       )}
                     </div>
                     <Globe className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
@@ -403,9 +404,9 @@ export default function SearchPage() {
                       {formatHandle(user)}
                     </p>
                     {user.bio && (
-                      <p className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
-                        {user.bio}
-                      </p>
+                      <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
+                        <MfmRenderer text={user.bio} />
+                      </div>
                     )}
                   </div>
                   {user.host ? (
