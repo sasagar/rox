@@ -16,6 +16,20 @@ export interface ListUsersOptions {
   isSuspended?: boolean;
 }
 
+/**
+ * Options for searching users
+ */
+export interface SearchUsersOptions {
+  /** Search query (matches username or displayName) */
+  query: string;
+  /** Maximum number of users to return */
+  limit?: number;
+  /** Number of users to skip */
+  offset?: number;
+  /** Filter by local users only (host is null) */
+  localOnly?: boolean;
+}
+
 export interface IUserRepository {
   /**
    * ユーザーを作成
@@ -73,4 +87,15 @@ export interface IUserRepository {
    * @param localOnly ローカルユーザーのみをカウントする場合はtrue
    */
   count(localOnly?: boolean): Promise<number>;
+
+  /**
+   * Search users by username or displayName
+   *
+   * Performs a case-insensitive partial match on username and displayName.
+   * For remote users, displayName may not be searchable depending on the server.
+   *
+   * @param options - Search options including query, limit, offset, and localOnly filter
+   * @returns Array of matching users
+   */
+  search(options: SearchUsersOptions): Promise<User[]>;
 }

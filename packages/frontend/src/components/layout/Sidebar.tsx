@@ -2,7 +2,7 @@
 
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
-import { Home, User, Settings, Shield, Bell } from 'lucide-react';
+import { Home, User, Settings, Shield, Bell, Search } from 'lucide-react';
 import { currentUserAtom } from '../../lib/atoms/auth';
 import { Avatar } from '../ui/Avatar';
 import { LanguageSwitcher } from '../LanguageSwitcher';
@@ -35,6 +35,12 @@ export function Sidebar() {
       label: <Trans>Home</Trans>,
       href: '/timeline',
       key: 'home',
+    },
+    {
+      icon: <Search className="w-6 h-6" />,
+      label: <Trans>Search</Trans>,
+      href: '/search',
+      key: 'search',
     },
     {
       icon: <Bell className="w-6 h-6" />,
