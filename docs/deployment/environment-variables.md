@@ -31,7 +31,8 @@ Complete reference for all environment variables used by Rox.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PORT` | HTTP server port | `3000` |
+| `PORT` | Backend HTTP server port | `3000` |
+| `FRONTEND_PORT` | Frontend (Waku) server port | `3001` |
 | `NODE_ENV` | Environment mode | `development` |
 | `URL` | Public URL (alias for ROX_URL) | Required |
 
