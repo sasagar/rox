@@ -218,10 +218,12 @@ DB_TYPE=postgres DATABASE_URL="postgresql://rox:${ROX_DB_PASSWORD}@localhost:543
 
 ### 8. Create Systemd Service
 
+This creates a single service that manages both backend and frontend:
+
 ```bash
 sudo tee /etc/systemd/system/rox.service > /dev/null <<EOF
 [Unit]
-Description=Rox ActivityPub Server
+Description=Rox ActivityPub Server (Backend + Frontend)
 After=network.target postgresql.service dragonfly.service
 
 [Service]
@@ -230,9 +232,13 @@ User=$USER
 WorkingDirectory=/opt/rox
 Environment=NODE_ENV=production
 EnvironmentFile=/opt/rox/.env
-ExecStart=/home/$USER/.bun/bin/bun run --cwd packages/backend src/index.ts
+ExecStart=/home/$USER/.bun/bin/bun run start
 Restart=always
 RestartSec=5
+
+# Resource limits
+MemoryMax=1.5G
+CPUQuota=300%
 
 # Security hardening
 NoNewPrivileges=true
@@ -252,6 +258,10 @@ sudo systemctl start rox
 # Check status
 sudo systemctl status rox
 ```
+
+The `bun run start` command runs the unified startup script that manages both:
+- **Backend (API)**: `http://localhost:3000`
+- **Frontend (Waku)**: `http://localhost:3001`
 
 ### 9. Configure Reverse Proxy
 

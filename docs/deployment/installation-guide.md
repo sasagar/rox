@@ -672,12 +672,14 @@ sudo certbot renew --dry-run
 
 ## Service Management
 
-### 1. Create Backend Service
+### 1. Create Systemd Service
+
+This creates a single service that manages both backend and frontend:
 
 ```bash
-sudo tee /etc/systemd/system/rox-backend.service << 'EOF'
+sudo tee /etc/systemd/system/rox.service << 'EOF'
 [Unit]
-Description=Rox Backend API Server
+Description=Rox ActivityPub Server (Backend + Frontend)
 After=network.target postgresql.service dragonfly.service
 Wants=dragonfly.service
 
@@ -685,15 +687,16 @@ Wants=dragonfly.service
 Type=simple
 User=rox
 Group=rox
-WorkingDirectory=/opt/rox/app/packages/backend
-ExecStart=/opt/rox/.bun/bin/bun run src/index.ts
+WorkingDirectory=/opt/rox/app
+ExecStart=/opt/rox/.bun/bin/bun run start
 Restart=always
 RestartSec=5
 EnvironmentFile=/opt/rox/app/.env
+EnvironmentFile=/opt/rox/app/.env
 
 # Resource limits
-MemoryMax=1G
-CPUQuota=200%
+MemoryMax=1.5G
+CPUQuota=300%
 
 # Security
 NoNewPrivileges=true
@@ -708,53 +711,22 @@ EOF
 
 > **Note**: If Dragonfly is not installed, remove `dragonfly.service` from `After=` and `Wants=`.
 
-### 2. Create Frontend Service
-
-```bash
-sudo tee /etc/systemd/system/rox-frontend.service << 'EOF'
-[Unit]
-Description=Rox Frontend (Waku)
-After=network.target
-
-[Service]
-Type=simple
-User=rox
-Group=rox
-WorkingDirectory=/opt/rox/app/packages/frontend
-ExecStart=/opt/rox/.bun/bin/bun run start
-Restart=always
-RestartSec=5
-Environment=NODE_ENV=production
-Environment=PORT=3001
-
-# Resource limits
-MemoryMax=512M
-CPUQuota=100%
-
-# Security
-NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
-
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-
-### 3. Enable and Start Services
+### 2. Enable and Start Service
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable rox-backend rox-frontend
-sudo systemctl start rox-backend rox-frontend
+sudo systemctl enable rox
+sudo systemctl start rox
 sudo systemctl reload nginx
 ```
 
-### 4. Check Status
+### 3. Check Status
 
 ```bash
-sudo systemctl status rox-backend
-sudo systemctl status rox-frontend
+sudo systemctl status rox
+
+# View logs
+sudo journalctl -u rox -f
 ```
 
 ---
