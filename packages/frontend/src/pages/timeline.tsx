@@ -2,7 +2,7 @@
 
 import { Trans } from "@lingui/react/macro";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Timeline } from "../components/timeline/Timeline";
 import { NoteComposer } from "../components/note/NoteComposer";
 import { Layout } from "../components/layout/Layout";
@@ -16,12 +16,32 @@ import { apiClient } from "../lib/api/client";
  */
 type TimelineType = "local" | "social" | "home";
 
+const TIMELINE_TYPE_STORAGE_KEY = "rox:timelineType";
+
+/**
+ * Get saved timeline type from localStorage
+ */
+function getSavedTimelineType(): TimelineType {
+  if (typeof window === "undefined") return "local";
+  const saved = localStorage.getItem(TIMELINE_TYPE_STORAGE_KEY);
+  if (saved === "local" || saved === "social" || saved === "home") {
+    return saved;
+  }
+  return "local";
+}
+
 export default function TimelinePage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, setTimelineNotes] = useAtom(timelineNotesAtom);
-  const [timelineType, setTimelineType] = useState<TimelineType>("local");
+  const [timelineType, setTimelineType] = useState<TimelineType>(getSavedTimelineType);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Save timeline type to localStorage when it changes
+  const handleTimelineTypeChange = useCallback((type: TimelineType) => {
+    setTimelineType(type);
+    localStorage.setItem(TIMELINE_TYPE_STORAGE_KEY, type);
+  }, []);
 
   // Restore user session on mount
   useEffect(() => {
@@ -93,7 +113,7 @@ export default function TimelinePage() {
       >
         <div className="flex gap-3 sm:gap-6">
           <button
-            onClick={() => setTimelineType("local")}
+            onClick={() => handleTimelineTypeChange("local")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === "local"
                 ? "border-primary-500 text-primary-600 dark:text-primary-400"
@@ -107,7 +127,7 @@ export default function TimelinePage() {
             <Trans>Local</Trans>
           </button>
           <button
-            onClick={() => setTimelineType("social")}
+            onClick={() => handleTimelineTypeChange("social")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === "social"
                 ? "border-primary-500 text-primary-600 dark:text-primary-400"
@@ -121,7 +141,7 @@ export default function TimelinePage() {
             <Trans>Social</Trans>
           </button>
           <button
-            onClick={() => setTimelineType("home")}
+            onClick={() => handleTimelineTypeChange("home")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === "home"
                 ? "border-primary-500 text-primary-600 dark:text-primary-400"
