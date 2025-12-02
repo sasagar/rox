@@ -1,6 +1,6 @@
 import { eq, and, or, sql } from "drizzle-orm";
 import type { Database } from "../../db/index.js";
-import { follows } from "../../db/schema/pg.js";
+import { follows, users } from "../../db/schema/pg.js";
 import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
 import type { Follow } from "shared";
 
@@ -53,12 +53,19 @@ export class PostgresFollowRepository implements IFollowRepository {
 
   async findByFollowerId(followerId: string, limit = 100): Promise<Follow[]> {
     const results = await this.db
-      .select()
+      .select({
+        follow: follows,
+        followee: users,
+      })
       .from(follows)
+      .leftJoin(users, eq(follows.followeeId, users.id))
       .where(eq(follows.followerId, followerId))
       .limit(limit);
 
-    return results as Follow[];
+    return results.map((r) => ({
+      ...r.follow,
+      followee: r.followee,
+    })) as Follow[];
   }
 
   async countFollowers(userId: string): Promise<number> {
