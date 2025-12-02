@@ -21,7 +21,6 @@ import {
   getMyReactions,
   getReactionCountsWithEmojis,
 } from "../../lib/api/reactions";
-import { followUser, unfollowUser } from "../../lib/api/following";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
 import { MfmRenderer } from "../mfm/MfmRenderer";
 import { addToastAtom } from "../../lib/atoms/toast";
@@ -58,7 +57,6 @@ function NoteCardComponent({
 }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [showReplyComposer, setShowReplyComposer] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -180,34 +178,6 @@ function NoteCardComponent({
     }
   };
 
-  const handleFollow = async () => {
-    if (!token || !currentUser) return;
-
-    try {
-      if (isFollowing) {
-        await unfollowUser(note.user.id, token);
-        setIsFollowing(false);
-        addToast({
-          type: "success",
-          message: t`Unfollowed successfully`,
-        });
-      } else {
-        await followUser(note.user.id, token);
-        setIsFollowing(true);
-        addToast({
-          type: "success",
-          message: t`Following successfully`,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to update follow status:", error);
-      addToast({
-        type: "error",
-        message: t`Failed to update follow status`,
-      });
-    }
-  };
-
   // Get user initials for avatar fallback
   const userInitials = note.user.name
     ? note.user.name
@@ -310,21 +280,6 @@ function NoteCardComponent({
               {new Date(note.createdAt).toLocaleString()}
             </a>
           </div>
-          {/* Follow button (only show if not own post and logged in) */}
-          {currentUser && currentUser.id !== note.user.id && (
-            <Button
-              variant={isFollowing ? "secondary" : "primary"}
-              size="sm"
-              onPress={handleFollow}
-              className={`${
-                isFollowing
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                  : "bg-primary-500 text-white hover:bg-primary-600"
-              }`}
-            >
-              {isFollowing ? <Trans>Following</Trans> : <Trans>Follow</Trans>}
-            </Button>
-          )}
         </div>
 
         {/* Renote Indicator */}
