@@ -27,9 +27,9 @@
     "typecheck": "bun run --cwd packages/backend typecheck && bun run --cwd packages/frontend typecheck",
     "typecheck:backend": "bun run --cwd packages/backend typecheck",
     "typecheck:frontend": "bun run --cwd packages/frontend typecheck",
-    "db:generate": "bun run --cwd packages/backend db:generate",
-    "db:migrate": "bun run --cwd packages/backend db:migrate",
-    "db:studio": "bun run --cwd packages/backend db:studio",
+    "db:generate": "bun run --env-file .env --cwd packages/backend db:generate",
+    "db:migrate": "bun run --env-file .env --cwd packages/backend db:migrate",
+    "db:studio": "bun run --env-file .env --cwd packages/backend db:studio",
     "lingui:extract": "bun run --cwd packages/frontend lingui:extract",
     "lingui:compile": "bun run --cwd packages/frontend lingui:compile",
     "typedoc": "typedoc"
