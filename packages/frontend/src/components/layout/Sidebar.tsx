@@ -8,6 +8,7 @@ import { Avatar } from "../ui/Avatar";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { DarkModeToggle } from "../ui/DarkModeToggle";
 import { NotificationBell } from "../notification/NotificationBell";
+import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 
 /**
  * Sidebar navigation component
@@ -15,6 +16,7 @@ import { NotificationBell } from "../notification/NotificationBell";
  */
 export function Sidebar() {
   const [currentUser] = useAtom(currentUserAtom);
+  const { instanceInfo } = useInstanceInfo();
 
   if (!currentUser) {
     return null;
@@ -76,8 +78,17 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-(--card-bg) border-r border-(--border-color) flex flex-col">
       {/* Logo / Brand */}
       <div className="p-6 border-b border-(--border-color)">
-        <a href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary-600">Rox</span>
+        <a href="/" className="flex items-center gap-3">
+          {instanceInfo?.iconUrl ? (
+            <img
+              src={instanceInfo.iconUrl}
+              alt={instanceInfo.name || "Logo"}
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+          ) : null}
+          <span className="text-2xl font-bold text-primary-600">
+            {instanceInfo?.name || "Rox"}
+          </span>
         </a>
       </div>
 

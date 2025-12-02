@@ -75,7 +75,7 @@ export function NotificationBell() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute left-full top-0 ml-2 w-96 max-h-[80vh] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden z-50"
+          className="absolute left-full bottom-0 ml-2 w-96 max-h-[80vh] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden z-50"
           role="dialog"
           aria-label="Notifications"
         >
