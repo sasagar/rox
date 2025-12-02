@@ -165,7 +165,19 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => r.notes as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
   async findByUserId(userId: string, options: TimelineOptions): Promise<Note[]> {
