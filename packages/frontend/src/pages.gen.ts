@@ -17,6 +17,7 @@ type Page =
 | { path: '/admin/reports'; render: 'dynamic' }
 | { path: '/admin/roles'; render: 'dynamic' }
 | { path: '/admin/settings'; render: 'dynamic' }
+| { path: '/admin/storage'; render: 'dynamic' }
 | { path: '/'; render: 'dynamic' }
 | { path: '/login'; render: 'dynamic' }
 | { path: '/mod/audit-logs'; render: 'dynamic' }

@@ -31,6 +31,19 @@ export class PostgresDriveFileRepository implements IDriveFileRepository {
     return (result as DriveFile) ?? null;
   }
 
+  async findAll(options?: { limit?: number; offset?: number }): Promise<DriveFile[]> {
+    const { limit = 1000, offset = 0 } = options ?? {};
+
+    const results = await this.db
+      .select()
+      .from(driveFiles)
+      .orderBy(desc(driveFiles.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return results as DriveFile[];
+  }
+
   async findByMd5(md5: string, userId: string): Promise<DriveFile | null> {
     const [result] = await this.db
       .select()

@@ -12,6 +12,11 @@ export interface IDriveFileRepository {
   findById(id: string): Promise<DriveFile | null>;
 
   /**
+   * 全ファイルを取得（管理者用）
+   */
+  findAll(options?: { limit?: number; offset?: number }): Promise<DriveFile[]>;
+
+  /**
    * MD5ハッシュでファイルを取得（重複チェック用）
    */
   findByMd5(md5: string, userId: string): Promise<DriveFile | null>;

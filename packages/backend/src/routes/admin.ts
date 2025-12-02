@@ -995,4 +995,258 @@ app.get("/stats", async (c) => {
   });
 });
 
+// ============================================================================
+// Storage Management Endpoints
+// ============================================================================
+
+/**
+ * Get Instance-wide Storage Statistics
+ *
+ * GET /api/admin/storage/stats
+ *
+ * Returns total storage usage across all users and system files.
+ */
+app.get("/storage/stats", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+
+  // Get all files (this might need pagination for very large instances)
+  const allFiles = await driveFileRepository.findAll({ limit: 100000 });
+
+  // Calculate totals
+  let totalSize = 0;
+  let userFilesSize = 0;
+  let systemFilesSize = 0;
+  let userFilesCount = 0;
+  let systemFilesCount = 0;
+
+  const byType: Record<string, { count: number; size: number }> = {};
+  const byUser: Record<string, { count: number; size: number; username?: string }> = {};
+
+  for (const file of allFiles) {
+    totalSize += file.size;
+    const source = (file as any).source || "user";
+
+    if (source === "system") {
+      systemFilesSize += file.size;
+      systemFilesCount++;
+    } else {
+      userFilesSize += file.size;
+      userFilesCount++;
+    }
+
+    // By type
+    const category = getFileCategoryAdmin(file.type);
+    if (!byType[category]) {
+      byType[category] = { count: 0, size: 0 };
+    }
+    byType[category].count++;
+    byType[category].size += file.size;
+
+    // By user
+    if (!byUser[file.userId]) {
+      byUser[file.userId] = { count: 0, size: 0 };
+    }
+    const userData = byUser[file.userId];
+    if (userData) {
+      userData.count++;
+      userData.size += file.size;
+    }
+  }
+
+  // Get top users by storage
+  const topUsers = Object.entries(byUser)
+    .sort((a, b) => b[1].size - a[1].size)
+    .slice(0, 10);
+
+  // Fetch usernames for top users
+  for (const [userId, data] of topUsers) {
+    const user = await userRepository.findById(userId);
+    if (user) {
+      data.username = user.username;
+    }
+  }
+
+  return c.json({
+    totalFiles: allFiles.length,
+    totalSize,
+    totalSizeMB: Math.round((totalSize / (1024 * 1024)) * 100) / 100,
+    userFiles: {
+      count: userFilesCount,
+      size: userFilesSize,
+      sizeMB: Math.round((userFilesSize / (1024 * 1024)) * 100) / 100,
+    },
+    systemFiles: {
+      count: systemFilesCount,
+      size: systemFilesSize,
+      sizeMB: Math.round((systemFilesSize / (1024 * 1024)) * 100) / 100,
+    },
+    byType,
+    topUsers: topUsers.map(([userId, data]) => ({
+      userId,
+      ...data,
+      sizeMB: Math.round((data.size / (1024 * 1024)) * 100) / 100,
+    })),
+  });
+});
+
+/**
+ * Get System Files
+ *
+ * GET /api/admin/storage/system-files
+ *
+ * Returns files marked as system files (emojis, instance assets, etc.)
+ */
+app.get("/storage/system-files", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const { limit, offset } = parsePagination(c);
+
+  const allFiles = await driveFileRepository.findAll({ limit: 10000 });
+  const systemFiles = allFiles.filter((f: any) => f.source === "system");
+
+  const paginatedFiles = systemFiles.slice(offset, offset + limit);
+
+  return c.json({
+    files: paginatedFiles,
+    total: systemFiles.length,
+  });
+});
+
+/**
+ * Get User's Storage Details (Admin)
+ *
+ * GET /api/admin/storage/users/:userId
+ *
+ * Returns detailed storage information for a specific user.
+ */
+app.get("/storage/users/:userId", async (c) => {
+  const userRepository = c.get("userRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const roleService = c.get("roleService");
+  const userId = c.req.param("userId");
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  const files = await driveFileRepository.findByUserId(userId);
+  const quotaMb = await roleService.getDriveCapacity(userId);
+
+  const totalSize = files.reduce((sum: number, f: any) => sum + f.size, 0);
+
+  // Group by source
+  const userFiles = files.filter((f: any) => f.source === "user" || !f.source);
+  const systemFiles = files.filter((f: any) => f.source === "system");
+
+  return c.json({
+    user: {
+      id: user.id,
+      username: user.username,
+      host: user.host,
+    },
+    storage: {
+      totalFiles: files.length,
+      totalSize,
+      totalSizeMB: Math.round((totalSize / (1024 * 1024)) * 100) / 100,
+      quotaMB: quotaMb,
+      isUnlimited: quotaMb === -1,
+      usagePercent: quotaMb === -1 ? 0 : Math.round((totalSize / (quotaMb * 1024 * 1024)) * 100),
+    },
+    fileCount: {
+      user: userFiles.length,
+      system: systemFiles.length,
+    },
+    files,
+  });
+});
+
+/**
+ * Delete File (Admin)
+ *
+ * DELETE /api/admin/storage/files/:fileId
+ *
+ * Deletes a file regardless of ownership.
+ */
+app.delete("/storage/files/:fileId", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const fileId = c.req.param("fileId");
+
+  const file = await driveFileRepository.findById(fileId);
+  if (!file) {
+    return errorResponse(c, "File not found", 404);
+  }
+
+  // Delete from storage
+  try {
+    await fileStorage.delete(file.storageKey);
+  } catch (error) {
+    console.error("Failed to delete file from storage:", error);
+    // Continue to delete database record even if storage deletion fails
+  }
+
+  // Delete from database
+  await driveFileRepository.delete(fileId);
+
+  return c.json({ success: true, message: "File deleted" });
+});
+
+/**
+ * Update User's Storage Quota
+ *
+ * PATCH /api/admin/storage/users/:userId/quota
+ *
+ * Updates a user's storage quota.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "quotaMB": 500  // -1 for unlimited
+ * }
+ * ```
+ */
+app.patch("/storage/users/:userId/quota", async (c) => {
+  const userRepository = c.get("userRepository");
+  const userId = c.req.param("userId");
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  // Cannot modify remote users
+  if (user.host !== null) {
+    return errorResponse(c, "Cannot modify remote user storage quota");
+  }
+
+  const body = await c.req.json();
+  if (typeof body.quotaMB !== "number") {
+    return errorResponse(c, "quotaMB must be a number");
+  }
+
+  // Update user's storageQuotaMb
+  const updatedUser = await userRepository.update(userId, {
+    storageQuotaMb: body.quotaMB === -1 ? null : body.quotaMB,
+  });
+
+  return c.json({
+    success: true,
+    user: sanitizeUser(updatedUser),
+    quotaMB: body.quotaMB,
+  });
+});
+
+/**
+ * Categorize file by MIME type (admin version)
+ */
+function getFileCategoryAdmin(mimeType: string): string {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType.startsWith("text/")) return "text";
+  if (mimeType.includes("pdf")) return "document";
+  return "other";
+}
+
 export default app;

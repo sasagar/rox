@@ -16,6 +16,7 @@ import { InvitationCodeSection } from "../components/settings/InvitationCodeSect
 import { UISettingsSection } from "../components/settings/UISettingsSection";
 import { AccountMigrationSection } from "../components/settings/AccountMigrationSection";
 import { PushNotificationSection } from "../components/settings/PushNotificationSection";
+import { StorageSection } from "../components/settings/StorageSection";
 
 /**
  * Settings page
@@ -281,6 +282,11 @@ export default function SettingsPage() {
       {/* UI Settings Section */}
       <div className="mt-6">
         <UISettingsSection />
+      </div>
+
+      {/* Storage Section */}
+      <div className="mt-6">
+        <StorageSection />
       </div>
 
       {/* Push Notifications Section */}

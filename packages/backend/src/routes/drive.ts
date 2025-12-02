@@ -223,25 +223,101 @@ drive.post(
 /**
  * GET /api/drive/usage
  *
- * Get user's total storage usage.
+ * Get user's storage usage with quota information.
  *
  * @remarks
  * - Requires authentication
- * - Returns total bytes used by the authenticated user
+ * - Returns total bytes used, quota, and file count
  */
 drive.get("/usage", requireAuth(), async (c: Context) => {
   const user = c.get("user")!;
   const driveFileRepository = c.get("driveFileRepository");
   const fileStorage = c.get("fileStorage");
+  const roleService = c.get("roleService");
 
-  const fileService = new FileService(driveFileRepository, fileStorage);
+  const fileService = new FileService(driveFileRepository, fileStorage, roleService);
 
   const usageBytes = await fileService.getStorageUsage(user.id);
+  const quotaMb = await roleService.getDriveCapacity(user.id);
+  const files = await driveFileRepository.findByUserId(user.id);
+
+  // Count files by source
+  const userFiles = files.filter((f: any) => f.source === "user" || !f.source);
+  const systemFiles = files.filter((f: any) => f.source === "system");
 
   return c.json({
     usage: usageBytes,
     usageMB: Math.round((usageBytes / (1024 * 1024)) * 100) / 100,
+    quotaMB: quotaMb,
+    quotaBytes: quotaMb === -1 ? -1 : quotaMb * 1024 * 1024,
+    isUnlimited: quotaMb === -1,
+    usagePercent: quotaMb === -1 ? 0 : Math.round((usageBytes / (quotaMb * 1024 * 1024)) * 100),
+    fileCount: {
+      total: files.length,
+      user: userFiles.length,
+      system: systemFiles.length,
+    },
   });
 });
+
+/**
+ * GET /api/drive/stats
+ *
+ * Get detailed storage statistics for the user.
+ *
+ * @remarks
+ * - Requires authentication
+ * - Returns file type breakdown and size distribution
+ */
+drive.get("/stats", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const driveFileRepository = c.get("driveFileRepository");
+
+  const files = await driveFileRepository.findByUserId(user.id);
+
+  // Group by type
+  const byType: Record<string, { count: number; size: number }> = {};
+  for (const file of files) {
+    const category = getFileCategory(file.type);
+    if (!byType[category]) {
+      byType[category] = { count: 0, size: 0 };
+    }
+    byType[category].count++;
+    byType[category].size += file.size;
+  }
+
+  // Group by source
+  const bySource: Record<string, { count: number; size: number }> = {
+    user: { count: 0, size: 0 },
+    system: { count: 0, size: 0 },
+  };
+  for (const file of files) {
+    const source = (file as any).source || "user";
+    if (!bySource[source]) {
+      bySource[source] = { count: 0, size: 0 };
+    }
+    bySource[source].count++;
+    bySource[source].size += file.size;
+  }
+
+  return c.json({
+    byType,
+    bySource,
+    totalFiles: files.length,
+    totalSize: files.reduce((sum, f) => sum + f.size, 0),
+  });
+});
+
+/**
+ * Categorize file by MIME type
+ */
+function getFileCategory(mimeType: string): string {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType.startsWith("text/")) return "text";
+  if (mimeType.includes("pdf")) return "document";
+  return "other";
+}
 
 export default drive;
