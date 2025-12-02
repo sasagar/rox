@@ -117,7 +117,7 @@ msgstr "Admin"
 msgid "Admin Role"
 msgstr "Admin Role"
 
-#: src/pages/admin/settings.tsx:183
+#: src/pages/admin/settings.tsx:184
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
@@ -159,7 +159,7 @@ msgstr "All instances can federate with this server"
 msgid "All Types"
 msgstr "All Types"
 
-#: src/pages/admin/settings.tsx:412
+#: src/pages/admin/settings.tsx:435
 msgid "Allow new users to register accounts"
 msgstr "Allow new users to register accounts"
 
@@ -201,7 +201,7 @@ msgstr "Available Codes"
 msgid "Back to timeline"
 msgstr "Back to timeline"
 
-#: src/pages/admin/settings.tsx:315
+#: src/pages/admin/settings.tsx:316
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -256,9 +256,13 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/user/UserProfile.tsx:397
+#: src/components/user/UserProfile.tsx:424
 msgid "Bot"
 msgstr "Bot"
+
+#: src/pages/admin/settings.tsx:352
+msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
+msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
 
 #: src/pages/notifications.tsx:226
 msgid "By type"
@@ -336,7 +340,7 @@ msgstr "Color"
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
-#: src/pages/admin/settings.tsx:186
+#: src/pages/admin/settings.tsx:187
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
 
@@ -427,7 +431,7 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
 
-#: src/pages/admin/settings.tsx:605
+#: src/pages/admin/settings.tsx:628
 msgid "Dark"
 msgstr "Dark"
 
@@ -439,7 +443,7 @@ msgstr "Default"
 msgid "Default (auto-assign to new users)"
 msgstr "Default (auto-assign to new users)"
 
-#: src/pages/admin/settings.tsx:548
+#: src/pages/admin/settings.tsx:571
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
 
@@ -487,7 +491,7 @@ msgid "Describe the reason for this warning..."
 msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:260
+#: src/pages/admin/settings.tsx:261
 msgid "Description"
 msgstr "Description"
 
@@ -540,7 +544,7 @@ msgstr "Edit"
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
-#: src/components/user/UserProfile.tsx:346
+#: src/components/user/UserProfile.tsx:373
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -589,7 +593,7 @@ msgstr "Emojis"
 msgid "Enable"
 msgstr "Enable"
 
-#: src/pages/admin/settings.tsx:409
+#: src/pages/admin/settings.tsx:432
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
@@ -625,7 +629,7 @@ msgstr "Enter your invitation code to register"
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:265
+#: src/components/user/UserProfile.tsx:304
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -783,6 +787,10 @@ msgstr "Failed to upload file"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "Fast and efficient with minimal resource usage"
 
+#: src/pages/admin/settings.tsx:336
+msgid "Favicon URL"
+msgstr "Favicon URL"
+
 #: src/components/LandingPage.tsx:176
 msgid "Federated"
 msgstr "Federated"
@@ -808,7 +816,7 @@ msgid "Find users by username or display name"
 msgstr "Find users by username or display name"
 
 #: src/components/note/NoteCard.tsx:284
-#: src/components/user/UserProfile.tsx:369
+#: src/components/user/UserProfile.tsx:396
 #: src/pages/notifications.tsx:240
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:520
@@ -822,13 +830,13 @@ msgid "followed you"
 msgstr "followed you"
 
 #: src/components/note/NoteComposer.tsx:282
-#: src/components/user/UserProfile.tsx:432
+#: src/components/user/UserProfile.tsx:459
 msgid "Followers"
 msgstr "Followers"
 
 #: src/components/note/NoteCard.tsx:284
-#: src/components/user/UserProfile.tsx:367
-#: src/components/user/UserProfile.tsx:440
+#: src/components/user/UserProfile.tsx:394
+#: src/components/user/UserProfile.tsx:467
 #: src/pages/search.tsx:513
 #: src/pages/search.tsx:597
 msgid "Following"
@@ -838,7 +846,7 @@ msgstr "Following"
 msgid "Following successfully"
 msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:362
+#: src/components/user/UserProfile.tsx:389
 msgid "Following..."
 msgstr "Following..."
 
@@ -872,7 +880,7 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:297
+#: src/pages/admin/settings.tsx:298
 msgid "Icon URL"
 msgstr "Icon URL"
 
@@ -884,7 +892,7 @@ msgstr "Image"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/pages/admin/settings.tsx:204
+#: src/pages/admin/settings.tsx:205
 msgid "Instance"
 msgstr "Instance"
 
@@ -913,15 +921,15 @@ msgstr "Instance Domain"
 msgid "Instance Hostname"
 msgstr "Instance Hostname"
 
-#: src/pages/admin/settings.tsx:236
+#: src/pages/admin/settings.tsx:237
 msgid "Instance Information"
 msgstr "Instance Information"
 
-#: src/pages/admin/settings.tsx:242
+#: src/pages/admin/settings.tsx:243
 msgid "Instance Name"
 msgstr "Instance Name"
 
-#: src/pages/admin/settings.tsx:117
+#: src/pages/admin/settings.tsx:118
 msgid "Instance settings saved"
 msgstr "Instance settings saved"
 
@@ -970,7 +978,7 @@ msgid "Invite limit:"
 msgstr "Invite limit:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:432
+#: src/pages/admin/settings.tsx:455
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "Invite Only"
@@ -1001,7 +1009,7 @@ msgstr "Leave empty for auto-generated code"
 msgid "License"
 msgstr "License"
 
-#: src/pages/admin/settings.tsx:586
+#: src/pages/admin/settings.tsx:609
 msgid "Light"
 msgstr "Light"
 
@@ -1014,7 +1022,7 @@ msgid "Line Height"
 msgstr "Line Height"
 
 #: src/components/timeline/Timeline.tsx:196
-#: src/components/user/UserProfile.tsx:491
+#: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "Load more"
 
@@ -1026,7 +1034,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/user/UserProfile.tsx:487
+#: src/components/user/UserProfile.tsx:514
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -1054,7 +1062,7 @@ msgstr "Looking up remote user..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "Lowercase letters, numbers, and underscores only"
 
-#: src/pages/admin/settings.tsx:278
+#: src/pages/admin/settings.tsx:279
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
@@ -1138,7 +1146,7 @@ msgstr "Name"
 msgid "Never"
 msgstr "Never"
 
-#: src/pages/admin/settings.tsx:458
+#: src/pages/admin/settings.tsx:481
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
 
@@ -1200,7 +1208,7 @@ msgstr "No notifications"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/user/UserProfile.tsx:467
+#: src/components/user/UserProfile.tsx:494
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -1354,8 +1362,8 @@ msgstr "Post"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:424
-#: src/components/user/UserProfile.tsx:450
+#: src/components/user/UserProfile.tsx:451
+#: src/components/user/UserProfile.tsx:477
 msgid "Posts"
 msgstr "Posts"
 
@@ -1366,15 +1374,15 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:394
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
-#: src/pages/admin/settings.tsx:617
+#: src/pages/admin/settings.tsx:640
 msgid "Preview"
 msgstr "Preview"
 
-#: src/pages/admin/settings.tsx:624
+#: src/pages/admin/settings.tsx:647
 msgid "Primary Button"
 msgstr "Primary Button"
 
-#: src/pages/admin/settings.tsx:487
+#: src/pages/admin/settings.tsx:510
 msgid "Primary Color"
 msgstr "Primary Color"
 
@@ -1390,7 +1398,7 @@ msgstr "Privacy First"
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: src/pages/admin/settings.tsx:354
+#: src/pages/admin/settings.tsx:377
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
@@ -1499,7 +1507,7 @@ msgstr "Refresh"
 msgid "Registered devices"
 msgstr "Registered devices"
 
-#: src/pages/admin/settings.tsx:214
+#: src/pages/admin/settings.tsx:215
 msgid "Registration"
 msgstr "Registration"
 
@@ -1512,11 +1520,11 @@ msgstr "Registration Closed"
 msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
-#: src/pages/admin/settings.tsx:390
+#: src/pages/admin/settings.tsx:413
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
-#: src/pages/admin/settings.tsx:136
+#: src/pages/admin/settings.tsx:137
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
@@ -1638,11 +1646,11 @@ msgstr "Reports"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
-#: src/pages/admin/settings.tsx:435
+#: src/pages/admin/settings.tsx:458
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
 
-#: src/pages/admin/settings.tsx:455
+#: src/pages/admin/settings.tsx:478
 msgid "Require Approval"
 msgstr "Require Approval"
 
@@ -1693,11 +1701,11 @@ msgstr "Restore"
 msgid "Restore Note"
 msgstr "Restore Note"
 
-#: src/components/ui/ErrorMessage.tsx:86
+#: src/components/ui/ErrorMessage.tsx:89
 msgid "Retry"
 msgstr "Retry"
 
-#: src/components/ui/ErrorMessage.tsx:86
+#: src/components/ui/ErrorMessage.tsx:89
 msgid "Retrying..."
 msgstr "Retrying..."
 
@@ -1738,11 +1746,11 @@ msgstr "Roles"
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: src/pages/admin/settings.tsx:377
+#: src/pages/admin/settings.tsx:400
 msgid "Save Instance Settings"
 msgstr "Save Instance Settings"
 
-#: src/pages/admin/settings.tsx:468
+#: src/pages/admin/settings.tsx:491
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
@@ -1750,7 +1758,7 @@ msgstr "Save Registration Settings"
 msgid "Save Settings"
 msgstr "Save Settings"
 
-#: src/pages/admin/settings.tsx:643
+#: src/pages/admin/settings.tsx:666
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
@@ -1794,7 +1802,7 @@ msgstr "Search User"
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "Search users... (e.g., alice or alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:633
+#: src/pages/admin/settings.tsx:656
 msgid "Secondary"
 msgstr "Secondary"
 
@@ -1893,7 +1901,7 @@ msgstr "Suspend Users"
 msgid "Suspended"
 msgstr "Suspended"
 
-#: src/pages/admin/settings.tsx:567
+#: src/pages/admin/settings.tsx:590
 msgid "System"
 msgstr "System"
 
@@ -1921,7 +1929,7 @@ msgstr "Terms"
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
-#: src/pages/admin/settings.tsx:336
+#: src/pages/admin/settings.tsx:359
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
@@ -1938,15 +1946,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:224
+#: src/pages/admin/settings.tsx:225
 msgid "Theme"
 msgstr "Theme"
 
-#: src/pages/admin/settings.tsx:481
+#: src/pages/admin/settings.tsx:504
 msgid "Theme Settings"
 msgstr "Theme Settings"
 
-#: src/pages/admin/settings.tsx:155
+#: src/pages/admin/settings.tsx:156
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
@@ -1966,7 +1974,7 @@ msgstr "This is a preview of how text will appear with your selected settings. A
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 
-#: src/components/user/UserProfile.tsx:473
+#: src/components/user/UserProfile.tsx:500
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -2038,7 +2046,7 @@ msgstr "Unfollow"
 msgid "Unfollowed successfully"
 msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:360
+#: src/components/user/UserProfile.tsx:387
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
@@ -2085,7 +2093,7 @@ msgstr "User Details"
 msgid "User Moderation"
 msgstr "User Moderation"
 
-#: src/components/user/UserProfile.tsx:266
+#: src/components/user/UserProfile.tsx:305
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "User not found"
@@ -2122,7 +2130,7 @@ msgstr "Username is required"
 msgid "Users"
 msgstr "Users"
 
-#: src/pages/admin/settings.tsx:610
+#: src/pages/admin/settings.tsx:633
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 
@@ -2218,7 +2226,7 @@ msgstr "You have an unsaved draft"
 msgid "You have reached your invitation limit"
 msgstr "You have reached your invitation limit"
 
-#: src/components/user/UserProfile.tsx:471
+#: src/components/user/UserProfile.tsx:498
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
@@ -2235,7 +2243,7 @@ msgstr "You will receive notifications even when the browser is closed."
 msgid "You're all caught up!"
 msgstr "You're all caught up!"
 
-#: src/components/user/UserProfile.tsx:500
+#: src/components/user/UserProfile.tsx:527
 msgid "You've reached the end"
 msgstr "You've reached the end"
 

@@ -117,7 +117,7 @@ msgstr "管理"
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:183
+#: src/pages/admin/settings.tsx:184
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -159,7 +159,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 msgid "All Types"
 msgstr "すべてのタイプ"
 
-#: src/pages/admin/settings.tsx:412
+#: src/pages/admin/settings.tsx:435
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -201,7 +201,7 @@ msgstr "利用可能なコード"
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
-#: src/pages/admin/settings.tsx:315
+#: src/pages/admin/settings.tsx:316
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -256,9 +256,13 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:397
+#: src/components/user/UserProfile.tsx:424
 msgid "Bot"
 msgstr "Bot"
+
+#: src/pages/admin/settings.tsx:352
+msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
+msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 
 #: src/pages/notifications.tsx:226
 msgid "By type"
@@ -336,7 +340,7 @@ msgstr "カラー"
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
-#: src/pages/admin/settings.tsx:186
+#: src/pages/admin/settings.tsx:187
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -427,7 +431,7 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
-#: src/pages/admin/settings.tsx:605
+#: src/pages/admin/settings.tsx:628
 msgid "Dark"
 msgstr "ダーク"
 
@@ -439,7 +443,7 @@ msgstr "デフォルト"
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:548
+#: src/pages/admin/settings.tsx:571
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
@@ -487,7 +491,7 @@ msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:260
+#: src/pages/admin/settings.tsx:261
 msgid "Description"
 msgstr "説明"
 
@@ -540,7 +544,7 @@ msgstr "編集"
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
-#: src/components/user/UserProfile.tsx:346
+#: src/components/user/UserProfile.tsx:373
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -589,7 +593,7 @@ msgstr "絵文字"
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:409
+#: src/pages/admin/settings.tsx:432
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
@@ -625,7 +629,7 @@ msgstr "登録には招待コードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:265
+#: src/components/user/UserProfile.tsx:304
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -783,6 +787,10 @@ msgstr "ファイルのアップロードに失敗しました"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
+#: src/pages/admin/settings.tsx:336
+msgid "Favicon URL"
+msgstr "ファビコンURL"
+
 #: src/components/LandingPage.tsx:176
 msgid "Federated"
 msgstr "分散型"
@@ -808,7 +816,7 @@ msgid "Find users by username or display name"
 msgstr "ユーザー名または表示名でユーザーを検索"
 
 #: src/components/note/NoteCard.tsx:284
-#: src/components/user/UserProfile.tsx:369
+#: src/components/user/UserProfile.tsx:396
 #: src/pages/notifications.tsx:240
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:520
@@ -822,13 +830,13 @@ msgid "followed you"
 msgstr "があなたをフォローしました"
 
 #: src/components/note/NoteComposer.tsx:282
-#: src/components/user/UserProfile.tsx:432
+#: src/components/user/UserProfile.tsx:459
 msgid "Followers"
 msgstr "フォロワー"
 
 #: src/components/note/NoteCard.tsx:284
-#: src/components/user/UserProfile.tsx:367
-#: src/components/user/UserProfile.tsx:440
+#: src/components/user/UserProfile.tsx:394
+#: src/components/user/UserProfile.tsx:467
 #: src/pages/search.tsx:513
 #: src/pages/search.tsx:597
 msgid "Following"
@@ -838,7 +846,7 @@ msgstr "フォロー中"
 msgid "Following successfully"
 msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:362
+#: src/components/user/UserProfile.tsx:389
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -872,7 +880,7 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:297
+#: src/pages/admin/settings.tsx:298
 msgid "Icon URL"
 msgstr "アイコンURL"
 
@@ -884,7 +892,7 @@ msgstr "画像"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:204
+#: src/pages/admin/settings.tsx:205
 msgid "Instance"
 msgstr "インスタンス"
 
@@ -913,15 +921,15 @@ msgstr "インスタンスドメイン"
 msgid "Instance Hostname"
 msgstr "インスタンスのホスト名"
 
-#: src/pages/admin/settings.tsx:236
+#: src/pages/admin/settings.tsx:237
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:242
+#: src/pages/admin/settings.tsx:243
 msgid "Instance Name"
 msgstr "インスタンス名"
 
-#: src/pages/admin/settings.tsx:117
+#: src/pages/admin/settings.tsx:118
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
 
@@ -970,7 +978,7 @@ msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:432
+#: src/pages/admin/settings.tsx:455
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1001,7 +1009,7 @@ msgstr "空欄にすると自動生成されます"
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:586
+#: src/pages/admin/settings.tsx:609
 msgid "Light"
 msgstr "ライト"
 
@@ -1014,7 +1022,7 @@ msgid "Line Height"
 msgstr "行の高さ"
 
 #: src/components/timeline/Timeline.tsx:196
-#: src/components/user/UserProfile.tsx:491
+#: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -1026,7 +1034,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/user/UserProfile.tsx:487
+#: src/components/user/UserProfile.tsx:514
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -1054,7 +1062,7 @@ msgstr "リモートユーザーを検索中..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:278
+#: src/pages/admin/settings.tsx:279
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1138,7 +1146,7 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
-#: src/pages/admin/settings.tsx:458
+#: src/pages/admin/settings.tsx:481
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
@@ -1200,7 +1208,7 @@ msgstr "通知はありません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:467
+#: src/components/user/UserProfile.tsx:494
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -1354,8 +1362,8 @@ msgstr "投稿"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:424
-#: src/components/user/UserProfile.tsx:450
+#: src/components/user/UserProfile.tsx:451
+#: src/components/user/UserProfile.tsx:477
 msgid "Posts"
 msgstr "投稿"
 
@@ -1366,15 +1374,15 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:394
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
-#: src/pages/admin/settings.tsx:617
+#: src/pages/admin/settings.tsx:640
 msgid "Preview"
 msgstr "プレビュー"
 
-#: src/pages/admin/settings.tsx:624
+#: src/pages/admin/settings.tsx:647
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:487
+#: src/pages/admin/settings.tsx:510
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -1390,7 +1398,7 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:354
+#: src/pages/admin/settings.tsx:377
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
@@ -1499,7 +1507,7 @@ msgstr "更新"
 msgid "Registered devices"
 msgstr "登録済みデバイス"
 
-#: src/pages/admin/settings.tsx:214
+#: src/pages/admin/settings.tsx:215
 msgid "Registration"
 msgstr "登録"
 
@@ -1512,11 +1520,11 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:390
+#: src/pages/admin/settings.tsx:413
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:136
+#: src/pages/admin/settings.tsx:137
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
@@ -1638,11 +1646,11 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
-#: src/pages/admin/settings.tsx:435
+#: src/pages/admin/settings.tsx:458
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:455
+#: src/pages/admin/settings.tsx:478
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -1693,11 +1701,11 @@ msgstr "復元"
 msgid "Restore Note"
 msgstr "ノートを復元"
 
-#: src/components/ui/ErrorMessage.tsx:86
+#: src/components/ui/ErrorMessage.tsx:89
 msgid "Retry"
 msgstr "再試行"
 
-#: src/components/ui/ErrorMessage.tsx:86
+#: src/components/ui/ErrorMessage.tsx:89
 msgid "Retrying..."
 msgstr "再試行中..."
 
@@ -1738,11 +1746,11 @@ msgstr "ロール"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/pages/admin/settings.tsx:377
+#: src/pages/admin/settings.tsx:400
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:468
+#: src/pages/admin/settings.tsx:491
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -1750,7 +1758,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:643
+#: src/pages/admin/settings.tsx:666
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -1794,7 +1802,7 @@ msgstr "ユーザーを検索"
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:633
+#: src/pages/admin/settings.tsx:656
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -1893,7 +1901,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/pages/admin/settings.tsx:567
+#: src/pages/admin/settings.tsx:590
 msgid "System"
 msgstr "システム"
 
@@ -1921,7 +1929,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:336
+#: src/pages/admin/settings.tsx:359
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -1938,15 +1946,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:224
+#: src/pages/admin/settings.tsx:225
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:481
+#: src/pages/admin/settings.tsx:504
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:155
+#: src/pages/admin/settings.tsx:156
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
@@ -1966,7 +1974,7 @@ msgstr "これは選択した設定でのテキスト表示のプレビューで
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
 
-#: src/components/user/UserProfile.tsx:473
+#: src/components/user/UserProfile.tsx:500
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -2038,7 +2046,7 @@ msgstr "フォロー解除"
 msgid "Unfollowed successfully"
 msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:360
+#: src/components/user/UserProfile.tsx:387
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -2085,7 +2093,7 @@ msgstr "ユーザー詳細"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/user/UserProfile.tsx:266
+#: src/components/user/UserProfile.tsx:305
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
@@ -2122,7 +2130,7 @@ msgstr "ユーザー名を入力してください"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:610
+#: src/pages/admin/settings.tsx:633
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
@@ -2218,7 +2226,7 @@ msgstr "未保存の下書きがあります"
 msgid "You have reached your invitation limit"
 msgstr "招待コードの作成上限に達しました"
 
-#: src/components/user/UserProfile.tsx:471
+#: src/components/user/UserProfile.tsx:498
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
@@ -2235,7 +2243,7 @@ msgstr "ブラウザを閉じていても通知を受け取ることができま
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
-#: src/components/user/UserProfile.tsx:500
+#: src/components/user/UserProfile.tsx:527
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
