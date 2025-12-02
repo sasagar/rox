@@ -3,16 +3,19 @@
 /**
  * Notification hooks for real-time notifications
  *
- * Provides hooks for managing notifications with SSE support
+ * Provides hooks for managing notifications with SSE support.
+ * Uses a singleton pattern for SSE connection to prevent multiple
+ * connections when the hook is used in multiple components.
  */
 
-import { useEffect, useCallback, useRef } from "react";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useCallback } from "react";
+import { atom, useAtom, useAtomValue, useSetAtom, getDefaultStore } from "jotai";
 import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { uiSettingsAtom } from "../lib/atoms/uiSettings";
 import { notificationsApi } from "../lib/api/notifications";
 import { playNotificationSound } from "../lib/utils/notificationSound";
 import type { Notification, NotificationFetchOptions } from "../lib/types/notification";
+import type { NotificationSound } from "../lib/types/uiSettings";
 
 /**
  * Notifications list atom
@@ -34,8 +37,126 @@ export const notificationsLoadingAtom = atom<boolean>(false);
  */
 export const sseConnectedAtom = atom<boolean>(false);
 
+// --- Singleton SSE Connection Manager ---
+// Module-level variables to ensure only one SSE connection exists
+
+let sseEventSource: EventSource | null = null;
+let sseReconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+let sseConnectionCount = 0; // Track how many components are using the connection
+
+/**
+ * Connect to SSE stream (singleton)
+ * Only creates a new connection if one doesn't exist
+ */
+function connectSSESingleton(
+  token: string,
+  setNotifications: (fn: (prev: Notification[]) => Notification[]) => void,
+  setUnreadCount: (fn: (prev: number) => number | number) => void,
+  setSseConnected: (connected: boolean) => void,
+  getUiSettings: () => { notificationSound?: NotificationSound; notificationVolume?: number },
+) {
+  // Already connected or connecting
+  if (sseEventSource) return;
+
+  // Clear any pending reconnect
+  if (sseReconnectTimeout) {
+    clearTimeout(sseReconnectTimeout);
+    sseReconnectTimeout = null;
+  }
+
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const url = `${baseUrl}/api/notifications/stream`;
+
+  // EventSource doesn't support custom headers, so we use a workaround
+  // Backend should accept token from query param for SSE
+  const eventSource = new EventSource(`${url}?token=${encodeURIComponent(token)}`);
+  sseEventSource = eventSource;
+
+  eventSource.addEventListener("connected", () => {
+    console.log("SSE connected for notifications (singleton)");
+    setSseConnected(true);
+  });
+
+  eventSource.addEventListener("notification", (event) => {
+    try {
+      const notification = JSON.parse(event.data) as Notification;
+      // Add new notification at the beginning
+      setNotifications((prev) => [notification, ...prev]);
+
+      // Play notification sound
+      const uiSettings = getUiSettings();
+      if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
+        playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
+      }
+    } catch (error) {
+      console.error("Failed to parse notification event:", error);
+    }
+  });
+
+  eventSource.addEventListener("unreadCount", (event) => {
+    try {
+      const { count } = JSON.parse(event.data);
+      setUnreadCount(count);
+    } catch (error) {
+      console.error("Failed to parse unreadCount event:", error);
+    }
+  });
+
+  eventSource.addEventListener("heartbeat", () => {
+    // Heartbeat received, connection is alive
+  });
+
+  eventSource.onerror = () => {
+    console.warn("SSE connection error, reconnecting...");
+    setSseConnected(false);
+    eventSource.close();
+    sseEventSource = null;
+
+    // Reconnect after delay (only if there are still subscribers)
+    if (sseConnectionCount > 0) {
+      sseReconnectTimeout = setTimeout(() => {
+        const store = getDefaultStore();
+        const currentToken = store.get(tokenAtom);
+        if (currentToken) {
+          connectSSESingleton(
+            currentToken,
+            setNotifications,
+            setUnreadCount,
+            setSseConnected,
+            getUiSettings,
+          );
+        }
+      }, 5000);
+    }
+  };
+}
+
+/**
+ * Disconnect SSE stream (singleton)
+ * Only actually disconnects when connection count reaches 0
+ */
+function disconnectSSESingleton(setSseConnected: (connected: boolean) => void, force = false) {
+  if (force || sseConnectionCount <= 0) {
+    if (sseReconnectTimeout) {
+      clearTimeout(sseReconnectTimeout);
+      sseReconnectTimeout = null;
+    }
+
+    if (sseEventSource) {
+      sseEventSource.close();
+      sseEventSource = null;
+      setSseConnected(false);
+    }
+  }
+}
+
 /**
  * Hook to manage notification state and SSE connection
+ *
+ * This hook uses a singleton pattern for SSE connections.
+ * Multiple components can call this hook, but only one SSE connection
+ * will be maintained. The connection is closed when the last component
+ * using it unmounts.
  */
 export function useNotifications() {
   const [notifications, setNotifications] = useAtom(notificationsAtom);
@@ -45,9 +166,6 @@ export function useNotifications() {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
   const uiSettings = useAtomValue(uiSettingsAtom);
-
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Fetch notifications from API
@@ -156,103 +274,56 @@ export function useNotifications() {
    * Connect to SSE stream for real-time updates
    */
   const connectSSE = useCallback(() => {
-    if (!token || eventSourceRef.current) return;
-
-    // Clear any pending reconnect
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-
-    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-    const url = `${baseUrl}/api/notifications/stream`;
-
-    // EventSource doesn't support custom headers, so we use a workaround
-    // Backend should accept token from query param for SSE
-    const eventSource = new EventSource(`${url}?token=${encodeURIComponent(token)}`);
-    eventSourceRef.current = eventSource;
-
-    eventSource.addEventListener("connected", () => {
-      console.log("SSE connected for notifications");
-      setSseConnected(true);
-    });
-
-    eventSource.addEventListener("notification", (event) => {
-      try {
-        const notification = JSON.parse(event.data) as Notification;
-        // Add new notification at the beginning
-        setNotifications((prev) => [notification, ...prev]);
-
-        // Play notification sound
-        if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
-          playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
-        }
-      } catch (error) {
-        console.error("Failed to parse notification event:", error);
-      }
-    });
-
-    eventSource.addEventListener("unreadCount", (event) => {
-      try {
-        const { count } = JSON.parse(event.data);
-        setUnreadCount(count);
-      } catch (error) {
-        console.error("Failed to parse unreadCount event:", error);
-      }
-    });
-
-    eventSource.addEventListener("heartbeat", () => {
-      // Heartbeat received, connection is alive
-    });
-
-    eventSource.onerror = () => {
-      console.warn("SSE connection error, reconnecting...");
-      setSseConnected(false);
-      eventSource.close();
-      eventSourceRef.current = null;
-
-      // Reconnect after delay
-      reconnectTimeoutRef.current = setTimeout(() => {
-        connectSSE();
-      }, 5000);
-    };
+    if (!token) return;
+    // Use the captured uiSettings in a getter function for the singleton
+    const getUiSettings = () => uiSettings;
+    connectSSESingleton(token, setNotifications, setUnreadCount, setSseConnected, getUiSettings);
   }, [token, setNotifications, setUnreadCount, setSseConnected, uiSettings]);
 
   /**
    * Disconnect SSE stream
    */
   const disconnectSSE = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-      setSseConnected(false);
-    }
+    disconnectSSESingleton(setSseConnected);
   }, [setSseConnected]);
 
   // Effect to manage SSE connection based on auth state
+  // Uses reference counting to ensure connection persists across multiple hook instances
   useEffect(() => {
     if (isAuthenticated && token) {
-      // Fetch initial data
-      fetchNotifications();
-      fetchUnreadCount();
-      // Connect to SSE
-      connectSSE();
-    } else {
-      // Disconnect and clear state
-      disconnectSSE();
-      setNotifications([]);
-      setUnreadCount(0);
+      sseConnectionCount++;
+
+      // Only fetch and connect on first subscriber
+      if (sseConnectionCount === 1) {
+        fetchNotifications();
+        fetchUnreadCount();
+        connectSSE();
+      }
     }
 
     return () => {
-      disconnectSSE();
+      if (isAuthenticated && token) {
+        sseConnectionCount--;
+
+        // Only disconnect when last subscriber unmounts
+        if (sseConnectionCount <= 0) {
+          sseConnectionCount = 0;
+          disconnectSSESingleton(setSseConnected, true);
+        }
+      }
     };
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, fetchNotifications, fetchUnreadCount, connectSSE, setSseConnected]);
+
+  // Handle auth state changes (logout)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Force disconnect and clear state on logout
+      sseConnectionCount = 0;
+      disconnectSSESingleton(setSseConnected, true);
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  }, [isAuthenticated, setSseConnected, setNotifications, setUnreadCount]);
 
   return {
     notifications,
