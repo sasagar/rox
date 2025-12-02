@@ -246,6 +246,19 @@ export function UserProfile({ username, host }: UserProfileProps) {
     setUser((prev) => (prev ? { ...prev, notesCount: (prev.notesCount ?? 0) - 1 } : null));
   }, []);
 
+  // Convert profileEmojis array to emoji map for MfmRenderer
+  // Must be called before any early returns to maintain hook order
+  const profileEmojiMap = useMemo(() => {
+    if (!user?.profileEmojis || user.profileEmojis.length === 0) return {};
+    return user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [user?.profileEmojis]);
+
   // Loading state
   if (loading) {
     return (
@@ -275,18 +288,6 @@ export function UserProfile({ username, host }: UserProfileProps) {
 
   // Get sanitized custom CSS for the profile
   const customCss = user.customCss ? sanitizeCustomCss(user.customCss, profileContainerId) : "";
-
-  // Convert profileEmojis array to emoji map for MfmRenderer
-  const profileEmojiMap = useMemo(() => {
-    if (!user.profileEmojis || user.profileEmojis.length === 0) return {};
-    return user.profileEmojis.reduce(
-      (acc, emoji) => {
-        acc[emoji.name] = emoji.url;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [user.profileEmojis]);
 
   return (
     <Layout>
