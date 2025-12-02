@@ -39,6 +39,8 @@ export interface User extends Timestamps {
   movedAt: Date | null; // When migration was completed
   // Profile emojis from remote instances
   profileEmojis: ProfileEmoji[] | null;
+  // Storage quota
+  storageQuotaMb: number | null; // Storage quota in MB (null means use role default)
 }
 
 export interface UserProfile {

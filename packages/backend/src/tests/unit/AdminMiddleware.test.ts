@@ -40,6 +40,7 @@ describe("Admin Middleware", () => {
     movedTo: null,
     movedAt: null,
     profileEmojis: [],
+    storageQuotaMb: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,

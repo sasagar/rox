@@ -18,6 +18,7 @@ import type {
   IUserWarningRepository,
   INotificationRepository,
   IRemoteInstanceRepository,
+  IScheduledNoteRepository,
 } from "../interfaces/repositories/index.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
@@ -39,6 +40,7 @@ import {
   PostgresUserWarningRepository,
   PostgresNotificationRepository,
   PostgresRemoteInstanceRepository,
+  PostgresScheduledNoteRepository,
 } from "../repositories/pg/index.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
@@ -71,6 +73,7 @@ export interface AppContainer {
   userWarningRepository: IUserWarningRepository;
   notificationRepository: INotificationRepository;
   remoteInstanceRepository: IRemoteInstanceRepository;
+  scheduledNoteRepository: IScheduledNoteRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -208,6 +211,7 @@ function createRepositories(db: any, dbType: string) {
         userWarningRepository: new PostgresUserWarningRepository(db),
         notificationRepository: new PostgresNotificationRepository(db),
         remoteInstanceRepository: new PostgresRemoteInstanceRepository(db),
+        scheduledNoteRepository: new PostgresScheduledNoteRepository(db),
       };
 
     case "mysql":

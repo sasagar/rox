@@ -241,6 +241,8 @@ export class RemoteActorService {
       alsoKnownAs: actor.alsoKnownAs || [],
       movedTo: actor.movedTo || null,
       movedAt: null,
+      // Storage quota (null for remote users - not applicable)
+      storageQuotaMb: null,
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);

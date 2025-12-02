@@ -130,6 +130,8 @@ export class AuthService {
       movedAt: null,
       // Profile emojis (for remote users)
       profileEmojis: [],
+      // Storage quota (null means use role default)
+      storageQuotaMb: null,
     });
 
     // セッション作成

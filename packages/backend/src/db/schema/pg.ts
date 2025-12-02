@@ -63,6 +63,15 @@ export interface RolePolicies {
   driveCapacityMb?: number;
   maxFileSizeMb?: number;
 
+  // Storage quota management
+  canManageStorageQuotas?: boolean; // Permission to change user/role storage quotas
+
+  // File management
+  canViewSystemAcquiredFiles?: boolean; // Moderator permission to view system-acquired files
+
+  // Scheduled notes
+  maxScheduledNotes?: number; // Maximum concurrent scheduled notes, -1 = unlimited, 0 = disabled
+
   // Moderation permissions
   canManageReports?: boolean;
   canDeleteNotes?: boolean;
@@ -109,6 +118,8 @@ export const users = pgTable(
     uiSettings: jsonb("ui_settings").$type<UISettings>(), // User's UI preferences
     // Profile emojis (for remote users - custom emojis in name/bio)
     profileEmojis: jsonb("profile_emojis").$type<ProfileEmoji[]>().default([]),
+    // Storage quota override (null = use role default, -1 = unlimited)
+    storageQuotaMb: integer("storage_quota_mb"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -185,6 +196,13 @@ export const notes = pgTable(
   }),
 );
 
+/**
+ * File source type
+ * - "user": Files uploaded by the user
+ * - "system": Files acquired by the system (e.g., fetched from remote servers)
+ */
+export type FileSource = "user" | "system";
+
 // Drive files table
 export const driveFiles = pgTable(
   "drive_files",
@@ -203,12 +221,14 @@ export const driveFiles = pgTable(
     comment: text("comment"),
     isSensitive: boolean("is_sensitive").notNull().default(false),
     storageKey: text("storage_key").notNull(), // Internal storage identifier
+    source: text("source").notNull().default("user").$type<FileSource>(), // "user" | "system"
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
     userIdIdx: index("file_user_id_idx").on(table.userId),
     md5Idx: index("file_md5_idx").on(table.md5),
+    sourceIdx: index("file_source_idx").on(table.source),
   }),
 );
 
@@ -555,6 +575,47 @@ export const remoteInstances = pgTable(
   }),
 );
 
+/**
+ * Scheduled note status type
+ */
+export type ScheduledNoteStatus = "pending" | "published" | "failed" | "cancelled";
+
+// Scheduled notes table (for delayed posting)
+export const scheduledNotes = pgTable(
+  "scheduled_notes",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Note content (same as notes table)
+    text: text("text"),
+    cw: text("cw"), // Content Warning
+    visibility: text("visibility").notNull().default("public"), // public, home, followers, specified
+    localOnly: boolean("local_only").notNull().default(false),
+    replyId: text("reply_id"),
+    renoteId: text("renote_id"),
+    fileIds: jsonb("file_ids").$type<string[]>().notNull().default([]),
+    // Schedule info
+    scheduledAt: timestamp("scheduled_at").notNull(), // When to publish
+    status: text("status").notNull().default("pending").$type<ScheduledNoteStatus>(), // pending, published, failed, cancelled
+    publishedNoteId: text("published_note_id").references(() => notes.id, { onDelete: "set null" }), // ID of created note after publishing
+    errorMessage: text("error_message"), // Error if publication failed
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("scheduled_note_user_id_idx").on(table.userId),
+    scheduledAtIdx: index("scheduled_note_scheduled_at_idx").on(table.scheduledAt),
+    statusIdx: index("scheduled_note_status_idx").on(table.status),
+    // Composite for efficient queue processing
+    pendingScheduleIdx: index("scheduled_note_pending_schedule_idx").on(
+      table.status,
+      table.scheduledAt,
+    ),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -594,3 +655,5 @@ export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
 export type RemoteInstance = typeof remoteInstances.$inferSelect;
 export type NewRemoteInstance = typeof remoteInstances.$inferInsert;
+export type ScheduledNote = typeof scheduledNotes.$inferSelect;
+export type NewScheduledNote = typeof scheduledNotes.$inferInsert;

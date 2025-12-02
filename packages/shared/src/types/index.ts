@@ -6,3 +6,4 @@ export * from "./reaction.js";
 export * from "./common.js";
 export * from "./uiSettings.js";
 export * from "./instance.js";
+export * from "./scheduledNote.js";

@@ -26,6 +26,9 @@ const DEFAULT_POLICIES: RolePolicies = {
   rateLimitFactor: 1.0,
   driveCapacityMb: 100,
   maxFileSizeMb: 10,
+  canManageStorageQuotas: false,
+  canViewSystemAcquiredFiles: false,
+  maxScheduledNotes: 10,
   canManageReports: false,
   canDeleteNotes: false,
   canSuspendUsers: false,
@@ -56,6 +59,8 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
     if (policy.canManageInstanceSettings) merged.canManageInstanceSettings = true;
     if (policy.canManageInstanceBlocks) merged.canManageInstanceBlocks = true;
     if (policy.canManageUsers) merged.canManageUsers = true;
+    if (policy.canManageStorageQuotas) merged.canManageStorageQuotas = true;
+    if (policy.canViewSystemAcquiredFiles) merged.canViewSystemAcquiredFiles = true;
 
     // Numeric values: take the highest (most permissive)
     if (
@@ -96,6 +101,16 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
       (merged.maxFileSizeMb === undefined || policy.maxFileSizeMb > merged.maxFileSizeMb)
     ) {
       merged.maxFileSizeMb = policy.maxFileSizeMb;
+    }
+
+    // Max scheduled notes: take the highest (-1 = unlimited)
+    if (
+      policy.maxScheduledNotes !== undefined &&
+      (merged.maxScheduledNotes === undefined ||
+        policy.maxScheduledNotes === -1 ||
+        (merged.maxScheduledNotes !== -1 && policy.maxScheduledNotes > merged.maxScheduledNotes))
+    ) {
+      merged.maxScheduledNotes = policy.maxScheduledNotes;
     }
   }
 
@@ -354,5 +369,30 @@ export class RoleService {
         canManageUsers: false,
       },
     });
+  }
+
+
+  /**
+   * Get user's max scheduled notes limit (-1 = unlimited, 0 = disabled)
+   */
+  async getMaxScheduledNotes(userId: string): Promise<number> {
+    const policies = await this.getEffectivePolicies(userId);
+    return policies.maxScheduledNotes ?? 10;
+  }
+
+  /**
+   * Check if user can manage storage quotas
+   */
+  async canManageStorageQuotas(userId: string): Promise<boolean> {
+    const policies = await this.getEffectivePolicies(userId);
+    return !!policies.canManageStorageQuotas;
+  }
+
+  /**
+   * Check if user can view system-acquired files
+   */
+  async canViewSystemAcquiredFiles(userId: string): Promise<boolean> {
+    const policies = await this.getEffectivePolicies(userId);
+    return !!policies.canViewSystemAcquiredFiles;
   }
 }

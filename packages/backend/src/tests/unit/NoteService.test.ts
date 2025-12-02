@@ -88,6 +88,7 @@ describe("NoteService", () => {
     isSensitive: false,
     comment: null,
     storageKey: "mock-storage-key",
+    source: "user",
     createdAt: new Date(),
     updatedAt: new Date(),
   };

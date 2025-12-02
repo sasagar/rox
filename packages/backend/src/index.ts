@@ -34,9 +34,13 @@ import migrationRoute from "./routes/migration.js";
 import moderatorRoute from "./routes/moderator.js";
 import notificationsRoute from "./routes/notifications.js";
 import pushRoute from "./routes/push.js";
+import scheduledNotesRoute from "./routes/scheduled-notes.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
 import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshService.js";
+import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
+import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
+import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
 
 const app = new Hono();
@@ -78,6 +82,7 @@ app.route("/api/emojis", emojisRoute);
 app.route("/api/i/migration", migrationRoute);
 app.route("/api/notifications", notificationsRoute);
 app.route("/api/push", pushRoute);
+app.route("/api/scheduled-notes", scheduledNotesRoute);
 
 // Media Proxy (both paths for backward compatibility)
 app.route("/api/proxy", proxyRoute);
@@ -125,6 +130,27 @@ const remoteInstanceRefreshService = new RemoteInstanceRefreshService(
 );
 remoteInstanceRefreshService.start();
 
+// Start scheduled note publisher service
+const noteService = new NoteService(
+  container.noteRepository,
+  container.driveFileRepository,
+  container.followRepository,
+  container.userRepository,
+  container.activityPubDeliveryService,
+  container.cacheService,
+  container.notificationService,
+);
+const scheduledNoteService = new ScheduledNoteService(
+  container.scheduledNoteRepository,
+  container.roleService,
+  noteService,
+);
+const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, {
+  intervalMs: 30 * 1000, // Check every 30 seconds
+  batchSize: 50,
+});
+scheduledNotePublisher.start();
+
 // Graceful shutdown handler
 let isShuttingDown = false;
 
@@ -149,6 +175,9 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping remote instance refresh service");
     remoteInstanceRefreshService.stop();
+
+    logger.info("Stopping scheduled note publisher");
+    scheduledNotePublisher.stop();
 
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");

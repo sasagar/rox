@@ -11,9 +11,10 @@ import { createHash } from "node:crypto";
 import { extname } from "node:path";
 import type { IDriveFileRepository } from "../interfaces/repositories/IDriveFileRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
-import type { DriveFile } from "../../../shared/src/types/file.js";
+import type { DriveFile, FileSource } from "../../../shared/src/types/file.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import { getImageProcessor } from "./ImageProcessor.js";
+import type { RoleService } from "./RoleService.js";
 
 /**
  * File upload input data
@@ -31,6 +32,8 @@ export interface FileUploadInput {
   isSensitive?: boolean;
   /** Optional comment/description */
   comment?: string | null;
+  /** File source: "user" for user uploads, "system" for system-acquired files */
+  source?: FileSource;
 }
 
 /**
@@ -67,10 +70,12 @@ export class FileService {
    *
    * @param driveFileRepository - Drive file repository
    * @param storage - File storage adapter (Local or S3)
+   * @param roleService - Optional role service for quota checking
    */
   constructor(
     private readonly driveFileRepository: IDriveFileRepository,
     private readonly storage: IFileStorage,
+    private readonly roleService?: RoleService,
   ) {
     // Default: 10MB, configurable via environment variable
     this.maxFileSize = Number.parseInt(process.env.MAX_FILE_SIZE || "10485760", 10);
@@ -104,11 +109,28 @@ export class FileService {
    * - Storage key format depends on adapter (local path or S3 key)
    */
   async upload(input: FileUploadInput): Promise<DriveFile> {
-    const { file, name, type, userId, isSensitive = false, comment = null } = input;
+    const { file, name, type, userId, isSensitive = false, comment = null, source = "user" } = input;
 
     // ファイルサイズのバリデーション
     if (file.byteLength > this.maxFileSize) {
       throw new Error(`File size exceeds maximum allowed size of ${this.maxFileSize} bytes`);
+    }
+
+    // Storage quota check (only for user uploads, not system-acquired files)
+    if (source === "user" && this.roleService) {
+      const currentUsage = await this.driveFileRepository.getTotalSize(userId);
+      const quotaMb = await this.roleService.getDriveCapacity(userId);
+
+      // -1 means unlimited
+      if (quotaMb !== -1) {
+        const quotaBytes = quotaMb * 1024 * 1024;
+        if (currentUsage + file.byteLength > quotaBytes) {
+          const usedMb = Math.round(currentUsage / 1024 / 1024);
+          throw new Error(
+            `Storage quota exceeded. Used: ${usedMb}MB / ${quotaMb}MB. Cannot upload file of ${Math.round(file.byteLength / 1024)}KB.`,
+          );
+        }
+      }
     }
 
     // MD5ハッシュ計算（将来の重複排除用）
@@ -176,6 +198,7 @@ export class FileService {
       comment,
       isSensitive,
       storageKey,
+      source,
     });
 
     return driveFile;

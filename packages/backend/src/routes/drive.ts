@@ -33,8 +33,9 @@ drive.post(
     const user = c.get("user")!;
     const driveFileRepository = c.get("driveFileRepository");
     const fileStorage = c.get("fileStorage");
+    const roleService = c.get("roleService");
 
-    const fileService = new FileService(driveFileRepository, fileStorage);
+    const fileService = new FileService(driveFileRepository, fileStorage, roleService);
 
     // multipart/form-data からファイルを取得
     const body = await c.req.parseBody();
