@@ -44,6 +44,25 @@ export function clearInstanceInfoCache(): void {
 }
 
 /**
+ * Update the favicon dynamically
+ */
+function updateFavicon(url: string): void {
+  if (typeof document === "undefined") return;
+
+  // Remove existing favicon links
+  const existingLinks = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]');
+  for (const link of existingLinks) {
+    link.remove();
+  }
+
+  // Create new favicon link
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.href = url;
+  document.head.appendChild(link);
+}
+
+/**
  * Hook to get instance information
  */
 export function useInstanceInfo() {
@@ -55,6 +74,10 @@ export function useInstanceInfo() {
     if (instanceInfoCache) {
       setInstanceInfo(instanceInfoCache);
       setIsLoading(false);
+      // Set favicon if available
+      if (instanceInfoCache.faviconUrl) {
+        updateFavicon(instanceInfoCache.faviconUrl);
+      }
       return;
     }
 
@@ -62,6 +85,10 @@ export function useInstanceInfo() {
       .then((info) => {
         setInstanceInfo(info);
         setIsLoading(false);
+        // Set favicon if available
+        if (info.faviconUrl) {
+          updateFavicon(info.faviconUrl);
+        }
       })
       .catch((err) => {
         setError(err);

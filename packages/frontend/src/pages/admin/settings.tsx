@@ -36,6 +36,7 @@ interface AdminSettings {
     maintainerEmail: string;
     iconUrl: string | null;
     bannerUrl: string | null;
+    faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
   };
@@ -328,6 +329,28 @@ export default function AdminSettingsPage() {
                   disabled={isSaving}
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Favicon URL</Trans>
+              </label>
+              <input
+                type="url"
+                value={settings.instance.faviconUrl || ""}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, faviconUrl: e.target.value || null },
+                  })
+                }
+                placeholder="https://..."
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <p className="mt-1 text-sm text-(--text-muted)">
+                <Trans>Browser tab icon (recommended: 32x32 PNG or ICO)</Trans>
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">

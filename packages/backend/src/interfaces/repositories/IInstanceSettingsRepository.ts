@@ -20,6 +20,7 @@ export type InstanceSettingKey =
   | "instance.maintainerEmail"
   | "instance.iconUrl"
   | "instance.bannerUrl"
+  | "instance.faviconUrl"
   | "instance.tosUrl"
   | "instance.privacyPolicyUrl"
   | "theme.primaryColor"

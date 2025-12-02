@@ -41,6 +41,7 @@ app.get("/", async (c: Context) => {
     maintainerEmail: info.maintainerEmail || null,
     iconUrl: info.iconUrl,
     bannerUrl: info.bannerUrl,
+    faviconUrl: info.faviconUrl,
 
     // Legal links
     tosUrl: info.tosUrl,

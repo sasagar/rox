@@ -30,6 +30,7 @@ export interface InstanceMetadata {
   maintainerEmail: string;
   iconUrl: string | null;
   bannerUrl: string | null;
+  faviconUrl: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
 }
@@ -60,6 +61,7 @@ const DEFAULT_METADATA: InstanceMetadata = {
   maintainerEmail: "",
   iconUrl: null,
   bannerUrl: null,
+  faviconUrl: null,
   tosUrl: null,
   privacyPolicyUrl: null,
 };
@@ -332,6 +334,25 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get instance favicon URL
+   */
+  async getFaviconUrl(): Promise<string | null> {
+    return this.getCachedValue<string | null>("instance.faviconUrl", DEFAULT_METADATA.faviconUrl);
+  }
+
+  /**
+   * Set instance favicon URL
+   */
+  async setFaviconUrl(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.faviconUrl");
+    } else {
+      await this.settingsRepository.set("instance.faviconUrl", url, updatedById);
+    }
+    await this.invalidateCache("instance.faviconUrl");
+  }
+
+  /**
    * Get Terms of Service URL
    */
   async getTosUrl(): Promise<string | null> {
@@ -392,6 +413,7 @@ export class InstanceSettingsService {
       "instance.maintainerEmail",
       "instance.iconUrl",
       "instance.bannerUrl",
+      "instance.faviconUrl",
       "instance.tosUrl",
       "instance.privacyPolicyUrl",
     ];
@@ -404,6 +426,8 @@ export class InstanceSettingsService {
         (values.get("instance.maintainerEmail") as string) ?? DEFAULT_METADATA.maintainerEmail,
       iconUrl: (values.get("instance.iconUrl") as string | null) ?? DEFAULT_METADATA.iconUrl,
       bannerUrl: (values.get("instance.bannerUrl") as string | null) ?? DEFAULT_METADATA.bannerUrl,
+      faviconUrl:
+        (values.get("instance.faviconUrl") as string | null) ?? DEFAULT_METADATA.faviconUrl,
       tosUrl: (values.get("instance.tosUrl") as string | null) ?? DEFAULT_METADATA.tosUrl,
       privacyPolicyUrl:
         (values.get("instance.privacyPolicyUrl") as string | null) ??
@@ -446,6 +470,9 @@ export class InstanceSettingsService {
     }
     if (metadata.bannerUrl !== undefined) {
       await this.setBannerUrl(metadata.bannerUrl, updatedById);
+    }
+    if (metadata.faviconUrl !== undefined) {
+      await this.setFaviconUrl(metadata.faviconUrl, updatedById);
     }
     if (metadata.tosUrl !== undefined) {
       await this.setTosUrl(metadata.tosUrl, updatedById);
@@ -548,6 +575,7 @@ export class InstanceSettingsService {
     maintainerEmail: string;
     iconUrl: string | null;
     bannerUrl: string | null;
+    faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
     registrationEnabled: boolean;
