@@ -176,9 +176,10 @@ upstream rox_frontend {
 }
 
 # Rate limiting zones
-# IMPORTANT: These values are tuned for typical usage.
-# Adjust based on your traffic patterns.
-limit_req_zone $binary_remote_addr zone=api_limit:10m rate=30r/s;
+# IMPORTANT: These values are tuned for Rox's API patterns.
+# Rox frontend makes many concurrent API calls on page load (reactions, instance info, etc.)
+# Adjust based on your traffic patterns and user count.
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=50r/s;
 limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/m;
 limit_conn_zone $binary_remote_addr zone=sse_conn:10m;
 
@@ -208,8 +209,9 @@ server {
 
     # API endpoints (general)
     location /api/ {
-        # Rate limit: 30 requests/second with burst of 50
-        limit_req zone=api_limit burst=50 nodelay;
+        # Rate limit: 50 requests/second with burst of 100
+        # Rox loads many resources concurrently (reactions, instance info, avatars)
+        limit_req zone=api_limit burst=100 nodelay;
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
@@ -223,9 +225,10 @@ server {
     # SSE endpoint (Server-Sent Events for notifications)
     # Requires special configuration for long-lived connections
     location /api/notifications/stream {
-        # Connection limit: 20 concurrent SSE connections per IP
-        # This prevents SSE reconnection storms from overwhelming the server
-        limit_conn sse_conn 20;
+        # Connection limit: 50 concurrent SSE connections per IP
+        # Multiple tabs, reconnection attempts, and mobile background activity
+        # can quickly exhaust lower limits
+        limit_conn sse_conn 50;
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
@@ -398,7 +401,7 @@ grep -E "(limiting|limit_req|503)" /var/log/nginx/rox.error.log | tail -50
 
 1. **`limiting requests, excess: XX by zone "api_limit"`**
 
-   The API rate limit is too restrictive. Increase the rate and burst values:
+   The API rate limit is too restrictive. Rox's frontend makes many concurrent API calls on page load (reactions for each note, instance info, user avatars, etc.). Increase the rate and burst values:
 
    ```nginx
    # Before (too restrictive)
@@ -407,23 +410,23 @@ grep -E "(limiting|limit_req|503)" /var/log/nginx/rox.error.log | tail -50
        limit_req zone=api_limit burst=20 nodelay;
    }
 
-   # After (recommended)
-   limit_req_zone $binary_remote_addr zone=api_limit:10m rate=30r/s;
+   # After (recommended for Rox)
+   limit_req_zone $binary_remote_addr zone=api_limit:10m rate=50r/s;
    location /api/ {
-       limit_req zone=api_limit burst=50 nodelay;
+       limit_req zone=api_limit burst=100 nodelay;
    }
    ```
 
 2. **`limiting connections by zone "sse_conn"`**
 
-   SSE connection limit is too low. The frontend may open multiple SSE connections (e.g., for different tabs or reconnection attempts):
+   SSE connection limit is too low. The frontend may open multiple SSE connections (e.g., for different tabs, reconnection attempts after network issues, or mobile background activity):
 
    ```nginx
    # Before (too restrictive)
    limit_conn sse_conn 5;
 
    # After (recommended)
-   limit_conn sse_conn 20;
+   limit_conn sse_conn 50;
    ```
 
 3. **`upstream prematurely closed connection`**
