@@ -114,8 +114,11 @@ export class ActivityDeliveryService {
    * @returns Accept activity
    */
   createAcceptActivity(followActivity: any, acceptorUri: string): any {
+    // Generate a unique ID for the Accept activity
+    const acceptId = `${acceptorUri}#accepts/${Date.now()}`;
     return {
       "@context": "https://www.w3.org/ns/activitystreams",
+      id: acceptId,
       type: "Accept",
       actor: acceptorUri,
       object: followActivity,

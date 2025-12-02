@@ -9,8 +9,12 @@
  */
 
 import { Hono } from "hono";
+import rootPackageJson from "../../../../../package.json";
 
 const app = new Hono();
+
+// Get version from root package.json
+const ROX_VERSION = rootPackageJson.version;
 
 /**
  * NodeInfo Discovery Endpoint
@@ -75,9 +79,9 @@ app.get("/nodeinfo/2.1", async (c) => {
     version: "2.1",
     software: {
       name: "rox",
-      version: "0.1.0", // TODO: Read from package.json
-      repository: "https://github.com/your-org/rox", // TODO: Update with actual repo
-      homepage: "https://github.com/your-org/rox", // TODO: Update with actual homepage
+      version: ROX_VERSION,
+      repository: "https://github.com/sasapiyo/rox",
+      homepage: "https://github.com/sasapiyo/rox",
     },
     protocols: ["activitypub"],
     services: {
@@ -142,7 +146,7 @@ app.get("/nodeinfo/2.0", async (c) => {
     version: "2.0",
     software: {
       name: "rox",
-      version: "0.1.0",
+      version: ROX_VERSION,
     },
     protocols: ["activitypub"],
     services: {

@@ -17,6 +17,7 @@ mock.module("../../../services/ap/ActivityDeliveryService", () => ({
   ActivityDeliveryService: class {
     createAcceptActivity = mock(() => ({
       "@context": "https://www.w3.org/ns/activitystreams",
+      id: "http://localhost:3000/users/localuser#accepts/123456789",
       type: "Accept",
       actor: "http://localhost:3000/users/localuser",
       object: {},

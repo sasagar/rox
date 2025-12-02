@@ -69,7 +69,9 @@ export function ErrorMessage({
           <h3 className={`font-semibold ${textColor} mb-1`}>{title}</h3>
 
           {/* Detailed message */}
-          {message && <p className={`text-sm ${textColor} opacity-90 break-words`}>{message}</p>}
+          {message && (
+            <p className={`text-sm ${textColor} opacity-90 wrap-break-word`}>{message}</p>
+          )}
 
           {/* Retry button */}
           {onRetry && (
