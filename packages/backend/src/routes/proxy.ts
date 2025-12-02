@@ -26,6 +26,8 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/webp",
   "image/avif",
   "image/svg+xml",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
   // Audio
   "audio/mpeg",
   "audio/ogg",

@@ -258,14 +258,20 @@ function NoteCardComponent({
                 >
                   {remoteInstance?.iconUrl ? (
                     <img
-                      src={remoteInstance.iconUrl}
+                      src={`/api/proxy?url=${encodeURIComponent(remoteInstance.iconUrl)}`}
                       alt=""
                       className="w-3.5 h-3.5 rounded-sm object-contain"
                       loading="lazy"
+                      onError={(e) => {
+                        // Hide broken image and show fallback
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.nextElementSibling?.classList.remove("hidden");
+                      }}
                     />
-                  ) : (
-                    <Globe className="w-3 h-3" />
-                  )}
+                  ) : null}
+                  <Globe
+                    className={`w-3 h-3 ${remoteInstance?.iconUrl ? "hidden" : ""}`}
+                  />
                   <span className="truncate">
                     {remoteInstance?.name || note.user.host}
                   </span>
