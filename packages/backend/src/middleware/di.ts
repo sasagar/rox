@@ -26,6 +26,7 @@ export function diMiddleware() {
     c.set("moderationAuditLogRepository", container.moderationAuditLogRepository);
     c.set("userWarningRepository", container.userWarningRepository);
     c.set("notificationRepository", container.notificationRepository);
+    c.set("remoteInstanceRepository", container.remoteInstanceRepository);
     c.set("fileStorage", container.fileStorage);
     c.set("cacheService", container.cacheService);
     c.set("activityDeliveryQueue", container.activityDeliveryQueue);
@@ -37,6 +38,7 @@ export function diMiddleware() {
     c.set("migrationService", container.migrationService);
     c.set("notificationService", container.notificationService);
     c.set("webPushService", container.webPushService);
+    c.set("remoteInstanceService", container.remoteInstanceService);
 
     // Also set the container itself for routes that need multiple services
     c.set("container", container);

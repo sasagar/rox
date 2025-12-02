@@ -529,6 +529,32 @@ export const pushSubscriptions = pgTable(
   }),
 );
 
+// Remote instances table (caches information about federated servers)
+export const remoteInstances = pgTable(
+  "remote_instances",
+  {
+    host: text("host").primaryKey(), // Domain of the remote instance (e.g., "misskey.io")
+    softwareName: text("software_name"), // Software name (e.g., "misskey", "mastodon", "gotosocial")
+    softwareVersion: text("software_version"), // Software version
+    name: text("name"), // Instance name
+    description: text("description"), // Instance description
+    iconUrl: text("icon_url"), // Instance icon/favicon URL
+    themeColor: text("theme_color"), // Theme color (hex code like "#86b300")
+    openRegistrations: boolean("open_registrations"), // Whether registrations are open
+    usersCount: integer("users_count"), // Number of users
+    notesCount: integer("notes_count"), // Number of posts/notes
+    isBlocked: boolean("is_blocked").notNull().default(false), // Whether this instance is blocked
+    lastFetchedAt: timestamp("last_fetched_at"), // When info was last fetched
+    fetchErrorCount: integer("fetch_error_count").notNull().default(0), // Number of consecutive fetch errors
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    softwareNameIdx: index("remote_instance_software_name_idx").on(table.softwareName),
+    lastFetchedAtIdx: index("remote_instance_last_fetched_at_idx").on(table.lastFetchedAt),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -566,3 +592,5 @@ export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
+export type RemoteInstance = typeof remoteInstances.$inferSelect;
+export type NewRemoteInstance = typeof remoteInstances.$inferInsert;

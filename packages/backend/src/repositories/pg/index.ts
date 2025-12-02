@@ -14,3 +14,4 @@ export * from "./PostgresCustomEmojiRepository.js";
 export * from "./PostgresModerationAuditLogRepository.js";
 export * from "./PostgresUserWarningRepository.js";
 export * from "./PostgresNotificationRepository.js";
+export * from "./PostgresRemoteInstanceRepository.js";

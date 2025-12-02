@@ -5,7 +5,8 @@ import { useAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { MessageCircle, Repeat2, MoreHorizontal, Flag } from "lucide-react";
+import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Card, CardContent } from "../ui/Card";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -73,6 +74,18 @@ function NoteCardComponent({
   const [reactionEmojis, setReactionEmojis] = useState<Record<string, string>>(
     note.reactionEmojis || {},
   );
+  const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+
+  // Load remote instance info for remote users
+  useEffect(() => {
+    if (note.user.host) {
+      getRemoteInstanceInfo(note.user.host).then((info) => {
+        if (info) {
+          setRemoteInstance(info);
+        }
+      });
+    }
+  }, [note.user.host]);
 
   // Load user's existing reactions and custom emoji URLs on mount
   useEffect(() => {
@@ -251,14 +264,42 @@ function NoteCardComponent({
                 @{note.user.username}
                 {note.user.host && `@${note.user.host}`}
               </a>
-              {/* Remote instance badge */}
+              {/* Remote instance badge with server info */}
               {note.user.host && (
-                <span
-                  className="inline-flex items-center px-1.5 py-0.5 text-xs rounded bg-(--bg-tertiary) text-(--text-muted) truncate max-w-[120px]"
-                  title={`From ${note.user.host}`}
+                <a
+                  href={`https://${note.user.host}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-[160px]"
+                  style={{
+                    backgroundColor: remoteInstance?.themeColor
+                      ? `${remoteInstance.themeColor}20`
+                      : "var(--bg-tertiary)",
+                    color: remoteInstance?.themeColor || "var(--text-muted)",
+                    borderLeft: remoteInstance?.themeColor
+                      ? `2px solid ${remoteInstance.themeColor}`
+                      : undefined,
+                  }}
+                  title={
+                    remoteInstance
+                      ? `${remoteInstance.name || note.user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                      : `From ${note.user.host}`
+                  }
                 >
-                  🌐 {note.user.host}
-                </span>
+                  {remoteInstance?.iconUrl ? (
+                    <img
+                      src={remoteInstance.iconUrl}
+                      alt=""
+                      className="w-3.5 h-3.5 rounded-sm object-contain"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <Globe className="w-3 h-3" />
+                  )}
+                  <span className="truncate">
+                    {remoteInstance?.name || note.user.host}
+                  </span>
+                </a>
               )}
             </div>
             <a

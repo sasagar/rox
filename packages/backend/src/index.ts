@@ -36,6 +36,7 @@ import notificationsRoute from "./routes/notifications.js";
 import pushRoute from "./routes/push.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
+import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshService.js";
 import { getContainer } from "./di/container.js";
 
 const app = new Hono();
@@ -111,6 +112,19 @@ const cleanupService = new ReceivedActivitiesCleanupService({
 });
 cleanupService.start();
 
+// Start remote instance refresh service
+const container = getContainer();
+const remoteInstanceRefreshService = new RemoteInstanceRefreshService(
+  container.remoteInstanceRepository,
+  {
+    intervalMs: 60 * 60 * 1000, // 1 hour
+    staleTTLMs: 24 * 60 * 60 * 1000, // 24 hours
+    batchSize: 20,
+    maxErrorCount: 5,
+  },
+);
+remoteInstanceRefreshService.start();
+
 // Graceful shutdown handler
 let isShuttingDown = false;
 
@@ -133,9 +147,11 @@ async function gracefulShutdown(signal: string): Promise<void> {
     logger.info("Stopping cleanup service");
     cleanupService.stop();
 
+    logger.info("Stopping remote instance refresh service");
+    remoteInstanceRefreshService.stop();
+
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");
-    const container = getContainer();
     await container.activityDeliveryQueue.shutdown();
 
     logger.info("Graceful shutdown complete");

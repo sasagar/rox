@@ -17,6 +17,7 @@ import type {
   IModerationAuditLogRepository,
   IUserWarningRepository,
   INotificationRepository,
+  IRemoteInstanceRepository,
 } from "../interfaces/repositories/index.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
@@ -37,6 +38,7 @@ import {
   PostgresModerationAuditLogRepository,
   PostgresUserWarningRepository,
   PostgresNotificationRepository,
+  PostgresRemoteInstanceRepository,
 } from "../repositories/pg/index.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
@@ -49,6 +51,7 @@ import { InstanceSettingsService } from "../services/InstanceSettingsService.js"
 import { MigrationService } from "../services/MigrationService.js";
 import { NotificationService } from "../services/NotificationService.js";
 import { WebPushService } from "../services/WebPushService.js";
+import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -67,6 +70,7 @@ export interface AppContainer {
   moderationAuditLogRepository: IModerationAuditLogRepository;
   userWarningRepository: IUserWarningRepository;
   notificationRepository: INotificationRepository;
+  remoteInstanceRepository: IRemoteInstanceRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -78,6 +82,7 @@ export interface AppContainer {
   migrationService: MigrationService;
   notificationService: NotificationService;
   webPushService: WebPushService;
+  remoteInstanceService: RemoteInstanceService;
 }
 
 /**
@@ -159,6 +164,9 @@ export function createContainer(): AppContainer {
   // Wire up WebPushService with NotificationService
   notificationService.setWebPushService(webPushService);
 
+  // Remote Instance Service for fetching federated server metadata
+  const remoteInstanceService = new RemoteInstanceService(repositories.remoteInstanceRepository);
+
   return {
     ...repositories,
     fileStorage,
@@ -172,6 +180,7 @@ export function createContainer(): AppContainer {
     migrationService,
     notificationService,
     webPushService,
+    remoteInstanceService,
   };
 }
 
@@ -198,6 +207,7 @@ function createRepositories(db: any, dbType: string) {
         moderationAuditLogRepository: new PostgresModerationAuditLogRepository(db),
         userWarningRepository: new PostgresUserWarningRepository(db),
         notificationRepository: new PostgresNotificationRepository(db),
+        remoteInstanceRepository: new PostgresRemoteInstanceRepository(db),
       };
 
     case "mysql":
