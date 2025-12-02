@@ -94,4 +94,10 @@ export interface INoteRepository {
    * @param localOnly ローカルノートのみをカウントする場合はtrue
    */
   count(localOnly?: boolean): Promise<number>;
+
+  /**
+   * 特定ユーザーのノート数を取得
+   * @param userId ユーザーID
+   */
+  countByUserId(userId: string): Promise<number>;
 }

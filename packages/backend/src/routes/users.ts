@@ -264,6 +264,7 @@ app.get("/search", async (c) => {
 app.get("/show", optionalAuth(), async (c) => {
   const userRepository = c.get("userRepository");
   const followRepository = c.get("followRepository");
+  const noteRepository = c.get("noteRepository");
   const userId = c.req.query("userId");
   const username = c.req.query("username");
 
@@ -292,7 +293,14 @@ app.get("/show", optionalAuth(), async (c) => {
     isFollowed = await followRepository.exists(currentUser.id, user.id);
   }
 
-  return c.json({ ...publicUser, isFollowed });
+  // Fetch counts in parallel
+  const [notesCount, followersCount, followingCount] = await Promise.all([
+    noteRepository.countByUserId(user.id),
+    followRepository.countFollowers(user.id),
+    followRepository.countFollowing(user.id),
+  ]);
+
+  return c.json({ ...publicUser, isFollowed, notesCount, followersCount, followingCount });
 });
 
 /**

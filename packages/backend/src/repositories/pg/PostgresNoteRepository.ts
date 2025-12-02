@@ -325,6 +325,15 @@ export class PostgresNoteRepository implements INoteRepository {
     return result?.count ?? 0;
   }
 
+  async countByUserId(userId: string): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(notes)
+      .where(and(eq(notes.userId, userId), eq(notes.isDeleted, false)));
+
+    return result?.count ?? 0;
+  }
+
   async softDelete(id: string, deletedById: string, reason?: string): Promise<Note | null> {
     const [result] = await this.db
       .update(notes)
