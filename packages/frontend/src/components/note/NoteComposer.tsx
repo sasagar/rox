@@ -13,6 +13,9 @@ import {
   Mail,
   ChevronDown,
   Eye,
+  Save,
+  FileText,
+  Trash2,
 } from "lucide-react";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -77,8 +80,19 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Draft management
-  const { loadDraft, clearDraft, hasDraft } = useDraft();
+  const {
+    loadDraft,
+    clearDraft,
+    hasDraft,
+    saveAsNewDraft,
+    loadDraftById,
+    deleteDraft,
+    startNewDraft,
+    drafts,
+    currentDraftId,
+  } = useDraft();
   const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [showDraftList, setShowDraftList] = useState(false);
 
   // Auto-save draft (only for non-reply posts)
   useAutosaveDraft(
@@ -127,6 +141,66 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       type: "info",
       message: t`Draft discarded`,
     });
+  };
+
+  const handleSaveAsNewDraft = () => {
+    if (!text.trim() && !cw.trim()) {
+      addToast({
+        type: "error",
+        message: t`Cannot save empty draft`,
+      });
+      return;
+    }
+
+    saveAsNewDraft({ text, cw, showCw, visibility });
+    addToast({
+      type: "success",
+      message: t`Draft saved`,
+    });
+  };
+
+  const handleLoadDraft = (id: string) => {
+    const draft = loadDraftById(id);
+    if (draft) {
+      setText(draft.text);
+      setCw(draft.cw);
+      setShowCw(draft.showCw);
+      setVisibility(draft.visibility);
+      setShowDraftList(false);
+
+      // Auto-resize textarea
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
+
+      addToast({
+        type: "success",
+        message: t`Draft loaded`,
+      });
+    }
+  };
+
+  const handleDeleteDraft = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteDraft(id);
+    addToast({
+      type: "info",
+      message: t`Draft deleted`,
+    });
+  };
+
+  const handleNewDraft = () => {
+    startNewDraft();
+    setText("");
+    setCw("");
+    setShowCw(false);
+    setVisibility("public");
+    setShowDraftList(false);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const maxLength = NOTE_TEXT_MAX_LENGTH;
@@ -494,6 +568,99 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 >
                   <Eye className="w-5 h-5" />
                 </button>
+
+                {/* Save draft button */}
+                <button
+                  onClick={handleSaveAsNewDraft}
+                  disabled={isSubmitting || (!text.trim() && !cw.trim())}
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-gray-400"
+                  type="button"
+                  title={t`Save draft`}
+                  aria-label={t`Save draft`}
+                >
+                  <Save className="w-5 h-5" />
+                </button>
+
+                {/* Drafts list button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDraftList(!showDraftList)}
+                    disabled={isSubmitting}
+                    className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
+                      showDraftList
+                        ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                        : "text-gray-600 dark:text-gray-400"
+                    }`}
+                    type="button"
+                    title={t`Drafts`}
+                    aria-label={t`Drafts`}
+                    aria-expanded={showDraftList}
+                  >
+                    <FileText className="w-5 h-5" />
+                    {drafts.length > 0 && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[10px] font-bold text-white bg-primary-500 rounded-full">
+                        {drafts.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Drafts dropdown */}
+                  {showDraftList && (
+                    <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          <Trans>Drafts</Trans> ({drafts.length})
+                        </span>
+                        <button
+                          onClick={handleNewDraft}
+                          className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                          type="button"
+                        >
+                          <Trans>New</Trans>
+                        </button>
+                      </div>
+                      <div className="max-h-60 overflow-y-auto">
+                        {drafts.length === 0 ? (
+                          <div className="px-3 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
+                            <Trans>No drafts saved</Trans>
+                          </div>
+                        ) : (
+                          drafts.map((draft) => (
+                            <div
+                              key={draft.id}
+                              onClick={() => handleLoadDraft(draft.id)}
+                              onKeyDown={(e) => e.key === "Enter" && handleLoadDraft(draft.id)}
+                              className={`flex items-start justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                currentDraftId === draft.id
+                                  ? "bg-primary-50 dark:bg-primary-900/20"
+                                  : ""
+                              }`}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <div className="flex-1 min-w-0 mr-2">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                  {draft.title || draft.text.slice(0, 30) || t`Empty draft`}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  {new Date(draft.timestamp).toLocaleString()}
+                                </p>
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteDraft(draft.id, e)}
+                                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
+                                type="button"
+                                aria-label={t`Delete draft`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Visibility selector */}
                 <Select

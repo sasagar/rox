@@ -109,7 +109,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:69
+#: src/components/layout/Sidebar.tsx:71
 msgid "Admin"
 msgstr "管理"
 
@@ -184,7 +184,7 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Audit Logs"
 msgstr "監査ログ"
 
-#: src/components/note/NoteComposer.tsx:201
+#: src/components/note/NoteComposer.tsx:275
 msgid "Authentication required"
 msgstr "認証が必要です"
 
@@ -296,6 +296,10 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/settings.tsx:274
 msgid "Cancel"
 msgstr "キャンセル"
+
+#: src/components/note/NoteComposer.tsx:150
+msgid "Cannot save empty draft"
+msgstr "空の下書きは保存できません"
 
 #: src/pages/admin/emojis.tsx:473
 msgid "Category"
@@ -460,6 +464,10 @@ msgstr "削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
+#: src/components/note/NoteComposer.tsx:653
+msgid "Delete draft"
+msgstr "下書きを削除"
+
 #: src/pages/mod/audit-logs.tsx:244
 msgid "Delete Note"
 msgstr "ノートを削除"
@@ -495,7 +503,7 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
-#: src/components/note/NoteComposer.tsx:283
+#: src/components/note/NoteComposer.tsx:357
 msgid "Direct"
 msgstr "ダイレクト"
 
@@ -503,7 +511,7 @@ msgstr "ダイレクト"
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/components/note/NoteComposer.tsx:339
+#: src/components/note/NoteComposer.tsx:413
 msgid "Discard"
 msgstr "破棄"
 
@@ -520,13 +528,31 @@ msgstr "表示設定"
 msgid "Don't have an account?"
 msgstr "アカウントをお持ちでないですか？"
 
-#: src/components/note/NoteComposer.tsx:128
+#: src/components/note/NoteComposer.tsx:189
+msgid "Draft deleted"
+msgstr "下書きを削除しました"
+
+#: src/components/note/NoteComposer.tsx:142
 msgid "Draft discarded"
 msgstr "下書きを破棄しました"
 
-#: src/components/note/NoteComposer.tsx:118
+#: src/components/note/NoteComposer.tsx:179
+msgid "Draft loaded"
+msgstr "下書きを読み込みました"
+
+#: src/components/note/NoteComposer.tsx:132
 msgid "Draft restored"
 msgstr "下書きを復元しました"
+
+#: src/components/note/NoteComposer.tsx:158
+msgid "Draft saved"
+msgstr "下書きを保存しました"
+
+#: src/components/note/NoteComposer.tsx:595
+#: src/components/note/NoteComposer.tsx:596
+#: src/components/note/NoteComposer.tsx:612
+msgid "Drafts"
+msgstr "下書き"
 
 #: src/pages/admin/emojis.tsx:511
 msgid "e.g., CC BY 4.0"
@@ -588,6 +614,10 @@ msgstr "絵文字名"
 #: src/pages/admin/roles.tsx:646
 msgid "Emojis"
 msgstr "絵文字"
+
+#: src/components/note/NoteComposer.tsx:643
+msgid "Empty draft"
+msgstr "空の下書き"
 
 #: src/components/settings/PushNotificationSection.tsx:185
 msgid "Enable"
@@ -775,7 +805,7 @@ msgid "Failed to update follow status"
 msgstr "フォロー状態の更新に失敗しました"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:228
+#: src/components/note/NoteComposer.tsx:302
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
@@ -829,7 +859,7 @@ msgstr "フォロー"
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
-#: src/components/note/NoteComposer.tsx:282
+#: src/components/note/NoteComposer.tsx:356
 #: src/components/user/UserProfile.tsx:459
 msgid "Followers"
 msgstr "フォロワー"
@@ -866,8 +896,8 @@ msgstr "始める"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
-#: src/components/layout/Sidebar.tsx:35
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/layout/Sidebar.tsx:37
+#: src/components/note/NoteComposer.tsx:355
 #: src/pages/timeline.tsx:135
 msgid "Home"
 msgstr "ホーム"
@@ -1146,6 +1176,10 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
+#: src/components/note/NoteComposer.tsx:619
+msgid "New"
+msgstr "新規"
+
 #: src/pages/admin/settings.tsx:481
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
@@ -1173,6 +1207,10 @@ msgstr "カスタム絵文字がまだありません"
 #: src/pages/mod/notes.tsx:192
 msgid "No deleted notes"
 msgstr "削除されたノートはありません"
+
+#: src/components/note/NoteComposer.tsx:625
+msgid "No drafts saved"
+msgstr "保存された下書きはありません"
 
 #: src/components/ui/EmojiPicker.tsx:972
 msgid "No emojis found"
@@ -1251,7 +1289,7 @@ msgstr "ノートのモデレーション"
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
-#: src/components/note/NoteComposer.tsx:260
+#: src/components/note/NoteComposer.tsx:334
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
@@ -1292,7 +1330,7 @@ msgstr "モデレーターが削除したノートがここに表示されます
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:47
+#: src/components/layout/Sidebar.tsx:49
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1346,7 +1384,7 @@ msgstr "権限"
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
-#: src/components/note/NoteComposer.tsx:191
+#: src/components/note/NoteComposer.tsx:265
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
@@ -1354,11 +1392,11 @@ msgstr "テキストを入力するかファイルを添付してください"
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
-#: src/components/note/NoteComposer.tsx:594
+#: src/components/note/NoteComposer.tsx:761
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:590
+#: src/components/note/NoteComposer.tsx:757
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -1371,7 +1409,7 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:394
+#: src/components/note/NoteComposer.tsx:468
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
 #: src/pages/admin/settings.tsx:640
@@ -1402,7 +1440,7 @@ msgstr "プライバシーポリシー"
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:53
+#: src/components/layout/Sidebar.tsx:55
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -1414,7 +1452,7 @@ msgstr "プロフィールを更新しました"
 msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
-#: src/components/note/NoteComposer.tsx:280
+#: src/components/note/NoteComposer.tsx:354
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "公開"
@@ -1567,12 +1605,12 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:592
+#: src/components/note/NoteComposer.tsx:759
 #: src/pages/notifications.tsx:242
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:358
+#: src/components/note/NoteComposer.tsx:432
 msgid "Replying to"
 msgstr "返信先:"
 
@@ -1692,7 +1730,7 @@ msgstr "解決済み"
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
-#: src/components/note/NoteComposer.tsx:331
+#: src/components/note/NoteComposer.tsx:405
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "復元"
@@ -1746,6 +1784,11 @@ msgstr "ロール"
 msgid "Save Changes"
 msgstr "変更を保存"
 
+#: src/components/note/NoteComposer.tsx:578
+#: src/components/note/NoteComposer.tsx:579
+msgid "Save draft"
+msgstr "下書きを保存"
+
 #: src/pages/admin/settings.tsx:400
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
@@ -1767,7 +1810,7 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/layout/Sidebar.tsx:41
+#: src/components/layout/Sidebar.tsx:43
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -1818,7 +1861,7 @@ msgstr "テスト送信"
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/components/layout/Sidebar.tsx:59
+#: src/components/layout/Sidebar.tsx:61
 #: src/pages/settings.tsx:133
 msgid "Settings"
 msgstr "設定"
@@ -1941,7 +1984,7 @@ msgstr "テスト"
 msgid "Test notification"
 msgstr "テスト通知"
 
-#: src/components/note/NoteComposer.tsx:196
+#: src/components/note/NoteComposer.tsx:270
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
@@ -2071,11 +2114,11 @@ msgstr "絵文字を更新"
 msgid "Update Role"
 msgstr "ロールを更新"
 
-#: src/components/note/NoteComposer.tsx:430
+#: src/components/note/NoteComposer.tsx:504
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:588
+#: src/components/note/NoteComposer.tsx:755
 #: src/pages/admin/emojis.tsx:441
 msgid "Uploading..."
 msgstr "アップロード中..."
@@ -2218,7 +2261,7 @@ msgstr "{1}時間あたり最大{0}個の招待コードを作成できます"
 msgid "You have already reported this"
 msgstr "既に報告済みです"
 
-#: src/components/note/NoteComposer.tsx:321
+#: src/components/note/NoteComposer.tsx:395
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
