@@ -22,7 +22,11 @@ interfaces/repositories/
 ├── ICustomEmojiRepository.ts
 ├── IModerationAuditLogRepository.ts
 ├── IUserWarningRepository.ts
-└── IInvitationCodeRepository.ts
+├── IInvitationCodeRepository.ts
+├── INotificationRepository.ts
+├── IReceivedActivityRepository.ts
+├── IRemoteInstanceRepository.ts
+└── IScheduledNoteRepository.ts
 ```
 
 Implementations per database type:
@@ -75,6 +79,12 @@ services/
 ├── RoleService.ts          # RBAC
 ├── InstanceSettingsService.ts
 ├── MigrationService.ts     # Account migration
+├── NotificationService.ts  # Notifications
+├── NotificationStreamService.ts  # SSE push
+├── ScheduledNoteService.ts # Scheduled posts
+├── ScheduledNotePublisher.ts
+├── RemoteInstanceService.ts  # Instance info
+├── WebPushService.ts       # Web push
 └── ap/                     # ActivityPub
     ├── RemoteActorService.ts
     ├── RemoteNoteService.ts
@@ -147,6 +157,16 @@ packages/frontend/src/
 - User warnings
 - Instance blocking
 - Audit logs
+
+### Notifications API (`/api/notifications/*`)
+- List notifications
+- SSE stream for real-time updates
+- Mark as read
+- Delete notifications
+
+### Push API (`/api/push/*`)
+- Web push subscription management
+- VAPID key endpoint
 
 ### ActivityPub
 - `/.well-known/webfinger`

@@ -1,73 +1,48 @@
-# Session Handoff - 2025-11-28
+# Session Status - 2025-12-03
 
 ## Current Status
 
-### Completed Features
+### Recently Completed Features
 
-#### Phase 5: Moderation System ✅
-- **Moderator Dashboard** (`/mod/*`)
-  - Reports management (`/mod/reports`)
-  - Note moderation with soft-delete (`/mod/notes`)
-  - User suspension management (`/mod/users`)
-  - Instance blocking (`/mod/instances`)
-  - Audit log viewer (`/mod/audit-logs`)
+#### UI Improvements (Latest)
+- **Collapsible Sidebar**: Desktop sidebar can collapse to icon-only mode
+  - Uses favicon when collapsed, full logo when expanded
+  - Persists state to localStorage via Jotai atom
+  - Files: `src/lib/atoms/sidebar.ts`, `src/components/layout/Sidebar.tsx`
 
-- **User Warning System**
-  - Database: `user_warnings` table (migration 0017)
-  - Repository: `IUserWarningRepository` + PostgreSQL implementation
-  - API endpoints for warnings
-  - Frontend UI on `/mod/users` page
+- **Scroll-to-Top Button**: Floating button on timeline when scrolling down
+  - File: `src/components/ui/ScrollToTop.tsx`
 
-#### Account Migration ✅
-- Move activity handler
-- Alias management (alsoKnownAs)
-- Migration initiation/validation
-- 30-day cooldown enforcement
+- **Global UI Settings**: Font size and line height now apply to entire UI
+  - CSS applies `--rox-font-size` to `html` element
+  - All Tailwind rem-based sizes scale accordingly
+  - File: `src/styles/globals.css`
 
-#### Redis Caching ✅
-- InstanceSettingsService caching
-- RoleService policy caching
-- Public key caching for HTTP signatures
+- **Note Page Routing Fix**: `/notes/:id` now properly serves HTML pages
+  - ActivityPub endpoint only responds to AP Accept headers
+  - File: `src/routes/ap/note.ts`
 
-#### Rate Limiting ✅
-- Rate limit middleware with role-based adjustments
-- Presets: `follow`, `reaction`, `fileUpload`, `write`
-- Integration with RoleService `rateLimitFactor`
+#### Admin Features
+- **Federation Admin Page** (`/admin/federation`)
+  - View all federated instances
+  - Refresh instance info
+  - Instance blocking/unblocking
 
-#### Notification System ✅ (Latest)
-- Database: `notifications` table (migration 0018)
-- Repository: `INotificationRepository` + PostgreSQL implementation
-- Service: `NotificationService` with methods for all notification types
-- API endpoints:
-  - `GET /api/notifications` - List notifications
-  - `GET /api/notifications/unread-count` - Get unread count
-  - `POST /api/notifications/mark-as-read` - Mark single as read
-  - `POST /api/notifications/mark-all-as-read` - Mark all as read
-  - `POST /api/notifications/mark-as-read-until` - Mark as read until ID
-  - `POST /api/notifications/delete` - Delete notification
-  - `POST /api/notifications/delete-all` - Delete all
-- Integration with:
-  - FollowService (local follow notifications)
-  - FollowHandler (remote follow notifications)
-  - ReactionService (local reaction notifications)
-  - LikeHandler (remote reaction notifications)
-- Notification types: `follow`, `mention`, `reply`, `reaction`, `renote`, `quote`, `warning`, `follow_request_accepted`
+- **Global Timeline** (`/timeline` with type="global")
+  - Shows all public posts including remote notes
+
+#### Previous Features (Stable)
+- Notification system with SSE real-time updates
+- Account migration (Move activity)
+- Moderation system (reports, warnings, suspensions)
+- Role-based access control
+- Instance blocking
+- Custom emoji management
+- MFM support
 
 ### Test Status
-- **407 unit tests** passing
-- All typecheck passing
-
-### Recent Work
-- Notification system implementation complete
-- Follow and reaction notifications integrated
-
-## Next Steps (Priority Order)
-
-1. **Mention/Reply notifications** - Parse notes for @mentions and replies
-2. **Renote/Quote notifications** - Notify when notes are renoted or quoted
-3. **Frontend notification UI** - Display notifications in the client
-4. **Image optimization** improvements
-5. **WebSocket/SSE** for real-time notifications
+- All unit tests passing
+- TypeScript type checking passes
 
 ## Development Environment
 
@@ -80,21 +55,15 @@ PORT=3000 NODE_ENV=development URL=http://localhost:3000 \
 bun run dev
 ```
 
-## Repository Interfaces (Complete List)
+## Frontend Development
 
-1. IUserRepository
-2. INoteRepository
-3. IDriveFileRepository
-4. ISessionRepository
-5. IReactionRepository
-6. IFollowRepository
-7. IInstanceBlockRepository
-8. IInvitationCodeRepository
-9. IUserReportRepository
-10. IRoleRepository
-11. IRoleAssignmentRepository
-12. IInstanceSettingsRepository
-13. ICustomEmojiRepository
-14. IModerationAuditLogRepository
-15. IUserWarningRepository
-16. INotificationRepository ← Latest addition
+```bash
+cd packages/frontend
+bun run dev  # Runs on port 3001
+```
+
+## Potential Next Steps
+1. Web Push notifications (service worker)
+2. Image optimization improvements
+3. Server onboarding wizard
+4. Performance optimizations
