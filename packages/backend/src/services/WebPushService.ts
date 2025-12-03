@@ -200,7 +200,11 @@ export class WebPushService {
     };
 
     try {
-      await webpush.sendNotification(pushSubscription, JSON.stringify(payload));
+      // Set a 30 second timeout for the push notification
+      const options = {
+        timeout: 30000, // 30 seconds
+      };
+      await webpush.sendNotification(pushSubscription, JSON.stringify(payload), options);
       logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
       return true;
     } catch (error: any) {
@@ -214,8 +218,15 @@ export class WebPushService {
         return false;
       }
 
+      // Log detailed error information
       logger.error(
-        { err: error, subscriptionId: subscription.id },
+        {
+          err: error,
+          subscriptionId: subscription.id,
+          statusCode: error.statusCode,
+          message: error.message,
+          endpoint: subscription.endpoint,
+        },
         "Failed to send push notification",
       );
       return false;
