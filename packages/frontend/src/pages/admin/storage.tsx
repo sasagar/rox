@@ -249,14 +249,22 @@ export default function AdminStoragePage() {
 
   if (isLoading || !currentUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <Spinner size="lg" />
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
     );
   }
 
   if (!currentUser.isAdmin) {
-    return null;
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
+    );
   }
 
   const filteredTopUsers = stats?.topUsers.filter(

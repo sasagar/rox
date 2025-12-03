@@ -33,9 +33,17 @@ export const tokenAtom = atomWithStorage<string | null>(
 );
 
 /**
- * Current user atom
+ * Current user atom with localStorage sync
+ * Uses atomWithStorage to persist user data across page navigations
+ * This ensures sidebar and other user-dependent UI elements render correctly
+ * even before the auth session is re-validated
  */
-export const currentUserAtom = atom<User | null>(null);
+export const currentUserAtom = atomWithStorage<User | null>(
+  "currentUser",
+  null,
+  createClientStorage<User | null>(),
+  { getOnInit: true },
+);
 
 /**
  * Derived atom: is user authenticated?

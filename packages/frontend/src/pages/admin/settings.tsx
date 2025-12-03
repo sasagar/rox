@@ -167,14 +167,22 @@ export default function AdminSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary)">
-        <Spinner size="lg" />
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
     );
   }
 
   if (!currentUser?.isAdmin) {
-    return null;
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
+    );
   }
 
   return (
