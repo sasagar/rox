@@ -38,7 +38,7 @@ export function createDatabase(): Database {
       const client = postgres(databaseUrl, {
         max: parseInt(process.env.DB_POOL_MAX || "10", 10), // Max connections in pool
         idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10), // Close idle connections after 20s
-        max_lifetime: parseInt(process.env.DB_MAX_LIFETIME || "1800", 10), // Max connection lifetime 30min
+        max_lifetime: parseInt(process.env.DB_MAX_LIFETIME || "600", 10), // Max connection lifetime 10min (reduced from 30min to prevent timeout overflow)
         connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "30", 10), // Connection timeout 30s
       });
       return drizzlePg(client, { schema: pgSchema }) as Database;
