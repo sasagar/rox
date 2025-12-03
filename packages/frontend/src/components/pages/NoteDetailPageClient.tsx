@@ -118,10 +118,10 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
             <li aria-hidden="true">/</li>
             <li>
               <a
-                href={`/@${note.user.username}`}
+                href={`/@${note.user.username}${note.user.host ? `@${note.user.host}` : ""}`}
                 className="hover:text-primary-600 dark:hover:text-primary-400"
               >
-                @{note.user.username}
+                @{note.user.username}{note.user.host ? `@${note.user.host}` : ""}
               </a>
             </li>
             <li aria-hidden="true">/</li>
