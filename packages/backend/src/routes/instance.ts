@@ -9,8 +9,28 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { InstanceSettingsService } from "../services/InstanceSettingsService.js";
 import type { RemoteInstanceService } from "../services/RemoteInstanceService.js";
+
+// Read version from root package.json at startup
+let ROX_VERSION = "0.1.0";
+try {
+  // Try to read from root package.json (../../.. from src/routes/instance.ts)
+  const rootPackageJsonPath = join(import.meta.dir, "../../../package.json");
+  const packageJson = JSON.parse(readFileSync(rootPackageJsonPath, "utf-8"));
+  ROX_VERSION = packageJson.version || ROX_VERSION;
+} catch {
+  // If that fails, try monorepo root (../../../../../package.json)
+  try {
+    const monorepoPackageJsonPath = join(import.meta.dir, "../../../../../package.json");
+    const packageJson = JSON.parse(readFileSync(monorepoPackageJsonPath, "utf-8"));
+    ROX_VERSION = packageJson.version || ROX_VERSION;
+  } catch {
+    // Fallback to default version
+  }
+}
 
 const app = new Hono();
 
@@ -64,7 +84,7 @@ app.get("/", async (c: Context) => {
     // Software info
     software: {
       name: "rox",
-      version: process.env.npm_package_version || "0.1.0",
+      version: ROX_VERSION,
       repository: "https://github.com/Love-rox/rox",
     },
   });
@@ -159,6 +179,67 @@ app.post("/remote/batch", async (c: Context) => {
   }
 
   return c.json(result);
+});
+
+/**
+ * Get PWA Manifest
+ *
+ * GET /api/instance/manifest.json
+ *
+ * Returns a dynamically generated PWA manifest based on instance settings.
+ * Uses instance name, description, theme color, and icon.
+ */
+app.get("/manifest.json", async (c: Context) => {
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
+  const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
+
+  const [metadata, theme] = await Promise.all([
+    instanceSettingsService.getInstanceMetadata(),
+    instanceSettingsService.getThemeSettings(),
+  ]);
+
+  const instanceUrl = process.env.URL || "http://localhost:3000";
+
+  // Build icons array - use instance icon if available, otherwise default favicon
+  const icons = [];
+  const iconUrl = metadata.iconUrl || "/favicon.png";
+
+  icons.push(
+    {
+      src: iconUrl,
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "any maskable",
+    },
+    {
+      src: iconUrl,
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "any maskable",
+    },
+  );
+
+  const manifest = {
+    name: metadata.name || "Rox",
+    short_name: metadata.name || "Rox",
+    description: metadata.description || "Lightweight ActivityPub Server",
+    start_url: "/timeline",
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: theme.primaryColor || "#4f46e5",
+    orientation: "portrait-primary",
+    icons,
+    categories: ["social"],
+    scope: "/",
+    lang: "en",
+    dir: "ltr",
+    id: instanceUrl,
+  };
+
+  return c.json(manifest, 200, {
+    "Content-Type": "application/manifest+json",
+    "Cache-Control": "public, max-age=3600",
+  });
 });
 
 export default app;

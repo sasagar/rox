@@ -7,7 +7,7 @@
  */
 
 // Service Worker version - bump this to force cache refresh
-const SW_VERSION = "2.0.0";
+const SW_VERSION = "2.1.0";
 
 // Cache names
 const CACHE_NAME = `rox-cache-v${SW_VERSION}`;
@@ -20,7 +20,7 @@ const STATIC_ASSETS = [
   "/notifications",
   "/login",
   "/favicon.png",
-  "/manifest.json",
+  "/api/instance/manifest.json",
 ];
 
 // Install event - cache static assets
