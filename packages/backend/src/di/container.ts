@@ -261,8 +261,24 @@ function createStorageAdapter(): IFileStorage {
         );
       }
 
-      // S3クライアントの作成
-      // forcePathStyle: true is required for S3-compatible storage (R2, MinIO, etc.)
+      /**
+       * S3クライアントの作成
+       *
+       * IMPORTANT: S3_ENDPOINT Configuration
+       * - S3_ENDPOINT should NOT include the bucket name
+       * - The bucket name is specified separately via S3_BUCKET_NAME
+       *
+       * Correct examples:
+       *   - AWS S3:       https://s3.us-east-1.amazonaws.com
+       *   - Cloudflare R2: https://{account-id}.r2.cloudflarestorage.com
+       *   - MinIO:        http://localhost:9000
+       *
+       * Incorrect (will cause extra directory in paths):
+       *   - https://{bucket-name}.{account-id}.r2.cloudflarestorage.com
+       *
+       * forcePathStyle: true is required for S3-compatible storage (R2, MinIO, etc.)
+       * to use path-style URLs instead of virtual-hosted-style URLs.
+       */
       const s3Client = new S3Client({
         endpoint,
         region,
