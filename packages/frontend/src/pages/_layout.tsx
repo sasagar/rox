@@ -21,8 +21,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       />
       <title>Rox - Lightweight ActivityPub Server</title>
 
-      {/* PWA Meta Tags */}
-      <link rel="manifest" href="/manifest.json" />
+      {/* PWA Meta Tags - manifest is served dynamically from backend */}
+      <link rel="manifest" href="/api/instance/manifest.json" />
       <meta name="theme-color" content="#4f46e5" />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
