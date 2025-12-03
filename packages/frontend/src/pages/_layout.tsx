@@ -25,8 +25,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <link rel="manifest" href="/api/instance/manifest.json" />
       <meta name="theme-color" content="#4f46e5" />
       <meta name="mobile-web-app-capable" content="yes" />
+      {/* iOS PWA Meta Tags - apple-mobile-web-app-capable is deprecated in iOS 26+ but kept for older versions */}
       <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      {/* black-translucent for transparent status bar on iOS (recommended for iOS 26+) */}
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta name="apple-mobile-web-app-title" content="Rox" />
 
       {/* Apple Touch Icon */}

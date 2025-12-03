@@ -161,3 +161,21 @@ body {
     padding-top: max(env(safe-area-inset-top, 0px), 8px);
   }
 }
+
+/* iOS 26+ PWA Compatibility
+ * iOS 26 has issues with fixed/sticky elements and viewport calculations.
+ * Using dvh (dynamic viewport height) and overscroll-behavior helps.
+ * Reference: https://stackoverflow.com/questions/79753701/
+ */
+@supports (height: 100dvh) {
+  @media all and (display-mode: standalone) {
+    html {
+      height: 100dvh;
+    }
+
+    body {
+      min-height: 100dvh;
+      overscroll-behavior: contain;
+    }
+  }
+}
