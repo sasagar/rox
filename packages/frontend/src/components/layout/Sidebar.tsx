@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
-import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, PanelLeft } from "lucide-react";
-import { currentUserAtom } from "../../lib/atoms/auth";
+import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, PanelLeft, LogOut } from "lucide-react";
+import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
@@ -20,9 +20,11 @@ import { useInstanceInfo } from "../../hooks/useInstanceInfo";
  */
 export function Sidebar() {
   const [currentUser] = useAtom(currentUserAtom);
+  const [, logout] = useAtom(logoutAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Toggle collapsed state
   const toggleCollapsed = () => {
@@ -113,6 +115,13 @@ export function Sidebar() {
     setIsMobileMenuOpen(false);
   };
 
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setIsMobileMenuOpen(false);
+    await logout();
+  };
+
   // Mobile sidebar content (always expanded)
   const MobileSidebarContent = () => (
     <>
@@ -176,6 +185,21 @@ export function Sidebar() {
             <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
           </div>
         </SpaLink>
+      </div>
+
+      {/* Logout Button */}
+      <div className="p-3 border-t border-(--border-color)">
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="font-medium">
+            {isLoggingOut ? <Trans>Logging out...</Trans> : <Trans>Logout</Trans>}
+          </span>
+        </button>
       </div>
     </>
   );
@@ -284,6 +308,26 @@ export function Sidebar() {
             </div>
           )}
         </SpaLink>
+      </div>
+
+      {/* Logout Button */}
+      <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className={`flex items-center rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 ${
+            isCollapsed ? "justify-center p-2 w-full" : "gap-3 px-3 py-2 w-full"
+          }`}
+          title={isCollapsed ? "Logout" : undefined}
+        >
+          <LogOut className="w-5 h-5" />
+          {!isCollapsed && (
+            <span className="font-medium">
+              {isLoggingOut ? <Trans>Logging out...</Trans> : <Trans>Logout</Trans>}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Expand button when collapsed */}

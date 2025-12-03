@@ -163,7 +163,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:106
+#: src/components/layout/Sidebar.tsx:108
 msgid "Admin"
 msgstr "管理"
 
@@ -1111,7 +1111,7 @@ msgstr "インスタンスのヘッダー画像（最大5MB）"
 msgid "Healthy"
 msgstr "正常"
 
-#: src/components/layout/Sidebar.tsx:72
+#: src/components/layout/Sidebar.tsx:74
 #: src/components/note/NoteComposer.tsx:379
 #: src/pages/timeline.tsx:169
 msgid "Home"
@@ -1334,9 +1334,19 @@ msgstr "ローカルのみ"
 msgid "Log In"
 msgstr "ログイン"
 
+#: src/components/layout/Sidebar.tsx:200
+#: src/components/layout/Sidebar.tsx:327
+msgid "Logging out..."
+msgstr "ログアウト中..."
+
 #: src/pages/login.tsx:57
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
+
+#: src/components/layout/Sidebar.tsx:200
+#: src/components/layout/Sidebar.tsx:327
+msgid "Logout"
+msgstr "ログアウト"
 
 #: src/pages/search.tsx:536
 msgid "Looking up remote user..."
@@ -1626,7 +1636,7 @@ msgstr "モデレーターが削除したノートがここに表示されます
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:84
+#: src/components/layout/Sidebar.tsx:86
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1776,7 +1786,7 @@ msgstr "プライバシーポリシー"
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:90
+#: src/components/layout/Sidebar.tsx:92
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -2206,7 +2216,7 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/layout/Sidebar.tsx:78
+#: src/components/layout/Sidebar.tsx:80
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2278,7 +2288,7 @@ msgstr "センシティブなコンテンツ（NSFW）"
 msgid "Server Assets"
 msgstr "サーバー素材"
 
-#: src/components/layout/Sidebar.tsx:96
+#: src/components/layout/Sidebar.tsx:98
 #: src/pages/settings.tsx:136
 msgid "Settings"
 msgstr "設定"

@@ -163,7 +163,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:106
+#: src/components/layout/Sidebar.tsx:108
 msgid "Admin"
 msgstr "Admin"
 
@@ -1111,7 +1111,7 @@ msgstr "Header image for your instance (max 5MB)"
 msgid "Healthy"
 msgstr "Healthy"
 
-#: src/components/layout/Sidebar.tsx:72
+#: src/components/layout/Sidebar.tsx:74
 #: src/components/note/NoteComposer.tsx:379
 #: src/pages/timeline.tsx:169
 msgid "Home"
@@ -1334,9 +1334,19 @@ msgstr "Local only"
 msgid "Log In"
 msgstr "Log In"
 
+#: src/components/layout/Sidebar.tsx:200
+#: src/components/layout/Sidebar.tsx:327
+msgid "Logging out..."
+msgstr "Logging out..."
+
 #: src/pages/login.tsx:57
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
+
+#: src/components/layout/Sidebar.tsx:200
+#: src/components/layout/Sidebar.tsx:327
+msgid "Logout"
+msgstr "Logout"
 
 #: src/pages/search.tsx:536
 msgid "Looking up remote user..."
@@ -1626,7 +1636,7 @@ msgstr "Notes deleted by moderators will appear here"
 msgid "Notification Sound"
 msgstr "Notification Sound"
 
-#: src/components/layout/Sidebar.tsx:84
+#: src/components/layout/Sidebar.tsx:86
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1776,7 +1786,7 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/components/layout/Sidebar.tsx:90
+#: src/components/layout/Sidebar.tsx:92
 msgid "Profile"
 msgstr "Profile"
 
@@ -2206,7 +2216,7 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
-#: src/components/layout/Sidebar.tsx:78
+#: src/components/layout/Sidebar.tsx:80
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2278,7 +2288,7 @@ msgstr "Sensitive content (NSFW)"
 msgid "Server Assets"
 msgstr "Server Assets"
 
-#: src/components/layout/Sidebar.tsx:96
+#: src/components/layout/Sidebar.tsx:98
 #: src/pages/settings.tsx:136
 msgid "Settings"
 msgstr "Settings"
