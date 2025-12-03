@@ -107,12 +107,12 @@ describe("PasskeyService", () => {
       delete: mock(() => Promise.resolve()),
       updateName: mock(() => Promise.resolve({ ...mockPasskey, name: "New Name" })),
       countByUserId: mock(() => Promise.resolve(2)), // Multiple passkeys by default
-      updateCounter: mock(() => Promise.resolve()),
+      updateCounter: mock(() => Promise.resolve(mockPasskey)),
     };
 
     mockPasskeyChallengeRepo = {
-      create: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date() })),
-      findByChallenge: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date() })),
+      create: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date(), createdAt: new Date() })),
+      findByChallenge: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date(), createdAt: new Date() })),
       deleteByChallenge: mock(() => Promise.resolve()),
     };
 
@@ -147,7 +147,7 @@ describe("PasskeyService", () => {
       const passkeys = await service.getUserPasskeys("user1");
 
       expect(passkeys).toHaveLength(1);
-      expect(passkeys[0].id).toBe("passkey1");
+      expect(passkeys[0]?.id).toBe("passkey1");
       expect(mockPasskeyCredentialRepo.findByUserId).toHaveBeenCalledWith("user1");
     });
 
@@ -222,7 +222,8 @@ describe("PasskeyService", () => {
     });
 
     test("should throw error when deleting last passkey with no password", async () => {
-      const userWithoutPassword: User = { ...mockUser, passwordHash: null };
+      // Empty string represents no password (passkey-only account)
+      const userWithoutPassword: User = { ...mockUser, passwordHash: "" };
       const mockUserRepoNoPassword: MockUserRepo = {
         ...mockUserRepo,
         findById: mock(() => Promise.resolve(userWithoutPassword)),
