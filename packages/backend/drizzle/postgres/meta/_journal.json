@@ -169,6 +169,13 @@
       "when": 1764720965232,
       "tag": "0023_burly_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1764724840521,
+      "tag": "0024_add_drive_folders",
+      "breakpoints": true
     }
   ]
 }

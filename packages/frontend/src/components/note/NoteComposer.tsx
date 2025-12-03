@@ -16,6 +16,7 @@ import {
   Save,
   FileText,
   Trash2,
+  HardDrive,
 } from "lucide-react";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -32,8 +33,10 @@ import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { notesApi } from "../../lib/api/notes";
 import type { NoteVisibility } from "../../lib/api/notes";
-import { uploadFile } from "../../lib/api/drive";
+import { uploadFile, type DriveFile } from "../../lib/api/drive";
 import { useDraft, useAutosaveDraft } from "../../hooks/useDraft";
+import { DrivePickerDialog } from "../drive/DrivePickerDialog";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 export interface NoteComposerProps {
   /**
@@ -71,6 +74,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [showCw, setShowCw] = useState(false);
   const [visibility, setVisibility] = useState<NoteVisibility>("public");
   const [files, setFiles] = useState<File[]>([]);
+  const [driveFiles, setDriveFiles] = useState<DriveFile[]>([]);
+  const [showDrivePicker, setShowDrivePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -78,6 +83,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Total file count (new uploads + drive files)
+  const totalFileCount = files.length + driveFiles.length;
 
   // Draft management
   const {
@@ -217,8 +225,21 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
-    // Limit to 4 files
-    setFiles((prev) => [...prev, ...selectedFiles].slice(0, 4));
+    // Limit to 4 files total (including drive files)
+    const remainingSlots = 4 - totalFileCount;
+    setFiles((prev) => [...prev, ...selectedFiles.slice(0, remainingSlots)]);
+  };
+
+  const removeDriveFile = (fileId: string) => {
+    setDriveFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
+
+  const handleDriveFilesSelect = (selectedFiles: DriveFile[]) => {
+    setDriveFiles((prev) => {
+      // Combine and limit to remaining slots
+      const remainingSlots = 4 - files.length;
+      return [...prev, ...selectedFiles].slice(0, remainingSlots);
+    });
   };
 
   const removeFile = (index: number) => {
@@ -239,7 +260,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     );
 
     if (droppedFiles.length > 0) {
-      setFiles((prev) => [...prev, ...droppedFiles].slice(0, 4));
+      const remainingSlots = 4 - totalFileCount;
+      setFiles((prev) => [...prev, ...droppedFiles.slice(0, remainingSlots)]);
     }
   };
 
@@ -261,7 +283,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   };
 
   const handleSubmit = async () => {
-    if (!text.trim() && files.length === 0) {
+    if (!text.trim() && totalFileCount === 0) {
       setError(t`Please enter text or attach files`);
       return;
     }
@@ -280,9 +302,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     setError(null);
 
     try {
-      // Upload files first and get file IDs
-      const fileIds: string[] = [];
+      // Start with already-uploaded drive file IDs
+      const fileIds: string[] = driveFiles.map((f) => f.id);
 
+      // Upload new files and get their IDs
       if (files.length > 0) {
         setIsUploading(true);
         setUploadProgress(0);
@@ -321,6 +344,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       setShowCw(false);
       setVisibility("public");
       setFiles([]);
+      setDriveFiles([]);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -473,11 +497,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
               </div>
             )}
 
-            {/* File previews */}
-            {files.length > 0 && (
+            {/* File previews (new uploads + drive files) */}
+            {totalFileCount > 0 && (
               <div className="grid grid-cols-2 gap-2">
+                {/* New upload files */}
                 {files.map((file, index) => (
-                  <div key={index} className="relative group">
+                  <div key={`new-${index}`} className="relative group">
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`Upload ${index + 1}`}
@@ -488,6 +513,28 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       type="button"
                       aria-label={`Remove image ${index + 1}`}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                {/* Drive files */}
+                {driveFiles.map((file) => (
+                  <div key={`drive-${file.id}`} className="relative group">
+                    <img
+                      src={getProxiedImageUrl(file.thumbnailUrl || file.url) || ""}
+                      alt={file.name}
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                    {/* Drive badge */}
+                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-primary-500/80 rounded text-[10px] text-white font-medium flex items-center gap-0.5">
+                      <HardDrive className="w-3 h-3" />
+                    </div>
+                    <button
+                      onClick={() => removeDriveFile(file.id)}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      type="button"
+                      aria-label={`Remove ${file.name}`}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -515,11 +562,11 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 {/* File upload button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isSubmitting || files.length >= 4}
+                  disabled={isSubmitting || totalFileCount >= 4}
                   className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
-                  title="Add images"
-                  aria-label="Add images"
+                  title={t`Add images`}
+                  aria-label={t`Add images`}
                 >
                   <ImageIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
@@ -531,6 +578,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   onChange={handleFileSelect}
                   className="hidden"
                 />
+
+                {/* Drive picker button */}
+                <button
+                  onClick={() => setShowDrivePicker(true)}
+                  disabled={isSubmitting || totalFileCount >= 4}
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  title={t`Select from drive`}
+                  aria-label={t`Select from drive`}
+                >
+                  <HardDrive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </button>
 
                 {/* CW toggle button */}
                 <button
@@ -743,7 +802,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   isDisabled={
                     isSubmitting ||
                     isUploading ||
-                    (!text.trim() && files.length === 0) ||
+                    (!text.trim() && totalFileCount === 0) ||
                     text.length > maxLength
                   }
                   variant="primary"
@@ -767,6 +826,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           </div>
         </div>
       </CardContent>
+
+      {/* Drive Picker Dialog */}
+      <DrivePickerDialog
+        isOpen={showDrivePicker}
+        onClose={() => setShowDrivePicker(false)}
+        onSelect={handleDriveFilesSelect}
+        maxFiles={4}
+        currentFileCount={totalFileCount}
+        fileTypes={["image"]}
+      />
     </Card>
   );
 }

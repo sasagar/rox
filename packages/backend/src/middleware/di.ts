@@ -13,6 +13,7 @@ export function diMiddleware() {
     c.set("userRepository", container.userRepository);
     c.set("noteRepository", container.noteRepository);
     c.set("driveFileRepository", container.driveFileRepository);
+    c.set("driveFolderRepository", container.driveFolderRepository);
     c.set("sessionRepository", container.sessionRepository);
     c.set("reactionRepository", container.reactionRepository);
     c.set("followRepository", container.followRepository);

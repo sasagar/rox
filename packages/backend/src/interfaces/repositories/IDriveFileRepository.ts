@@ -30,8 +30,14 @@ export interface IDriveFileRepository {
       limit?: number;
       sinceId?: string;
       untilId?: string;
+      folderId?: string | null;
     },
   ): Promise<DriveFile[]>;
+
+  /**
+   * ファイルを別のフォルダに移動
+   */
+  moveToFolder(id: string, folderId: string | null): Promise<DriveFile>;
 
   /**
    * 複数のIDでファイルを取得

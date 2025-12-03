@@ -78,6 +78,7 @@ describe("NoteService", () => {
   const mockDriveFile: DriveFile = {
     id: "file1",
     userId: "user1",
+    folderId: null,
     name: "file.jpg",
     type: "image/jpeg",
     size: 1024,

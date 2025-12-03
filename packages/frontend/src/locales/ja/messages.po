@@ -45,6 +45,11 @@ msgstr "{0}はブロックされていません"
 msgid "{0} reports against this user"
 msgstr "このユーザーに対する通報: {0}件"
 
+#. placeholder {0}: selectedFiles.length
+#: src/components/drive/DrivePickerDialog.tsx:498
+msgid "{0} selected (up to {remainingSlots} remaining)"
+msgstr "{0} 件選択中 (残り {remainingSlots} 件選択可能)"
+
 #. placeholder {0}: usage.fileCount.system
 #: src/components/settings/StorageSection.tsx:211
 msgid "{0} system files"
@@ -114,6 +119,11 @@ msgstr "他のサーバーのアカウントとリンクするためにエイリ
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
+#: src/components/note/NoteComposer.tsx:568
+#: src/components/note/NoteComposer.tsx:569
+msgid "Add images"
+msgstr "画像を追加"
+
 #: src/pages/admin/emojis.tsx:386
 msgid "Add New Emoji"
 msgstr "新しい絵文字を追加"
@@ -136,7 +146,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:98
+#: src/components/layout/Sidebar.tsx:105
 msgid "Admin"
 msgstr "管理"
 
@@ -144,7 +154,7 @@ msgstr "管理"
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:184
+#: src/pages/admin/settings.tsx:192
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -187,7 +197,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 msgid "All Types"
 msgstr "すべてのタイプ"
 
-#: src/pages/admin/settings.tsx:435
+#: src/pages/admin/settings.tsx:443
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -216,7 +226,7 @@ msgstr "このインスタンスをキャッシュから削除してもよろし
 msgid "Audit Logs"
 msgstr "監査ログ"
 
-#: src/components/note/NoteComposer.tsx:275
+#: src/components/note/NoteComposer.tsx:297
 msgid "Authentication required"
 msgstr "認証が必要です"
 
@@ -233,11 +243,11 @@ msgstr "利用可能なコード"
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
-#: src/pages/admin/settings.tsx:316
+#: src/pages/admin/settings.tsx:324
 msgid "Banner URL"
 msgstr "バナーURL"
 
-#: src/components/timeline/Timeline.tsx:215
+#: src/components/timeline/Timeline.tsx:216
 msgid "Be the first to post something!"
 msgstr "最初の投稿をしてみましょう！"
 
@@ -296,12 +306,12 @@ msgstr "インスタンスをブロックすると、そのサーバーとの連
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/settings.tsx:352
+#: src/pages/admin/settings.tsx:360
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 
 #: src/components/settings/StorageSection.tsx:222
-#: src/pages/admin/storage.tsx:331
+#: src/pages/admin/storage.tsx:339
 msgid "By File Type"
 msgstr "ファイルタイプ別"
 
@@ -329,17 +339,19 @@ msgstr "通報を管理可能"
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
+#: src/components/drive/DrivePickerDialog.tsx:359
+#: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/report/ReportDialog.tsx:170
 #: src/pages/admin/emojis.tsx:567
 #: src/pages/admin/roles.tsx:568
-#: src/pages/admin/storage.tsx:535
+#: src/pages/admin/storage.tsx:543
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:275
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/components/note/NoteComposer.tsx:150
+#: src/components/note/NoteComposer.tsx:158
 msgid "Cannot save empty draft"
 msgstr "空の下書きは保存できません"
 
@@ -367,6 +379,7 @@ msgstr "すべてクリア"
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
 msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）"
 
+#: src/components/drive/DrivePickerDialog.tsx:276
 #: src/components/report/ReportDialog.tsx:108
 #: src/pages/admin/reports.tsx:388
 #: src/pages/mod/reports.tsx:365
@@ -386,7 +399,7 @@ msgstr "カラー"
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
-#: src/pages/admin/settings.tsx:187
+#: src/pages/admin/settings.tsx:195
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -418,6 +431,10 @@ msgstr "会話スレッド"
 #: src/pages/admin/invitations.tsx:401
 msgid "Copy code"
 msgstr "コードをコピー"
+
+#: src/components/drive/DrivePickerDialog.tsx:349
+msgid "Create"
+msgstr "作成"
 
 #: src/pages/admin/roles.tsx:322
 msgid "Create and manage user roles with custom permissions"
@@ -477,7 +494,7 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
-#: src/pages/admin/settings.tsx:628
+#: src/pages/admin/settings.tsx:636
 msgid "Dark"
 msgstr "ダーク"
 
@@ -489,7 +506,7 @@ msgstr "デフォルト"
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:571
+#: src/pages/admin/settings.tsx:579
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
@@ -506,7 +523,7 @@ msgstr "削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/components/note/NoteComposer.tsx:653
+#: src/components/note/NoteComposer.tsx:712
 msgid "Delete draft"
 msgstr "下書きを削除"
 
@@ -541,11 +558,11 @@ msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:261
+#: src/pages/admin/settings.tsx:269
 msgid "Description"
 msgstr "説明"
 
-#: src/components/note/NoteComposer.tsx:357
+#: src/components/note/NoteComposer.tsx:381
 msgid "Direct"
 msgstr "ダイレクト"
 
@@ -553,7 +570,7 @@ msgstr "ダイレクト"
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/components/note/NoteComposer.tsx:413
+#: src/components/note/NoteComposer.tsx:437
 msgid "Discard"
 msgstr "破棄"
 
@@ -570,29 +587,29 @@ msgstr "表示設定"
 msgid "Don't have an account?"
 msgstr "アカウントをお持ちでないですか？"
 
-#: src/components/note/NoteComposer.tsx:189
+#: src/components/note/NoteComposer.tsx:197
 msgid "Draft deleted"
 msgstr "下書きを削除しました"
 
-#: src/components/note/NoteComposer.tsx:142
+#: src/components/note/NoteComposer.tsx:150
 msgid "Draft discarded"
 msgstr "下書きを破棄しました"
 
-#: src/components/note/NoteComposer.tsx:179
+#: src/components/note/NoteComposer.tsx:187
 msgid "Draft loaded"
 msgstr "下書きを読み込みました"
 
-#: src/components/note/NoteComposer.tsx:132
+#: src/components/note/NoteComposer.tsx:140
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/note/NoteComposer.tsx:158
+#: src/components/note/NoteComposer.tsx:166
 msgid "Draft saved"
 msgstr "下書きを保存しました"
 
-#: src/components/note/NoteComposer.tsx:595
-#: src/components/note/NoteComposer.tsx:596
-#: src/components/note/NoteComposer.tsx:612
+#: src/components/note/NoteComposer.tsx:654
+#: src/components/note/NoteComposer.tsx:655
+#: src/components/note/NoteComposer.tsx:671
 msgid "Drafts"
 msgstr "下書き"
 
@@ -657,15 +674,19 @@ msgstr "絵文字名"
 msgid "Emojis"
 msgstr "絵文字"
 
-#: src/components/note/NoteComposer.tsx:643
+#: src/components/note/NoteComposer.tsx:702
 msgid "Empty draft"
 msgstr "空の下書き"
+
+#: src/components/drive/DrivePickerDialog.tsx:380
+msgid "Empty folder"
+msgstr "空のフォルダ"
 
 #: src/components/settings/PushNotificationSection.tsx:185
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:432
+#: src/pages/admin/settings.tsx:440
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
@@ -697,7 +718,7 @@ msgstr "ユーザー名を入力（例: alice または alice@remote.server）"
 msgid "Enter your invitation code to register"
 msgstr "登録には招待コードを入力してください"
 
-#: src/components/timeline/Timeline.tsx:155
+#: src/components/timeline/Timeline.tsx:156
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
@@ -753,6 +774,10 @@ msgstr "インスタンスのブロックに失敗しました"
 msgid "Failed to check instance"
 msgstr "インスタンスの確認に失敗しました"
 
+#: src/components/drive/DrivePickerDialog.tsx:228
+msgid "Failed to create folder"
+msgstr "フォルダの作成に失敗しました"
+
 #: src/components/settings/InvitationCodeSection.tsx:99
 #: src/pages/admin/invitations.tsx:144
 msgid "Failed to create invitation code"
@@ -791,6 +816,10 @@ msgstr "引っ越しの開始に失敗しました"
 #: src/pages/mod/users.tsx:215
 msgid "Failed to issue warning"
 msgstr "警告の発行に失敗しました"
+
+#: src/components/drive/DrivePickerDialog.tsx:196
+msgid "Failed to load files"
+msgstr "ファイルの読み込みに失敗しました"
 
 #: src/components/pages/NoteDetailPageClient.tsx:48
 msgid "Failed to load note"
@@ -876,7 +905,7 @@ msgid "Failed to update quota"
 msgstr "クォータの更新に失敗しました"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:302
+#: src/components/note/NoteComposer.tsx:325
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
@@ -888,7 +917,7 @@ msgstr "ファイルのアップロードに失敗しました"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
-#: src/pages/admin/settings.tsx:336
+#: src/pages/admin/settings.tsx:344
 msgid "Favicon URL"
 msgstr "ファビコンURL"
 
@@ -929,6 +958,10 @@ msgstr "通知をフィルター"
 msgid "Find users by username or display name"
 msgstr "ユーザー名または表示名でユーザーを検索"
 
+#: src/components/drive/DrivePickerDialog.tsx:332
+msgid "Folder name"
+msgstr "フォルダ名"
+
 #: src/components/user/UserProfile.tsx:396
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:505
@@ -942,7 +975,7 @@ msgstr "フォロー"
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
-#: src/components/note/NoteComposer.tsx:356
+#: src/components/note/NoteComposer.tsx:380
 #: src/components/user/UserProfile.tsx:459
 msgid "Followers"
 msgstr "フォロワー"
@@ -987,8 +1020,8 @@ msgstr "タイムラインへ"
 msgid "Healthy"
 msgstr "正常"
 
-#: src/components/layout/Sidebar.tsx:64
-#: src/components/note/NoteComposer.tsx:355
+#: src/components/layout/Sidebar.tsx:71
+#: src/components/note/NoteComposer.tsx:379
 #: src/pages/timeline.tsx:169
 msgid "Home"
 msgstr "ホーム"
@@ -1001,7 +1034,7 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:298
+#: src/pages/admin/settings.tsx:306
 msgid "Icon URL"
 msgstr "アイコンURL"
 
@@ -1013,7 +1046,7 @@ msgstr "画像"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:205
+#: src/pages/admin/settings.tsx:213
 msgid "Instance"
 msgstr "インスタンス"
 
@@ -1042,15 +1075,15 @@ msgstr "インスタンスドメイン"
 msgid "Instance Hostname"
 msgstr "インスタンスのホスト名"
 
-#: src/pages/admin/settings.tsx:237
+#: src/pages/admin/settings.tsx:245
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:243
+#: src/pages/admin/settings.tsx:251
 msgid "Instance Name"
 msgstr "インスタンス名"
 
-#: src/pages/admin/storage.tsx:288
+#: src/pages/admin/storage.tsx:296
 msgid "Instance Overview"
 msgstr "インスタンス概要"
 
@@ -1107,7 +1140,7 @@ msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:455
+#: src/pages/admin/settings.tsx:463
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1146,7 +1179,7 @@ msgstr "空欄にすると自動生成されます"
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:609
+#: src/pages/admin/settings.tsx:617
 msgid "Light"
 msgstr "ライト"
 
@@ -1158,19 +1191,21 @@ msgstr "軽量"
 msgid "Line Height"
 msgstr "行の高さ"
 
-#: src/components/timeline/Timeline.tsx:224
+#: src/components/drive/DrivePickerDialog.tsx:486
+#: src/components/timeline/Timeline.tsx:225
 #: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "もっと読み込む"
 
-#: src/components/timeline/Timeline.tsx:183
+#: src/components/timeline/Timeline.tsx:184
 msgid "Loading more posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/timeline/Timeline.tsx:168
+#: src/components/timeline/Timeline.tsx:169
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
+#: src/components/drive/DrivePickerDialog.tsx:483
 #: src/components/user/UserProfile.tsx:514
 msgid "Loading..."
 msgstr "読み込み中..."
@@ -1199,7 +1234,7 @@ msgstr "リモートユーザーを検索中..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:279
+#: src/pages/admin/settings.tsx:287
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1207,7 +1242,7 @@ msgstr "管理者メールアドレス"
 msgid "Manage blocked instances"
 msgstr "ブロック済みインスタンスを管理"
 
-#: src/pages/admin/storage.tsx:275
+#: src/pages/admin/storage.tsx:283
 msgid "Manage instance storage and user quotas"
 msgstr "インスタンスのストレージとユーザークォータを管理"
 
@@ -1232,7 +1267,7 @@ msgstr "すべて既読にする"
 msgid "Max Uses"
 msgstr "最大使用回数"
 
-#: src/pages/admin/storage.tsx:518
+#: src/pages/admin/storage.tsx:526
 msgid "MB (-1 for unlimited)"
 msgstr "MB（無制限の場合は-1）"
 
@@ -1295,13 +1330,17 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
-#: src/components/note/NoteComposer.tsx:619
+#: src/components/note/NoteComposer.tsx:678
 msgid "New"
 msgstr "新規"
 
-#: src/pages/admin/settings.tsx:481
+#: src/pages/admin/settings.tsx:489
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
+
+#: src/components/drive/DrivePickerDialog.tsx:320
+msgid "New folder"
+msgstr "新しいフォルダ"
 
 #: src/components/notification/NotificationItem.tsx:111
 msgid "New notification"
@@ -1331,7 +1370,7 @@ msgstr "カスタム絵文字がまだありません"
 msgid "No deleted notes"
 msgstr "削除されたノートはありません"
 
-#: src/components/note/NoteComposer.tsx:625
+#: src/components/note/NoteComposer.tsx:684
 msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
@@ -1342,6 +1381,10 @@ msgstr "絵文字が見つかりません"
 #: src/pages/admin/emojis.tsx:613
 msgid "No emojis match your search"
 msgstr "検索に一致する絵文字がありません"
+
+#: src/components/drive/DrivePickerDialog.tsx:380
+msgid "No files in drive"
+msgstr "ドライブにファイルがありません"
 
 #: src/components/settings/StorageSection.tsx:270
 msgid "No files uploaded yet"
@@ -1364,7 +1407,7 @@ msgstr "招待コードがまだありません"
 msgid "No matching notifications"
 msgstr "一致する通知がありません"
 
-#: src/components/timeline/Timeline.tsx:212
+#: src/components/timeline/Timeline.tsx:213
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
@@ -1394,7 +1437,7 @@ msgstr "報告が見つかりません"
 msgid "No roles yet"
 msgstr "ロールがまだありません"
 
-#: src/pages/admin/storage.tsx:388
+#: src/pages/admin/storage.tsx:396
 msgid "No system files"
 msgstr "システムファイルはありません"
 
@@ -1404,7 +1447,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
-#: src/pages/admin/storage.tsx:487
+#: src/pages/admin/storage.tsx:495
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "ユーザーが見つかりませんでした"
@@ -1425,7 +1468,7 @@ msgstr "ノートのモデレーション"
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
-#: src/components/note/NoteComposer.tsx:334
+#: src/components/note/NoteComposer.tsx:358
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
@@ -1466,7 +1509,7 @@ msgstr "モデレーターが削除したノートがここに表示されます
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:76
+#: src/components/layout/Sidebar.tsx:83
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1520,7 +1563,7 @@ msgstr "権限"
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
-#: src/components/note/NoteComposer.tsx:265
+#: src/components/note/NoteComposer.tsx:287
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
@@ -1528,11 +1571,11 @@ msgstr "テキストを入力するかファイルを添付してください"
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
-#: src/components/note/NoteComposer.tsx:761
+#: src/components/note/NoteComposer.tsx:820
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:757
+#: src/components/note/NoteComposer.tsx:816
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -1546,10 +1589,10 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:468
+#: src/components/note/NoteComposer.tsx:492
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
-#: src/pages/admin/settings.tsx:640
+#: src/pages/admin/settings.tsx:648
 msgid "Preview"
 msgstr "プレビュー"
 
@@ -1557,11 +1600,11 @@ msgstr "プレビュー"
 msgid "Previous"
 msgstr "前へ"
 
-#: src/pages/admin/settings.tsx:647
+#: src/pages/admin/settings.tsx:655
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:510
+#: src/pages/admin/settings.tsx:518
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -1577,11 +1620,11 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:377
+#: src/pages/admin/settings.tsx:385
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:82
+#: src/components/layout/Sidebar.tsx:89
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -1593,7 +1636,7 @@ msgstr "プロフィールを更新しました"
 msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
-#: src/components/note/NoteComposer.tsx:354
+#: src/components/note/NoteComposer.tsx:378
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "公開"
@@ -1625,7 +1668,7 @@ msgid "Quota updated"
 msgstr "クォータを更新しました"
 
 #. placeholder {0}: selectedUser.quotaMb === -1 ? "Unlimited" : `${selectedUser.quotaMb} MB`
-#: src/pages/admin/storage.tsx:549
+#: src/pages/admin/storage.tsx:557
 msgid "Quota: {0}"
 msgstr "クォータ: {0}"
 
@@ -1700,7 +1743,7 @@ msgstr "リストを更新"
 msgid "Registered devices"
 msgstr "登録済みデバイス"
 
-#: src/pages/admin/settings.tsx:215
+#: src/pages/admin/settings.tsx:223
 msgid "Registration"
 msgstr "登録"
 
@@ -1713,7 +1756,7 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:413
+#: src/pages/admin/settings.tsx:421
 msgid "Registration Settings"
 msgstr "登録設定"
 
@@ -1768,12 +1811,12 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:759
+#: src/components/note/NoteComposer.tsx:818
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:432
+#: src/components/note/NoteComposer.tsx:456
 msgid "Replying to"
 msgstr "返信先:"
 
@@ -1847,11 +1890,11 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
-#: src/pages/admin/settings.tsx:458
+#: src/pages/admin/settings.tsx:466
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:478
+#: src/pages/admin/settings.tsx:486
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -1893,7 +1936,7 @@ msgstr "解決済み"
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
-#: src/components/note/NoteComposer.tsx:405
+#: src/components/note/NoteComposer.tsx:429
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "復元"
@@ -1943,7 +1986,11 @@ msgstr "ロールを更新しました"
 msgid "Roles"
 msgstr "ロール"
 
-#: src/pages/admin/storage.tsx:525
+#: src/components/drive/DrivePickerDialog.tsx:294
+msgid "Root"
+msgstr "ルート"
+
+#: src/pages/admin/storage.tsx:533
 msgid "Save"
 msgstr "保存"
 
@@ -1951,16 +1998,16 @@ msgstr "保存"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/components/note/NoteComposer.tsx:578
-#: src/components/note/NoteComposer.tsx:579
+#: src/components/note/NoteComposer.tsx:637
+#: src/components/note/NoteComposer.tsx:638
 msgid "Save draft"
 msgstr "下書きを保存"
 
-#: src/pages/admin/settings.tsx:400
+#: src/pages/admin/settings.tsx:408
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:491
+#: src/pages/admin/settings.tsx:499
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -1968,7 +2015,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:666
+#: src/pages/admin/settings.tsx:674
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -1977,7 +2024,7 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/layout/Sidebar.tsx:70
+#: src/components/layout/Sidebar.tsx:77
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2008,7 +2055,7 @@ msgstr "検索対象:"
 msgid "Search User"
 msgstr "ユーザーを検索"
 
-#: src/pages/admin/storage.tsx:453
+#: src/pages/admin/storage.tsx:461
 msgid "Search users..."
 msgstr "ユーザーを検索..."
 
@@ -2016,9 +2063,22 @@ msgstr "ユーザーを検索..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:656
+#: src/pages/admin/settings.tsx:664
 msgid "Secondary"
 msgstr "セカンダリ"
+
+#: src/components/drive/DrivePickerDialog.tsx:511
+msgid "Select"
+msgstr "選択する"
+
+#: src/components/note/NoteComposer.tsx:588
+#: src/components/note/NoteComposer.tsx:589
+msgid "Select from drive"
+msgstr "ドライブから選択"
+
+#: src/components/drive/DrivePickerDialog.tsx:270
+msgid "Select from Drive"
+msgstr "ドライブから選択"
 
 #: src/components/settings/PushNotificationSection.tsx:199
 msgid "Send a test notification to verify your setup."
@@ -2032,7 +2092,7 @@ msgstr "テスト送信"
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/components/layout/Sidebar.tsx:88
+#: src/components/layout/Sidebar.tsx:95
 #: src/pages/settings.tsx:134
 msgid "Settings"
 msgstr "設定"
@@ -2112,7 +2172,7 @@ msgstr "標準絵文字"
 msgid "Storage"
 msgstr "ストレージ"
 
-#: src/pages/admin/storage.tsx:272
+#: src/pages/admin/storage.tsx:280
 msgid "Storage Management"
 msgstr "ストレージ管理"
 
@@ -2137,12 +2197,12 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/pages/admin/settings.tsx:590
+#: src/pages/admin/settings.tsx:598
 msgid "System"
 msgstr "システム"
 
-#: src/pages/admin/storage.tsx:319
-#: src/pages/admin/storage.tsx:372
+#: src/pages/admin/storage.tsx:327
+#: src/pages/admin/storage.tsx:380
 msgid "System Files"
 msgstr "システムファイル"
 
@@ -2170,7 +2230,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:359
+#: src/pages/admin/settings.tsx:367
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -2182,16 +2242,16 @@ msgstr "テスト"
 msgid "Test notification"
 msgstr "テスト通知"
 
-#: src/components/note/NoteComposer.tsx:270
+#: src/components/note/NoteComposer.tsx:292
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:225
+#: src/pages/admin/settings.tsx:233
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:504
+#: src/pages/admin/settings.tsx:512
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
@@ -2236,7 +2296,7 @@ msgstr "合計アクション数"
 msgid "Total Codes"
 msgstr "コード総数"
 
-#: src/pages/admin/storage.tsx:295
+#: src/pages/admin/storage.tsx:303
 msgid "Total Files"
 msgstr "総ファイル数"
 
@@ -2249,7 +2309,7 @@ msgstr "報告総数"
 msgid "Total Roles"
 msgstr "ロール総数"
 
-#: src/pages/admin/storage.tsx:303
+#: src/pages/admin/storage.tsx:311
 msgid "Total Size"
 msgstr "総サイズ"
 
@@ -2320,11 +2380,15 @@ msgstr "絵文字を更新"
 msgid "Update Role"
 msgstr "ロールを更新"
 
-#: src/components/note/NoteComposer.tsx:504
+#: src/components/drive/DrivePickerDialog.tsx:383
+msgid "Upload files to see them here"
+msgstr "ファイルをアップロードするとここに表示されます"
+
+#: src/components/note/NoteComposer.tsx:551
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:755
+#: src/components/note/NoteComposer.tsx:814
 #: src/pages/admin/emojis.tsx:441
 msgid "Uploading..."
 msgstr "アップロード中..."
@@ -2352,7 +2416,7 @@ msgstr "ユーザーが見つかりません"
 msgid "User Report"
 msgstr "ユーザーの報告"
 
-#: src/pages/admin/storage.tsx:442
+#: src/pages/admin/storage.tsx:450
 msgid "User Storage"
 msgstr "ユーザーストレージ"
 
@@ -2384,11 +2448,11 @@ msgstr "ユーザー名を入力してください"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:633
+#: src/pages/admin/settings.tsx:641
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
-#: src/pages/admin/storage.tsx:311
+#: src/pages/admin/storage.tsx:319
 msgid "Users with Files"
 msgstr "ファイルを持つユーザー"
 
@@ -2486,7 +2550,7 @@ msgstr "{1}時間あたり最大{0}個の招待コードを作成できます"
 msgid "You have already reported this"
 msgstr "既に報告済みです"
 
-#: src/components/note/NoteComposer.tsx:395
+#: src/components/note/NoteComposer.tsx:419
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
@@ -2515,7 +2579,7 @@ msgstr "すべての通知を確認しました！"
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
-#: src/components/timeline/Timeline.tsx:198
+#: src/components/timeline/Timeline.tsx:199
 msgid "You've reached the end of the timeline"
 msgstr "タイムラインの最後に到達しました"
 

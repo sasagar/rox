@@ -34,6 +34,8 @@ export interface FileUploadInput {
   comment?: string | null;
   /** File source: "user" for user uploads, "system" for system-acquired files */
   source?: FileSource;
+  /** Optional folder ID to place the file in */
+  folderId?: string | null;
 }
 
 /**
@@ -109,7 +111,16 @@ export class FileService {
    * - Storage key format depends on adapter (local path or S3 key)
    */
   async upload(input: FileUploadInput): Promise<DriveFile> {
-    const { file, name, type, userId, isSensitive = false, comment = null, source = "user" } = input;
+    const {
+      file,
+      name,
+      type,
+      userId,
+      isSensitive = false,
+      comment = null,
+      source = "user",
+      folderId = null,
+    } = input;
 
     // ファイルサイズのバリデーション
     if (file.byteLength > this.maxFileSize) {
@@ -188,6 +199,7 @@ export class FileService {
     const driveFile = await this.driveFileRepository.create({
       id: generateId(),
       userId,
+      folderId,
       name: fileName,
       type: fileType,
       size: fileToSave.byteLength,
@@ -262,7 +274,7 @@ export class FileService {
    */
   async listFiles(
     userId: string,
-    options: { limit?: number; sinceId?: string; untilId?: string } = {},
+    options: { limit?: number; sinceId?: string; untilId?: string; folderId?: string | null } = {},
   ): Promise<DriveFile[]> {
     return await this.driveFileRepository.findByUserId(userId, options);
   }

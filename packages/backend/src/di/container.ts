@@ -4,6 +4,7 @@ import type {
   IUserRepository,
   INoteRepository,
   IDriveFileRepository,
+  IDriveFolderRepository,
   ISessionRepository,
   IReactionRepository,
   IFollowRepository,
@@ -26,6 +27,7 @@ import {
   PostgresUserRepository,
   PostgresNoteRepository,
   PostgresDriveFileRepository,
+  PostgresDriveFolderRepository,
   PostgresSessionRepository,
   PostgresReactionRepository,
   PostgresFollowRepository,
@@ -59,6 +61,7 @@ export interface AppContainer {
   userRepository: IUserRepository;
   noteRepository: INoteRepository;
   driveFileRepository: IDriveFileRepository;
+  driveFolderRepository: IDriveFolderRepository;
   sessionRepository: ISessionRepository;
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
@@ -197,6 +200,7 @@ function createRepositories(db: any, dbType: string) {
         userRepository: new PostgresUserRepository(db),
         noteRepository: new PostgresNoteRepository(db),
         driveFileRepository: new PostgresDriveFileRepository(db),
+        driveFolderRepository: new PostgresDriveFolderRepository(db),
         sessionRepository: new PostgresSessionRepository(db),
         reactionRepository: new PostgresReactionRepository(db),
         followRepository: new PostgresFollowRepository(db),

@@ -60,9 +60,10 @@ export class PostgresDriveFileRepository implements IDriveFileRepository {
       limit?: number;
       sinceId?: string;
       untilId?: string;
+      folderId?: string | null;
     },
   ): Promise<DriveFile[]> {
-    const { limit = 20, sinceId, untilId } = options ?? {};
+    const { limit = 20, sinceId, untilId, folderId } = options ?? {};
 
     let conditions = [eq(driveFiles.userId, userId)];
 
@@ -74,6 +75,15 @@ export class PostgresDriveFileRepository implements IDriveFileRepository {
       conditions.push(lt(driveFiles.id, untilId));
     }
 
+    // Filter by folder - undefined means no filter, null means root folder (no parent)
+    if (folderId !== undefined) {
+      if (folderId === null) {
+        conditions.push(sql`${driveFiles.folderId} IS NULL`);
+      } else {
+        conditions.push(eq(driveFiles.folderId, folderId));
+      }
+    }
+
     const results = await this.db
       .select()
       .from(driveFiles)
@@ -82,6 +92,23 @@ export class PostgresDriveFileRepository implements IDriveFileRepository {
       .limit(limit);
 
     return results as DriveFile[];
+  }
+
+  async moveToFolder(id: string, folderId: string | null): Promise<DriveFile> {
+    const [result] = await this.db
+      .update(driveFiles)
+      .set({
+        folderId,
+        updatedAt: new Date(),
+      })
+      .where(eq(driveFiles.id, id))
+      .returning();
+
+    if (!result) {
+      throw new Error("File not found");
+    }
+
+    return result as DriveFile;
   }
 
   async findByIds(ids: string[]): Promise<DriveFile[]> {

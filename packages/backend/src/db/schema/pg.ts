@@ -203,6 +203,25 @@ export const notes = pgTable(
  */
 export type FileSource = "user" | "system";
 
+// Drive folders table
+export const driveFolders = pgTable(
+  "drive_folders",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    parentId: text("parent_id"), // Self-referencing for nested folders
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("folder_user_id_idx").on(table.userId),
+    parentIdIdx: index("folder_parent_id_idx").on(table.parentId),
+  }),
+);
+
 // Drive files table
 export const driveFiles = pgTable(
   "drive_files",
@@ -211,6 +230,7 @@ export const driveFiles = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    folderId: text("folder_id").references(() => driveFolders.id, { onDelete: "set null" }),
     name: text("name").notNull(),
     type: text("type").notNull(), // MIME type
     size: integer("size").notNull(),
@@ -227,6 +247,7 @@ export const driveFiles = pgTable(
   },
   (table) => ({
     userIdIdx: index("file_user_id_idx").on(table.userId),
+    folderIdIdx: index("file_folder_id_idx").on(table.folderId),
     md5Idx: index("file_md5_idx").on(table.md5),
     sourceIdx: index("file_source_idx").on(table.source),
   }),

@@ -2,9 +2,20 @@ import type { ID, Timestamps } from "./common.js";
 
 export type FileSource = "user" | "system";
 
+/**
+ * Drive folder for organizing files
+ */
+export interface DriveFolder extends Timestamps {
+  id: ID;
+  userId: ID;
+  parentId: ID | null;
+  name: string;
+}
+
 export interface DriveFile extends Timestamps {
   id: ID;
   userId: ID;
+  folderId: ID | null;
   name: string;
   type: string; // MIME type
   size: number;
