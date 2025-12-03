@@ -12,7 +12,7 @@
  * @module services/ap/RemoteFetchService
  */
 
-import { signRequest, getSignedHeaders } from '../../utils/crypto.js';
+import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 
 /**
  * Signature configuration for authenticated fetches
@@ -47,7 +47,7 @@ export interface RemoteFetchResult<T = any> {
   success: boolean;
   data?: T;
   error?: {
-    type: 'timeout' | 'network' | 'rate_limit' | 'server_error' | 'invalid_response';
+    type: "timeout" | "network" | "rate_limit" | "server_error" | "invalid_response";
     message: string;
     statusCode?: number;
     retryAfter?: number;
@@ -79,8 +79,8 @@ export class RemoteFetchService {
   private static readonly DEFAULT_MAX_RETRIES = 3;
   private static readonly DEFAULT_INITIAL_RETRY_DELAY = 1000; // 1 second
   private static readonly ACTIVITYPUB_HEADERS = {
-    'Accept': 'application/activity+json, application/ld+json',
-    'User-Agent': 'Rox/1.0 (ActivityPub)',
+    Accept: "application/activity+json, application/ld+json",
+    "User-Agent": "Rox/1.0 (ActivityPub)",
   };
 
   /**
@@ -95,7 +95,7 @@ export class RemoteFetchService {
    */
   async fetchActivityPubObject<T = any>(
     url: string,
-    options: RemoteFetchOptions = {}
+    options: RemoteFetchOptions = {},
   ): Promise<RemoteFetchResult<T>> {
     const {
       timeout = RemoteFetchService.DEFAULT_TIMEOUT,
@@ -105,12 +105,14 @@ export class RemoteFetchService {
       signature,
     } = options;
 
-    let lastError: RemoteFetchResult<T>['error'];
+    let lastError: RemoteFetchResult<T>["error"];
     let retryDelay = initialRetryDelay;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔄 Fetching ${url} (attempt ${attempt + 1}/${maxRetries + 1})${signature ? ' (signed)' : ''}`);
+        console.log(
+          `🔄 Fetching ${url} (attempt ${attempt + 1}/${maxRetries + 1})${signature ? " (signed)" : ""}`,
+        );
 
         // Build request headers
         let requestHeaders: Record<string, string> = {
@@ -124,14 +126,14 @@ export class RemoteFetchService {
           const signatureHeader = signRequest(
             signature.privateKey,
             signature.keyId,
-            'GET',
+            "GET",
             url,
-            null
+            null,
           );
           requestHeaders = {
             ...requestHeaders,
             ...signedHeaders,
-            'Signature': signatureHeader,
+            Signature: signatureHeader,
           };
         }
 
@@ -145,15 +147,18 @@ export class RemoteFetchService {
 
         // Don't retry on certain errors
         if (
-          result.error?.type === 'invalid_response' ||
-          (result.error?.statusCode && result.error.statusCode >= 400 && result.error.statusCode < 500 && result.error.statusCode !== 429)
+          result.error?.type === "invalid_response" ||
+          (result.error?.statusCode &&
+            result.error.statusCode >= 400 &&
+            result.error.statusCode < 500 &&
+            result.error.statusCode !== 429)
         ) {
           console.warn(`❌ Non-retryable error for ${url}:`, result.error);
           return result;
         }
 
         // Handle rate limiting
-        if (result.error?.type === 'rate_limit' && result.error.retryAfter) {
+        if (result.error?.type === "rate_limit" && result.error.retryAfter) {
           retryDelay = result.error.retryAfter * 1000; // Convert to milliseconds
           console.warn(`⏱️  Rate limited, waiting ${retryDelay}ms before retry`);
         }
@@ -168,8 +173,8 @@ export class RemoteFetchService {
         // Unexpected error (should not happen due to try/catch in performFetch)
         console.error(`❌ Unexpected error fetching ${url}:`, error);
         lastError = {
-          type: 'network',
-          message: error instanceof Error ? error.message : 'Unknown error',
+          type: "network",
+          message: error instanceof Error ? error.message : "Unknown error",
         };
       }
     }
@@ -178,8 +183,8 @@ export class RemoteFetchService {
     return {
       success: false,
       error: lastError || {
-        type: 'network',
-        message: 'Max retries exceeded',
+        type: "network",
+        message: "Max retries exceeded",
       },
     };
   }
@@ -197,7 +202,7 @@ export class RemoteFetchService {
   private async performFetch<T>(
     url: string,
     timeout: number,
-    headers: Record<string, string>
+    headers: Record<string, string>,
   ): Promise<RemoteFetchResult<T>> {
     try {
       // Create abort controller for timeout
@@ -218,12 +223,12 @@ export class RemoteFetchService {
       if (!response.ok) {
         // Rate limiting
         if (response.status === 429) {
-          const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
+          const retryAfter = parseInt(response.headers.get("Retry-After") || "60", 10);
           return {
             success: false,
             error: {
-              type: 'rate_limit',
-              message: 'Rate limited by remote server',
+              type: "rate_limit",
+              message: "Rate limited by remote server",
               statusCode: 429,
               retryAfter,
             },
@@ -235,7 +240,7 @@ export class RemoteFetchService {
           return {
             success: false,
             error: {
-              type: 'server_error',
+              type: "server_error",
               message: `Server error: ${response.status} ${response.statusText}`,
               statusCode: response.status,
             },
@@ -246,7 +251,7 @@ export class RemoteFetchService {
         return {
           success: false,
           error: {
-            type: 'invalid_response',
+            type: "invalid_response",
             message: `HTTP error: ${response.status} ${response.statusText}`,
             statusCode: response.status,
           },
@@ -261,8 +266,8 @@ export class RemoteFetchService {
         return {
           success: false,
           error: {
-            type: 'invalid_response',
-            message: 'Failed to parse JSON response',
+            type: "invalid_response",
+            message: "Failed to parse JSON response",
             statusCode: response.status,
           },
         };
@@ -274,11 +279,11 @@ export class RemoteFetchService {
       };
     } catch (error) {
       // Timeout or network error
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.name === "AbortError") {
         return {
           success: false,
           error: {
-            type: 'timeout',
+            type: "timeout",
             message: `Request timeout after ${timeout}ms`,
           },
         };
@@ -288,8 +293,8 @@ export class RemoteFetchService {
       return {
         success: false,
         error: {
-          type: 'network',
-          message: error instanceof Error ? error.message : 'Network error',
+          type: "network",
+          message: error instanceof Error ? error.message : "Network error",
         },
       };
     }

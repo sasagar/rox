@@ -1,4 +1,4 @@
-import type { Notification, NotificationType } from '../../db/schema/pg.js';
+import type { Notification, NotificationType } from "../../db/schema/pg.js";
 
 /**
  * Notification Repository Interface
@@ -45,7 +45,7 @@ export interface INotificationRepository {
       untilId?: string;
       types?: NotificationType[];
       unreadOnly?: boolean;
-    }
+    },
   ): Promise<Notification[]>;
 
   /**
@@ -99,7 +99,7 @@ export interface INotificationRepository {
    */
   countByUserId(
     userId: string,
-    options?: { types?: NotificationType[]; unreadOnly?: boolean }
+    options?: { types?: NotificationType[]; unreadOnly?: boolean },
   ): Promise<number>;
 
   /**
@@ -141,6 +141,6 @@ export interface INotificationRepository {
     userId: string,
     type: NotificationType,
     notifierId?: string,
-    noteId?: string
+    noteId?: string,
   ): Promise<boolean>;
 }

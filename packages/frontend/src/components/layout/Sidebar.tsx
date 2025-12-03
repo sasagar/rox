@@ -1,20 +1,56 @@
-'use client';
+"use client";
 
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { Home, User, Settings, Shield, Bell, Search } from 'lucide-react';
-import { currentUserAtom } from '../../lib/atoms/auth';
-import { Avatar } from '../ui/Avatar';
-import { LanguageSwitcher } from '../LanguageSwitcher';
-import { DarkModeToggle } from '../ui/DarkModeToggle';
-import { NotificationBell } from '../notification/NotificationBell';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, PanelLeft } from "lucide-react";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
+import { Avatar } from "../ui/Avatar";
+import { LanguageSwitcher } from "../LanguageSwitcher";
+import { DarkModeToggle } from "../ui/DarkModeToggle";
+import { NotificationBell } from "../notification/NotificationBell";
+import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 
 /**
  * Sidebar navigation component
  * Misskey-style sidebar for main navigation
+ * Responsive: Desktop shows fixed sidebar, mobile shows hamburger menu
  */
 export function Sidebar() {
   const [currentUser] = useAtom(currentUserAtom);
+  const { instanceInfo } = useInstanceInfo();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);
+
+  // Toggle collapsed state
+  const toggleCollapsed = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  // Close mobile menu on route change or resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   if (!currentUser) {
     return null;
@@ -22,9 +58,9 @@ export function Sidebar() {
 
   const userInitials = currentUser.name
     ? currentUser.name
-        .split(' ')
+        .split(" ")
         .map((n: string) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
     : currentUser.username.slice(0, 2).toUpperCase();
@@ -33,32 +69,32 @@ export function Sidebar() {
     {
       icon: <Home className="w-6 h-6" />,
       label: <Trans>Home</Trans>,
-      href: '/timeline',
-      key: 'home',
+      href: "/timeline",
+      key: "home",
     },
     {
       icon: <Search className="w-6 h-6" />,
       label: <Trans>Search</Trans>,
-      href: '/search',
-      key: 'search',
+      href: "/search",
+      key: "search",
     },
     {
       icon: <Bell className="w-6 h-6" />,
       label: <Trans>Notifications</Trans>,
-      href: '/notifications',
-      key: 'notifications',
+      href: "/notifications",
+      key: "notifications",
     },
     {
       icon: <User className="w-6 h-6" />,
       label: <Trans>Profile</Trans>,
       href: `/${currentUser.username}`,
-      key: 'profile',
+      key: "profile",
     },
     {
       icon: <Settings className="w-6 h-6" />,
       label: <Trans>Settings</Trans>,
-      href: '/settings',
-      key: 'settings',
+      href: "/settings",
+      key: "settings",
     },
   ];
 
@@ -67,27 +103,42 @@ export function Sidebar() {
     navItems.push({
       icon: <Shield className="w-6 h-6" />,
       label: <Trans>Admin</Trans>,
-      href: '/admin/settings',
-      key: 'admin',
+      href: "/admin/settings",
+      key: "admin",
     });
   }
 
-  return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-(--card-bg) border-r border-(--border-color) flex flex-col">
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Mobile sidebar content (always expanded)
+  const MobileSidebarContent = () => (
+    <>
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-(--border-color)">
-        <a href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary-600">Rox</span>
+      <div className="p-4 border-b border-(--border-color)">
+        <a href="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
+          {instanceInfo?.iconUrl ? (
+            <img
+              src={instanceInfo.iconUrl}
+              alt={instanceInfo.name || "Logo"}
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+          ) : null}
+          <span className="text-xl font-bold text-primary-600">
+            {instanceInfo?.name || "Rox"}
+          </span>
         </a>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <a
             key={item.key}
             href={item.href}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
+            onClick={handleNavClick}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
           >
             <span className="text-(--text-muted)">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
@@ -96,7 +147,7 @@ export function Sidebar() {
       </nav>
 
       {/* Notifications & Language & Theme */}
-      <div className="p-4 border-t border-(--border-color) flex items-center justify-between">
+      <div className="p-3 border-t border-(--border-color) flex items-center justify-between">
         <NotificationBell />
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
@@ -105,9 +156,10 @@ export function Sidebar() {
       </div>
 
       {/* User Profile at Bottom */}
-      <div className="p-4 border-t border-(--border-color)">
+      <div className="p-3 border-t border-(--border-color)">
         <a
           href={`/${currentUser.username}`}
+          onClick={handleNavClick}
           className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors"
         >
           <Avatar
@@ -124,6 +176,211 @@ export function Sidebar() {
           </div>
         </a>
       </div>
-    </aside>
+    </>
+  );
+
+  // Desktop sidebar content (supports collapsed mode)
+  const DesktopSidebarContent = () => (
+    <>
+      {/* Logo / Brand with collapse toggle */}
+      <div className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+        <a href="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
+          {/* Use favicon for collapsed mode, icon for expanded */}
+          {isCollapsed ? (
+            instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
+              <img
+                src={instanceInfo.faviconUrl || instanceInfo.iconUrl || ""}
+                alt={instanceInfo?.name || "Logo"}
+                className="w-8 h-8 rounded object-cover"
+              />
+            ) : (
+              <span className="text-xl font-bold text-primary-600">R</span>
+            )
+          ) : (
+            <>
+              {instanceInfo?.iconUrl ? (
+                <img
+                  src={instanceInfo.iconUrl}
+                  alt={instanceInfo.name || "Logo"}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+              ) : null}
+              <span className="text-xl font-bold text-primary-600">
+                {instanceInfo?.name || "Rox"}
+              </span>
+            </>
+          )}
+        </a>
+        {!isCollapsed && (
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="p-1.5 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            aria-label="Collapse sidebar"
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className={`flex-1 ${isCollapsed ? "p-2" : "p-4"} space-y-2 overflow-y-auto`}>
+        {navItems.map((item) => (
+          <a
+            key={item.key}
+            href={item.href}
+            className={`flex items-center rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors ${
+              isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"
+            }`}
+            title={isCollapsed ? String(item.key) : undefined}
+          >
+            <span className="text-(--text-muted)">{item.icon}</span>
+            {!isCollapsed && <span className="font-medium">{item.label}</span>}
+          </a>
+        ))}
+      </nav>
+
+      {/* Notifications & Language & Theme */}
+      <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
+        {isCollapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <NotificationBell />
+            <DarkModeToggle />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <NotificationBell />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <DarkModeToggle />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* User Profile at Bottom */}
+      <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
+        <a
+          href={`/${currentUser.username}`}
+          className={`flex items-center rounded-lg hover:bg-(--bg-tertiary) transition-colors ${
+            isCollapsed ? "justify-center p-2" : "gap-3 px-2 py-2"
+          }`}
+          title={isCollapsed ? currentUser.username : undefined}
+        >
+          <Avatar
+            src={currentUser.avatarUrl}
+            alt={currentUser.name || currentUser.username}
+            fallback={userInitials}
+            size="sm"
+          />
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-(--text-primary) truncate">
+                {(currentUser as any).displayName || currentUser.username}
+              </p>
+              <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
+            </div>
+          )}
+        </a>
+      </div>
+
+      {/* Expand button when collapsed */}
+      {isCollapsed && (
+        <div className="p-2 border-t border-(--border-color) flex justify-center">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+          >
+            <PanelLeft className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Header Bar */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-(--card-bg) border-b border-(--border-color) px-4 py-3 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-2 -ml-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        <a href="/timeline" className="flex items-center gap-2">
+          {instanceInfo?.iconUrl ? (
+            <img
+              src={instanceInfo.iconUrl}
+              alt={instanceInfo.name || "Logo"}
+              className="w-7 h-7 rounded-lg object-cover"
+            />
+          ) : null}
+          <span className="text-lg font-bold text-primary-600">
+            {instanceInfo?.name || "Rox"}
+          </span>
+        </a>
+
+        <a
+          href={`/${currentUser.username}`}
+          className="p-1 -mr-1 rounded-full"
+        >
+          <Avatar
+            src={currentUser.avatarUrl}
+            alt={currentUser.name || currentUser.username}
+            fallback={userInitials}
+            size="sm"
+          />
+        </a>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-50 bg-black/50"
+          onClick={() => setIsMobileMenuOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setIsMobileMenuOpen(false)}
+          role="button"
+          tabIndex={0}
+          aria-label="Close menu"
+        />
+      )}
+
+      {/* Mobile Slide-in Menu */}
+      <aside
+        className={`lg:hidden fixed left-0 top-0 h-screen w-72 max-w-[85vw] bg-(--card-bg) border-r border-(--border-color) flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Close button */}
+        <div className="absolute top-3 right-3">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <MobileSidebarContent />
+      </aside>
+
+      {/* Desktop Sidebar */}
+      <aside
+        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-(--card-bg) border-r border-(--border-color) flex-col transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-64"
+        }`}
+      >
+        <DesktopSidebarContent />
+      </aside>
+    </>
   );
 }

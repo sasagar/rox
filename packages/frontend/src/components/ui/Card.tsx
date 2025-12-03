@@ -1,37 +1,37 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import type { ReactNode } from 'react';
+import { cva, type VariantProps } from "class-variance-authority";
+import type { ReactNode } from "react";
 
 /**
  * Card variant styles using Class Variance Authority
  * Defines visual variants for card appearance
  */
 const cardVariants = cva(
-  'rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+  "rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700",
   {
     variants: {
       padding: {
-        none: '',
-        sm: 'p-3',
-        md: 'p-4',
-        lg: 'p-6',
+        none: "",
+        sm: "p-3",
+        md: "p-4",
+        lg: "p-6",
       },
       shadow: {
-        none: '',
-        sm: 'shadow-sm',
-        md: 'shadow',
-        lg: 'shadow-lg',
+        none: "",
+        sm: "shadow-sm",
+        md: "shadow",
+        lg: "shadow-lg",
       },
       hover: {
-        true: 'transition-shadow hover:shadow-md',
-        false: '',
+        true: "transition-shadow hover:shadow-md",
+        false: "",
       },
     },
     defaultVariants: {
-      padding: 'md',
-      shadow: 'sm',
+      padding: "md",
+      shadow: "sm",
       hover: false,
     },
-  }
+  },
 );
 
 /**
@@ -47,7 +47,7 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
   /** ARIA role attribute */
   role?: string;
   /** ARIA label for accessibility */
-  'aria-label'?: string;
+  "aria-label"?: string;
   /** Tab index for keyboard navigation */
   tabIndex?: number;
 }
@@ -90,16 +90,16 @@ export function Card({
   className,
   onClick,
   role,
-  'aria-label': ariaLabel,
+  "aria-label": ariaLabel,
   tabIndex,
 }: CardProps) {
-  const Component = onClick ? 'button' : 'div';
+  const Component = onClick ? "button" : "div";
 
   return (
     <Component
       className={cardVariants({ padding, shadow, hover, className })}
       onClick={onClick}
-      type={onClick ? 'button' : undefined}
+      type={onClick ? "button" : undefined}
       role={role}
       aria-label={ariaLabel}
       tabIndex={tabIndex}
@@ -112,32 +112,16 @@ export function Card({
 /**
  * CardHeader component for card titles and headers
  */
-export function CardHeader({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`mb-4 ${className || ''}`}>
-      {children}
-    </div>
-  );
+export function CardHeader({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={`mb-4 ${className || ""}`}>{children}</div>;
 }
 
 /**
  * CardTitle component for card titles
  */
-export function CardTitle({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function CardTitle({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <h3 className={`text-lg font-semibold text-gray-900 dark:text-gray-100 ${className || ''}`}>
+    <h3 className={`text-lg font-semibold text-gray-900 dark:text-gray-100 ${className || ""}`}>
       {children}
     </h3>
   );
@@ -154,42 +138,20 @@ export function CardDescription({
   className?: string;
 }) {
   return (
-    <p className={`text-sm text-gray-600 dark:text-gray-400 ${className || ''}`}>
-      {children}
-    </p>
+    <p className={`text-sm text-gray-600 dark:text-gray-400 ${className || ""}`}>{children}</p>
   );
 }
 
 /**
  * CardContent component for main card content
  */
-export function CardContent({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={className || ''}>
-      {children}
-    </div>
-  );
+export function CardContent({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={className || ""}>{children}</div>;
 }
 
 /**
  * CardFooter component for card actions and footers
  */
-export function CardFooter({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`mt-4 flex items-center gap-2 ${className || ''}`}>
-      {children}
-    </div>
-  );
+export function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={`mt-4 flex items-center gap-2 ${className || ""}`}>{children}</div>;
 }

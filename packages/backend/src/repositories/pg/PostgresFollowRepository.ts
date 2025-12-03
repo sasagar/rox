@@ -1,13 +1,13 @@
-import { eq, and, or, sql } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { follows } from '../../db/schema/pg.js';
-import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
-import type { Follow } from 'shared';
+import { eq, and, or, sql } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { follows, users } from "../../db/schema/pg.js";
+import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
+import type { Follow } from "shared";
 
 export class PostgresFollowRepository implements IFollowRepository {
   constructor(private db: Database) {}
 
-  async create(follow: Omit<Follow, 'createdAt' | 'updatedAt'>): Promise<Follow> {
+  async create(follow: Omit<Follow, "createdAt" | "updatedAt">): Promise<Follow> {
     const now = new Date();
     const [result] = await this.db
       .insert(follows)
@@ -19,18 +19,14 @@ export class PostgresFollowRepository implements IFollowRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create follow');
+      throw new Error("Failed to create follow");
     }
 
     return result as Follow;
   }
 
   async findById(id: string): Promise<Follow | null> {
-    const [result] = await this.db
-      .select()
-      .from(follows)
-      .where(eq(follows.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(follows).where(eq(follows.id, id)).limit(1);
 
     return (result as Follow) ?? null;
   }
@@ -39,12 +35,7 @@ export class PostgresFollowRepository implements IFollowRepository {
     const [result] = await this.db
       .select({ id: follows.id })
       .from(follows)
-      .where(
-        and(
-          eq(follows.followerId, followerId),
-          eq(follows.followeeId, followeeId)
-        )
-      )
+      .where(and(eq(follows.followerId, followerId), eq(follows.followeeId, followeeId)))
       .limit(1);
 
     return result !== undefined;
@@ -62,12 +53,19 @@ export class PostgresFollowRepository implements IFollowRepository {
 
   async findByFollowerId(followerId: string, limit = 100): Promise<Follow[]> {
     const results = await this.db
-      .select()
+      .select({
+        follow: follows,
+        followee: users,
+      })
       .from(follows)
+      .leftJoin(users, eq(follows.followeeId, users.id))
       .where(eq(follows.followerId, followerId))
       .limit(limit);
 
-    return results as Follow[];
+    return results.map((r) => ({
+      ...r.follow,
+      followee: r.followee,
+    })) as Follow[];
   }
 
   async countFollowers(userId: string): Promise<number> {
@@ -91,19 +89,12 @@ export class PostgresFollowRepository implements IFollowRepository {
   async delete(followerId: string, followeeId: string): Promise<void> {
     await this.db
       .delete(follows)
-      .where(
-        and(
-          eq(follows.followerId, followerId),
-          eq(follows.followeeId, followeeId)
-        )
-      );
+      .where(and(eq(follows.followerId, followerId), eq(follows.followeeId, followeeId)));
   }
 
   async deleteByUserId(userId: string): Promise<void> {
     await this.db
       .delete(follows)
-      .where(
-        or(eq(follows.followerId, userId), eq(follows.followeeId, userId))
-      );
+      .where(or(eq(follows.followerId, userId), eq(follows.followeeId, userId)));
   }
 }

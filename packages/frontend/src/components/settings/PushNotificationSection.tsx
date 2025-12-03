@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Push Notification Settings Section
@@ -6,12 +6,12 @@
  * Allows users to manage push notification subscriptions
  */
 
-import { Trans } from '@lingui/react/macro';
-import { Bell, BellOff, Smartphone, Send, AlertCircle, Check } from 'lucide-react';
-import { usePushNotifications } from '../../hooks/usePushNotifications';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Spinner } from '../ui/Spinner';
+import { Trans } from "@lingui/react/macro";
+import { Bell, BellOff, Smartphone, Send, AlertCircle, Check } from "lucide-react";
+import { usePushNotifications } from "../../hooks/usePushNotifications";
+import { Button } from "../ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Spinner } from "../ui/Spinner";
 
 /**
  * Format date for display
@@ -19,11 +19,11 @@ import { Spinner } from '../ui/Spinner';
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -31,18 +31,18 @@ function formatDate(dateString: string): string {
  * Get device name from user agent
  */
 function getDeviceName(userAgent?: string): string {
-  if (!userAgent) return 'Unknown device';
+  if (!userAgent) return "Unknown device";
 
-  if (userAgent.includes('Mobile')) {
-    if (userAgent.includes('iPhone')) return 'iPhone';
-    if (userAgent.includes('Android')) return 'Android';
-    return 'Mobile';
+  if (userAgent.includes("Mobile")) {
+    if (userAgent.includes("iPhone")) return "iPhone";
+    if (userAgent.includes("Android")) return "Android";
+    return "Mobile";
   }
-  if (userAgent.includes('Mac')) return 'Mac';
-  if (userAgent.includes('Windows')) return 'Windows';
-  if (userAgent.includes('Linux')) return 'Linux';
+  if (userAgent.includes("Mac")) return "Mac";
+  if (userAgent.includes("Windows")) return "Windows";
+  if (userAgent.includes("Linux")) return "Linux";
 
-  return 'Browser';
+  return "Browser";
 }
 
 export function PushNotificationSection() {
@@ -121,7 +121,7 @@ export function PushNotificationSection() {
         )}
 
         {/* Permission denied warning */}
-        {permission === 'denied' && (
+        {permission === "denied" && (
           <div className="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-amber-700 dark:text-amber-300">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <div className="text-sm">
@@ -130,7 +130,8 @@ export function PushNotificationSection() {
               </p>
               <p className="mt-1">
                 <Trans>
-                  Please enable notifications in your browser settings to receive push notifications.
+                  Please enable notifications in your browser settings to receive push
+                  notifications.
                 </Trans>
               </p>
             </div>
@@ -173,8 +174,8 @@ export function PushNotificationSection() {
 
           <Button
             onPress={isSubscribed ? unsubscribe : subscribe}
-            isDisabled={loading || permission === 'denied'}
-            variant={isSubscribed ? 'secondary' : 'primary'}
+            isDisabled={loading || permission === "denied"}
+            variant={isSubscribed ? "secondary" : "primary"}
           >
             {loading ? (
               <Spinner size="sm" />

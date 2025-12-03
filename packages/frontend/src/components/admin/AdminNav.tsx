@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Navigation Component
@@ -6,18 +6,20 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, Ticket, Shield, AlertTriangle, Smile } from 'lucide-react';
+import { Settings, Users, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe } from "lucide-react";
 
 /**
  * Admin navigation items
  */
 const ADMIN_NAV_ITEMS = [
-  { href: '/admin/settings', icon: Settings, label: 'Settings' },
-  { href: '/admin/roles', icon: Users, label: 'Roles' },
-  { href: '/admin/emojis', icon: Smile, label: 'Emojis' },
-  { href: '/admin/invitations', icon: Ticket, label: 'Invitations' },
-  { href: '/admin/blocks', icon: Shield, label: 'Blocks' },
-  { href: '/admin/reports', icon: AlertTriangle, label: 'Reports' },
+  { href: "/admin/settings", icon: Settings, label: "Settings" },
+  { href: "/admin/roles", icon: Users, label: "Roles" },
+  { href: "/admin/emojis", icon: Smile, label: "Emojis" },
+  { href: "/admin/storage", icon: HardDrive, label: "Storage" },
+  { href: "/admin/federation", icon: Globe, label: "Federation" },
+  { href: "/admin/invitations", icon: Ticket, label: "Invitations" },
+  { href: "/admin/blocks", icon: Shield, label: "Blocks" },
+  { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },
 ];
 
 interface AdminNavProps {
@@ -36,8 +38,8 @@ export function AdminNav({ currentPath }: AdminNavProps) {
             href={item.href}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               isActive
-                ? 'bg-primary-600 text-white'
-                : 'bg-(--bg-tertiary) text-(--text-secondary) hover:bg-(--bg-primary) hover:text-(--text-primary)'
+                ? "bg-primary-600 text-white"
+                : "bg-(--bg-tertiary) text-(--text-secondary) hover:bg-(--bg-primary) hover:text-(--text-primary)"
             }`}
           >
             <Icon className="w-4 h-4" />

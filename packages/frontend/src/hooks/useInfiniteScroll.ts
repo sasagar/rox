@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from "react";
 
 /**
  * Options for useInfiniteScroll hook
@@ -79,7 +79,7 @@ export function useInfiniteScroll({
   isLoading,
   hasMore,
   threshold = 0.1,
-  rootMargin = '100px',
+  rootMargin = "100px",
   disabled = false,
 }: UseInfiniteScrollOptions) {
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -111,7 +111,7 @@ export function useInfiniteScroll({
       {
         threshold,
         rootMargin,
-      }
+      },
     );
 
     const currentSentinel = sentinelRef.current;

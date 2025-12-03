@@ -1,8 +1,11 @@
-import { eq, sql, desc, and } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { userReports, type UserReport } from '../../db/schema/pg.js';
-import type { IUserReportRepository, ReportStatus } from '../../interfaces/repositories/IUserReportRepository.js';
-import { generateId } from 'shared';
+import { eq, sql, desc, and } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { userReports, type UserReport } from "../../db/schema/pg.js";
+import type {
+  IUserReportRepository,
+  ReportStatus,
+} from "../../interfaces/repositories/IUserReportRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of User Report Repository
@@ -26,12 +29,12 @@ export class PostgresUserReportRepository implements IUserReportRepository {
         targetNoteId: data.targetNoteId ?? null,
         reason: data.reason,
         comment: data.comment ?? null,
-        status: 'pending',
+        status: "pending",
       })
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create user report');
+      throw new Error("Failed to create user report");
     }
 
     return result;
@@ -97,9 +100,7 @@ export class PostgresUserReportRepository implements IUserReportRepository {
       conditions.push(eq(userReports.reporterId, options.reporterId));
     }
 
-    const query = this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(userReports);
+    const query = this.db.select({ count: sql<number>`count(*)::int` }).from(userReports);
 
     if (conditions.length > 0) {
       const [result] = await query.where(and(...conditions));
@@ -114,7 +115,7 @@ export class PostgresUserReportRepository implements IUserReportRepository {
     id: string,
     resolvedById: string,
     resolution: string,
-    status: 'resolved' | 'rejected'
+    status: "resolved" | "rejected",
   ): Promise<UserReport | null> {
     const [updated] = await this.db
       .update(userReports)
@@ -143,7 +144,7 @@ export class PostgresUserReportRepository implements IUserReportRepository {
   async hasReported(
     reporterId: string,
     targetUserId?: string,
-    targetNoteId?: string
+    targetNoteId?: string,
   ): Promise<boolean> {
     const conditions = [eq(userReports.reporterId, reporterId)];
 

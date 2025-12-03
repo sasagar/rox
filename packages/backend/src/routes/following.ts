@@ -6,11 +6,11 @@
  * @module routes/following
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { requireAuth } from '../middleware/auth.js';
-import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
-import { FollowService } from '../services/FollowService.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { requireAuth } from "../middleware/auth.js";
+import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
+import { FollowService } from "../services/FollowService.js";
 
 const following = new Hono();
 
@@ -23,29 +23,39 @@ const following = new Hono();
  * @body {string} userId - User ID to follow
  * @returns {Follow} Created follow relationship
  */
-following.post('/create', requireAuth(), userRateLimit(RateLimitPresets.follow), async (c: Context) => {
-  const user = c.get('user')!;
-  const followRepository = c.get('followRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const notificationService = c.get('notificationService');
+following.post(
+  "/create",
+  requireAuth(),
+  userRateLimit(RateLimitPresets.follow),
+  async (c: Context) => {
+    const user = c.get("user")!;
+    const followRepository = c.get("followRepository");
+    const userRepository = c.get("userRepository");
+    const deliveryService = c.get("activityPubDeliveryService");
+    const notificationService = c.get("notificationService");
 
-  const followService = new FollowService(followRepository, userRepository, deliveryService, notificationService);
+    const followService = new FollowService(
+      followRepository,
+      userRepository,
+      deliveryService,
+      notificationService,
+    );
 
-  const body = await c.req.json();
+    const body = await c.req.json();
 
-  if (!body.userId) {
-    return c.json({ error: 'userId is required' }, 400);
-  }
+    if (!body.userId) {
+      return c.json({ error: "userId is required" }, 400);
+    }
 
-  try {
-    const follow = await followService.follow(user.id, body.userId);
-    return c.json(follow, 201);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to follow user';
-    return c.json({ error: message }, 400);
-  }
-});
+    try {
+      const follow = await followService.follow(user.id, body.userId);
+      return c.json(follow, 201);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to follow user";
+      return c.json({ error: message }, 400);
+    }
+  },
+);
 
 /**
  * POST /api/following/delete
@@ -56,28 +66,33 @@ following.post('/create', requireAuth(), userRateLimit(RateLimitPresets.follow),
  * @body {string} userId - User ID to unfollow
  * @returns {void}
  */
-following.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.follow), async (c: Context) => {
-  const user = c.get('user')!;
-  const followRepository = c.get('followRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+following.post(
+  "/delete",
+  requireAuth(),
+  userRateLimit(RateLimitPresets.follow),
+  async (c: Context) => {
+    const user = c.get("user")!;
+    const followRepository = c.get("followRepository");
+    const userRepository = c.get("userRepository");
+    const deliveryService = c.get("activityPubDeliveryService");
 
-  const followService = new FollowService(followRepository, userRepository, deliveryService);
+    const followService = new FollowService(followRepository, userRepository, deliveryService);
 
-  const body = await c.req.json();
+    const body = await c.req.json();
 
-  if (!body.userId) {
-    return c.json({ error: 'userId is required' }, 400);
-  }
+    if (!body.userId) {
+      return c.json({ error: "userId is required" }, 400);
+    }
 
-  try {
-    await followService.unfollow(user.id, body.userId);
-    return c.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to unfollow user';
-    return c.json({ error: message }, 400);
-  }
-});
+    try {
+      await followService.unfollow(user.id, body.userId);
+      return c.json({ success: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to unfollow user";
+      return c.json({ error: message }, 400);
+    }
+  },
+);
 
 /**
  * GET /api/following/exists
@@ -88,21 +103,21 @@ following.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.follow),
  * @query {string} userId - User ID to check if current user is following
  * @returns {object} { exists: boolean }
  */
-following.get('/exists', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const followRepository = c.get('followRepository');
+following.get("/exists", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const followRepository = c.get("followRepository");
 
-  const userId = c.req.query('userId');
+  const userId = c.req.query("userId");
 
   if (!userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return c.json({ error: "userId is required" }, 400);
   }
 
   try {
     const exists = await followRepository.exists(user.id, userId);
     return c.json({ exists });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to check follow status';
+    const message = error instanceof Error ? error.message : "Failed to check follow status";
     return c.json({ error: message }, 400);
   }
 });
@@ -116,24 +131,24 @@ following.get('/exists', requireAuth(), async (c: Context) => {
  * @query {number} [limit=100] - Maximum number of followers to retrieve
  * @returns {Follow[]} List of followers
  */
-following.get('/users/followers', async (c: Context) => {
-  const followRepository = c.get('followRepository');
-  const userRepository = c.get('userRepository');
+following.get("/users/followers", async (c: Context) => {
+  const followRepository = c.get("followRepository");
+  const userRepository = c.get("userRepository");
 
   const followService = new FollowService(followRepository, userRepository);
 
-  const userId = c.req.query('userId');
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
+  const userId = c.req.query("userId");
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
 
   if (!userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return c.json({ error: "userId is required" }, 400);
   }
 
   try {
     const followers = await followService.getFollowers(userId, limit);
     return c.json(followers);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get followers';
+    const message = error instanceof Error ? error.message : "Failed to get followers";
     return c.json({ error: message }, 400);
   }
 });
@@ -147,24 +162,24 @@ following.get('/users/followers', async (c: Context) => {
  * @query {number} [limit=100] - Maximum number of following to retrieve
  * @returns {Follow[]} List of following
  */
-following.get('/users/following', async (c: Context) => {
-  const followRepository = c.get('followRepository');
-  const userRepository = c.get('userRepository');
+following.get("/users/following", async (c: Context) => {
+  const followRepository = c.get("followRepository");
+  const userRepository = c.get("userRepository");
 
   const followService = new FollowService(followRepository, userRepository);
 
-  const userId = c.req.query('userId');
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
+  const userId = c.req.query("userId");
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
 
   if (!userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return c.json({ error: "userId is required" }, 400);
   }
 
   try {
     const following = await followService.getFollowing(userId, limit);
     return c.json(following);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get following';
+    const message = error instanceof Error ? error.message : "Failed to get following";
     return c.json({ error: message }, 400);
   }
 });

@@ -6,7 +6,7 @@
  * @module interfaces/repositories/IRoleRepository
  */
 
-import type { Role, RolePolicies } from '../../db/schema/pg.js';
+import type { Role, RolePolicies } from "../../db/schema/pg.js";
 
 /**
  * Input for creating a new role

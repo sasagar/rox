@@ -9,7 +9,7 @@
  */
 export interface ThemeSettings {
   primaryColor: string;
-  darkMode: 'light' | 'dark' | 'system';
+  darkMode: "light" | "dark" | "system";
 }
 
 /**
@@ -40,6 +40,7 @@ export interface InstanceInfo {
   maintainerEmail: string | null;
   iconUrl: string | null;
   bannerUrl: string | null;
+  faviconUrl: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
   registration: RegistrationSettings;

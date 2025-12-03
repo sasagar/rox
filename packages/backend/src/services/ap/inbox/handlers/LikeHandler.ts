@@ -7,10 +7,10 @@
  * @module services/ap/inbox/handlers/LikeHandler
  */
 
-import type { Activity, HandlerContext, HandlerResult } from '../types.js';
-import { getObjectUri } from '../types.js';
-import { BaseHandler } from './BaseHandler.js';
-import { extractReactionFromLike } from '../../../../utils/activitypub/reaction.js';
+import type { Activity, HandlerContext, HandlerResult } from "../types.js";
+import { getObjectUri } from "../types.js";
+import { BaseHandler } from "./BaseHandler.js";
+import { extractReactionFromLike } from "../../../../utils/activitypub/reaction.js";
 
 /**
  * Handler for Like activities
@@ -19,7 +19,7 @@ import { extractReactionFromLike } from '../../../../utils/activitypub/reaction.
  * Supports Misskey _misskey_reaction extension for custom emoji.
  */
 export class LikeHandler extends BaseHandler {
-  readonly activityType = 'Like';
+  readonly activityType = "Like";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
     const { c } = context;
@@ -28,14 +28,17 @@ export class LikeHandler extends BaseHandler {
       const objectUri = getObjectUri(activity.object);
 
       if (!objectUri) {
-        this.warn('Invalid Like activity: missing object');
-        return this.failure('Invalid Like activity: missing object');
+        this.warn("Invalid Like activity: missing object");
+        return this.failure("Invalid Like activity: missing object");
       }
 
       // Extract reaction (supports Misskey custom emoji)
       const { reaction, customEmojiUrl } = extractReactionFromLike(activity);
 
-      this.log('📥', `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ', custom emoji' : ''})`);
+      this.log(
+        "📥",
+        `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ", custom emoji" : ""})`,
+      );
 
       // Resolve remote actor
       const actorUri = this.getActorUri(activity);
@@ -55,12 +58,12 @@ export class LikeHandler extends BaseHandler {
       const existingReaction = await reactionRepository.findByUserNoteAndReaction(
         remoteActor.id,
         note.id,
-        reaction
+        reaction,
       );
 
       if (existingReaction) {
-        this.log('⚠️', 'Reaction already exists, skipping');
-        return this.success('Reaction already exists');
+        this.log("⚠️", "Reaction already exists, skipping");
+        return this.success("Reaction already exists");
       }
 
       // Create reaction with custom emoji URL if available
@@ -73,13 +76,21 @@ export class LikeHandler extends BaseHandler {
         ...(customEmojiUrl && { customEmojiUrl }),
       });
 
-      this.log('✅', `Reaction created: ${remoteActor.username}@${remoteActor.host} ${reaction} note ${note.id}`);
+      this.log(
+        "✅",
+        `Reaction created: ${remoteActor.username}@${remoteActor.host} ${reaction} note ${note.id}`,
+      );
 
       // Create notification for the note author (fire-and-forget)
       try {
         const notificationService = this.getNotificationService(c);
         if (notificationService) {
-          await notificationService.createReactionNotification(note.userId, remoteActor.id, note.id, reaction);
+          await notificationService.createReactionNotification(
+            note.userId,
+            remoteActor.id,
+            note.id,
+            reaction,
+          );
         }
       } catch (notifError) {
         this.warn(`Failed to create reaction notification: ${notifError}`);
@@ -87,8 +98,8 @@ export class LikeHandler extends BaseHandler {
 
       return this.success(`Reaction created: ${reaction}`);
     } catch (error) {
-      this.error('Failed to handle Like activity:', error as Error);
-      return this.failure('Failed to handle Like activity', error as Error);
+      this.error("Failed to handle Like activity:", error as Error);
+      return this.failure("Failed to handle Like activity", error as Error);
     }
   }
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Notifications page component
@@ -6,17 +6,17 @@
  * Full-page view of all notifications with filtering options
  */
 
-import { useState, useEffect } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { useAtom, useAtomValue } from 'jotai';
-import { Bell, CheckCheck, Filter, Loader2 } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
-import { NotificationItem } from '../components/notification/NotificationItem';
-import { useNotifications } from '../hooks/useNotifications';
-import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
-import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
-import { apiClient } from '../lib/api/client';
-import type { Notification, NotificationType } from '../lib/types/notification';
+import { useState, useEffect } from "react";
+import { Trans } from "@lingui/react/macro";
+import { useAtom, useAtomValue } from "jotai";
+import { Bell, CheckCheck, Filter, Loader2 } from "lucide-react";
+import { Layout } from "../components/layout/Layout";
+import { NotificationItem } from "../components/notification/NotificationItem";
+import { useNotifications } from "../hooks/useNotifications";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
+import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
+import type { Notification, NotificationType } from "../lib/types/notification";
 
 /**
  * Filter options for notifications
@@ -30,12 +30,12 @@ interface NotificationFilters {
  * Available notification type filters
  */
 const NOTIFICATION_TYPE_FILTERS: { type: NotificationType; labelKey: string }[] = [
-  { type: 'follow', labelKey: 'Follow' },
-  { type: 'mention', labelKey: 'Mention' },
-  { type: 'reply', labelKey: 'Reply' },
-  { type: 'reaction', labelKey: 'Reaction' },
-  { type: 'renote', labelKey: 'Renote' },
-  { type: 'quote', labelKey: 'Quote' },
+  { type: "follow", labelKey: "Follow" },
+  { type: "mention", labelKey: "Mention" },
+  { type: "reply", labelKey: "Reply" },
+  { type: "reaction", labelKey: "Reaction" },
+  { type: "renote", labelKey: "Renote" },
+  { type: "quote", labelKey: "Quote" },
 ];
 
 export default function NotificationsPage() {
@@ -43,13 +43,7 @@ export default function NotificationsPage() {
   const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
 
-  const {
-    notifications,
-    loading,
-    markAsRead,
-    markAllAsRead,
-    loadMore,
-  } = useNotifications();
+  const { notifications, loading, markAsRead, markAllAsRead, loadMore } = useNotifications();
 
   const [hasMore, setHasMore] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
@@ -62,19 +56,19 @@ export default function NotificationsPage() {
   useEffect(() => {
     const restoreSession = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
           apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
-          console.error('Failed to restore session:', error);
-          window.location.href = '/login';
+          console.error("Failed to restore session:", error);
+          window.location.href = "/login";
           return;
         }
       } else {
@@ -173,36 +167,38 @@ export default function NotificationsPage() {
     <Layout>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Bell className="w-8 h-8 text-(--text-primary)" />
-              <h1 className="text-2xl font-bold text-(--text-primary)">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Bell className="w-6 h-6 sm:w-8 sm:h-8 text-(--text-primary)" />
+              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary)">
                 <Trans>Notifications</Trans>
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {hasUnread && (
                 <button
                   type="button"
                   onClick={markAllAsRead}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary) rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary) rounded-lg transition-colors"
+                  title="Mark all as read"
                 >
                   <CheckCheck className="w-4 h-4" />
-                  <Trans>Mark all as read</Trans>
+                  <span className="hidden sm:inline"><Trans>Mark all as read</Trans></span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-colors ${
                   hasActiveFilters
-                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                    : 'text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary)'
+                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300"
+                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary)"
                 }`}
+                title="Filter"
               >
                 <Filter className="w-4 h-4" />
-                <Trans>Filter</Trans>
+                <span className="hidden sm:inline"><Trans>Filter</Trans></span>
               </button>
             </div>
           </div>
@@ -239,16 +235,16 @@ export default function NotificationsPage() {
                     onClick={() => toggleTypeFilter(type)}
                     className={`px-3 py-1 text-xs rounded-full transition-colors ${
                       filters.types.includes(type)
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)'
+                        ? "bg-primary-500 text-white"
+                        : "bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
                     }`}
                   >
-                    {labelKey === 'Follow' && <Trans>Follow</Trans>}
-                    {labelKey === 'Mention' && <Trans>Mention</Trans>}
-                    {labelKey === 'Reply' && <Trans>Reply</Trans>}
-                    {labelKey === 'Reaction' && <Trans>Reaction</Trans>}
-                    {labelKey === 'Renote' && <Trans>Renote</Trans>}
-                    {labelKey === 'Quote' && <Trans>Quote</Trans>}
+                    {labelKey === "Follow" && <Trans>Follow</Trans>}
+                    {labelKey === "Mention" && <Trans>Mention</Trans>}
+                    {labelKey === "Reply" && <Trans>Reply</Trans>}
+                    {labelKey === "Reaction" && <Trans>Reaction</Trans>}
+                    {labelKey === "Renote" && <Trans>Renote</Trans>}
+                    {labelKey === "Quote" && <Trans>Quote</Trans>}
                   </button>
                 ))}
               </div>

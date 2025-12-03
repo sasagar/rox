@@ -67,3 +67,6 @@ docs/api/
 # Note: Actual tests in src/tests/ are tracked - these are ad-hoc debugging scripts
 packages/backend/test-*.ts
 packages/backend/check-*.ts
+
+# Migration backups (consolidated migrations)
+packages/backend/drizzle/postgres-backup/

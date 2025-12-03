@@ -6,14 +6,14 @@
  * @module repositories/pg/PostgresRoleAssignmentRepository
  */
 
-import { eq, and, sql, lt } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { roleAssignments, roles, type Role, type RoleAssignment } from '../../db/schema/pg.js';
+import { eq, and, sql, lt } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { roleAssignments, roles, type Role, type RoleAssignment } from "../../db/schema/pg.js";
 import type {
   IRoleAssignmentRepository,
   RoleAssignmentWithRole,
-} from '../../interfaces/repositories/IRoleAssignmentRepository.js';
-import { generateId } from 'shared';
+} from "../../interfaces/repositories/IRoleAssignmentRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of Role Assignment Repository
@@ -25,7 +25,7 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
     userId: string,
     roleId: string,
     assignedById?: string,
-    expiresAt?: Date
+    expiresAt?: Date,
   ): Promise<RoleAssignment> {
     const [result] = await this.db
       .insert(roleAssignments)
@@ -44,16 +44,11 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
       const [existing] = await this.db
         .select()
         .from(roleAssignments)
-        .where(
-          and(
-            eq(roleAssignments.userId, userId),
-            eq(roleAssignments.roleId, roleId)
-          )
-        )
+        .where(and(eq(roleAssignments.userId, userId), eq(roleAssignments.roleId, roleId)))
         .limit(1);
 
       if (!existing) {
-        throw new Error('Failed to assign role');
+        throw new Error("Failed to assign role");
       }
       return existing;
     }
@@ -64,12 +59,7 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
   async unassign(userId: string, roleId: string): Promise<boolean> {
     const result = await this.db
       .delete(roleAssignments)
-      .where(
-        and(
-          eq(roleAssignments.userId, userId),
-          eq(roleAssignments.roleId, roleId)
-        )
-      )
+      .where(and(eq(roleAssignments.userId, userId), eq(roleAssignments.roleId, roleId)))
       .returning({ id: roleAssignments.id });
 
     return result.length > 0;
@@ -125,12 +115,7 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
     const [result] = await this.db
       .select({ id: roleAssignments.id })
       .from(roleAssignments)
-      .where(
-        and(
-          eq(roleAssignments.userId, userId),
-          eq(roleAssignments.roleId, roleId)
-        )
-      )
+      .where(and(eq(roleAssignments.userId, userId), eq(roleAssignments.roleId, roleId)))
       .limit(1);
 
     return result !== undefined;
@@ -141,12 +126,7 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
       .select({ id: roleAssignments.id })
       .from(roleAssignments)
       .innerJoin(roles, eq(roleAssignments.roleId, roles.id))
-      .where(
-        and(
-          eq(roleAssignments.userId, userId),
-          eq(roles.isAdminRole, true)
-        )
-      )
+      .where(and(eq(roleAssignments.userId, userId), eq(roles.isAdminRole, true)))
       .limit(1);
 
     return result !== undefined;
@@ -157,12 +137,7 @@ export class PostgresRoleAssignmentRepository implements IRoleAssignmentReposito
       .select({ id: roleAssignments.id })
       .from(roleAssignments)
       .innerJoin(roles, eq(roleAssignments.roleId, roles.id))
-      .where(
-        and(
-          eq(roleAssignments.userId, userId),
-          eq(roles.isModeratorRole, true)
-        )
-      )
+      .where(and(eq(roleAssignments.userId, userId), eq(roles.isModeratorRole, true)))
       .limit(1);
 
     return result !== undefined;

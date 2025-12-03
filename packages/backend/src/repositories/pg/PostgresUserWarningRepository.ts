@@ -1,8 +1,8 @@
-import { eq, and, desc, isNull, lte, or, sql } from 'drizzle-orm';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { userWarnings, type UserWarning } from '../../db/schema/pg.js';
-import type { IUserWarningRepository } from '../../interfaces/repositories/IUserWarningRepository.js';
-import { generateId } from 'shared';
+import { eq, and, desc, isNull, lte, or, sql } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { userWarnings, type UserWarning } from "../../db/schema/pg.js";
+import type { IUserWarningRepository } from "../../interfaces/repositories/IUserWarningRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of user warning repository
@@ -43,7 +43,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
 
   async findByUserId(
     userId: string,
-    options?: { limit?: number; offset?: number; includeExpired?: boolean }
+    options?: { limit?: number; offset?: number; includeExpired?: boolean },
   ): Promise<UserWarning[]> {
     const { limit = 100, offset = 0, includeExpired = false } = options ?? {};
 
@@ -51,12 +51,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
 
     if (!includeExpired) {
       // Only include non-expired warnings (null expiresAt or expiresAt > now)
-      conditions.push(
-        or(
-          isNull(userWarnings.expiresAt),
-          lte(sql`NOW()`, userWarnings.expiresAt)
-        )!
-      );
+      conditions.push(or(isNull(userWarnings.expiresAt), lte(sql`NOW()`, userWarnings.expiresAt))!);
     }
 
     const results = await this.db
@@ -72,7 +67,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
 
   async findByModeratorId(
     moderatorId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<UserWarning[]> {
     const { limit = 100, offset = 0 } = options ?? {};
 
@@ -95,11 +90,8 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
         and(
           eq(userWarnings.userId, userId),
           eq(userWarnings.isRead, false),
-          or(
-            isNull(userWarnings.expiresAt),
-            lte(sql`NOW()`, userWarnings.expiresAt)
-          )
-        )
+          or(isNull(userWarnings.expiresAt), lte(sql`NOW()`, userWarnings.expiresAt)),
+        ),
       )
       .orderBy(desc(userWarnings.createdAt));
 
@@ -126,12 +118,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
         isRead: true,
         readAt: new Date(),
       })
-      .where(
-        and(
-          eq(userWarnings.userId, userId),
-          eq(userWarnings.isRead, false)
-        )
-      )
+      .where(and(eq(userWarnings.userId, userId), eq(userWarnings.isRead, false)))
       .returning();
 
     return result.length;
@@ -139,19 +126,14 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
 
   async countByUserId(
     userId: string,
-    options?: { includeExpired?: boolean; unreadOnly?: boolean }
+    options?: { includeExpired?: boolean; unreadOnly?: boolean },
   ): Promise<number> {
     const { includeExpired = false, unreadOnly = false } = options ?? {};
 
     const conditions = [eq(userWarnings.userId, userId)];
 
     if (!includeExpired) {
-      conditions.push(
-        or(
-          isNull(userWarnings.expiresAt),
-          lte(sql`NOW()`, userWarnings.expiresAt)
-        )!
-      );
+      conditions.push(or(isNull(userWarnings.expiresAt), lte(sql`NOW()`, userWarnings.expiresAt))!);
     }
 
     if (unreadOnly) {
@@ -167,18 +149,13 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
   }
 
   async count(): Promise<number> {
-    const [result] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(userWarnings);
+    const [result] = await this.db.select({ count: sql<number>`count(*)::int` }).from(userWarnings);
 
     return result?.count ?? 0;
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(userWarnings)
-      .where(eq(userWarnings.id, id))
-      .returning();
+    const result = await this.db.delete(userWarnings).where(eq(userWarnings.id, id)).returning();
 
     return result.length > 0;
   }
@@ -190,13 +167,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
     offset?: number;
     includeExpired?: boolean;
   }): Promise<UserWarning[]> {
-    const {
-      userId,
-      moderatorId,
-      limit = 100,
-      offset = 0,
-      includeExpired = false,
-    } = options ?? {};
+    const { userId, moderatorId, limit = 100, offset = 0, includeExpired = false } = options ?? {};
 
     const conditions = [];
 
@@ -209,12 +180,7 @@ export class PostgresUserWarningRepository implements IUserWarningRepository {
     }
 
     if (!includeExpired) {
-      conditions.push(
-        or(
-          isNull(userWarnings.expiresAt),
-          lte(sql`NOW()`, userWarnings.expiresAt)
-        )!
-      );
+      conditions.push(or(isNull(userWarnings.expiresAt), lte(sql`NOW()`, userWarnings.expiresAt))!);
     }
 
     const query = this.db

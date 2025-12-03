@@ -1,2 +1,2 @@
-export { MfmRenderer } from './MfmRenderer';
-export type { MfmRendererProps } from './MfmRenderer';
+export { MfmRenderer } from "./MfmRenderer";
+export type { MfmRendererProps } from "./MfmRenderer";

@@ -1,7 +1,7 @@
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import { lingui } from "@lingui/vite-plugin";
-import { defineConfig } from 'waku/config';
+import { defineConfig } from "waku/config";
 
 /**
  * Waku configuration
@@ -14,10 +14,7 @@ export default defineConfig({
       tailwindcss(),
       react({
         babel: {
-          plugins: [
-            'babel-plugin-react-compiler',
-            '@lingui/babel-plugin-lingui-macro'
-          ],
+          plugins: ["babel-plugin-react-compiler", "@lingui/babel-plugin-lingui-macro"],
         },
       }),
       lingui(),
@@ -26,19 +23,19 @@ export default defineConfig({
     server: {
       port: 3001,
       proxy: {
-        '/api': {
-          target: 'http://localhost:3000',
+        "/api": {
+          target: "http://localhost:3000",
           changeOrigin: true,
         },
       },
     },
     ssr: {
       /** Allow Lingui macros to work with SSR by not externalizing them */
-      noExternal: ['@lingui/macro', 'babel-plugin-macros'],
+      noExternal: ["@lingui/macro", "babel-plugin-macros"],
     },
     optimizeDeps: {
       /** Optimize Lingui macro for ESM compatibility */
-      include: ['@lingui/macro', '@lingui/react', 'babel-plugin-macros'],
+      include: ["@lingui/macro", "@lingui/react", "babel-plugin-macros"],
     },
   },
 });

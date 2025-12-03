@@ -1,7 +1,7 @@
-import '../styles/globals.css';
+import "../styles/globals.css";
 
-import { AppProviders } from '../components/AppProviders.js';
-import { ToastContainer } from '../components/ui/Toast';
+import { AppProviders } from "../components/AppProviders.js";
+import { ToastContainer } from "../components/ui/Toast";
 
 /**
  * Root layout component for the application.
@@ -10,11 +10,7 @@ import { ToastContainer } from '../components/ui/Toast';
  * @param children - Child components to render
  * @returns Root HTML structure
  */
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <meta charSet="utf-8" />
@@ -36,6 +32,6 @@ export default async function RootLayout({
  */
 export const getConfig = async () => {
   return {
-    render: 'static',
+    render: "static",
   };
 };

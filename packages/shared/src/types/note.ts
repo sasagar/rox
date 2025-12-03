@@ -1,4 +1,4 @@
-import type { ID, Timestamps, Visibility } from './common.js';
+import type { ID, Timestamps, Visibility } from "./common.js";
 
 export interface Note extends Timestamps {
   id: ID;

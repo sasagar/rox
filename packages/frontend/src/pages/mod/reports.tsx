@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Moderator Reports Page
@@ -6,10 +6,10 @@
  * Allows moderators to view and manage user reports.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   RefreshCw,
   AlertTriangle,
@@ -19,16 +19,16 @@ import {
   User,
   FileText,
   ExternalLink,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { ModeratorNav } from '../../components/moderator/ModeratorNav';
+} from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { ModeratorNav } from "../../components/moderator/ModeratorNav";
 
 interface UserReport {
   id: string;
@@ -37,7 +37,7 @@ interface UserReport {
   targetNoteId: string | null;
   reason: string;
   comment: string | null;
-  status: 'pending' | 'resolved' | 'rejected';
+  status: "pending" | "resolved" | "rejected";
   resolvedById: string | null;
   resolution: string | null;
   resolvedAt: string | null;
@@ -54,14 +54,14 @@ interface ReportsResponse {
 }
 
 const REASON_LABELS: Record<string, string> = {
-  spam: 'Spam',
-  harassment: 'Harassment',
-  hate_speech: 'Hate Speech',
-  violence: 'Violence',
-  nsfw: 'NSFW Content',
-  impersonation: 'Impersonation',
-  copyright: 'Copyright Violation',
-  other: 'Other',
+  spam: "Spam",
+  harassment: "Harassment",
+  hate_speech: "Hate Speech",
+  violence: "Violence",
+  nsfw: "NSFW Content",
+  impersonation: "Impersonation",
+  copyright: "Copyright Violation",
+  other: "Other",
 };
 
 export default function ModeratorReportsPage() {
@@ -74,11 +74,13 @@ export default function ModeratorReportsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'resolved' | 'rejected'>('pending');
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "resolved" | "rejected">(
+    "pending",
+  );
   const [selectedReport, setSelectedReport] = useState<UserReport | null>(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
-  const [resolutionText, setResolutionText] = useState('');
+  const [resolutionText, setResolutionText] = useState("");
 
   const loadReports = useCallback(async () => {
     if (!token) return;
@@ -86,18 +88,18 @@ export default function ModeratorReportsPage() {
     try {
       apiClient.setToken(token);
       const params = new URLSearchParams();
-      if (statusFilter !== 'all') {
-        params.set('status', statusFilter);
+      if (statusFilter !== "all") {
+        params.set("status", statusFilter);
       }
       const response = await apiClient.get<ReportsResponse>(
-        `/api/mod/reports${params.toString() ? `?${params}` : ''}`
+        `/api/mod/reports${params.toString() ? `?${params}` : ""}`,
       );
       setReports(response.reports);
       setTotal(response.total);
       setPendingCount(response.pendingCount);
     } catch (err) {
-      console.error('Failed to load reports:', err);
-      setError('Failed to load reports');
+      console.error("Failed to load reports:", err);
+      setError("Failed to load reports");
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +108,7 @@ export default function ModeratorReportsPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -115,11 +117,11 @@ export default function ModeratorReportsPage() {
         // The mod API will check for moderator access
         await loadReports();
       } catch (err: any) {
-        console.error('Access check failed:', err);
+        console.error("Access check failed:", err);
         if (err.status === 403) {
-          setError('Moderator access required');
+          setError("Moderator access required");
         } else {
-          setError('Access denied');
+          setError("Access denied");
         }
         setIsLoading(false);
       }
@@ -136,10 +138,10 @@ export default function ModeratorReportsPage() {
       apiClient.setToken(token);
       const detail = await apiClient.get<UserReport>(`/api/mod/reports/${id}`);
       setSelectedReport(detail);
-      setResolutionText('');
+      setResolutionText("");
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to load report details`,
       });
     } finally {
@@ -147,7 +149,7 @@ export default function ModeratorReportsPage() {
     }
   };
 
-  const handleResolve = async (status: 'resolved' | 'rejected') => {
+  const handleResolve = async (status: "resolved" | "rejected") => {
     if (!token || !selectedReport) return;
 
     setIsResolving(true);
@@ -159,15 +161,15 @@ export default function ModeratorReportsPage() {
       });
 
       addToast({
-        type: 'success',
-        message: status === 'resolved' ? t`Report resolved` : t`Report rejected`,
+        type: "success",
+        message: status === "resolved" ? t`Report resolved` : t`Report rejected`,
       });
 
       setSelectedReport(null);
       await loadReports();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to process report`,
       });
     } finally {
@@ -181,11 +183,11 @@ export default function ModeratorReportsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'resolved':
+      case "resolved":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'rejected':
+      case "rejected":
         return <XCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
       default:
         return null;
@@ -194,14 +196,14 @@ export default function ModeratorReportsPage() {
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'resolved':
-        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-      case 'rejected':
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400';
+      case "pending":
+        return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "resolved":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      case "rejected":
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -312,7 +314,9 @@ export default function ModeratorReportsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {getStatusIcon(report.status)}
-                        <span className={`px-2 py-0.5 text-xs rounded ${getStatusBadgeClass(report.status)}`}>
+                        <span
+                          className={`px-2 py-0.5 text-xs rounded ${getStatusBadgeClass(report.status)}`}
+                        >
                           {report.status}
                         </span>
                         <span className="px-2 py-0.5 text-xs rounded bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
@@ -354,7 +358,12 @@ export default function ModeratorReportsPage() {
                   <h2 className="text-xl font-bold text-(--text-primary)">
                     <Trans>Report Details</Trans>
                   </h2>
-                  <Button variant="ghost" size="sm" onPress={() => setSelectedReport(null)} aria-label={t`Close`}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onPress={() => setSelectedReport(null)}
+                    aria-label={t`Close`}
+                  >
                     <XCircle className="w-5 h-5" />
                   </Button>
                 </div>
@@ -366,7 +375,9 @@ export default function ModeratorReportsPage() {
                 ) : (
                   <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                      <span className={`px-3 py-1 text-sm rounded-full ${getStatusBadgeClass(selectedReport.status)}`}>
+                      <span
+                        className={`px-3 py-1 text-sm rounded-full ${getStatusBadgeClass(selectedReport.status)}`}
+                      >
                         {selectedReport.status}
                       </span>
                       <span className="px-3 py-1 text-sm rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
@@ -381,7 +392,12 @@ export default function ModeratorReportsPage() {
                         </label>
                         <div className="flex items-center gap-2 text-(--text-primary)">
                           <User className="w-4 h-4" />
-                          <a href={`/@${selectedReport.reporter.username}`} className="hover:underline" target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={`/@${selectedReport.reporter.username}`}
+                            className="hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             @{selectedReport.reporter.username}
                           </a>
                         </div>
@@ -396,7 +412,7 @@ export default function ModeratorReportsPage() {
                         <div className="flex items-center gap-2 text-(--text-primary)">
                           <User className="w-4 h-4" />
                           <a
-                            href={`/@${selectedReport.targetUser.username}${selectedReport.targetUser.host ? `@${selectedReport.targetUser.host}` : ''}`}
+                            href={`/@${selectedReport.targetUser.username}${selectedReport.targetUser.host ? `@${selectedReport.targetUser.host}` : ""}`}
                             className="hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -415,7 +431,11 @@ export default function ModeratorReportsPage() {
                         </label>
                         <div className="p-3 rounded-lg bg-(--bg-secondary) border border-(--border-color)">
                           <p className="text-(--text-primary) whitespace-pre-wrap">
-                            {selectedReport.targetNote.text || <span className="text-(--text-muted) italic"><Trans>No text content</Trans></span>}
+                            {selectedReport.targetNote.text || (
+                              <span className="text-(--text-muted) italic">
+                                <Trans>No text content</Trans>
+                              </span>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -427,17 +447,25 @@ export default function ModeratorReportsPage() {
                           <Trans>Additional Comment</Trans>
                         </label>
                         <div className="p-3 rounded-lg bg-(--bg-secondary) border border-(--border-color)">
-                          <p className="text-(--text-primary) whitespace-pre-wrap">{selectedReport.comment}</p>
+                          <p className="text-(--text-primary) whitespace-pre-wrap">
+                            {selectedReport.comment}
+                          </p>
                         </div>
                       </div>
                     )}
 
                     <div className="text-sm text-(--text-muted)">
-                      <p><Trans>Created: {formatDate(selectedReport.createdAt)}</Trans></p>
-                      {selectedReport.resolvedAt && <p><Trans>Resolved: {formatDate(selectedReport.resolvedAt)}</Trans></p>}
+                      <p>
+                        <Trans>Created: {formatDate(selectedReport.createdAt)}</Trans>
+                      </p>
+                      {selectedReport.resolvedAt && (
+                        <p>
+                          <Trans>Resolved: {formatDate(selectedReport.resolvedAt)}</Trans>
+                        </p>
+                      )}
                     </div>
 
-                    {selectedReport.status !== 'pending' && selectedReport.resolution && (
+                    {selectedReport.status !== "pending" && selectedReport.resolution && (
                       <div>
                         <label className="block text-sm font-medium text-(--text-muted) mb-1">
                           <Trans>Resolution</Trans>
@@ -448,7 +476,7 @@ export default function ModeratorReportsPage() {
                       </div>
                     )}
 
-                    {selectedReport.status === 'pending' && (
+                    {selectedReport.status === "pending" && (
                       <div className="space-y-4 pt-4 border-t border-(--border-color)">
                         <div>
                           <label className="block text-sm font-medium text-(--text-secondary) mb-1">
@@ -463,11 +491,34 @@ export default function ModeratorReportsPage() {
                           />
                         </div>
                         <div className="flex gap-3">
-                          <Button onPress={() => handleResolve('resolved')} isDisabled={isResolving} className="flex-1">
-                            {isResolving ? <Spinner size="sm" /> : <><CheckCircle className="w-4 h-4 mr-2" /><Trans>Resolve</Trans></>}
+                          <Button
+                            onPress={() => handleResolve("resolved")}
+                            isDisabled={isResolving}
+                            className="flex-1"
+                          >
+                            {isResolving ? (
+                              <Spinner size="sm" />
+                            ) : (
+                              <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                <Trans>Resolve</Trans>
+                              </>
+                            )}
                           </Button>
-                          <Button variant="secondary" onPress={() => handleResolve('rejected')} isDisabled={isResolving} className="flex-1">
-                            {isResolving ? <Spinner size="sm" /> : <><XCircle className="w-4 h-4 mr-2" /><Trans>Reject</Trans></>}
+                          <Button
+                            variant="secondary"
+                            onPress={() => handleResolve("rejected")}
+                            isDisabled={isResolving}
+                            className="flex-1"
+                          >
+                            {isResolving ? (
+                              <Spinner size="sm" />
+                            ) : (
+                              <>
+                                <XCircle className="w-4 h-4 mr-2" />
+                                <Trans>Reject</Trans>
+                              </>
+                            )}
                           </Button>
                         </div>
                       </div>

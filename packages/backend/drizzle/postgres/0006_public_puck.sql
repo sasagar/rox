@@ -1,1 +1,0 @@
-ALTER TABLE "reactions" ADD COLUMN "custom_emoji_url" text;

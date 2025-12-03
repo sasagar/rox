@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Notification bell icon with badge
@@ -6,11 +6,11 @@
  * Shows unread notification count and opens notification panel
  */
 
-import { useState, useRef, useEffect } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { Bell, X } from 'lucide-react';
-import { useNotifications } from '../../hooks/useNotifications';
-import { NotificationList } from './NotificationList';
+import { useState, useRef, useEffect } from "react";
+import { Trans } from "@lingui/react/macro";
+import { Bell, X } from "lucide-react";
+import { useNotifications } from "../../hooks/useNotifications";
+import { NotificationList } from "./NotificationList";
 
 export function NotificationBell() {
   const { unreadCount } = useNotifications();
@@ -32,21 +32,21 @@ export function NotificationBell() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   // Close panel on escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
+      if (event.key === "Escape" && isOpen) {
         setIsOpen(false);
         buttonRef.current?.focus();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
   return (
@@ -57,7 +57,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative flex items-center justify-center w-10 h-10 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) hover:text-(--text-primary) transition-colors"
-        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -66,7 +66,7 @@ export function NotificationBell() {
         {/* Unread badge */}
         {unreadCount > 0 && (
           <span className="absolute top-0 right-0 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-red-500 rounded-full">
-            {unreadCount > 99 ? '99+' : unreadCount}
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
@@ -75,7 +75,7 @@ export function NotificationBell() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute left-full top-0 ml-2 w-96 max-h-[80vh] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden z-50"
+          className="absolute left-full bottom-0 ml-2 w-96 max-h-[80vh] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden z-50"
           role="dialog"
           aria-label="Notifications"
         >

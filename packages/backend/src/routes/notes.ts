@@ -6,11 +6,11 @@
  * @module routes/notes
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { requireAuth, optionalAuth } from '../middleware/auth.js';
-import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
-import { NoteService } from '../services/NoteService.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
+import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
+import { NoteService } from "../services/NoteService.js";
 
 const notes = new Hono();
 
@@ -29,46 +29,51 @@ const notes = new Hono();
  * @body {string[]} [fileIds] - File IDs to attach
  * @returns {Note} Created note
  */
-notes.post('/create', requireAuth(), userRateLimit(RateLimitPresets.createNote), async (c: Context) => {
-  const user = c.get('user')!;
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
-  const notificationService = c.get('notificationService');
+notes.post(
+  "/create",
+  requireAuth(),
+  userRateLimit(RateLimitPresets.createNote),
+  async (c: Context) => {
+    const user = c.get("user")!;
+    const noteRepository = c.get("noteRepository");
+    const driveFileRepository = c.get("driveFileRepository");
+    const userRepository = c.get("userRepository");
+    const deliveryService = c.get("activityPubDeliveryService");
+    const cacheService = c.get("cacheService");
+    const notificationService = c.get("notificationService");
 
-  const followRepository = c.get('followRepository');
-  const noteService = new NoteService(
-    noteRepository,
-    driveFileRepository,
-    followRepository,
-    userRepository,
-    deliveryService,
-    cacheService,
-    notificationService,
-  );
+    const followRepository = c.get("followRepository");
+    const noteService = new NoteService(
+      noteRepository,
+      driveFileRepository,
+      followRepository,
+      userRepository,
+      deliveryService,
+      cacheService,
+      notificationService,
+    );
 
-  const body = await c.req.json();
+    const body = await c.req.json();
 
-  try {
-    const note = await noteService.create({
-      userId: user.id,
-      text: body.text ?? null,
-      cw: body.cw ?? null,
-      visibility: body.visibility ?? 'public',
-      localOnly: body.localOnly ?? false,
-      replyId: body.replyId ?? null,
-      renoteId: body.renoteId ?? null,
-      fileIds: body.fileIds ?? [],
-    });
+    try {
+      const note = await noteService.create({
+        userId: user.id,
+        text: body.text ?? null,
+        cw: body.cw ?? null,
+        visibility: body.visibility ?? "public",
+        localOnly: body.localOnly ?? false,
+        replyId: body.replyId ?? null,
+        renoteId: body.renoteId ?? null,
+        fileIds: body.fileIds ?? [],
+      });
 
-    return c.json(note, 201);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create note';
-    return c.json({ error: message }, 400);
-  }
-});
+      return c.json(note, 201);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create note";
+      return c.json({ error: message }, 400);
+    }
+  },
+);
 
 /**
  * POST /api/notes/show
@@ -79,14 +84,14 @@ notes.post('/create', requireAuth(), userRateLimit(RateLimitPresets.createNote),
  * @body {string} noteId - Note ID
  * @returns {Note} Note record
  */
-notes.post('/show', optionalAuth(), async (c: Context) => {
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.post("/show", optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -100,13 +105,13 @@ notes.post('/show', optionalAuth(), async (c: Context) => {
   const noteId = body.noteId;
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   const note = await noteService.findById(noteId);
 
   if (!note) {
-    return c.json({ error: 'Note not found' }, 404);
+    return c.json({ error: "Note not found" }, 404);
   }
 
   return c.json(note);
@@ -121,15 +126,15 @@ notes.post('/show', optionalAuth(), async (c: Context) => {
  * @body {string} noteId - Note ID to delete
  * @returns {void}
  */
-notes.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
-  const user = c.get('user')!;
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.post("/delete", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -142,14 +147,14 @@ notes.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.write), asyn
   const body = await c.req.json();
 
   if (!body.noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
     await noteService.delete(body.noteId, user.id);
     return c.json({ success: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to delete note';
+    const message = error instanceof Error ? error.message : "Failed to delete note";
     return c.json({ error: message }, 400);
   }
 });
@@ -167,14 +172,14 @@ notes.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.write), asyn
  * @query {string} [untilId] - Get notes older than this ID
  * @returns {Note[]} List of notes
  */
-notes.get('/local-timeline', optionalAuth(), async (c: Context) => {
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.get("/local-timeline", optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -184,9 +189,9 @@ notes.get('/local-timeline', optionalAuth(), async (c: Context) => {
     cacheService,
   );
 
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
-  const sinceId = c.req.query('sinceId');
-  const untilId = c.req.query('untilId');
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
 
   const timeline = await noteService.getLocalTimeline({
     limit,
@@ -210,15 +215,15 @@ notes.get('/local-timeline', optionalAuth(), async (c: Context) => {
  * @query {string} [untilId] - Get notes older than this ID
  * @returns {Note[]} List of notes
  */
-notes.get('/timeline', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.get("/timeline", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -228,9 +233,9 @@ notes.get('/timeline', requireAuth(), async (c: Context) => {
     cacheService,
   );
 
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
-  const sinceId = c.req.query('sinceId');
-  const untilId = c.req.query('untilId');
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
 
   const timeline = await noteService.getHomeTimeline(user.id, {
     limit,
@@ -254,15 +259,15 @@ notes.get('/timeline', requireAuth(), async (c: Context) => {
  * @query {string} [untilId] - Get notes older than this ID
  * @returns {Note[]} List of notes
  */
-notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
-  const user = c.get('user');
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.get("/social-timeline", optionalAuth(), async (c: Context) => {
+  const user = c.get("user");
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -272,11 +277,54 @@ notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
     cacheService,
   );
 
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
-  const sinceId = c.req.query('sinceId');
-  const untilId = c.req.query('untilId');
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
 
   const timeline = await noteService.getSocialTimeline(user?.id ?? null, {
+    limit,
+    sinceId,
+    untilId,
+  });
+
+  return c.json(timeline);
+});
+
+/**
+ * GET /api/notes/global-timeline
+ *
+ * Get global timeline
+ *
+ * Returns all public posts from local and remote users.
+ *
+ * @auth Optional
+ * @query {number} [limit=20] - Maximum number of notes (max: 100)
+ * @query {string} [sinceId] - Get notes newer than this ID
+ * @query {string} [untilId] - Get notes older than this ID
+ * @returns {Note[]} List of notes
+ */
+notes.get("/global-timeline", optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const followRepository = c.get("followRepository");
+  const noteService = new NoteService(
+    noteRepository,
+    driveFileRepository,
+    followRepository,
+    userRepository,
+    deliveryService,
+    cacheService,
+  );
+
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
+
+  const timeline = await noteService.getGlobalTimeline({
     limit,
     sinceId,
     untilId,
@@ -299,14 +347,14 @@ notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
  * @query {string} [untilId] - Get notes older than this ID
  * @returns {Note[]} List of notes
  */
-notes.get('/user-notes', optionalAuth(), async (c: Context) => {
-  const noteRepository = c.get('noteRepository');
-  const driveFileRepository = c.get('driveFileRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+notes.get("/user-notes", optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const noteService = new NoteService(
     noteRepository,
     driveFileRepository,
@@ -316,15 +364,15 @@ notes.get('/user-notes', optionalAuth(), async (c: Context) => {
     cacheService,
   );
 
-  const userId = c.req.query('userId');
+  const userId = c.req.query("userId");
 
   if (!userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return c.json({ error: "userId is required" }, 400);
   }
 
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
-  const sinceId = c.req.query('sinceId');
-  const untilId = c.req.query('untilId');
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
 
   const timeline = await noteService.getUserTimeline(userId, {
     limit,
@@ -347,18 +395,18 @@ notes.get('/user-notes', optionalAuth(), async (c: Context) => {
  * @query {string} [untilId] - Return replies before this ID
  * @returns {Note[]} Array of reply notes
  */
-notes.get('/replies', optionalAuth(), async (c: Context) => {
-  const noteRepository = c.get('noteRepository');
+notes.get("/replies", optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get("noteRepository");
 
-  const noteId = c.req.query('noteId');
+  const noteId = c.req.query("noteId");
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
-  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : 20;
-  const sinceId = c.req.query('sinceId');
-  const untilId = c.req.query('untilId');
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : 20;
+  const sinceId = c.req.query("sinceId");
+  const untilId = c.req.query("untilId");
 
   // Get all replies to this note
   const replies = await noteRepository.findReplies(noteId, {
@@ -369,7 +417,6 @@ notes.get('/replies', optionalAuth(), async (c: Context) => {
 
   // TODO: Implement hydration with user and file data
   return c.json(replies);
-
 });
 
 export default notes;

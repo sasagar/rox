@@ -1,12 +1,8 @@
-import { eq, and, desc, lt, gt, inArray, sql } from 'drizzle-orm';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import {
-  notifications,
-  type Notification,
-  type NotificationType,
-} from '../../db/schema/pg.js';
-import type { INotificationRepository } from '../../interfaces/repositories/INotificationRepository.js';
-import { generateId } from 'shared';
+import { eq, and, desc, lt, gt, inArray, sql } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { notifications, type Notification, type NotificationType } from "../../db/schema/pg.js";
+import type { INotificationRepository } from "../../interfaces/repositories/INotificationRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of notification repository
@@ -57,7 +53,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
       untilId?: string;
       types?: NotificationType[];
       unreadOnly?: boolean;
-    }
+    },
   ): Promise<Notification[]> {
     const { limit = 40, sinceId, untilId, types, unreadOnly } = options ?? {};
 
@@ -97,16 +93,11 @@ export class PostgresNotificationRepository implements INotificationRepository {
     return results as Notification[];
   }
 
-  async findUnreadByUserId(
-    userId: string,
-    limit: number = 40
-  ): Promise<Notification[]> {
+  async findUnreadByUserId(userId: string, limit: number = 40): Promise<Notification[]> {
     const results = await this.db
       .select()
       .from(notifications)
-      .where(
-        and(eq(notifications.userId, userId), eq(notifications.isRead, false))
-      )
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)))
       .orderBy(desc(notifications.createdAt))
       .limit(limit);
 
@@ -127,9 +118,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
     const result = await this.db
       .update(notifications)
       .set({ isRead: true })
-      .where(
-        and(eq(notifications.userId, userId), eq(notifications.isRead, false))
-      )
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)))
       .returning();
 
     return result.length;
@@ -149,8 +138,8 @@ export class PostgresNotificationRepository implements INotificationRepository {
           eq(notifications.userId, userId),
           eq(notifications.isRead, false),
           // Mark as read all notifications created at or before the untilId notification
-          sql`${notifications.createdAt} <= ${untilNotification.createdAt}`
-        )
+          sql`${notifications.createdAt} <= ${untilNotification.createdAt}`,
+        ),
       )
       .returning();
 
@@ -161,16 +150,14 @@ export class PostgresNotificationRepository implements INotificationRepository {
     const [result] = await this.db
       .select({ count: sql<number>`count(*)::int` })
       .from(notifications)
-      .where(
-        and(eq(notifications.userId, userId), eq(notifications.isRead, false))
-      );
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
 
     return result?.count ?? 0;
   }
 
   async countByUserId(
     userId: string,
-    options?: { types?: NotificationType[]; unreadOnly?: boolean }
+    options?: { types?: NotificationType[]; unreadOnly?: boolean },
   ): Promise<number> {
     const { types, unreadOnly } = options ?? {};
 
@@ -193,10 +180,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(notifications)
-      .where(eq(notifications.id, id))
-      .returning();
+    const result = await this.db.delete(notifications).where(eq(notifications.id, id)).returning();
 
     return result.length > 0;
   }
@@ -213,12 +197,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
   async deleteOlderThan(userId: string, before: Date): Promise<number> {
     const result = await this.db
       .delete(notifications)
-      .where(
-        and(
-          eq(notifications.userId, userId),
-          lt(notifications.createdAt, before)
-        )
-      )
+      .where(and(eq(notifications.userId, userId), lt(notifications.createdAt, before)))
       .returning();
 
     return result.length;
@@ -228,12 +207,9 @@ export class PostgresNotificationRepository implements INotificationRepository {
     userId: string,
     type: NotificationType,
     notifierId?: string,
-    noteId?: string
+    noteId?: string,
   ): Promise<boolean> {
-    const conditions = [
-      eq(notifications.userId, userId),
-      eq(notifications.type, type),
-    ];
+    const conditions = [eq(notifications.userId, userId), eq(notifications.type, type)];
 
     if (notifierId) {
       conditions.push(eq(notifications.notifierId, notifierId));

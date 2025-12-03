@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Moderator Users Page
@@ -6,10 +6,10 @@
  * Allows moderators to suspend, unsuspend, and warn users.
  */
 
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   Search,
   User,
@@ -20,16 +20,16 @@ import {
   AlertCircle,
   Trash2,
   Clock,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { ModeratorNav } from '../../components/moderator/ModeratorNav';
+} from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { ModeratorNav } from "../../components/moderator/ModeratorNav";
 
 interface UserData {
   id: string;
@@ -71,22 +71,22 @@ export default function ModeratorUsersPage() {
   const [, addToast] = useAtom(addToastAtom);
 
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserDetailResponse | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [suspendReason, setSuspendReason] = useState('');
+  const [suspendReason, setSuspendReason] = useState("");
 
   // Warning state
   const [showWarningForm, setShowWarningForm] = useState(false);
-  const [warningReason, setWarningReason] = useState('');
-  const [warningExpiresAt, setWarningExpiresAt] = useState('');
+  const [warningReason, setWarningReason] = useState("");
+  const [warningExpiresAt, setWarningExpiresAt] = useState("");
   const [isWarning, setIsWarning] = useState(false);
   const [isDeletingWarning, setIsDeletingWarning] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
   }, [token]);
 
@@ -100,13 +100,17 @@ export default function ModeratorUsersPage() {
     try {
       apiClient.setToken(token);
       // First resolve the user
-      const resolveResponse = await apiClient.get<{ id: string }>(`/api/users/resolve?acct=${encodeURIComponent(searchQuery.trim())}`);
+      const resolveResponse = await apiClient.get<{ id: string }>(
+        `/api/users/resolve?acct=${encodeURIComponent(searchQuery.trim())}`,
+      );
 
       // Then get the user details from moderation endpoint
-      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${resolveResponse.id}`);
+      const userDetail = await apiClient.get<UserDetailResponse>(
+        `/api/mod/users/${resolveResponse.id}`,
+      );
       setSelectedUser(userDetail);
     } catch (err: any) {
-      console.error('Failed to find user:', err);
+      console.error("Failed to find user:", err);
       if (err.status === 404) {
         setError(t`User not found`);
       } else if (err.status === 403) {
@@ -130,17 +134,19 @@ export default function ModeratorUsersPage() {
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`User suspended successfully`,
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      const userDetail = await apiClient.get<UserDetailResponse>(
+        `/api/mod/users/${selectedUser.user.id}`,
+      );
       setSelectedUser(userDetail);
-      setSuspendReason('');
+      setSuspendReason("");
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to suspend user`,
       });
     } finally {
@@ -159,17 +165,19 @@ export default function ModeratorUsersPage() {
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`User unsuspended successfully`,
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      const userDetail = await apiClient.get<UserDetailResponse>(
+        `/api/mod/users/${selectedUser.user.id}`,
+      );
       setSelectedUser(userDetail);
-      setSuspendReason('');
+      setSuspendReason("");
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to unsuspend user`,
       });
     } finally {
@@ -189,19 +197,21 @@ export default function ModeratorUsersPage() {
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Warning issued successfully`,
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      const userDetail = await apiClient.get<UserDetailResponse>(
+        `/api/mod/users/${selectedUser.user.id}`,
+      );
       setSelectedUser(userDetail);
-      setWarningReason('');
-      setWarningExpiresAt('');
+      setWarningReason("");
+      setWarningExpiresAt("");
       setShowWarningForm(false);
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to issue warning`,
       });
     } finally {
@@ -218,16 +228,18 @@ export default function ModeratorUsersPage() {
       await apiClient.delete(`/api/mod/warnings/${warningId}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Warning deleted successfully`,
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(`/api/mod/users/${selectedUser.user.id}`);
+      const userDetail = await apiClient.get<UserDetailResponse>(
+        `/api/mod/users/${selectedUser.user.id}`,
+      );
       setSelectedUser(userDetail);
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to delete warning`,
       });
     } finally {
@@ -272,13 +284,20 @@ export default function ModeratorUsersPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && searchUser()}
+                  onKeyDown={(e) => e.key === "Enter" && searchUser()}
                   placeholder={t`Enter username (e.g., alice or alice@remote.server)`}
                   className="w-full px-4 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <Button onPress={searchUser} isDisabled={isLoadingUser || !searchQuery.trim()}>
-                {isLoadingUser ? <Spinner size="sm" /> : <><Search className="w-4 h-4 mr-2" /><Trans>Search</Trans></>}
+                {isLoadingUser ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <>
+                    <Search className="w-4 h-4 mr-2" />
+                    <Trans>Search</Trans>
+                  </>
+                )}
               </Button>
             </div>
             {error && (
@@ -304,7 +323,11 @@ export default function ModeratorUsersPage() {
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 rounded-full bg-(--bg-secondary) flex items-center justify-center overflow-hidden">
                     {selectedUser.user.avatarUrl ? (
-                      <img src={selectedUser.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={selectedUser.user.avatarUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <User className="w-8 h-8 text-(--text-muted)" />
                     )}
@@ -362,8 +385,8 @@ export default function ModeratorUsersPage() {
                           key={warning.id}
                           className={`p-3 rounded-lg border text-sm ${
                             isWarningExpired(warning.expiresAt)
-                              ? 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700 opacity-60'
-                              : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+                              ? "bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700 opacity-60"
+                              : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -537,8 +560,8 @@ export default function ModeratorUsersPage() {
                                 variant="secondary"
                                 onPress={() => {
                                   setShowWarningForm(false);
-                                  setWarningReason('');
-                                  setWarningExpiresAt('');
+                                  setWarningReason("");
+                                  setWarningExpiresAt("");
                                 }}
                                 isDisabled={isWarning}
                               >
@@ -547,10 +570,7 @@ export default function ModeratorUsersPage() {
                             </div>
                           </div>
                         ) : (
-                          <Button
-                            variant="secondary"
-                            onPress={() => setShowWarningForm(true)}
-                          >
+                          <Button variant="secondary" onPress={() => setShowWarningForm(true)}>
                             <AlertCircle className="w-4 h-4 mr-2" />
                             <Trans>Warn User</Trans>
                           </Button>

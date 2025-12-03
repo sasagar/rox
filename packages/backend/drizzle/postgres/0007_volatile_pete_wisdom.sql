@@ -1,2 +1,0 @@
-CREATE INDEX IF NOT EXISTS "note_user_timeline_idx" ON "notes" USING btree ("user_id","created_at");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "note_local_timeline_idx" ON "notes" USING btree ("visibility","local_only","created_at");

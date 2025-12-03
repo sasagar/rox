@@ -7,11 +7,11 @@
  * @module services/NotificationService
  */
 
-import type { Notification, NotificationType } from '../db/schema/pg.js';
-import type { INotificationRepository } from '../interfaces/repositories/INotificationRepository.js';
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import { getNotificationStreamService } from './NotificationStreamService.js';
-import type { WebPushService } from './WebPushService.js';
+import type { Notification, NotificationType } from "../db/schema/pg.js";
+import type { INotificationRepository } from "../interfaces/repositories/INotificationRepository.js";
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import { getNotificationStreamService } from "./NotificationStreamService.js";
+import type { WebPushService } from "./WebPushService.js";
 
 /**
  * Notification with populated user data
@@ -31,7 +31,7 @@ export class NotificationService {
 
   constructor(
     private notificationRepository: INotificationRepository,
-    private userRepository: IUserRepository
+    private userRepository: IUserRepository,
   ) {}
 
   /**
@@ -50,7 +50,7 @@ export class NotificationService {
    */
   async createFollowNotification(
     followeeId: string,
-    followerId: string
+    followerId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (followeeId === followerId) {
@@ -58,11 +58,7 @@ export class NotificationService {
     }
 
     // Check if notification already exists
-    const exists = await this.notificationRepository.exists(
-      followeeId,
-      'follow',
-      followerId
-    );
+    const exists = await this.notificationRepository.exists(followeeId, "follow", followerId);
 
     if (exists) {
       return null;
@@ -70,7 +66,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: followeeId,
-      type: 'follow',
+      type: "follow",
       notifierId: followerId,
     });
 
@@ -90,7 +86,7 @@ export class NotificationService {
   async createMentionNotification(
     mentionedUserId: string,
     authorId: string,
-    noteId: string
+    noteId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (mentionedUserId === authorId) {
@@ -99,7 +95,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: mentionedUserId,
-      type: 'mention',
+      type: "mention",
       notifierId: authorId,
       noteId,
     });
@@ -118,7 +114,7 @@ export class NotificationService {
   async createReplyNotification(
     replyToUserId: string,
     authorId: string,
-    noteId: string
+    noteId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (replyToUserId === authorId) {
@@ -127,7 +123,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: replyToUserId,
-      type: 'reply',
+      type: "reply",
       notifierId: authorId,
       noteId,
     });
@@ -148,7 +144,7 @@ export class NotificationService {
     noteAuthorId: string,
     reactorId: string,
     noteId: string,
-    reaction: string
+    reaction: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (noteAuthorId === reactorId) {
@@ -158,9 +154,9 @@ export class NotificationService {
     // Check if same reaction notification already exists
     const exists = await this.notificationRepository.exists(
       noteAuthorId,
-      'reaction',
+      "reaction",
       reactorId,
-      noteId
+      noteId,
     );
 
     if (exists) {
@@ -169,7 +165,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: noteAuthorId,
-      type: 'reaction',
+      type: "reaction",
       notifierId: reactorId,
       noteId,
       reaction,
@@ -189,7 +185,7 @@ export class NotificationService {
   async createRenoteNotification(
     noteAuthorId: string,
     renoterId: string,
-    renoteId: string
+    renoteId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (noteAuthorId === renoterId) {
@@ -198,7 +194,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: noteAuthorId,
-      type: 'renote',
+      type: "renote",
       notifierId: renoterId,
       noteId: renoteId,
     });
@@ -217,7 +213,7 @@ export class NotificationService {
   async createQuoteNotification(
     noteAuthorId: string,
     quoterId: string,
-    quoteNoteId: string
+    quoteNoteId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (noteAuthorId === quoterId) {
@@ -226,7 +222,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: noteAuthorId,
-      type: 'quote',
+      type: "quote",
       notifierId: quoterId,
       noteId: quoteNoteId,
     });
@@ -241,13 +237,10 @@ export class NotificationService {
    * @param userId - User who received the warning
    * @param warningId - Warning ID
    */
-  async createWarningNotification(
-    userId: string,
-    warningId: string
-  ): Promise<Notification> {
+  async createWarningNotification(userId: string, warningId: string): Promise<Notification> {
     const notification = await this.notificationRepository.create({
       userId,
-      type: 'warning',
+      type: "warning",
       warningId,
     });
 
@@ -263,7 +256,7 @@ export class NotificationService {
    */
   async createFollowRequestAcceptedNotification(
     followerId: string,
-    followeeId: string
+    followeeId: string,
   ): Promise<Notification | null> {
     // Don't notify yourself
     if (followerId === followeeId) {
@@ -272,7 +265,7 @@ export class NotificationService {
 
     const notification = await this.notificationRepository.create({
       userId: followerId,
-      type: 'follow_request_accepted',
+      type: "follow_request_accepted",
       notifierId: followeeId,
     });
 
@@ -295,25 +288,16 @@ export class NotificationService {
       untilId?: string;
       types?: NotificationType[];
       unreadOnly?: boolean;
-    }
+    },
   ): Promise<NotificationWithUser[]> {
-    const notifications = await this.notificationRepository.findByUserId(
-      userId,
-      options
-    );
+    const notifications = await this.notificationRepository.findByUserId(userId, options);
 
     // Populate notifier data
     const notifierIds = [
-      ...new Set(
-        notifications
-          .map((n) => n.notifierId)
-          .filter((id): id is string => id !== null)
-      ),
+      ...new Set(notifications.map((n) => n.notifierId).filter((id): id is string => id !== null)),
     ];
 
-    const notifiers = await Promise.all(
-      notifierIds.map((id) => this.userRepository.findById(id))
-    );
+    const notifiers = await Promise.all(notifierIds.map((id) => this.userRepository.findById(id)));
 
     const notifierMap = new Map(
       notifiers
@@ -327,14 +311,12 @@ export class NotificationService {
             name: u.displayName,
             avatarUrl: u.avatarUrl,
           },
-        ])
+        ]),
     );
 
     return notifications.map((notification) => ({
       ...notification,
-      notifier: notification.notifierId
-        ? notifierMap.get(notification.notifierId) ?? null
-        : null,
+      notifier: notification.notifierId ? (notifierMap.get(notification.notifierId) ?? null) : null,
     }));
   }
 
@@ -355,12 +337,8 @@ export class NotificationService {
    * @param userId - User ID (for authorization)
    * @returns Updated notification or null
    */
-  async markAsRead(
-    notificationId: string,
-    userId: string
-  ): Promise<Notification | null> {
-    const notification =
-      await this.notificationRepository.findById(notificationId);
+  async markAsRead(notificationId: string, userId: string): Promise<Notification | null> {
+    const notification = await this.notificationRepository.findById(notificationId);
 
     if (!notification || notification.userId !== userId) {
       return null;
@@ -397,12 +375,8 @@ export class NotificationService {
    * @param userId - User ID (for authorization)
    * @returns True if deleted, false otherwise
    */
-  async deleteNotification(
-    notificationId: string,
-    userId: string
-  ): Promise<boolean> {
-    const notification =
-      await this.notificationRepository.findById(notificationId);
+  async deleteNotification(notificationId: string, userId: string): Promise<boolean> {
+    const notification = await this.notificationRepository.findById(notificationId);
 
     if (!notification || notification.userId !== userId) {
       return false;
@@ -456,26 +430,26 @@ export class NotificationService {
 
       // Also push updated unread count
       const unreadCount = await this.notificationRepository.countUnreadByUserId(
-        notification.userId
+        notification.userId,
       );
       streamService.pushUnreadCount(notification.userId, unreadCount);
 
       // Send Web Push notification if available
       if (this.webPushService?.isAvailable()) {
         try {
-          const payload = this.webPushService.createPayload(
+          const payload = await this.webPushService.createPayload(
             notification.type,
             notifierName,
             notification.id,
-            notification.noteId
+            notification.noteId,
           );
           await this.webPushService.sendToUser(notification.userId, payload);
         } catch (pushError) {
-          console.error('Failed to send web push notification:', pushError);
+          console.error("Failed to send web push notification:", pushError);
         }
       }
     } catch (error) {
-      console.error('Failed to push notification to stream:', error);
+      console.error("Failed to push notification to stream:", error);
     }
   }
 }

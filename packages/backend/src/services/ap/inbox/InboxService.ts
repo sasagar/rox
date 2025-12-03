@@ -7,8 +7,8 @@
  * @module services/ap/inbox/InboxService
  */
 
-import type { Context } from 'hono';
-import type { Activity, HandlerContext, HandlerResult, IActivityHandler } from './types.js';
+import type { Context } from "hono";
+import type { Activity, HandlerContext, HandlerResult, IActivityHandler } from "./types.js";
 import {
   FollowHandler,
   AcceptHandler,
@@ -20,7 +20,7 @@ import {
   AnnounceHandler,
   UndoHandler,
   MoveHandler,
-} from './handlers/index.js';
+} from "./handlers/index.js";
 
 /**
  * InboxService - Activity dispatcher
@@ -33,7 +33,7 @@ export class InboxService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.URL || 'http://localhost:3000';
+    this.baseUrl = process.env.URL || "http://localhost:3000";
     this.handlers = new Map();
     this.registerDefaultHandlers();
   }
@@ -95,7 +95,7 @@ export class InboxService {
   async handleActivity(
     c: Context,
     activity: Activity,
-    recipientId: string
+    recipientId: string,
   ): Promise<HandlerResult> {
     const handler = this.handlers.get(activity.type);
 

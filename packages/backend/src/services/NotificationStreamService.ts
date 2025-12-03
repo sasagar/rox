@@ -7,14 +7,14 @@
  * @module services/NotificationStreamService
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
 /**
  * Notification event payload
  */
 export interface NotificationEvent {
   /** Event type */
-  type: 'notification' | 'unreadCount';
+  type: "notification" | "unreadCount";
   /** Notification data */
   data: unknown;
 }
@@ -115,7 +115,7 @@ export class NotificationStreamService {
   pushNotification(userId: string, notification: unknown): void {
     const channel = `user:${userId}`;
     const event: NotificationEvent = {
-      type: 'notification',
+      type: "notification",
       data: notification,
     };
     this.emitter.emit(channel, event);
@@ -131,7 +131,7 @@ export class NotificationStreamService {
   pushUnreadCount(userId: string, count: number): void {
     const channel = `user:${userId}`;
     const event: NotificationEvent = {
-      type: 'unreadCount',
+      type: "unreadCount",
       data: { count },
     };
     this.emitter.emit(channel, event);

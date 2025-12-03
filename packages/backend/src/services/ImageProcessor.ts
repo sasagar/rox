@@ -9,8 +9,8 @@
  * @module services/ImageProcessor
  */
 
-import sharp from 'sharp';
-import { encode as blurhashEncode } from 'blurhash';
+import sharp from "sharp";
+import { encode as blurhashEncode } from "blurhash";
 
 /**
  * Processed image result
@@ -66,15 +66,15 @@ const DEFAULT_OPTIONS: Required<ProcessOptions> = {
  * Supported image MIME types
  */
 const SUPPORTED_IMAGE_TYPES = new Set([
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/avif',
-  'image/heif',
-  'image/heic',
-  'image/tiff',
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/avif",
+  "image/heif",
+  "image/heic",
+  "image/tiff",
 ]);
 
 /**
@@ -115,7 +115,7 @@ export class ImageProcessor {
   async process(
     buffer: Buffer,
     _mimeType: string,
-    options: ProcessOptions = {}
+    options: ProcessOptions = {},
   ): Promise<ProcessedImage> {
     const opts = { ...DEFAULT_OPTIONS, ...options };
 
@@ -133,9 +133,9 @@ export class ImageProcessor {
 
     return {
       webp: webpResult,
-      webpType: 'image/webp',
+      webpType: "image/webp",
       thumbnail: thumbnailResult,
-      thumbnailType: 'image/webp',
+      thumbnailType: "image/webp",
       width,
       height,
       blurhash,
@@ -149,13 +149,10 @@ export class ImageProcessor {
    * @param options - Processing options
    * @returns WebP buffer
    */
-  private async convertToWebP(
-    buffer: Buffer,
-    options: Required<ProcessOptions>
-  ): Promise<Buffer> {
+  private async convertToWebP(buffer: Buffer, options: Required<ProcessOptions>): Promise<Buffer> {
     return await sharp(buffer)
       .resize(options.maxWidth, options.maxHeight, {
-        fit: 'inside',
+        fit: "inside",
         withoutEnlargement: true,
       })
       .webp({ quality: options.webpQuality })
@@ -173,12 +170,12 @@ export class ImageProcessor {
    */
   private async generateThumbnail(
     buffer: Buffer,
-    options: Required<ProcessOptions>
+    options: Required<ProcessOptions>,
   ): Promise<Buffer> {
     return await sharp(buffer)
       .resize(options.thumbnailWidth, options.thumbnailHeight, {
-        fit: 'cover',
-        position: 'centre',
+        fit: "cover",
+        position: "centre",
       })
       .webp({ quality: 70 })
       .toBuffer();
@@ -194,14 +191,14 @@ export class ImageProcessor {
     try {
       // Resize to small size for blurhash calculation
       const { data, info } = await sharp(buffer)
-        .resize(32, 32, { fit: 'inside' })
+        .resize(32, 32, { fit: "inside" })
         .ensureAlpha()
         .raw()
         .toBuffer({ resolveWithObject: true });
 
       return blurhashEncode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
     } catch (error) {
-      console.warn('Failed to generate blurhash:', error);
+      console.warn("Failed to generate blurhash:", error);
       return null;
     }
   }
@@ -213,7 +210,7 @@ export class ImageProcessor {
    * @returns Image metadata (width, height, format)
    */
   async getMetadata(
-    buffer: Buffer
+    buffer: Buffer,
   ): Promise<{ width: number; height: number; format: string | undefined }> {
     const metadata = await sharp(buffer).metadata();
     return {

@@ -1,57 +1,49 @@
-import { atom } from 'jotai';
-import type { User } from '../types/user';
+import { atom } from "jotai";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import type { User } from "../types/user";
 
 /**
- * Get token from localStorage (client-side only)
+ * Custom storage that handles SSR gracefully
+ * Returns null on server, uses localStorage on client
  */
-const getTokenFromStorage = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    return localStorage.getItem('token');
-  } catch {
-    return null;
-  }
-};
-
-/**
- * Save token to localStorage (client-side only)
- */
-const saveTokenToStorage = (token: string | null) => {
-  if (typeof window === 'undefined') return;
-  try {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+const createClientStorage = <T>() => {
+  const storage = createJSONStorage<T>(() => {
+    if (typeof window === "undefined") {
+      // Return a dummy storage for SSR that does nothing
+      return {
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {},
+      };
     }
-  } catch (error) {
-    console.error('Failed to save token to localStorage:', error);
-  }
+    return localStorage;
+  });
+  return storage;
 };
-
-/**
- * Base token atom for storage
- */
-const baseTokenAtom = atom<string | null>(getTokenFromStorage());
 
 /**
  * Authentication token atom with localStorage sync
- * Reads from localStorage on initialization, writes on updates
+ * Uses atomWithStorage for proper SSR hydration handling
  */
-export const tokenAtom = atom(
-  // Read: Get value from base atom
-  (get) => get(baseTokenAtom),
-  // Write: Save to both atom and localStorage
-  (_get, set, newValue: string | null) => {
-    set(baseTokenAtom, newValue);
-    saveTokenToStorage(newValue);
-  }
+export const tokenAtom = atomWithStorage<string | null>(
+  "token",
+  null,
+  createClientStorage<string | null>(),
+  { getOnInit: true },
 );
 
 /**
- * Current user atom
+ * Current user atom with localStorage sync
+ * Uses atomWithStorage to persist user data across page navigations
+ * This ensures sidebar and other user-dependent UI elements render correctly
+ * even before the auth session is re-validated
  */
-export const currentUserAtom = atom<User | null>(null);
+export const currentUserAtom = atomWithStorage<User | null>(
+  "currentUser",
+  null,
+  createClientStorage<User | null>(),
+  { getOnInit: true },
+);
 
 /**
  * Derived atom: is user authenticated?

@@ -8,9 +8,9 @@
  * @module services/ap/inbox/handlers/MoveHandler
  */
 
-import type { Activity, HandlerContext, HandlerResult } from '../types.js';
-import { BaseHandler } from './BaseHandler.js';
-import { ActivityDeliveryService } from '../../ActivityDeliveryService.js';
+import type { Activity, HandlerContext, HandlerResult } from "../types.js";
+import { BaseHandler } from "./BaseHandler.js";
+import { ActivityDeliveryService } from "../../ActivityDeliveryService.js";
 
 /**
  * Handler for Move activities
@@ -24,7 +24,7 @@ import { ActivityDeliveryService } from '../../ActivityDeliveryService.js';
  * 3. Updates the cached remote user data with movedTo
  */
 export class MoveHandler extends BaseHandler {
-  readonly activityType = 'Move';
+  readonly activityType = "Move";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
     const { c, baseUrl } = context;
@@ -35,11 +35,11 @@ export class MoveHandler extends BaseHandler {
       const targetUri = this.getTargetUri(activity);
 
       if (!targetUri) {
-        this.warn('Move activity missing target');
-        return this.failure('Move activity missing target');
+        this.warn("Move activity missing target");
+        return this.failure("Move activity missing target");
       }
 
-      this.log('🚚', `Move: ${oldAccountUri} → ${targetUri}`);
+      this.log("🚚", `Move: ${oldAccountUri} → ${targetUri}`);
 
       // Resolve both actors
       const remoteActorService = this.getRemoteActorService(c);
@@ -48,11 +48,16 @@ export class MoveHandler extends BaseHandler {
 
       if (!newActor) {
         this.warn(`Could not resolve new account: ${targetUri}`);
-        return this.failure('Could not resolve new account');
+        return this.failure("Could not resolve new account");
       }
 
       // Validate bi-directional alsoKnownAs
-      const validationResult = await this.validateMove(oldActor, newActor, oldAccountUri, targetUri);
+      const validationResult = await this.validateMove(
+        oldActor,
+        newActor,
+        oldAccountUri,
+        targetUri,
+      );
       if (!validationResult.valid) {
         this.warn(`Move validation failed: ${validationResult.reason}`);
         return this.failure(`Move validation failed: ${validationResult.reason}`);
@@ -71,7 +76,7 @@ export class MoveHandler extends BaseHandler {
       const followRepository = this.getFollowRepository(c);
       const followers = await followRepository.findByFolloweeId(oldActor.id);
 
-      this.log('📋', `Found ${followers.length} local followers to migrate`);
+      this.log("📋", `Found ${followers.length} local followers to migrate`);
 
       let migratedCount = 0;
       let errorCount = 0;
@@ -88,7 +93,7 @@ export class MoveHandler extends BaseHandler {
           // Check if already following the new account
           const alreadyFollowing = await followRepository.exists(follower.id, newActor.id);
           if (alreadyFollowing) {
-            this.log('⏭️', `${follower.username} already follows new account`);
+            this.log("⏭️", `${follower.username} already follows new account`);
             continue;
           }
 
@@ -107,8 +112,8 @@ export class MoveHandler extends BaseHandler {
 
             const deliveryService = new ActivityDeliveryService();
             const followActivity = {
-              '@context': 'https://www.w3.org/ns/activitystreams',
-              type: 'Follow',
+              "@context": "https://www.w3.org/ns/activitystreams",
+              type: "Follow",
               id: `${baseUrl}/activities/${newFollowId}`,
               actor: followerUri,
               object: targetUri,
@@ -118,10 +123,10 @@ export class MoveHandler extends BaseHandler {
               followActivity,
               newActor.inbox,
               keyId,
-              follower.privateKey
+              follower.privateKey,
             );
 
-            this.log('📤', `Follow activity sent to ${newActor.inbox} for ${follower.username}`);
+            this.log("📤", `Follow activity sent to ${newActor.inbox} for ${follower.username}`);
           }
 
           migratedCount++;
@@ -131,12 +136,12 @@ export class MoveHandler extends BaseHandler {
         }
       }
 
-      this.log('✅', `Move processed: ${migratedCount} followers migrated, ${errorCount} errors`);
+      this.log("✅", `Move processed: ${migratedCount} followers migrated, ${errorCount} errors`);
 
       return this.success(`Move processed: ${migratedCount} followers migrated`);
     } catch (error) {
-      this.error('Failed to handle Move activity:', error as Error);
-      return this.failure('Failed to handle Move activity', error as Error);
+      this.error("Failed to handle Move activity:", error as Error);
+      return this.failure("Failed to handle Move activity", error as Error);
     }
   }
 
@@ -147,11 +152,11 @@ export class MoveHandler extends BaseHandler {
     const target = activity.target;
     if (!target) return null;
 
-    if (typeof target === 'string') {
+    if (typeof target === "string") {
       return target;
     }
 
-    if (typeof target === 'object' && 'id' in target) {
+    if (typeof target === "object" && "id" in target) {
       return target.id as string;
     }
 
@@ -169,14 +174,14 @@ export class MoveHandler extends BaseHandler {
     oldActor: { alsoKnownAs?: string[] | null },
     newActor: { alsoKnownAs?: string[] | null },
     oldAccountUri: string,
-    newAccountUri: string
+    newAccountUri: string,
   ): Promise<{ valid: boolean; reason?: string }> {
     // Check if old account lists new account in alsoKnownAs
     const oldHasNew = oldActor.alsoKnownAs?.includes(newAccountUri);
     if (!oldHasNew) {
       return {
         valid: false,
-        reason: 'Old account does not have new account in alsoKnownAs',
+        reason: "Old account does not have new account in alsoKnownAs",
       };
     }
 
@@ -185,7 +190,7 @@ export class MoveHandler extends BaseHandler {
     if (!newHasOld) {
       return {
         valid: false,
-        reason: 'New account does not have old account in alsoKnownAs',
+        reason: "New account does not have old account in alsoKnownAs",
       };
     }
 

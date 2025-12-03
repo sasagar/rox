@@ -6,13 +6,13 @@
  * @module repositories/pg/PostgresInstanceSettingsRepository
  */
 
-import { eq, inArray } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { instanceSettings, type InstanceSetting } from '../../db/schema/pg.js';
+import { eq, inArray } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { instanceSettings, type InstanceSetting } from "../../db/schema/pg.js";
 import type {
   IInstanceSettingsRepository,
   InstanceSettingKey,
-} from '../../interfaces/repositories/IInstanceSettingsRepository.js';
+} from "../../interfaces/repositories/IInstanceSettingsRepository.js";
 
 /**
  * PostgreSQL implementation of Instance Settings Repository
@@ -54,7 +54,7 @@ export class PostgresInstanceSettingsRepository implements IInstanceSettingsRepo
       .returning();
 
     if (!result) {
-      throw new Error('Failed to set instance setting');
+      throw new Error("Failed to set instance setting");
     }
 
     return result;

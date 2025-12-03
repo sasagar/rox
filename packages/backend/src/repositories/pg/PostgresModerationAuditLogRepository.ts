@@ -1,12 +1,12 @@
-import { eq, sql, desc, and } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { moderationAuditLogs, type ModerationAuditLog } from '../../db/schema/pg.js';
+import { eq, sql, desc, and } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { moderationAuditLogs, type ModerationAuditLog } from "../../db/schema/pg.js";
 import type {
   IModerationAuditLogRepository,
   ModerationAction,
   ModerationTargetType,
-} from '../../interfaces/repositories/IModerationAuditLogRepository.js';
-import { generateId } from 'shared';
+} from "../../interfaces/repositories/IModerationAuditLogRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of Moderation Audit Log Repository
@@ -36,7 +36,7 @@ export class PostgresModerationAuditLogRepository implements IModerationAuditLog
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create moderation audit log');
+      throw new Error("Failed to create moderation audit log");
     }
 
     return result;
@@ -110,9 +110,7 @@ export class PostgresModerationAuditLogRepository implements IModerationAuditLog
       conditions.push(eq(moderationAuditLogs.targetId, options.targetId));
     }
 
-    const query = this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(moderationAuditLogs);
+    const query = this.db.select({ count: sql<number>`count(*)::int` }).from(moderationAuditLogs);
 
     if (conditions.length > 0) {
       const [result] = await query.where(and(...conditions));
@@ -126,7 +124,7 @@ export class PostgresModerationAuditLogRepository implements IModerationAuditLog
   async findByTarget(
     targetType: ModerationTargetType,
     targetId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]> {
     return this.db
       .select()
@@ -134,8 +132,8 @@ export class PostgresModerationAuditLogRepository implements IModerationAuditLog
       .where(
         and(
           eq(moderationAuditLogs.targetType, targetType),
-          eq(moderationAuditLogs.targetId, targetId)
-        )
+          eq(moderationAuditLogs.targetId, targetId),
+        ),
       )
       .orderBy(desc(moderationAuditLogs.createdAt))
       .limit(options?.limit ?? 100)
@@ -144,7 +142,7 @@ export class PostgresModerationAuditLogRepository implements IModerationAuditLog
 
   async findByModerator(
     moderatorId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]> {
     return this.db
       .select()

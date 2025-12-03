@@ -1,12 +1,12 @@
-import type { IAuthProvider, AuthResult, PasskeyConfig } from '../types';
-import { apiClient } from '../../api/client';
+import type { IAuthProvider, AuthResult, PasskeyConfig } from "../types";
+import { apiClient } from "../../api/client";
 
 /**
  * Passkey (WebAuthn) authentication provider
  * Provides passwordless authentication using FIDO2/WebAuthn
  */
 export class PasskeyProvider implements IAuthProvider {
-  readonly method = 'passkey' as const;
+  readonly method = "passkey" as const;
   private config: PasskeyConfig;
 
   constructor(config: PasskeyConfig) {
@@ -36,10 +36,10 @@ export class PasskeyProvider implements IAuthProvider {
     const challenge = await apiClient.post<{
       challenge: string;
       userId: string;
-    }>('/api/auth/passkey/register/begin', { username });
+    }>("/api/auth/passkey/register/begin", { username });
 
     // Create WebAuthn credential
-    const credential = await navigator.credentials.create({
+    const credential = (await navigator.credentials.create({
       publicKey: {
         challenge: this.base64ToBuffer(challenge.challenge),
         rp: {
@@ -52,25 +52,25 @@ export class PasskeyProvider implements IAuthProvider {
           displayName: username,
         },
         pubKeyCredParams: [
-          { type: 'public-key', alg: -7 }, // ES256
-          { type: 'public-key', alg: -257 }, // RS256
+          { type: "public-key", alg: -7 }, // ES256
+          { type: "public-key", alg: -257 }, // RS256
         ],
         authenticatorSelection: {
-          authenticatorAttachment: 'platform', // Prefer platform authenticators (Touch ID, Windows Hello)
+          authenticatorAttachment: "platform", // Prefer platform authenticators (Touch ID, Windows Hello)
           userVerification: this.config.userVerification,
           requireResidentKey: true,
         },
         attestation: this.config.attestation,
         timeout: 60000,
       },
-    }) as PublicKeyCredential;
+    })) as PublicKeyCredential;
 
     if (!credential) {
-      throw new Error('Failed to create passkey');
+      throw new Error("Failed to create passkey");
     }
 
     // Send credential to server for verification and storage
-    await apiClient.post('/api/auth/passkey/register/finish', {
+    await apiClient.post("/api/auth/passkey/register/finish", {
       username,
       credential: this.credentialToJSON(credential),
     });
@@ -95,11 +95,11 @@ export class PasskeyProvider implements IAuthProvider {
     // Request authentication challenge from server
     const challenge = await apiClient.post<{
       challenge: string;
-      allowCredentials?: Array<{ id: string; type: 'public-key' }>;
-    }>('/api/auth/passkey/authenticate/begin', username ? { username } : {});
+      allowCredentials?: Array<{ id: string; type: "public-key" }>;
+    }>("/api/auth/passkey/authenticate/begin", username ? { username } : {});
 
     // Get WebAuthn assertion
-    const assertion = await navigator.credentials.get({
+    const assertion = (await navigator.credentials.get({
       publicKey: {
         challenge: this.base64ToBuffer(challenge.challenge),
         rpId: this.config.rpId,
@@ -110,19 +110,16 @@ export class PasskeyProvider implements IAuthProvider {
         userVerification: this.config.userVerification,
         timeout: 60000,
       },
-    }) as PublicKeyCredential;
+    })) as PublicKeyCredential;
 
     if (!assertion) {
-      throw new Error('Passkey authentication failed');
+      throw new Error("Passkey authentication failed");
     }
 
     // Send assertion to server for verification
-    const response = await apiClient.post<AuthResult>(
-      '/api/auth/passkey/authenticate/finish',
-      {
-        credential: this.credentialToJSON(assertion),
-      }
-    );
+    const response = await apiClient.post<AuthResult>("/api/auth/passkey/authenticate/finish", {
+      credential: this.credentialToJSON(assertion),
+    });
 
     return response;
   }
@@ -134,7 +131,7 @@ export class PasskeyProvider implements IAuthProvider {
     return !!(
       window.PublicKeyCredential &&
       navigator.credentials &&
-      typeof navigator.credentials.create === 'function'
+      typeof navigator.credentials.create === "function"
     );
   }
 
@@ -156,7 +153,7 @@ export class PasskeyProvider implements IAuthProvider {
   // Helper methods for WebAuthn data conversion
 
   private base64ToBuffer(base64: string): ArrayBuffer {
-    const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+    const binary = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
@@ -170,15 +167,17 @@ export class PasskeyProvider implements IAuthProvider {
 
   private bufferToBase64(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
-    let binary = '';
+    let binary = "";
     for (let i = 0; i < bytes.byteLength; i++) {
       binary += String.fromCharCode(bytes[i] ?? 0);
     }
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
   }
 
   private credentialToJSON(credential: PublicKeyCredential): any {
-    const response = credential.response as AuthenticatorAttestationResponse | AuthenticatorAssertionResponse;
+    const response = credential.response as
+      | AuthenticatorAttestationResponse
+      | AuthenticatorAssertionResponse;
 
     const base: any = {
       id: credential.id,
@@ -186,7 +185,7 @@ export class PasskeyProvider implements IAuthProvider {
       type: credential.type,
     };
 
-    if ('attestationObject' in response) {
+    if ("attestationObject" in response) {
       // Registration response
       base.response = {
         clientDataJSON: this.bufferToBase64(response.clientDataJSON),

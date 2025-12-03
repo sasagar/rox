@@ -1,28 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { useState } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 /**
  * Avatar variant styles using Class Variance Authority
  * Defines visual variants for size
  */
-const avatarVariants = cva(
-  'rounded-full bg-gray-200 dark:bg-gray-700 object-cover',
-  {
-    variants: {
-      size: {
-        sm: 'h-8 w-8 text-xs',
-        md: 'h-10 w-10 text-sm',
-        lg: 'h-12 w-12 text-base',
-        xl: 'h-16 w-16 text-xl',
-      },
+const avatarVariants = cva("rounded-full bg-gray-200 dark:bg-gray-700 object-cover", {
+  variants: {
+    size: {
+      sm: "h-8 w-8 text-xs",
+      md: "h-10 w-10 text-sm",
+      lg: "h-12 w-12 text-base",
+      xl: "h-16 w-16 text-xl",
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 /**
  * Props for the Avatar component
@@ -60,73 +58,18 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
  * <Avatar src="/avatar.jpg" alt="Jane" size="sm" />
  * ```
  */
-/**
- * Check if URL is external (not on the same origin)
- */
-function isExternalUrl(url: string): boolean {
-  if (!url) return false;
-  // Relative URLs are not external
-  if (url.startsWith('/') && !url.startsWith('//')) return false;
-  // Data URLs are not external
-  if (url.startsWith('data:')) return false;
-
-  try {
-    const parsed = new URL(url, window.location.origin);
-    return parsed.origin !== window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check if URL points to a local/development domain that shouldn't be proxied
- */
-function isLocalDevelopmentUrl(url: string): boolean {
-  if (!url) return false;
-  try {
-    const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
-    return (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '::1' ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.localhost') ||
-      hostname.startsWith('192.168.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('172.')
-    );
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Get proxied URL for external images
- * In development/local environments, return the original URL to avoid proxy restrictions
- */
-function getProxiedUrl(url: string): string {
-  // Temporarily disabled proxying to debug image loading issues
-  // TODO: Re-enable proxy for production
-  return url;
-  // if (!url || !isExternalUrl(url)) return url;
-  // // Don't proxy local development URLs - they would be blocked by the proxy anyway
-  // if (isLocalDevelopmentUrl(url)) return url;
-  // return `/proxy?url=${encodeURIComponent(url)}`;
-}
-
-export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
+export function Avatar({ src, alt = "", fallback, size, className }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   // Get the image URL (proxied if external)
-  const imageUrl = src ? getProxiedUrl(src) : null;
+  const imageUrl = getProxiedImageUrl(src);
 
   if (imageUrl && !hasError) {
     return (
       <img
         src={imageUrl}
         alt={alt}
-        className={'inline-block ' + avatarVariants({ size, className })}
+        className={"inline-block " + avatarVariants({ size, className })}
         onError={() => setHasError(true)}
       />
     );
@@ -135,7 +78,12 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   if (fallback) {
     return (
       <div
-        className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-primary-100! dark:bg-primary-900/30! text-primary-700 dark:text-primary-300 font-semibold ' + (className || '')}
+        className={
+          "inline-flex items-center justify-center " +
+          avatarVariants({ size }) +
+          " bg-primary-100! dark:bg-primary-900/30! text-primary-700 dark:text-primary-300 font-semibold " +
+          (className || "")
+        }
         aria-label={alt}
       >
         {fallback}
@@ -146,7 +94,12 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   // Default fallback: user icon
   return (
     <div
-      className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-gray-300! dark:bg-gray-600! text-gray-600 dark:text-gray-300 ' + (className || '')}
+      className={
+        "inline-flex items-center justify-center " +
+        avatarVariants({ size }) +
+        " bg-gray-300! dark:bg-gray-600! text-gray-600 dark:text-gray-300 " +
+        (className || "")
+      }
       aria-label={alt}
     >
       <svg

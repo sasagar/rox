@@ -7,7 +7,7 @@
  * @module services/ap/ActivityDeliveryService
  */
 
-import { signRequest, getSignedHeaders } from '../../utils/crypto.js';
+import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 
 /**
  * Delivery timeout in milliseconds (30 seconds)
@@ -47,25 +47,25 @@ export class ActivityDeliveryService {
     activity: any,
     inboxUrl: string,
     senderKeyId: string,
-    senderPrivateKey: string
+    senderPrivateKey: string,
   ): Promise<boolean> {
     try {
       const body = JSON.stringify(activity);
 
       // Generate HTTP Signature
-      const signature = signRequest(senderPrivateKey, senderKeyId, 'POST', inboxUrl, body);
+      const signature = signRequest(senderPrivateKey, senderKeyId, "POST", inboxUrl, body);
 
       // Get required headers
       const headers = getSignedHeaders(inboxUrl, body);
 
       // Send request with timeout
       const headersObj = new Headers();
-      headersObj.set('Content-Type', 'application/activity+json');
-      headersObj.set('Host', headers.host!);
-      headersObj.set('Date', headers.date!);
-      headersObj.set('Signature', signature);
+      headersObj.set("Content-Type", "application/activity+json");
+      headersObj.set("Host", headers.host!);
+      headersObj.set("Date", headers.date!);
+      headersObj.set("Signature", signature);
       if (headers.digest) {
-        headersObj.set('Digest', headers.digest);
+        headersObj.set("Digest", headers.digest);
       }
 
       // Create abort controller for timeout
@@ -75,7 +75,7 @@ export class ActivityDeliveryService {
       let response: Response;
       try {
         response = await fetch(inboxUrl, {
-          method: 'POST',
+          method: "POST",
           headers: headersObj,
           body,
           signal: controller.signal,
@@ -86,7 +86,7 @@ export class ActivityDeliveryService {
 
       if (!response.ok) {
         console.error(
-          `Failed to deliver activity to ${inboxUrl}: ${response.status} ${response.statusText}`
+          `Failed to deliver activity to ${inboxUrl}: ${response.status} ${response.statusText}`,
         );
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -94,7 +94,7 @@ export class ActivityDeliveryService {
       console.log(`✅ Activity delivered to ${inboxUrl}: ${activity.type}`);
       return true;
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.name === "AbortError") {
         console.error(`⏱️  Timeout delivering activity to ${inboxUrl} (${DELIVERY_TIMEOUT}ms)`);
         throw new Error(`Delivery timeout after ${DELIVERY_TIMEOUT}ms`);
       }
@@ -114,9 +114,12 @@ export class ActivityDeliveryService {
    * @returns Accept activity
    */
   createAcceptActivity(followActivity: any, acceptorUri: string): any {
+    // Generate a unique ID for the Accept activity
+    const acceptId = `${acceptorUri}#accepts/${Date.now()}`;
     return {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Accept',
+      "@context": "https://www.w3.org/ns/activitystreams",
+      id: acceptId,
+      type: "Accept",
       actor: acceptorUri,
       object: followActivity,
     };
@@ -134,9 +137,9 @@ export class ActivityDeliveryService {
    */
   createFollowActivity(followerUri: string, followeeUri: string, activityId: string): any {
     return {
-      '@context': 'https://www.w3.org/ns/activitystreams',
+      "@context": "https://www.w3.org/ns/activitystreams",
       id: activityId,
-      type: 'Follow',
+      type: "Follow",
       actor: followerUri,
       object: followeeUri,
     };
@@ -154,9 +157,9 @@ export class ActivityDeliveryService {
    */
   createUndoActivity(actorUri: string, originalActivity: any, activityId: string): any {
     return {
-      '@context': 'https://www.w3.org/ns/activitystreams',
+      "@context": "https://www.w3.org/ns/activitystreams",
       id: activityId,
-      type: 'Undo',
+      type: "Undo",
       actor: actorUri,
       object: originalActivity,
     };

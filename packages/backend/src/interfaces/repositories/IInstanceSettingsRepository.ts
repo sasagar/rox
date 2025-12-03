@@ -6,24 +6,25 @@
  * @module interfaces/repositories/IInstanceSettingsRepository
  */
 
-import type { InstanceSetting } from '../../db/schema/pg.js';
+import type { InstanceSetting } from "../../db/schema/pg.js";
 
 /**
  * Known instance setting keys
  */
 export type InstanceSettingKey =
-  | 'registration.enabled'
-  | 'registration.inviteOnly'
-  | 'registration.approvalRequired'
-  | 'instance.name'
-  | 'instance.description'
-  | 'instance.maintainerEmail'
-  | 'instance.iconUrl'
-  | 'instance.bannerUrl'
-  | 'instance.tosUrl'
-  | 'instance.privacyPolicyUrl'
-  | 'theme.primaryColor'
-  | 'theme.darkMode';
+  | "registration.enabled"
+  | "registration.inviteOnly"
+  | "registration.approvalRequired"
+  | "instance.name"
+  | "instance.description"
+  | "instance.maintainerEmail"
+  | "instance.iconUrl"
+  | "instance.bannerUrl"
+  | "instance.faviconUrl"
+  | "instance.tosUrl"
+  | "instance.privacyPolicyUrl"
+  | "theme.primaryColor"
+  | "theme.darkMode";
 
 /**
  * Instance settings repository interface

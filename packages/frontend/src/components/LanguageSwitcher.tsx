@@ -1,22 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import {
-  Select,
-  Label,
-  Button,
-  SelectValue,
-  Popover,
-  ListBox,
-  ListBoxItem,
-} from 'react-aria-components';
-import { ChevronDown } from 'lucide-react';
-import { loadLocale, locales, type Locale } from '../lib/i18n/index.js';
+import { useState, useRef, useEffect } from "react";
+import { Globe } from "lucide-react";
+import { loadLocale, locales, type Locale } from "../lib/i18n/index.js";
 
 /**
  * Language switcher component
- * Allows users to switch between available locales using a select box
- * Saves the selected locale to localStorage for persistence
+ * Compact icon button that opens a popover to select language
  *
  * @example
  * ```tsx
@@ -25,49 +15,73 @@ import { loadLocale, locales, type Locale } from '../lib/i18n/index.js';
  */
 export function LanguageSwitcher() {
   const [currentLocale, setCurrentLocale] = useState<Locale>(
-    (typeof window !== 'undefined'
-      ? (localStorage.getItem('locale') as Locale)
-      : null) || 'en',
+    (typeof window !== "undefined" ? (localStorage.getItem("locale") as Locale) : null) || "en",
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleLocaleChange = async (locale: Locale) => {
     try {
       await loadLocale(locale);
       setCurrentLocale(locale);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('locale', locale);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("locale", locale);
       }
+      setIsOpen(false);
       // Force a page refresh to apply translations throughout the app
       window.location.reload();
     } catch (error) {
-      console.error('Failed to change locale:', error);
+      console.error("Failed to change locale:", error);
     }
   };
 
+  // Close popover when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <Select
-      selectedKey={currentLocale}
-      onSelectionChange={(key) => handleLocaleChange(key as Locale)}
-      className="w-full"
-    >
-      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Language</Label>
-      <Button className="w-full flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-        <SelectValue className="flex-1 text-left" />
-        <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-      </Button>
-      <Popover className="w-[--trigger-width] mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden">
-        <ListBox className="outline-none">
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors"
+        aria-label="Change language"
+        title={`Language: ${locales[currentLocale]}`}
+      >
+        <Globe className="w-5 h-5" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute bottom-full mb-2 right-0 bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden min-w-[120px] z-50">
           {Object.entries(locales).map(([locale, label]) => (
-            <ListBoxItem
+            <button
               key={locale}
-              id={locale}
-              className="px-3 py-2 text-sm text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none data-selected:bg-primary-50 dark:data-selected:bg-primary-900/30 data-selected:text-primary-900 dark:data-selected:text-primary-100"
+              type="button"
+              onClick={() => handleLocaleChange(locale as Locale)}
+              className={`w-full px-3 py-2 text-sm text-left hover:bg-(--bg-tertiary) transition-colors ${
+                currentLocale === locale
+                  ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                  : "text-(--text-primary)"
+              }`}
             >
               {label}
-            </ListBoxItem>
+            </button>
           ))}
-        </ListBox>
-      </Popover>
-    </Select>
+        </div>
+      )}
+    </div>
   );
 }

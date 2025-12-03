@@ -1,15 +1,13 @@
-import { eq, lt } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { sessions } from '../../db/schema/pg.js';
-import type { ISessionRepository } from '../../interfaces/repositories/ISessionRepository.js';
-import type { Session } from 'shared';
+import { eq, lt } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { sessions } from "../../db/schema/pg.js";
+import type { ISessionRepository } from "../../interfaces/repositories/ISessionRepository.js";
+import type { Session } from "shared";
 
 export class PostgresSessionRepository implements ISessionRepository {
   constructor(private db: Database) {}
 
-  async create(
-    session: Omit<Session, 'createdAt' | 'updatedAt'>
-  ): Promise<Session> {
+  async create(session: Omit<Session, "createdAt" | "updatedAt">): Promise<Session> {
     const now = new Date();
     const [result] = await this.db
       .insert(sessions)
@@ -21,18 +19,14 @@ export class PostgresSessionRepository implements ISessionRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create session');
+      throw new Error("Failed to create session");
     }
 
     return result as Session;
   }
 
   async findById(id: string): Promise<Session | null> {
-    const [result] = await this.db
-      .select()
-      .from(sessions)
-      .where(eq(sessions.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(sessions).where(eq(sessions.id, id)).limit(1);
 
     return (result as Session) ?? null;
   }
@@ -48,10 +42,7 @@ export class PostgresSessionRepository implements ISessionRepository {
   }
 
   async findByUserId(userId: string): Promise<Session[]> {
-    const results = await this.db
-      .select()
-      .from(sessions)
-      .where(eq(sessions.userId, userId));
+    const results = await this.db.select().from(sessions).where(eq(sessions.userId, userId));
 
     return results as Session[];
   }
@@ -67,7 +58,7 @@ export class PostgresSessionRepository implements ISessionRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Session not found');
+      throw new Error("Session not found");
     }
 
     return result as Session;

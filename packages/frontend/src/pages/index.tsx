@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
-import { LandingPage } from '../components/LandingPage';
-import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
-import { apiClient } from '../lib/api/client';
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { LandingPage } from "../components/LandingPage";
+import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
 
 /**
  * Home page component
@@ -21,10 +21,10 @@ export default function HomePage() {
       if (token && !currentUser) {
         try {
           apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
         } catch (error) {
-          console.error('Failed to restore session:', error);
+          console.error("Failed to restore session:", error);
           // Token is invalid, stay on landing page as guest
         }
       }

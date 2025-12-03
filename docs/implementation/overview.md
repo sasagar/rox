@@ -1,5 +1,7 @@
 # Rox Implementation Overview
 
+**言語**: [English](./overview.en.md) | 日本語
+
 ## プロジェクト概要
 
 Roxは、軽量かつ高性能なActivityPubサーバー＆クライアントです。Misskey互換APIを提供し、既存のMisskeyユーザーがスムーズに移行できるように設計されています。

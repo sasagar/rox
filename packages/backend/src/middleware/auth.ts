@@ -7,12 +7,12 @@
  * @module middleware/auth
  */
 
-import type { Context, Next } from 'hono';
-import type { User, Session } from 'shared';
-import { AuthService } from '../services/AuthService.js';
-import type { RolePolicies } from '../db/schema/pg.js';
+import type { Context, Next } from "hono";
+import type { User, Session } from "shared";
+import { AuthService } from "../services/AuthService.js";
+import type { RolePolicies } from "../db/schema/pg.js";
 
-declare module 'hono' {
+declare module "hono" {
   interface ContextVariableMap {
     /** Currently authenticated user (only when authenticated) */
     user?: User;
@@ -44,26 +44,26 @@ declare module 'hono' {
  */
 export function optionalAuth() {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
       await next();
       return;
     }
 
     // Bearer トークンを抽出
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
       await next();
       return;
     }
 
     // セッション検証
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (result) {
-      c.set('user', result.user);
-      c.set('session', result.session);
+      c.set("user", result.user);
+      c.set("session", result.session);
     }
 
     await next();
@@ -95,32 +95,36 @@ export function optionalAuth() {
  */
 export function requireAuth() {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-      return c.json({ error: 'Authentication required' }, 401);
+      return c.json({ error: "Authentication required" }, 401);
     }
 
     // Bearer トークンを抽出
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
-      return c.json({ error: 'Invalid token format' }, 401);
+      return c.json({ error: "Invalid token format" }, 401);
     }
 
     // セッション検証
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (!result) {
-      return c.json({ error: 'Invalid or expired token' }, 401);
+      // Debug log for troubleshooting authentication issues
+      console.log(
+        `[Auth] Token validation failed - token prefix: ${token.substring(0, 8)}..., path: ${c.req.path}`,
+      );
+      return c.json({ error: "Invalid or expired token" }, 401);
     }
 
     // Check if user is suspended
     if (result.user.isSuspended) {
-      return c.json({ error: 'Your account has been suspended' }, 403);
+      return c.json({ error: "Your account has been suspended" }, 403);
     }
 
-    c.set('user', result.user);
-    c.set('session', result.session);
+    c.set("user", result.user);
+    c.set("session", result.session);
 
     return await next();
   };
@@ -150,35 +154,35 @@ export function requireAuth() {
  */
 export function requireAdmin() {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-      return c.json({ error: 'Authentication required' }, 401);
+      return c.json({ error: "Authentication required" }, 401);
     }
 
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
-      return c.json({ error: 'Invalid token format' }, 401);
+      return c.json({ error: "Invalid token format" }, 401);
     }
 
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (!result) {
-      return c.json({ error: 'Invalid or expired token' }, 401);
+      return c.json({ error: "Invalid or expired token" }, 401);
     }
 
     // Check if user is suspended
     if (result.user.isSuspended) {
-      return c.json({ error: 'Your account has been suspended' }, 403);
+      return c.json({ error: "Your account has been suspended" }, 403);
     }
 
     // Check if user is admin
     if (!result.user.isAdmin) {
-      return c.json({ error: 'Admin access required' }, 403);
+      return c.json({ error: "Admin access required" }, 403);
     }
 
-    c.set('user', result.user);
-    c.set('session', result.session);
+    c.set("user", result.user);
+    c.set("session", result.session);
 
     return await next();
   };
@@ -209,33 +213,33 @@ export function requireAdmin() {
  */
 export function requirePermission(permission: keyof RolePolicies) {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-      return c.json({ error: 'Authentication required' }, 401);
+      return c.json({ error: "Authentication required" }, 401);
     }
 
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
-      return c.json({ error: 'Invalid token format' }, 401);
+      return c.json({ error: "Invalid token format" }, 401);
     }
 
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (!result) {
-      return c.json({ error: 'Invalid or expired token' }, 401);
+      return c.json({ error: "Invalid or expired token" }, 401);
     }
 
     // Check if user is suspended
     if (result.user.isSuspended) {
-      return c.json({ error: 'Your account has been suspended' }, 403);
+      return c.json({ error: "Your account has been suspended" }, 403);
     }
 
-    c.set('user', result.user);
-    c.set('session', result.session);
+    c.set("user", result.user);
+    c.set("session", result.session);
 
     // Check role-based permission
-    const roleService = c.get('roleService');
+    const roleService = c.get("roleService");
     const hasPermission = await roleService.hasPermission(result.user.id, permission);
 
     if (!hasPermission) {
@@ -243,19 +247,19 @@ export function requirePermission(permission: keyof RolePolicies) {
       if (
         result.user.isAdmin &&
         [
-          'canManageRoles',
-          'canManageInstanceSettings',
-          'canManageInstanceBlocks',
-          'canManageUsers',
-          'canManageReports',
-          'canDeleteNotes',
-          'canSuspendUsers',
-          'canInvite',
+          "canManageRoles",
+          "canManageInstanceSettings",
+          "canManageInstanceBlocks",
+          "canManageUsers",
+          "canManageReports",
+          "canDeleteNotes",
+          "canSuspendUsers",
+          "canInvite",
         ].includes(permission)
       ) {
         return await next();
       }
-      return c.json({ error: 'Permission denied' }, 403);
+      return c.json({ error: "Permission denied" }, 403);
     }
 
     return await next();
@@ -284,38 +288,38 @@ export function requirePermission(permission: keyof RolePolicies) {
  */
 export function requireAdminRole() {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-      return c.json({ error: 'Authentication required' }, 401);
+      return c.json({ error: "Authentication required" }, 401);
     }
 
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
-      return c.json({ error: 'Invalid token format' }, 401);
+      return c.json({ error: "Invalid token format" }, 401);
     }
 
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (!result) {
-      return c.json({ error: 'Invalid or expired token' }, 401);
+      return c.json({ error: "Invalid or expired token" }, 401);
     }
 
     // Check if user is suspended
     if (result.user.isSuspended) {
-      return c.json({ error: 'Your account has been suspended' }, 403);
+      return c.json({ error: "Your account has been suspended" }, 403);
     }
 
-    c.set('user', result.user);
-    c.set('session', result.session);
+    c.set("user", result.user);
+    c.set("session", result.session);
 
     // Check role-based admin status
-    const roleService = c.get('roleService');
+    const roleService = c.get("roleService");
     const isAdmin = await roleService.isAdmin(result.user.id);
 
     // Fallback to legacy isAdmin flag
     if (!isAdmin && !result.user.isAdmin) {
-      return c.json({ error: 'Admin access required' }, 403);
+      return c.json({ error: "Admin access required" }, 403);
     }
 
     return await next();
@@ -343,39 +347,39 @@ export function requireAdminRole() {
  */
 export function requireModeratorRole() {
   return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('Authorization');
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-      return c.json({ error: 'Authentication required' }, 401);
+      return c.json({ error: "Authentication required" }, 401);
     }
 
-    const token = authHeader.replace(/^Bearer\s+/i, '');
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     if (!token) {
-      return c.json({ error: 'Invalid token format' }, 401);
+      return c.json({ error: "Invalid token format" }, 401);
     }
 
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const result = await authService.validateSession(token);
 
     if (!result) {
-      return c.json({ error: 'Invalid or expired token' }, 401);
+      return c.json({ error: "Invalid or expired token" }, 401);
     }
 
     // Check if user is suspended
     if (result.user.isSuspended) {
-      return c.json({ error: 'Your account has been suspended' }, 403);
+      return c.json({ error: "Your account has been suspended" }, 403);
     }
 
-    c.set('user', result.user);
-    c.set('session', result.session);
+    c.set("user", result.user);
+    c.set("session", result.session);
 
     // Check role-based moderator/admin status
-    const roleService = c.get('roleService');
+    const roleService = c.get("roleService");
     const isModerator = await roleService.isModerator(result.user.id);
     const isAdmin = await roleService.isAdmin(result.user.id);
 
     // Admins automatically pass, or fallback to legacy isAdmin flag
     if (!isModerator && !isAdmin && !result.user.isAdmin) {
-      return c.json({ error: 'Moderator access required' }, 403);
+      return c.json({ error: "Moderator access required" }, 403);
     }
 
     return await next();

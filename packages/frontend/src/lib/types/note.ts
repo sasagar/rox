@@ -1,10 +1,10 @@
-import type { NoteWithRelations, Visibility } from 'shared';
+import type { NoteWithRelations, Visibility } from "shared";
 
 /**
  * Note visibility types
  * Extended from shared types with 'direct' alias for 'specified'
  */
-export type NoteVisibility = Visibility | 'direct';
+export type NoteVisibility = Visibility | "direct";
 
 /**
  * User information in note responses
@@ -36,7 +36,10 @@ export interface NoteFile {
  * Note entity from API responses
  * Extends the shared NoteWithRelations type with additional frontend-specific fields
  */
-export interface Note extends Omit<NoteWithRelations, 'createdAt' | 'updatedAt' | 'user' | 'files' | 'text' | 'cw'> {
+export interface Note extends Omit<
+  NoteWithRelations,
+  "createdAt" | "updatedAt" | "user" | "files" | "text" | "cw"
+> {
   user: NoteUser;
   text?: string;
   cw?: string;

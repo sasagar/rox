@@ -1,21 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
-import { usersApi } from '../lib/api/users';
-import { Button } from '../components/ui/Button';
-import { Card, CardContent } from '../components/ui/Card';
-import { Spinner } from '../components/ui/Spinner';
-import { InlineError } from '../components/ui/ErrorMessage';
-import { addToastAtom } from '../lib/atoms/toast';
-import { Layout } from '../components/layout/Layout';
-import { InvitationCodeSection } from '../components/settings/InvitationCodeSection';
-import { UISettingsSection } from '../components/settings/UISettingsSection';
-import { AccountMigrationSection } from '../components/settings/AccountMigrationSection';
-import { PushNotificationSection } from '../components/settings/PushNotificationSection';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { usersApi } from "../lib/api/users";
+import { Button } from "../components/ui/Button";
+import { Card, CardContent } from "../components/ui/Card";
+import { Spinner } from "../components/ui/Spinner";
+import { InlineError } from "../components/ui/ErrorMessage";
+import { addToastAtom } from "../lib/atoms/toast";
+import { Layout } from "../components/layout/Layout";
+import { InvitationCodeSection } from "../components/settings/InvitationCodeSection";
+import { UISettingsSection } from "../components/settings/UISettingsSection";
+import { AccountMigrationSection } from "../components/settings/AccountMigrationSection";
+import { PushNotificationSection } from "../components/settings/PushNotificationSection";
+import { StorageSection } from "../components/settings/StorageSection";
 
 /**
  * Settings page
@@ -26,9 +27,9 @@ export default function SettingsPage() {
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
-  const [displayName, setDisplayName] = useState('');
-  const [bio, setBio] = useState('');
-  const [customCss, setCustomCss] = useState('');
+  const [displayName, setDisplayName] = useState("");
+  const [bio, setBio] = useState("");
+  const [customCss, setCustomCss] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,22 +39,22 @@ export default function SettingsPage() {
     const restoreSession = async () => {
       // No token at all, redirect to login
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
       // Token exists but no user data, try to restore session
       if (!currentUser) {
         try {
-          const { apiClient } = await import('../lib/api/client');
+          const { apiClient } = await import("../lib/api/client");
           apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
-          console.error('Failed to restore session:', error);
+          console.error("Failed to restore session:", error);
           // Token is invalid, redirect to login
-          window.location.href = '/login';
+          window.location.href = "/login";
           return;
         }
       } else {
@@ -67,9 +68,9 @@ export default function SettingsPage() {
   // Initialize form with current user data
   useEffect(() => {
     if (currentUser) {
-      setDisplayName(currentUser.displayName || currentUser.name || '');
-      setBio(currentUser.bio || '');
-      setCustomCss((currentUser as any).customCss || '');
+      setDisplayName(currentUser.displayName || currentUser.name || "");
+      setBio(currentUser.bio || "");
+      setCustomCss((currentUser as any).customCss || "");
     }
   }, [currentUser]);
 
@@ -96,7 +97,7 @@ export default function SettingsPage() {
 
       // Show success toast
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Profile updated successfully`,
       });
 
@@ -105,12 +106,12 @@ export default function SettingsPage() {
         window.location.href = `/${currentUser?.username}`;
       }, 500);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update profile';
+      const errorMessage = err instanceof Error ? err.message : "Failed to update profile";
       setError(errorMessage);
 
       // Show error toast
       addToast({
-        type: 'error',
+        type: "error",
         message: errorMessage,
       });
     } finally {
@@ -128,8 +129,8 @@ export default function SettingsPage() {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
           <Trans>Settings</Trans>
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
@@ -142,7 +143,10 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Display Name */}
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="displayName"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 <Trans>Display Name</Trans>
               </label>
               <input
@@ -162,7 +166,10 @@ export default function SettingsPage() {
 
             {/* Bio */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 <Trans>Bio</Trans>
               </label>
               <textarea
@@ -179,7 +186,7 @@ export default function SettingsPage() {
                 <span>
                   <Trans>Your bio (max 500 characters)</Trans>
                 </span>
-                <span className={bio.length > 450 ? 'text-orange-600 font-medium' : ''}>
+                <span className={bio.length > 450 ? "text-orange-600 font-medium" : ""}>
                   {bio.length}/500
                 </span>
               </div>
@@ -187,7 +194,10 @@ export default function SettingsPage() {
 
             {/* Username (read-only) */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 <Trans>Username</Trans>
               </label>
               <input
@@ -205,7 +215,10 @@ export default function SettingsPage() {
 
             {/* Custom CSS */}
             <div>
-              <label htmlFor="customCss" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="customCss"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 <Trans>Custom CSS</Trans>
               </label>
               <textarea
@@ -222,12 +235,14 @@ export default function SettingsPage() {
                 <span>
                   <Trans>Custom CSS for your profile page (max 10KB)</Trans>
                 </span>
-                <span className={customCss.length > 9000 ? 'text-orange-600 font-medium' : ''}>
+                <span className={customCss.length > 9000 ? "text-orange-600 font-medium" : ""}>
                   {customCss.length.toLocaleString()}/10,240
                 </span>
               </div>
               <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                <Trans>Note: Custom CSS is sanitized and some properties may be restricted for security.</Trans>
+                <Trans>
+                  Note: Custom CSS is sanitized and some properties may be restricted for security.
+                </Trans>
               </p>
             </div>
 
@@ -236,11 +251,7 @@ export default function SettingsPage() {
 
             {/* Action buttons */}
             <div className="flex items-center gap-3 pt-4">
-              <Button
-                type="submit"
-                variant="primary"
-                isDisabled={isSubmitting}
-              >
+              <Button type="submit" variant="primary" isDisabled={isSubmitting}>
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <Spinner size="xs" variant="white" />
@@ -271,6 +282,11 @@ export default function SettingsPage() {
       {/* UI Settings Section */}
       <div className="mt-6">
         <UISettingsSection />
+      </div>
+
+      {/* Storage Section */}
+      <div className="mt-6">
+        <StorageSection />
       </div>
 
       {/* Push Notifications Section */}

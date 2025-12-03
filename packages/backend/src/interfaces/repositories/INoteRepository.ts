@@ -1,4 +1,4 @@
-import type { Note } from 'shared';
+import type { Note } from "shared";
 
 export interface TimelineOptions {
   limit?: number;
@@ -11,7 +11,7 @@ export interface INoteRepository {
   /**
    * ノートを作成
    */
-  create(note: Omit<Note, 'createdAt' | 'updatedAt'>): Promise<Note>;
+  create(note: Omit<Note, "createdAt" | "updatedAt">): Promise<Note>;
 
   /**
    * IDでノートを取得
@@ -42,6 +42,12 @@ export interface INoteRepository {
   getSocialTimeline(options: TimelineOptions & { userIds?: string[] }): Promise<Note[]>;
 
   /**
+   * グローバルタイムラインを取得
+   * ローカル + リモートユーザーのすべての公開投稿
+   */
+  getGlobalTimeline(options: TimelineOptions): Promise<Note[]>;
+
+  /**
    * ユーザーの投稿を取得
    */
   findByUserId(userId: string, options: TimelineOptions): Promise<Note[]>;
@@ -59,7 +65,7 @@ export interface INoteRepository {
   /**
    * ノートを更新
    */
-  update(id: string, data: Partial<Omit<Note, 'id' | 'createdAt'>>): Promise<Note>;
+  update(id: string, data: Partial<Omit<Note, "id" | "createdAt">>): Promise<Note>;
 
   /**
    * ノートを削除（ハードデリート）
@@ -94,4 +100,10 @@ export interface INoteRepository {
    * @param localOnly ローカルノートのみをカウントする場合はtrue
    */
   count(localOnly?: boolean): Promise<number>;
+
+  /**
+   * 特定ユーザーのノート数を取得
+   * @param userId ユーザーID
+   */
+  countByUserId(userId: string): Promise<number>;
 }

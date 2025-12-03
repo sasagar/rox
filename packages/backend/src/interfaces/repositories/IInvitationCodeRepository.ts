@@ -1,4 +1,4 @@
-import type { InvitationCode } from '../../db/schema/pg.js';
+import type { InvitationCode } from "../../db/schema/pg.js";
 
 /**
  * Invitation Code Repository Interface

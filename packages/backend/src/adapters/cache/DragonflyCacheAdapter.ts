@@ -7,8 +7,8 @@
  * @module adapters/cache/DragonflyCacheAdapter
  */
 
-import { Redis } from 'ioredis';
-import type { ICacheService, CacheSetOptions } from '../../interfaces/ICacheService.js';
+import { Redis } from "ioredis";
+import type { ICacheService, CacheSetOptions } from "../../interfaces/ICacheService.js";
 
 /**
  * Default TTL values in seconds
@@ -28,16 +28,17 @@ export const CacheTTL = {
  * Cache key prefixes for organization
  */
 export const CachePrefix = {
-  TIMELINE_LOCAL: 'timeline:local',
-  TIMELINE_HOME: 'timeline:home',
-  TIMELINE_SOCIAL: 'timeline:social',
-  USER_PROFILE: 'user:profile',
-  USER_BY_USERNAME: 'user:username',
-  NOTE: 'note',
-  REMOTE_ACTOR: 'remote:actor',
-  INSTANCE_SETTINGS: 'instance:settings',
-  ROLE_POLICIES: 'role:policies',
-  PUBLIC_KEY: 'pubkey',
+  TIMELINE_LOCAL: "timeline:local",
+  TIMELINE_HOME: "timeline:home",
+  TIMELINE_SOCIAL: "timeline:social",
+  TIMELINE_GLOBAL: "timeline:global",
+  USER_PROFILE: "user:profile",
+  USER_BY_USERNAME: "user:username",
+  NOTE: "note",
+  REMOTE_ACTOR: "remote:actor",
+  INSTANCE_SETTINGS: "instance:settings",
+  ROLE_POLICIES: "role:policies",
+  PUBLIC_KEY: "pubkey",
 } as const;
 
 /**
@@ -58,7 +59,7 @@ export class DragonflyCacheAdapter implements ICacheService {
    * Initialize Redis connection
    */
   private async initialize(): Promise<void> {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
     try {
       this.redis = new Redis(redisUrl, {
@@ -76,9 +77,9 @@ export class DragonflyCacheAdapter implements ICacheService {
       await this.redis.ping();
 
       this.available = true;
-      console.log('✅ Dragonfly cache connected');
+      console.log("✅ Dragonfly cache connected");
     } catch (error) {
-      console.warn('⚠️  Dragonfly cache not available, caching disabled:', (error as Error).message);
+      console.warn("⚠️  Dragonfly cache not available, caching disabled:", (error as Error).message);
       this.available = false;
       this.redis = null;
     }
@@ -129,7 +130,7 @@ export class DragonflyCacheAdapter implements ICacheService {
     try {
       const serialized = JSON.stringify(value);
       if (options?.ttl) {
-        await this.redis.set(key, serialized, 'EX', options.ttl);
+        await this.redis.set(key, serialized, "EX", options.ttl);
       } else {
         await this.redis.set(key, serialized);
       }

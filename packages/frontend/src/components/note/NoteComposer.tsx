@@ -1,26 +1,42 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Image as ImageIcon, X, Globe, Home as HomeIcon, Lock, Mail, ChevronDown, Eye } from 'lucide-react';
-import { MfmRenderer } from '../mfm/MfmRenderer';
-import { Select, Button as RACButton, Popover, ListBox, ListBoxItem } from 'react-aria-components';
-import { Button } from '../ui/Button';
-import { Card, CardContent } from '../ui/Card';
-import { Avatar } from '../ui/Avatar';
-import { ProgressBar } from '../ui/ProgressBar';
-import { Spinner } from '../ui/Spinner';
-import { InlineError } from '../ui/ErrorMessage';
-import { EmojiPicker } from '../ui/EmojiPicker';
-import { useAtom } from 'jotai';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { notesApi } from '../../lib/api/notes';
-import type { NoteVisibility } from '../../lib/api/notes';
-import { uploadFile } from '../../lib/api/drive';
-import { useDraft, useAutosaveDraft } from '../../hooks/useDraft';
+import { useState, useRef, useEffect } from "react";
+import type { ReactNode } from "react";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import {
+  Image as ImageIcon,
+  X,
+  Globe,
+  Home as HomeIcon,
+  Lock,
+  Mail,
+  ChevronDown,
+  Eye,
+  Save,
+  FileText,
+  Trash2,
+  HardDrive,
+} from "lucide-react";
+import { NOTE_TEXT_MAX_LENGTH } from "shared";
+import { MfmRenderer } from "../mfm/MfmRenderer";
+import { Select, Button as RACButton, Popover, ListBox, ListBoxItem } from "react-aria-components";
+import { Button } from "../ui/Button";
+import { Card, CardContent } from "../ui/Card";
+import { Avatar } from "../ui/Avatar";
+import { ProgressBar } from "../ui/ProgressBar";
+import { Spinner } from "../ui/Spinner";
+import { InlineError } from "../ui/ErrorMessage";
+import { EmojiPicker } from "../ui/EmojiPicker";
+import { useAtom } from "jotai";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { notesApi } from "../../lib/api/notes";
+import type { NoteVisibility } from "../../lib/api/notes";
+import { uploadFile, type DriveFile } from "../../lib/api/drive";
+import { useDraft, useAutosaveDraft } from "../../hooks/useDraft";
+import { DrivePickerDialog } from "../drive/DrivePickerDialog";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 export interface NoteComposerProps {
   /**
@@ -53,11 +69,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
-  const [text, setText] = useState('');
-  const [cw, setCw] = useState('');
+  const [text, setText] = useState("");
+  const [cw, setCw] = useState("");
   const [showCw, setShowCw] = useState(false);
-  const [visibility, setVisibility] = useState<NoteVisibility>('public');
+  const [visibility, setVisibility] = useState<NoteVisibility>("public");
   const [files, setFiles] = useState<File[]>([]);
+  const [driveFiles, setDriveFiles] = useState<DriveFile[]>([]);
+  const [showDrivePicker, setShowDrivePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -66,9 +84,23 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Total file count (new uploads + drive files)
+  const totalFileCount = files.length + driveFiles.length;
+
   // Draft management
-  const { loadDraft, clearDraft, hasDraft } = useDraft();
+  const {
+    loadDraft,
+    clearDraft,
+    hasDraft,
+    saveAsNewDraft,
+    loadDraftById,
+    deleteDraft,
+    startNewDraft,
+    drafts,
+    currentDraftId,
+  } = useDraft();
   const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [showDraftList, setShowDraftList] = useState(false);
 
   // Auto-save draft (only for non-reply posts)
   useAutosaveDraft(
@@ -78,7 +110,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       showCw,
       visibility,
     },
-    1000 // Save every 1 second after user stops typing
+    1000, // Save every 1 second after user stops typing
   );
 
   // Load draft on mount (only if not replying)
@@ -99,12 +131,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
       // Auto-resize textarea
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       }
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Draft restored`,
       });
     }
@@ -114,27 +146,100 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     clearDraft();
     setShowDraftBanner(false);
     addToast({
-      type: 'info',
+      type: "info",
       message: t`Draft discarded`,
     });
   };
 
-  const maxLength = 3000;
+  const handleSaveAsNewDraft = () => {
+    if (!text.trim() && !cw.trim()) {
+      addToast({
+        type: "error",
+        message: t`Cannot save empty draft`,
+      });
+      return;
+    }
+
+    saveAsNewDraft({ text, cw, showCw, visibility });
+    addToast({
+      type: "success",
+      message: t`Draft saved`,
+    });
+  };
+
+  const handleLoadDraft = (id: string) => {
+    const draft = loadDraftById(id);
+    if (draft) {
+      setText(draft.text);
+      setCw(draft.cw);
+      setShowCw(draft.showCw);
+      setVisibility(draft.visibility);
+      setShowDraftList(false);
+
+      // Auto-resize textarea
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
+
+      addToast({
+        type: "success",
+        message: t`Draft loaded`,
+      });
+    }
+  };
+
+  const handleDeleteDraft = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteDraft(id);
+    addToast({
+      type: "info",
+      message: t`Draft deleted`,
+    });
+  };
+
+  const handleNewDraft = () => {
+    startNewDraft();
+    setText("");
+    setCw("");
+    setShowCw(false);
+    setVisibility("public");
+    setShowDraftList(false);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  };
+
+  const maxLength = NOTE_TEXT_MAX_LENGTH;
   const remainingChars = maxLength - text.length;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
     // Auto-resize textarea
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
-    // Limit to 4 files
-    setFiles((prev) => [...prev, ...selectedFiles].slice(0, 4));
+    // Limit to 4 files total (including drive files)
+    const remainingSlots = 4 - totalFileCount;
+    setFiles((prev) => [...prev, ...selectedFiles.slice(0, remainingSlots)]);
+  };
+
+  const removeDriveFile = (fileId: string) => {
+    setDriveFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
+
+  const handleDriveFilesSelect = (selectedFiles: DriveFile[]) => {
+    setDriveFiles((prev) => {
+      // Combine and limit to remaining slots
+      const remainingSlots = 4 - files.length;
+      return [...prev, ...selectedFiles].slice(0, remainingSlots);
+    });
   };
 
   const removeFile = (index: number) => {
@@ -151,11 +256,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     e.stopPropagation();
 
     const droppedFiles = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith('image/'),
+      file.type.startsWith("image/"),
     );
 
     if (droppedFiles.length > 0) {
-      setFiles((prev) => [...prev, ...droppedFiles].slice(0, 4));
+      const remainingSlots = 4 - totalFileCount;
+      setFiles((prev) => [...prev, ...droppedFiles.slice(0, remainingSlots)]);
     }
   };
 
@@ -177,7 +283,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   };
 
   const handleSubmit = async () => {
-    if (!text.trim() && files.length === 0) {
+    if (!text.trim() && totalFileCount === 0) {
       setError(t`Please enter text or attach files`);
       return;
     }
@@ -196,9 +302,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     setError(null);
 
     try {
-      // Upload files first and get file IDs
-      const fileIds: string[] = [];
+      // Start with already-uploaded drive file IDs
+      const fileIds: string[] = driveFiles.map((f) => f.id);
 
+      // Upload new files and get their IDs
       if (files.length > 0) {
         setIsUploading(true);
         setUploadProgress(0);
@@ -214,7 +321,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             // Update progress
             setUploadProgress(Math.round(((i + 1) / files.length) * 100));
           } catch (uploadError) {
-            console.error('Failed to upload file:', uploadError);
+            console.error("Failed to upload file:", uploadError);
             throw new Error(t`Failed to upload ${file.name}`);
           }
         }
@@ -232,13 +339,14 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       });
 
       // Reset form
-      setText('');
-      setCw('');
+      setText("");
+      setCw("");
       setShowCw(false);
-      setVisibility('public');
+      setVisibility("public");
       setFiles([]);
+      setDriveFiles([]);
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
       }
 
       // Clear draft
@@ -246,18 +354,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
       // Show success toast
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Note posted successfully`,
       });
 
       onNoteCreated?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create note';
+      const errorMessage = err instanceof Error ? err.message : "Failed to create note";
       setError(errorMessage);
 
       // Show error toast
       addToast({
-        type: 'error',
+        type: "error",
         message: errorMessage,
       });
     } finally {
@@ -267,10 +375,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   };
 
   const visibilityOptions: { value: NoteVisibility; label: ReactNode; icon: ReactNode }[] = [
-    { value: 'public', label: <Trans>Public</Trans>, icon: <Globe className="w-4 h-4" /> },
-    { value: 'home', label: <Trans>Home</Trans>, icon: <HomeIcon className="w-4 h-4" /> },
-    { value: 'followers', label: <Trans>Followers</Trans>, icon: <Lock className="w-4 h-4" /> },
-    { value: 'direct', label: <Trans>Direct</Trans>, icon: <Mail className="w-4 h-4" /> },
+    { value: "public", label: <Trans>Public</Trans>, icon: <Globe className="w-4 h-4" /> },
+    { value: "home", label: <Trans>Home</Trans>, icon: <HomeIcon className="w-4 h-4" /> },
+    { value: "followers", label: <Trans>Followers</Trans>, icon: <Lock className="w-4 h-4" /> },
+    { value: "direct", label: <Trans>Direct</Trans>, icon: <Mail className="w-4 h-4" /> },
   ];
 
   if (!currentUser) {
@@ -279,9 +387,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
   const userInitials = currentUser.name
     ? currentUser.name
-        .split(' ')
+        .split(" ")
         .map((n: string) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
     : currentUser.username.slice(0, 2).toUpperCase();
@@ -294,8 +402,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           <div className="mb-4 rounded-md bg-blue-50 dark:bg-blue-900/30 p-3 border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
                   <Trans>You have an unsaved draft</Trans>
@@ -335,7 +453,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {/* Reply indicator */}
             {replyTo && (
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                <Trans>Replying to</Trans> <span className="text-primary-600 dark:text-primary-400 font-medium">{replyTo}</span>
+                <Trans>Replying to</Trans>{" "}
+                <span className="text-primary-600 dark:text-primary-400 font-medium">
+                  {replyTo}
+                </span>
               </div>
             )}
 
@@ -376,11 +497,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
               </div>
             )}
 
-            {/* File previews */}
-            {files.length > 0 && (
+            {/* File previews (new uploads + drive files) */}
+            {totalFileCount > 0 && (
               <div className="grid grid-cols-2 gap-2">
+                {/* New upload files */}
                 {files.map((file, index) => (
-                  <div key={index} className="relative group">
+                  <div key={`new-${index}`} className="relative group">
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`Upload ${index + 1}`}
@@ -391,6 +513,28 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       type="button"
                       aria-label={`Remove image ${index + 1}`}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                {/* Drive files */}
+                {driveFiles.map((file) => (
+                  <div key={`drive-${file.id}`} className="relative group">
+                    <img
+                      src={getProxiedImageUrl(file.thumbnailUrl || file.url) || ""}
+                      alt={file.name}
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                    {/* Drive badge */}
+                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-primary-500/80 rounded text-[10px] text-white font-medium flex items-center gap-0.5">
+                      <HardDrive className="w-3 h-3" />
+                    </div>
+                    <button
+                      onClick={() => removeDriveFile(file.id)}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      type="button"
+                      aria-label={`Remove ${file.name}`}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -413,16 +557,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {error && <InlineError message={error} />}
 
             {/* Toolbar */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                 {/* File upload button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isSubmitting || files.length >= 4}
+                  disabled={isSubmitting || totalFileCount >= 4}
                   className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
-                  title="Add images"
-                  aria-label="Add images"
+                  title={t`Add images`}
+                  aria-label={t`Add images`}
                 >
                   <ImageIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
@@ -435,12 +579,26 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   className="hidden"
                 />
 
+                {/* Drive picker button */}
+                <button
+                  onClick={() => setShowDrivePicker(true)}
+                  disabled={isSubmitting || totalFileCount >= 4}
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  title={t`Select from drive`}
+                  aria-label={t`Select from drive`}
+                >
+                  <HardDrive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </button>
+
                 {/* CW toggle button */}
                 <button
                   onClick={() => setShowCw(!showCw)}
                   disabled={isSubmitting}
                   className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                    showCw ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
+                    showCw
+                      ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                      : "text-gray-600 dark:text-gray-400"
                   }`}
                   type="button"
                   title="Content Warning"
@@ -451,17 +609,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 </button>
 
                 {/* Emoji picker */}
-                <EmojiPicker
-                  onEmojiSelect={handleEmojiSelect}
-                  isDisabled={isSubmitting}
-                />
+                <EmojiPicker onEmojiSelect={handleEmojiSelect} isDisabled={isSubmitting} />
 
                 {/* MFM Preview toggle */}
                 <button
                   onClick={() => setShowPreview(!showPreview)}
                   disabled={isSubmitting}
                   className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                    showPreview ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
+                    showPreview
+                      ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                      : "text-gray-600 dark:text-gray-400"
                   }`}
                   type="button"
                   title="Preview MFM"
@@ -470,6 +627,99 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 >
                   <Eye className="w-5 h-5" />
                 </button>
+
+                {/* Save draft button */}
+                <button
+                  onClick={handleSaveAsNewDraft}
+                  disabled={isSubmitting || (!text.trim() && !cw.trim())}
+                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-gray-400"
+                  type="button"
+                  title={t`Save draft`}
+                  aria-label={t`Save draft`}
+                >
+                  <Save className="w-5 h-5" />
+                </button>
+
+                {/* Drafts list button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDraftList(!showDraftList)}
+                    disabled={isSubmitting}
+                    className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
+                      showDraftList
+                        ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                        : "text-gray-600 dark:text-gray-400"
+                    }`}
+                    type="button"
+                    title={t`Drafts`}
+                    aria-label={t`Drafts`}
+                    aria-expanded={showDraftList}
+                  >
+                    <FileText className="w-5 h-5" />
+                    {drafts.length > 0 && (
+                      <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-white bg-primary-500 rounded-full">
+                        {drafts.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Drafts dropdown */}
+                  {showDraftList && (
+                    <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          <Trans>Drafts</Trans> ({drafts.length})
+                        </span>
+                        <button
+                          onClick={handleNewDraft}
+                          className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                          type="button"
+                        >
+                          <Trans>New</Trans>
+                        </button>
+                      </div>
+                      <div className="max-h-60 overflow-y-auto">
+                        {drafts.length === 0 ? (
+                          <div className="px-3 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
+                            <Trans>No drafts saved</Trans>
+                          </div>
+                        ) : (
+                          drafts.map((draft) => (
+                            <div
+                              key={draft.id}
+                              onClick={() => handleLoadDraft(draft.id)}
+                              onKeyDown={(e) => e.key === "Enter" && handleLoadDraft(draft.id)}
+                              className={`flex items-start justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                currentDraftId === draft.id
+                                  ? "bg-primary-50 dark:bg-primary-900/20"
+                                  : ""
+                              }`}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <div className="flex-1 min-w-0 mr-2">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                  {draft.title || draft.text.slice(0, 30) || t`Empty draft`}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  {new Date(draft.timestamp).toLocaleString()}
+                                </p>
+                              </div>
+                              <button
+                                onClick={(e) => handleDeleteDraft(draft.id, e)}
+                                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
+                                type="button"
+                                aria-label={t`Delete draft`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Visibility selector */}
                 <Select
@@ -501,7 +751,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 </Select>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {/* Character counter with circular progress */}
                 <div className="relative flex items-center justify-center w-8 h-8">
                   {/* Circular progress background */}
@@ -512,7 +762,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       r="14"
                       fill="none"
                       className="stroke-gray-200 dark:stroke-gray-600"
-                      stroke={remainingChars < 0 ? '#ef4444' : undefined}
+                      stroke={remainingChars < 0 ? "#ef4444" : undefined}
                       strokeWidth="2"
                     />
                     <circle
@@ -520,7 +770,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       cy="16"
                       r="14"
                       fill="none"
-                      stroke={remainingChars < 0 ? '#ef4444' : remainingChars < 100 ? '#f97316' : '#3b82f6'}
+                      stroke={
+                        remainingChars < 0
+                          ? "#ef4444"
+                          : remainingChars < 100
+                            ? "#f97316"
+                            : "#3b82f6"
+                      }
                       strokeWidth="2"
                       strokeDasharray={`${(text.length / maxLength) * 87.96} 87.96`}
                       strokeLinecap="round"
@@ -530,20 +786,25 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   <span
                     className={`absolute text-xs font-medium ${
                       remainingChars < 0
-                        ? 'text-red-600'
+                        ? "text-red-600"
                         : remainingChars < 100
-                        ? 'text-orange-600'
-                        : 'text-gray-500 dark:text-gray-400'
+                          ? "text-orange-600"
+                          : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {text.length > maxLength - 100 ? remainingChars : ''}
+                    {text.length > maxLength - 100 ? remainingChars : ""}
                   </span>
                 </div>
 
                 {/* Submit button */}
                 <Button
                   onPress={handleSubmit}
-                  isDisabled={isSubmitting || isUploading || (!text.trim() && files.length === 0) || text.length > maxLength}
+                  isDisabled={
+                    isSubmitting ||
+                    isUploading ||
+                    (!text.trim() && totalFileCount === 0) ||
+                    text.length > maxLength
+                  }
                   variant="primary"
                   size="sm"
                 >
@@ -565,6 +826,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           </div>
         </div>
       </CardContent>
+
+      {/* Drive Picker Dialog */}
+      <DrivePickerDialog
+        isOpen={showDrivePicker}
+        onClose={() => setShowDrivePicker(false)}
+        onSelect={handleDriveFilesSelect}
+        maxFiles={4}
+        currentFileCount={totalFileCount}
+        fileTypes={["image"]}
+      />
     </Card>
   );
 }

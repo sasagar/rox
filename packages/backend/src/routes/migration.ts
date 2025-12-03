@@ -7,10 +7,10 @@
  * @module routes/migration
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import type { MigrationService } from '../services/MigrationService.js';
-import { requireAuth } from '../middleware/auth.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import type { MigrationService } from "../services/MigrationService.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const app = new Hono();
 
@@ -24,16 +24,16 @@ const app = new Hono();
  *
  * Requires authentication.
  */
-app.get('/', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.get("/", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const status = await migrationService.getMigrationStatus(user.id);
     return c.json(status);
   } catch (error) {
-    console.error('Failed to get migration status:', error);
-    return c.json({ error: 'Failed to get migration status' }, 500);
+    console.error("Failed to get migration status:", error);
+    return c.json({ error: "Failed to get migration status" }, 500);
   }
 });
 
@@ -46,16 +46,16 @@ app.get('/', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.get('/aliases', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.get("/aliases", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const aliases = await migrationService.getAliases(user.id);
     return c.json({ aliases });
   } catch (error) {
-    console.error('Failed to get aliases:', error);
-    return c.json({ error: 'Failed to get aliases' }, 500);
+    console.error("Failed to get aliases:", error);
+    return c.json({ error: "Failed to get aliases" }, 500);
   }
 });
 
@@ -70,15 +70,15 @@ app.get('/aliases', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/aliases', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.post("/aliases", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const body = await c.req.json<{ uri?: string }>();
 
-    if (!body.uri || typeof body.uri !== 'string') {
-      return c.json({ error: 'URI is required' }, 400);
+    if (!body.uri || typeof body.uri !== "string") {
+      return c.json({ error: "URI is required" }, 400);
     }
 
     const aliases = await migrationService.addAlias(user.id, body.uri.trim());
@@ -87,8 +87,8 @@ app.post('/aliases', requireAuth(), async (c: Context) => {
     if (error instanceof Error) {
       return c.json({ error: error.message }, 400);
     }
-    console.error('Failed to add alias:', error);
-    return c.json({ error: 'Failed to add alias' }, 500);
+    console.error("Failed to add alias:", error);
+    return c.json({ error: "Failed to add alias" }, 500);
   }
 });
 
@@ -103,15 +103,15 @@ app.post('/aliases', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.delete('/aliases', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.delete("/aliases", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const body = await c.req.json<{ uri?: string }>();
 
-    if (!body.uri || typeof body.uri !== 'string') {
-      return c.json({ error: 'URI is required' }, 400);
+    if (!body.uri || typeof body.uri !== "string") {
+      return c.json({ error: "URI is required" }, 400);
     }
 
     const aliases = await migrationService.removeAlias(user.id, body.uri.trim());
@@ -120,8 +120,8 @@ app.delete('/aliases', requireAuth(), async (c: Context) => {
     if (error instanceof Error) {
       return c.json({ error: error.message }, 400);
     }
-    console.error('Failed to remove alias:', error);
-    return c.json({ error: 'Failed to remove alias' }, 500);
+    console.error("Failed to remove alias:", error);
+    return c.json({ error: "Failed to remove alias" }, 500);
   }
 });
 
@@ -137,22 +137,22 @@ app.delete('/aliases', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/validate', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.post("/validate", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const body = await c.req.json<{ targetUri?: string }>();
 
-    if (!body.targetUri || typeof body.targetUri !== 'string') {
-      return c.json({ error: 'Target URI is required' }, 400);
+    if (!body.targetUri || typeof body.targetUri !== "string") {
+      return c.json({ error: "Target URI is required" }, 400);
     }
 
     const result = await migrationService.validateMigration(user.id, body.targetUri.trim());
     return c.json(result);
   } catch (error) {
-    console.error('Failed to validate migration:', error);
-    return c.json({ error: 'Failed to validate migration' }, 500);
+    console.error("Failed to validate migration:", error);
+    return c.json({ error: "Failed to validate migration" }, 500);
   }
 });
 
@@ -170,15 +170,15 @@ app.post('/validate', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.post('/initiate', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.post("/initiate", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const body = await c.req.json<{ targetUri?: string }>();
 
-    if (!body.targetUri || typeof body.targetUri !== 'string') {
-      return c.json({ error: 'Target URI is required' }, 400);
+    if (!body.targetUri || typeof body.targetUri !== "string") {
+      return c.json({ error: "Target URI is required" }, 400);
     }
 
     const result = await migrationService.initiateMigration(user.id, body.targetUri.trim());
@@ -189,8 +189,8 @@ app.post('/initiate', requireAuth(), async (c: Context) => {
 
     return c.json(result);
   } catch (error) {
-    console.error('Failed to initiate migration:', error);
-    return c.json({ error: 'Failed to initiate migration' }, 500);
+    console.error("Failed to initiate migration:", error);
+    return c.json({ error: "Failed to initiate migration" }, 500);
   }
 });
 
@@ -204,16 +204,16 @@ app.post('/initiate', requireAuth(), async (c: Context) => {
  *
  * Requires authentication.
  */
-app.get('/can-migrate', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const migrationService = c.get('migrationService') as MigrationService;
+app.get("/can-migrate", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const migrationService = c.get("migrationService") as MigrationService;
 
   try {
     const result = await migrationService.canMigrate(user.id);
     return c.json(result);
   } catch (error) {
-    console.error('Failed to check migration eligibility:', error);
-    return c.json({ error: 'Failed to check migration eligibility' }, 500);
+    console.error("Failed to check migration eligibility:", error);
+    return c.json({ error: "Failed to check migration eligibility" }, 500);
   }
 });
 

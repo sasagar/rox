@@ -6,10 +6,10 @@
  * @module services/ap/inbox/handlers/AnnounceHandler
  */
 
-import type { Activity, HandlerContext, HandlerResult } from '../types.js';
-import { getObjectUri } from '../types.js';
-import { BaseHandler } from './BaseHandler.js';
-import { RemoteFetchService } from '../../RemoteFetchService.js';
+import type { Activity, HandlerContext, HandlerResult } from "../types.js";
+import { getObjectUri } from "../types.js";
+import { BaseHandler } from "./BaseHandler.js";
+import { RemoteFetchService } from "../../RemoteFetchService.js";
 
 /**
  * Handler for Announce activities
@@ -18,7 +18,7 @@ import { RemoteFetchService } from '../../RemoteFetchService.js';
  * Will fetch remote notes if not already in local database.
  */
 export class AnnounceHandler extends BaseHandler {
-  readonly activityType = 'Announce';
+  readonly activityType = "Announce";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
     const { c } = context;
@@ -27,11 +27,11 @@ export class AnnounceHandler extends BaseHandler {
       const objectUri = getObjectUri(activity.object);
 
       if (!objectUri) {
-        this.warn('Invalid Announce activity: missing object');
-        return this.failure('Invalid Announce activity: missing object');
+        this.warn("Invalid Announce activity: missing object");
+        return this.failure("Invalid Announce activity: missing object");
       }
 
-      this.log('📥', `Announce: ${activity.actor} → ${objectUri}`);
+      this.log("📥", `Announce: ${activity.actor} → ${objectUri}`);
 
       // Resolve remote actor
       const actorUri = this.getActorUri(activity);
@@ -44,7 +44,7 @@ export class AnnounceHandler extends BaseHandler {
 
       // If note doesn't exist locally, fetch it from remote
       if (!targetNote) {
-        this.log('ℹ️', `Target note not found locally, fetching: ${objectUri}`);
+        this.log("ℹ️", `Target note not found locally, fetching: ${objectUri}`);
 
         const fetchService = new RemoteFetchService();
 
@@ -67,7 +67,7 @@ export class AnnounceHandler extends BaseHandler {
         userId: remoteActor.id,
         text: null, // No text = pure boost
         cw: null,
-        visibility: 'public',
+        visibility: "public",
         localOnly: false,
         replyId: null,
         renoteId: targetNote.id,
@@ -82,11 +82,14 @@ export class AnnounceHandler extends BaseHandler {
         deletionReason: null,
       });
 
-      this.log('✅', `Renote created: ${remoteActor.username}@${remoteActor.host} announced note ${targetNote.id}`);
+      this.log(
+        "✅",
+        `Renote created: ${remoteActor.username}@${remoteActor.host} announced note ${targetNote.id}`,
+      );
       return this.success(`Renote created for note ${targetNote.id}`);
     } catch (error) {
-      this.error('Failed to handle Announce activity:', error as Error);
-      return this.failure('Failed to handle Announce activity', error as Error);
+      this.error("Failed to handle Announce activity:", error as Error);
+      return this.failure("Failed to handle Announce activity", error as Error);
     }
   }
 }

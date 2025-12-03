@@ -7,12 +7,12 @@
  * @module lib/logger
  */
 
-import pino from 'pino';
+import pino from "pino";
 
 /**
  * Log levels
  */
-export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 
 /**
  * Logger configuration
@@ -30,12 +30,12 @@ export interface LoggerConfig {
  * Create logger configuration based on environment
  */
 function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const level = config.level || process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
+  const isProduction = process.env.NODE_ENV === "production";
+  const level = config.level || process.env.LOG_LEVEL || (isProduction ? "info" : "debug");
 
   const baseConfig: pino.LoggerOptions = {
     level,
-    name: config.name || 'rox',
+    name: config.name || "rox",
     // Add timestamp
     timestamp: pino.stdTimeFunctions.isoTime,
     // Format error objects properly
@@ -47,8 +47,8 @@ function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
         url: req.url,
         headers: {
           host: req.headers?.host,
-          'user-agent': req.headers?.['user-agent'],
-          'content-type': req.headers?.['content-type'],
+          "user-agent": req.headers?.["user-agent"],
+          "content-type": req.headers?.["content-type"],
         },
       }),
       res: (res) => ({
@@ -58,7 +58,7 @@ function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
     // Base bindings for all logs
     base: {
       pid: process.pid,
-      env: process.env.NODE_ENV || 'development',
+      env: process.env.NODE_ENV || "development",
     },
   };
 
@@ -69,16 +69,16 @@ function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
  * Create pino transport for pretty printing in development
  */
 function createTransport(config: LoggerConfig = {}): pino.TransportSingleOptions | undefined {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === "production";
   const pretty = config.pretty ?? !isProduction;
 
   if (pretty) {
     return {
-      target: 'pino-pretty',
+      target: "pino-pretty",
       options: {
         colorize: true,
-        translateTime: 'SYS:standard',
-        ignore: 'pid,hostname,env',
+        translateTime: "SYS:standard",
+        ignore: "pid,hostname,env",
       },
     };
   }

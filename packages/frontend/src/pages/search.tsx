@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Search page component
@@ -7,16 +7,34 @@
  * Supports both local and remote (federated) user search.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { useAtom, useAtomValue } from 'jotai';
-import { Search, Users, Globe, Home, Loader2, AlertCircle, UserPlus } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
-import { Avatar } from '../components/ui/Avatar';
-import { MfmRenderer } from '../components/mfm/MfmRenderer';
-import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
-import { apiClient } from '../lib/api/client';
+import { useState, useEffect, useCallback } from "react";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  Search,
+  Users,
+  Globe,
+  Home,
+  Loader2,
+  AlertCircle,
+  UserPlus,
+  UserCheck,
+} from "lucide-react";
+import { usersApi } from "../lib/api/users";
+import { Layout } from "../components/layout/Layout";
+import { Avatar } from "../components/ui/Avatar";
+import { MfmRenderer } from "../components/mfm/MfmRenderer";
+import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
+
+/**
+ * Profile emoji (custom emoji used in user profile)
+ */
+interface ProfileEmoji {
+  name: string;
+  url: string;
+}
 
 /**
  * User type from search results
@@ -30,6 +48,8 @@ interface SearchUser {
   avatarUrl: string | null;
   followersCount?: number;
   followingCount?: number;
+  profileEmojis?: ProfileEmoji[];
+  isFollowed?: boolean;
 }
 
 /**
@@ -57,8 +77,8 @@ export default function SearchPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Search state
-  const [query, setQuery] = useState('');
-  const [searchScope, setSearchScope] = useState<'all' | 'local'>('all');
+  const [query, setQuery] = useState("");
+  const [searchScope, setSearchScope] = useState<"all" | "local">("all");
   const [results, setResults] = useState<SearchUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -68,23 +88,27 @@ export default function SearchPage() {
   const [isResolvingRemote, setIsResolvingRemote] = useState(false);
   const [resolvedRemoteUser, setResolvedRemoteUser] = useState<SearchUser | null>(null);
 
+  // Follow state - track loading state per user ID
+  const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
+  const [followLoadingUsers, setFollowLoadingUsers] = useState<Set<string>>(new Set());
+
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
           apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
-          console.error('Failed to restore session:', error);
-          window.location.href = '/login';
+          console.error("Failed to restore session:", error);
+          window.location.href = "/login";
           return;
         }
       } else {
@@ -121,22 +145,24 @@ export default function SearchPage() {
       // Search local database
       const params = new URLSearchParams({
         q: trimmedQuery,
-        limit: '20',
-        localOnly: searchScope === 'local' ? 'true' : 'false',
+        limit: "20",
+        localOnly: searchScope === "local" ? "true" : "false",
       });
 
       const response = await apiClient.get<SearchResponse>(`/api/users/search?${params}`);
       setResults(response.users);
 
       // If query looks like a remote user and we're searching all, try to resolve
-      if (searchScope === 'all' && isRemoteUserQuery(trimmedQuery)) {
+      if (searchScope === "all" && isRemoteUserQuery(trimmedQuery)) {
         setIsResolvingRemote(true);
         try {
-          const acct = trimmedQuery.startsWith('@') ? trimmedQuery.slice(1) : trimmedQuery;
-          const remoteUser = await apiClient.get<ResolveResponse>(`/api/users/resolve?acct=${encodeURIComponent(acct)}`);
+          const acct = trimmedQuery.startsWith("@") ? trimmedQuery.slice(1) : trimmedQuery;
+          const remoteUser = await apiClient.get<ResolveResponse>(
+            `/api/users/resolve?acct=${encodeURIComponent(acct)}`,
+          );
 
           // Check if this user is already in results
-          const alreadyInResults = response.users.some(u => u.id === remoteUser.id);
+          const alreadyInResults = response.users.some((u) => u.id === remoteUser.id);
           if (!alreadyInResults) {
             setResolvedRemoteUser(remoteUser);
           }
@@ -147,8 +173,8 @@ export default function SearchPage() {
         }
       }
     } catch (err) {
-      console.error('Search failed:', err);
-      setSearchError(err instanceof Error ? err.message : 'Search failed');
+      console.error("Search failed:", err);
+      setSearchError(err instanceof Error ? err.message : "Search failed");
       setResults([]);
     } finally {
       setIsSearching(false);
@@ -180,13 +206,27 @@ export default function SearchPage() {
   const getUserInitials = (user: SearchUser): string => {
     if (user.displayName) {
       return user.displayName
-        .split(' ')
+        .split(" ")
         .map((n) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2);
     }
     return user.username.slice(0, 2).toUpperCase();
+  };
+
+  /**
+   * Convert profileEmojis array to emoji map for MfmRenderer
+   */
+  const getEmojiMap = (user: SearchUser): Record<string, string> => {
+    if (!user.profileEmojis || user.profileEmojis.length === 0) return {};
+    return user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   };
 
   /**
@@ -198,6 +238,80 @@ export default function SearchPage() {
     }
     return `@${user.username}`;
   };
+
+  /**
+   * Initialize following state from search results
+   */
+  useEffect(() => {
+    const following = new Set<string>();
+    for (const user of results) {
+      if (user.isFollowed) {
+        following.add(user.id);
+      }
+    }
+    if (resolvedRemoteUser?.isFollowed) {
+      following.add(resolvedRemoteUser.id);
+    }
+    setFollowingUsers(following);
+  }, [results, resolvedRemoteUser]);
+
+  /**
+   * Handle follow/unfollow toggle
+   */
+  const handleFollowToggle = useCallback(
+    async (e: React.MouseEvent, user: SearchUser) => {
+      e.stopPropagation(); // Prevent navigation to user profile
+
+      if (!token || followLoadingUsers.has(user.id)) return;
+
+      setFollowLoadingUsers((prev) => new Set(prev).add(user.id));
+
+      try {
+        const isCurrentlyFollowing = followingUsers.has(user.id);
+
+        if (isCurrentlyFollowing) {
+          await usersApi.unfollow(user.id);
+          setFollowingUsers((prev) => {
+            const next = new Set(prev);
+            next.delete(user.id);
+            return next;
+          });
+        } else {
+          await usersApi.follow(user.id);
+          setFollowingUsers((prev) => new Set(prev).add(user.id));
+        }
+      } catch (err) {
+        console.error("Failed to toggle follow:", err);
+      } finally {
+        setFollowLoadingUsers((prev) => {
+          const next = new Set(prev);
+          next.delete(user.id);
+          return next;
+        });
+      }
+    },
+    [token, followingUsers, followLoadingUsers],
+  );
+
+  /**
+   * Check if user is being followed
+   */
+  const isUserFollowed = useCallback(
+    (userId: string): boolean => {
+      return followingUsers.has(userId);
+    },
+    [followingUsers],
+  );
+
+  /**
+   * Check if follow action is loading for user
+   */
+  const isFollowLoading = useCallback(
+    (userId: string): boolean => {
+      return followLoadingUsers.has(userId);
+    },
+    [followLoadingUsers],
+  );
 
   // Show loading while checking auth
   if (isLoading || !currentUser) {
@@ -242,11 +356,7 @@ export default function SearchPage() {
               disabled={!query.trim() || isSearching}
               className="px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isSearching ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Trans>Search</Trans>
-              )}
+              {isSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trans>Search</Trans>}
             </button>
           </div>
 
@@ -258,11 +368,11 @@ export default function SearchPage() {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setSearchScope('all')}
+                onClick={() => setSearchScope("all")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full transition-colors ${
-                  searchScope === 'all'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)'
+                  searchScope === "all"
+                    ? "bg-primary-500 text-white"
+                    : "bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
                 }`}
               >
                 <Globe className="w-4 h-4" />
@@ -270,11 +380,11 @@ export default function SearchPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setSearchScope('local')}
+                onClick={() => setSearchScope("local")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full transition-colors ${
-                  searchScope === 'local'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)'
+                  searchScope === "local"
+                    ? "bg-primary-500 text-white"
+                    : "bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
                 }`}
               >
                 <Home className="w-4 h-4" />
@@ -284,11 +394,12 @@ export default function SearchPage() {
           </div>
 
           {/* Remote user notice */}
-          {searchScope === 'all' && (
+          {searchScope === "all" && (
             <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 <Trans>
-                  Tip: To find users on other servers, enter their full address like @user@example.com
+                  Tip: To find users on other servers, enter their full address like
+                  @user@example.com
                 </Trans>
               </p>
             </div>
@@ -328,7 +439,7 @@ export default function SearchPage() {
               <p className="text-sm mt-1">
                 <Trans>Try a different search term or check the spelling</Trans>
               </p>
-              {searchScope === 'local' && (
+              {searchScope === "local" && (
                 <p className="text-sm mt-2 text-blue-600 dark:text-blue-400">
                   <Trans>Try searching "All" to include remote users</Trans>
                 </p>
@@ -340,35 +451,80 @@ export default function SearchPage() {
               {resolvedRemoteUser && (
                 <div className="p-3 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">
                   <p className="text-xs text-green-700 dark:text-green-300 mb-2 flex items-center gap-1">
-                    <UserPlus className="w-3 h-3" />
+                    <Globe className="w-3 h-3" />
                     <Trans>Found on remote server</Trans>
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => handleUserClick(resolvedRemoteUser)}
-                    className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
-                  >
-                    <Avatar
-                      src={resolvedRemoteUser.avatarUrl}
-                      alt={resolvedRemoteUser.displayName || resolvedRemoteUser.username}
-                      fallback={getUserInitials(resolvedRemoteUser)}
-                      size="md"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-(--text-primary) truncate">
-                        {resolvedRemoteUser.displayName || resolvedRemoteUser.username}
-                      </p>
-                      <p className="text-sm text-(--text-muted) truncate">
-                        {formatHandle(resolvedRemoteUser)}
-                      </p>
-                      {resolvedRemoteUser.bio && (
-                        <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
-                          <MfmRenderer text={resolvedRemoteUser.bio} />
-                        </div>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => handleUserClick(resolvedRemoteUser)}
+                      className="flex items-center gap-3 flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
+                    >
+                      <Avatar
+                        src={resolvedRemoteUser.avatarUrl}
+                        alt={resolvedRemoteUser.displayName || resolvedRemoteUser.username}
+                        fallback={getUserInitials(resolvedRemoteUser)}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-(--text-primary) truncate">
+                          {resolvedRemoteUser.displayName ? (
+                            <MfmRenderer
+                              text={resolvedRemoteUser.displayName}
+                              plain
+                              customEmojis={getEmojiMap(resolvedRemoteUser)}
+                            />
+                          ) : (
+                            resolvedRemoteUser.username
+                          )}
+                        </p>
+                        <p className="text-sm text-(--text-muted) truncate">
+                          {formatHandle(resolvedRemoteUser)}
+                        </p>
+                        {resolvedRemoteUser.bio && (
+                          <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
+                            <MfmRenderer
+                              text={resolvedRemoteUser.bio}
+                              customEmojis={getEmojiMap(resolvedRemoteUser)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                    {/* Follow button for remote user */}
+                    {resolvedRemoteUser.id !== currentUser?.id && (
+                      <button
+                        type="button"
+                        onClick={(e) => handleFollowToggle(e, resolvedRemoteUser)}
+                        disabled={isFollowLoading(resolvedRemoteUser.id)}
+                        className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                          isUserFollowed(resolvedRemoteUser.id)
+                            ? "bg-gray-200 dark:bg-gray-700 text-(--text-secondary) hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+                            : "bg-primary-500 text-white hover:bg-primary-600"
+                        } disabled:opacity-50`}
+                        title={isUserFollowed(resolvedRemoteUser.id) ? t`Unfollow` : t`Follow`}
+                      >
+                        {isFollowLoading(resolvedRemoteUser.id) ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : isUserFollowed(resolvedRemoteUser.id) ? (
+                          <>
+                            <UserCheck className="w-4 h-4" />
+                            <span className="hidden sm:inline">
+                              <Trans>Following</Trans>
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="w-4 h-4" />
+                            <span className="hidden sm:inline">
+                              <Trans>Follow</Trans>
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
                     <Globe className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
-                  </button>
+                  </div>
                 </div>
               )}
 
@@ -384,49 +540,91 @@ export default function SearchPage() {
 
               {/* Local/cached results */}
               {results.map((user) => (
-                <button
+                <div
                   key={user.id}
-                  type="button"
-                  onClick={() => handleUserClick(user)}
-                  className="w-full flex items-center gap-3 p-4 hover:bg-(--bg-secondary) transition-colors text-left"
+                  className="flex items-center gap-3 p-4 hover:bg-(--bg-secondary) transition-colors"
                 >
-                  <Avatar
-                    src={user.avatarUrl}
-                    alt={user.displayName || user.username}
-                    fallback={getUserInitials(user)}
-                    size="md"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-(--text-primary) truncate">
-                      {user.displayName || user.username}
-                    </p>
-                    <p className="text-sm text-(--text-muted) truncate">
-                      {formatHandle(user)}
-                    </p>
-                    {user.bio && (
-                      <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
-                        <MfmRenderer text={user.bio} />
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleUserClick(user)}
+                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                  >
+                    <Avatar
+                      src={user.avatarUrl}
+                      alt={user.displayName || user.username}
+                      fallback={getUserInitials(user)}
+                      size="md"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-(--text-primary) truncate">
+                        {user.displayName ? (
+                          <MfmRenderer
+                            text={user.displayName}
+                            plain
+                            customEmojis={getEmojiMap(user)}
+                          />
+                        ) : (
+                          user.username
+                        )}
+                      </p>
+                      <p className="text-sm text-(--text-muted) truncate">{formatHandle(user)}</p>
+                      {user.bio && (
+                        <div className="text-sm text-(--text-secondary) mt-1 line-clamp-2">
+                          <MfmRenderer text={user.bio} customEmojis={getEmojiMap(user)} />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                  {/* Follow button - don't show for own profile */}
+                  {user.id !== currentUser?.id && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleFollowToggle(e, user)}
+                      disabled={isFollowLoading(user.id)}
+                      className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                        isUserFollowed(user.id)
+                          ? "bg-gray-200 dark:bg-gray-700 text-(--text-secondary) hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+                          : "bg-primary-500 text-white hover:bg-primary-600"
+                      } disabled:opacity-50`}
+                      title={isUserFollowed(user.id) ? t`Unfollow` : t`Follow`}
+                    >
+                      {isFollowLoading(user.id) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : isUserFollowed(user.id) ? (
+                        <>
+                          <UserCheck className="w-4 h-4" />
+                          <span className="hidden sm:inline">
+                            <Trans>Following</Trans>
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4" />
+                          <span className="hidden sm:inline">
+                            <Trans>Follow</Trans>
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  )}
                   {user.host ? (
                     <Globe className="w-4 h-4 text-(--text-muted) shrink-0" />
                   ) : (
                     <Home className="w-4 h-4 text-(--text-muted) shrink-0" />
                   )}
-                </button>
+                </div>
               ))}
             </div>
           )}
         </div>
 
         {/* Info about remote user search */}
-        {searchScope === 'all' && hasSearched && results.length > 0 && (
+        {searchScope === "all" && hasSearched && results.length > 0 && (
           <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <p className="text-xs text-amber-700 dark:text-amber-300">
               <Trans>
-                Note: Remote users can only be searched by username, not display name,
-                unless they have been previously cached on this server.
+                Note: Remote users can only be searched by username, not display name, unless they
+                have been previously cached on this server.
               </Trans>
             </p>
           </div>

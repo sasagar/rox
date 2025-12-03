@@ -7,8 +7,8 @@
  * @module routes/ap/followers
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
+import { Hono } from "hono";
+import type { Context } from "hono";
 
 const followers = new Hono();
 
@@ -22,56 +22,56 @@ const followers = new Hono();
  * GET /users/alice/followers
  * GET /users/alice/followers?page=1
  */
-followers.get('/:username/followers', async (c: Context) => {
+followers.get("/:username/followers", async (c: Context) => {
   const { username } = c.req.param();
-  const page = c.req.query('page');
+  const page = c.req.query("page");
 
   // Get user
-  const userRepository = c.get('userRepository');
+  const userRepository = c.get("userRepository");
   const user = await userRepository.findByUsername(username as string);
 
   if (!user || user.host !== null) {
     return c.notFound();
   }
 
-  const baseUrl = process.env.URL || 'http://localhost:3000';
+  const baseUrl = process.env.URL || "http://localhost:3000";
   const followersUrl = `${baseUrl}/users/${username}/followers`;
 
   // If no page parameter, return collection metadata
   if (!page) {
-    const followRepository = c.get('followRepository');
+    const followRepository = c.get("followRepository");
 
     // Get all followers (users who follow this user)
     const followerRelations = await followRepository.findByFolloweeId(user.id);
     const totalItems = followerRelations.length;
 
     const collection = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
+      "@context": "https://www.w3.org/ns/activitystreams",
       id: followersUrl,
-      type: 'OrderedCollection',
+      type: "OrderedCollection",
       totalItems,
       first: `${followersUrl}?page=1`,
     };
 
     return c.json(collection, 200, {
-      'Content-Type': 'application/activity+json; charset=utf-8',
+      "Content-Type": "application/activity+json; charset=utf-8",
     });
   }
 
   // Return paginated collection
   const pageNum = parseInt(page, 10);
   if (isNaN(pageNum) || pageNum < 1) {
-    return c.json({ error: 'Invalid page number' }, 400);
+    return c.json({ error: "Invalid page number" }, 400);
   }
 
-  const followRepository = c.get('followRepository');
+  const followRepository = c.get("followRepository");
   const limit = 20;
   const offset = (pageNum - 1) * limit;
 
   // Get followers with pagination
   const followerRelations = await followRepository.findByFolloweeId(user.id);
   const sortedRelations = followerRelations.sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
   );
   const paginatedRelations = sortedRelations.slice(offset, offset + limit);
 
@@ -80,7 +80,7 @@ followers.get('/:username/followers', async (c: Context) => {
     paginatedRelations.map(async (rel) => {
       const followerUser = await userRepository.findById(rel.followerId);
       return followerUser;
-    })
+    }),
   );
 
   // Convert to actor URIs
@@ -97,9 +97,9 @@ followers.get('/:username/followers', async (c: Context) => {
     });
 
   const collectionPage = {
-    '@context': 'https://www.w3.org/ns/activitystreams',
+    "@context": "https://www.w3.org/ns/activitystreams",
     id: `${followersUrl}?page=${pageNum}`,
-    type: 'OrderedCollectionPage',
+    type: "OrderedCollectionPage",
     partOf: followersUrl,
     orderedItems,
   };
@@ -113,7 +113,7 @@ followers.get('/:username/followers', async (c: Context) => {
   }
 
   return c.json(collectionPage, 200, {
-    'Content-Type': 'application/activity+json; charset=utf-8',
+    "Content-Type": "application/activity+json; charset=utf-8",
   });
 });
 

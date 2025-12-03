@@ -1,9 +1,10 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { getDatabase } from '../db/index.js';
+import { S3Client } from "@aws-sdk/client-s3";
+import { getDatabase } from "../db/index.js";
 import type {
   IUserRepository,
   INoteRepository,
   IDriveFileRepository,
+  IDriveFolderRepository,
   ISessionRepository,
   IReactionRepository,
   IFollowRepository,
@@ -17,13 +18,16 @@ import type {
   IModerationAuditLogRepository,
   IUserWarningRepository,
   INotificationRepository,
-} from '../interfaces/repositories/index.js';
-import type { IFileStorage } from '../interfaces/IFileStorage.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
+  IRemoteInstanceRepository,
+  IScheduledNoteRepository,
+} from "../interfaces/repositories/index.js";
+import type { IFileStorage } from "../interfaces/IFileStorage.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
 import {
   PostgresUserRepository,
   PostgresNoteRepository,
   PostgresDriveFileRepository,
+  PostgresDriveFolderRepository,
   PostgresSessionRepository,
   PostgresReactionRepository,
   PostgresFollowRepository,
@@ -37,26 +41,27 @@ import {
   PostgresModerationAuditLogRepository,
   PostgresUserWarningRepository,
   PostgresNotificationRepository,
-} from '../repositories/pg/index.js';
-import {
-  LocalStorageAdapter,
-  S3StorageAdapter,
-} from '../adapters/storage/index.js';
-import { ActivityDeliveryQueue } from '../services/ap/ActivityDeliveryQueue.js';
-import { DragonflyCacheAdapter } from '../adapters/cache/DragonflyCacheAdapter.js';
-import { RemoteActorService } from '../services/ap/RemoteActorService.js';
-import { RemoteNoteService } from '../services/ap/RemoteNoteService.js';
-import { ActivityPubDeliveryService } from '../services/ap/ActivityPubDeliveryService.js';
-import { RoleService } from '../services/RoleService.js';
-import { InstanceSettingsService } from '../services/InstanceSettingsService.js';
-import { MigrationService } from '../services/MigrationService.js';
-import { NotificationService } from '../services/NotificationService.js';
-import { WebPushService } from '../services/WebPushService.js';
+  PostgresRemoteInstanceRepository,
+  PostgresScheduledNoteRepository,
+} from "../repositories/pg/index.js";
+import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
+import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
+import { DragonflyCacheAdapter } from "../adapters/cache/DragonflyCacheAdapter.js";
+import { RemoteActorService } from "../services/ap/RemoteActorService.js";
+import { RemoteNoteService } from "../services/ap/RemoteNoteService.js";
+import { ActivityPubDeliveryService } from "../services/ap/ActivityPubDeliveryService.js";
+import { RoleService } from "../services/RoleService.js";
+import { InstanceSettingsService } from "../services/InstanceSettingsService.js";
+import { MigrationService } from "../services/MigrationService.js";
+import { NotificationService } from "../services/NotificationService.js";
+import { WebPushService } from "../services/WebPushService.js";
+import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
 
 export interface AppContainer {
   userRepository: IUserRepository;
   noteRepository: INoteRepository;
   driveFileRepository: IDriveFileRepository;
+  driveFolderRepository: IDriveFolderRepository;
   sessionRepository: ISessionRepository;
   reactionRepository: IReactionRepository;
   followRepository: IFollowRepository;
@@ -70,6 +75,8 @@ export interface AppContainer {
   moderationAuditLogRepository: IModerationAuditLogRepository;
   userWarningRepository: IUserWarningRepository;
   notificationRepository: INotificationRepository;
+  remoteInstanceRepository: IRemoteInstanceRepository;
+  scheduledNoteRepository: IScheduledNoteRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -81,6 +88,7 @@ export interface AppContainer {
   migrationService: MigrationService;
   notificationService: NotificationService;
   webPushService: WebPushService;
+  remoteInstanceService: RemoteInstanceService;
 }
 
 /**
@@ -89,7 +97,7 @@ export interface AppContainer {
  */
 export function createContainer(): AppContainer {
   const db = getDatabase();
-  const dbType = process.env.DB_TYPE || 'postgres';
+  const dbType = process.env.DB_TYPE || "postgres";
 
   // Repository選択
   const repositories = createRepositories(db, dbType);
@@ -101,14 +109,14 @@ export function createContainer(): AppContainer {
   const cacheService = new DragonflyCacheAdapter();
   // Initialize in background (non-blocking)
   cacheService.waitForInit().catch((error) => {
-    console.warn('Cache service initialization failed (caching disabled):', error);
+    console.warn("Cache service initialization failed (caching disabled):", error);
   });
 
   // Activity Delivery Queue
   const activityDeliveryQueue = new ActivityDeliveryQueue();
   // Initialize in background (non-blocking)
   activityDeliveryQueue.waitForInit().catch((error) => {
-    console.error('Failed to initialize ActivityDeliveryQueue:', error);
+    console.error("Failed to initialize ActivityDeliveryQueue:", error);
   });
 
   // Remote Actor/Note Services for ActivityPub federation
@@ -116,12 +124,12 @@ export function createContainer(): AppContainer {
   const remoteActorService = new RemoteActorService(
     repositories.userRepository,
     undefined, // signatureConfig - set later per request
-    cacheService
+    cacheService,
   );
   const remoteNoteService = new RemoteNoteService(
     repositories.noteRepository,
     repositories.userRepository,
-    remoteActorService
+    remoteActorService,
   );
 
   // ActivityPub Delivery Service
@@ -129,38 +137,41 @@ export function createContainer(): AppContainer {
     repositories.userRepository,
     repositories.followRepository,
     activityDeliveryQueue,
-    repositories.instanceBlockRepository
+    repositories.instanceBlockRepository,
   );
 
   // Role and Instance Settings Services
   const roleService = new RoleService(
     repositories.roleRepository,
     repositories.roleAssignmentRepository,
-    cacheService
+    cacheService,
   );
   const instanceSettingsService = new InstanceSettingsService(
     repositories.instanceSettingsRepository,
-    cacheService
+    cacheService,
   );
 
   // Migration Service for account migration
   const migrationService = new MigrationService(
     repositories.userRepository,
     repositories.followRepository,
-    remoteActorService
+    remoteActorService,
   );
 
   // Web Push Service
-  const webPushService = new WebPushService(db);
+  const webPushService = new WebPushService(db, instanceSettingsService);
 
   // Notification Service
   const notificationService = new NotificationService(
     repositories.notificationRepository,
-    repositories.userRepository
+    repositories.userRepository,
   );
 
   // Wire up WebPushService with NotificationService
   notificationService.setWebPushService(webPushService);
+
+  // Remote Instance Service for fetching federated server metadata
+  const remoteInstanceService = new RemoteInstanceService(repositories.remoteInstanceRepository);
 
   return {
     ...repositories,
@@ -175,6 +186,7 @@ export function createContainer(): AppContainer {
     migrationService,
     notificationService,
     webPushService,
+    remoteInstanceService,
   };
 }
 
@@ -183,11 +195,12 @@ export function createContainer(): AppContainer {
  */
 function createRepositories(db: any, dbType: string) {
   switch (dbType) {
-    case 'postgres':
+    case "postgres":
       return {
         userRepository: new PostgresUserRepository(db),
         noteRepository: new PostgresNoteRepository(db),
         driveFileRepository: new PostgresDriveFileRepository(db),
+        driveFolderRepository: new PostgresDriveFolderRepository(db),
         sessionRepository: new PostgresSessionRepository(db),
         reactionRepository: new PostgresReactionRepository(db),
         followRepository: new PostgresFollowRepository(db),
@@ -201,16 +214,18 @@ function createRepositories(db: any, dbType: string) {
         moderationAuditLogRepository: new PostgresModerationAuditLogRepository(db),
         userWarningRepository: new PostgresUserWarningRepository(db),
         notificationRepository: new PostgresNotificationRepository(db),
+        remoteInstanceRepository: new PostgresRemoteInstanceRepository(db),
+        scheduledNoteRepository: new PostgresScheduledNoteRepository(db),
       };
 
-    case 'mysql':
+    case "mysql":
       // TODO: MySQL実装（Phase 0完了後に追加）
-      throw new Error('MySQL is not yet implemented');
+      throw new Error("MySQL is not yet implemented");
 
-    case 'sqlite':
-    case 'd1':
+    case "sqlite":
+    case "d1":
       // TODO: SQLite/D1実装（Phase 0完了後に追加）
-      throw new Error('SQLite/D1 is not yet implemented');
+      throw new Error("SQLite/D1 is not yet implemented");
 
     default:
       throw new Error(`Unsupported database type: ${dbType}`);
@@ -221,32 +236,49 @@ function createRepositories(db: any, dbType: string) {
  * ストレージタイプに応じたAdapterを作成
  */
 function createStorageAdapter(): IFileStorage {
-  const storageType = process.env.STORAGE_TYPE || 'local';
+  const storageType = process.env.STORAGE_TYPE || "local";
 
   switch (storageType) {
-    case 'local': {
-      const basePath = process.env.LOCAL_STORAGE_PATH || './uploads';
-      const baseUrl = process.env.URL || 'http://localhost:3000';
+    case "local": {
+      const basePath = process.env.LOCAL_STORAGE_PATH || "./uploads";
+      const baseUrl = process.env.URL || "http://localhost:3000";
 
       return new LocalStorageAdapter(basePath, baseUrl);
     }
 
-    case 's3': {
+    case "s3": {
       // S3設定の検証
       const endpoint = process.env.S3_ENDPOINT;
       const bucketName = process.env.S3_BUCKET_NAME;
       const accessKey = process.env.S3_ACCESS_KEY;
       const secretKey = process.env.S3_SECRET_KEY;
-      const region = process.env.S3_REGION || 'auto';
+      const region = process.env.S3_REGION || "auto";
       const publicUrl = process.env.S3_PUBLIC_URL;
 
       if (!endpoint || !bucketName || !accessKey || !secretKey || !publicUrl) {
         throw new Error(
-          'Missing required S3 configuration. Please check S3_ENDPOINT, S3_BUCKET_NAME, S3_ACCESS_KEY, S3_SECRET_KEY, and S3_PUBLIC_URL environment variables.'
+          "Missing required S3 configuration. Please check S3_ENDPOINT, S3_BUCKET_NAME, S3_ACCESS_KEY, S3_SECRET_KEY, and S3_PUBLIC_URL environment variables.",
         );
       }
 
-      // S3クライアントの作成
+      /**
+       * S3クライアントの作成
+       *
+       * IMPORTANT: S3_ENDPOINT Configuration
+       * - S3_ENDPOINT should NOT include the bucket name
+       * - The bucket name is specified separately via S3_BUCKET_NAME
+       *
+       * Correct examples:
+       *   - AWS S3:       https://s3.us-east-1.amazonaws.com
+       *   - Cloudflare R2: https://{account-id}.r2.cloudflarestorage.com
+       *   - MinIO:        http://localhost:9000
+       *
+       * Incorrect (will cause extra directory in paths):
+       *   - https://{bucket-name}.{account-id}.r2.cloudflarestorage.com
+       *
+       * forcePathStyle: true is required for S3-compatible storage (R2, MinIO, etc.)
+       * to use path-style URLs instead of virtual-hosted-style URLs.
+       */
       const s3Client = new S3Client({
         endpoint,
         region,
@@ -254,6 +286,7 @@ function createStorageAdapter(): IFileStorage {
           accessKeyId: accessKey,
           secretAccessKey: secretKey,
         },
+        forcePathStyle: true,
       });
 
       return new S3StorageAdapter(s3Client, bucketName, publicUrl);

@@ -6,7 +6,7 @@
  * @module interfaces/repositories/ICustomEmojiRepository
  */
 
-import type { CustomEmoji, NewCustomEmoji } from '../../db/schema/pg.js';
+import type { CustomEmoji, NewCustomEmoji } from "../../db/schema/pg.js";
 
 /**
  * Options for listing custom emojis

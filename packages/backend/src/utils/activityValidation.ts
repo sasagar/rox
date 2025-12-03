@@ -11,11 +11,11 @@
  * Validation error types
  */
 export enum ValidationErrorType {
-  MISSING_FIELD = 'missing_field',
-  INVALID_FORMAT = 'invalid_format',
-  INVALID_TIMESTAMP = 'invalid_timestamp',
-  ACTOR_MISMATCH = 'actor_mismatch',
-  INVALID_URI = 'invalid_uri',
+  MISSING_FIELD = "missing_field",
+  INVALID_FORMAT = "invalid_format",
+  INVALID_TIMESTAMP = "invalid_timestamp",
+  ACTOR_MISMATCH = "actor_mismatch",
+  INVALID_URI = "invalid_uri",
 }
 
 /**
@@ -48,11 +48,11 @@ export function extractActorUri(activity: any): string | null {
     return null;
   }
 
-  if (typeof activity.actor === 'string') {
+  if (typeof activity.actor === "string") {
     return activity.actor;
   }
 
-  if (typeof activity.actor === 'object' && activity.actor.id) {
+  if (typeof activity.actor === "object" && activity.actor.id) {
     return activity.actor.id;
   }
 
@@ -72,11 +72,11 @@ export function extractObjectUri(activity: any): string | null {
     return null;
   }
 
-  if (typeof activity.object === 'string') {
+  if (typeof activity.object === "string") {
     return activity.object;
   }
 
-  if (typeof activity.object === 'object' && activity.object.id) {
+  if (typeof activity.object === "object" && activity.object.id) {
     return activity.object.id;
   }
 
@@ -94,7 +94,7 @@ export function extractObjectUri(activity: any): string | null {
 export function isValidUri(uri: string): boolean {
   try {
     const url = new URL(uri);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
   }
@@ -156,16 +156,16 @@ export function validateRequiredFields(activity: any): ValidationResult {
   if (!activity.type) {
     errors.push({
       type: ValidationErrorType.MISSING_FIELD,
-      field: 'type',
-      message: 'Activity type is required',
+      field: "type",
+      message: "Activity type is required",
     });
   }
 
   if (!activity.actor) {
     errors.push({
       type: ValidationErrorType.MISSING_FIELD,
-      field: 'actor',
-      message: 'Activity actor is required',
+      field: "actor",
+      message: "Activity actor is required",
     });
   }
 
@@ -174,32 +174,32 @@ export function validateRequiredFields(activity: any): ValidationResult {
   if (actorUri && !isValidUri(actorUri)) {
     errors.push({
       type: ValidationErrorType.INVALID_URI,
-      field: 'actor',
-      message: 'Actor must be a valid HTTP(S) URI',
+      field: "actor",
+      message: "Actor must be a valid HTTP(S) URI",
     });
   }
 
   // Type-specific validation
   switch (activity.type) {
-    case 'Create':
-    case 'Update':
-    case 'Delete':
-    case 'Announce':
+    case "Create":
+    case "Update":
+    case "Delete":
+    case "Announce":
       if (!activity.object) {
         errors.push({
           type: ValidationErrorType.MISSING_FIELD,
-          field: 'object',
+          field: "object",
           message: `${activity.type} activity requires an object`,
         });
       }
       break;
 
-    case 'Follow':
-    case 'Like':
+    case "Follow":
+    case "Like":
       if (!activity.object) {
         errors.push({
           type: ValidationErrorType.MISSING_FIELD,
-          field: 'object',
+          field: "object",
           message: `${activity.type} activity requires an object`,
         });
       } else {
@@ -207,28 +207,28 @@ export function validateRequiredFields(activity: any): ValidationResult {
         if (objectUri && !isValidUri(objectUri)) {
           errors.push({
             type: ValidationErrorType.INVALID_URI,
-            field: 'object',
-            message: 'Object must be a valid HTTP(S) URI',
+            field: "object",
+            message: "Object must be a valid HTTP(S) URI",
           });
         }
       }
       break;
 
-    case 'Accept':
-    case 'Reject':
-    case 'Undo':
+    case "Accept":
+    case "Reject":
+    case "Undo":
       if (!activity.object) {
         errors.push({
           type: ValidationErrorType.MISSING_FIELD,
-          field: 'object',
+          field: "object",
           message: `${activity.type} activity requires an object`,
         });
       }
       // For these types, object should be another activity
-      if (activity.object && typeof activity.object === 'object' && !activity.object.type) {
+      if (activity.object && typeof activity.object === "object" && !activity.object.type) {
         errors.push({
           type: ValidationErrorType.INVALID_FORMAT,
-          field: 'object',
+          field: "object",
           message: `${activity.type} activity object must be an activity with a type`,
         });
       }
@@ -255,35 +255,37 @@ export function validateTimestamps(activity: any): ValidationResult {
   if (activity.published && !isValidTimestamp(activity.published)) {
     errors.push({
       type: ValidationErrorType.INVALID_TIMESTAMP,
-      field: 'published',
-      message: 'Published timestamp is invalid or outside acceptable range',
+      field: "published",
+      message: "Published timestamp is invalid or outside acceptable range",
     });
   }
 
   if (activity.updated && !isValidTimestamp(activity.updated)) {
     errors.push({
       type: ValidationErrorType.INVALID_TIMESTAMP,
-      field: 'updated',
-      message: 'Updated timestamp is invalid or outside acceptable range',
+      field: "updated",
+      message: "Updated timestamp is invalid or outside acceptable range",
     });
   }
 
   // Check object timestamps for Create/Update activities
-  if ((activity.type === 'Create' || activity.type === 'Update') &&
-      typeof activity.object === 'object') {
+  if (
+    (activity.type === "Create" || activity.type === "Update") &&
+    typeof activity.object === "object"
+  ) {
     if (activity.object.published && !isValidTimestamp(activity.object.published)) {
       errors.push({
         type: ValidationErrorType.INVALID_TIMESTAMP,
-        field: 'object.published',
-        message: 'Object published timestamp is invalid or outside acceptable range',
+        field: "object.published",
+        message: "Object published timestamp is invalid or outside acceptable range",
       });
     }
 
     if (activity.object.updated && !isValidTimestamp(activity.object.updated)) {
       errors.push({
         type: ValidationErrorType.INVALID_TIMESTAMP,
-        field: 'object.updated',
-        message: 'Object updated timestamp is invalid or outside acceptable range',
+        field: "object.updated",
+        message: "Object updated timestamp is invalid or outside acceptable range",
       });
     }
   }
@@ -306,7 +308,7 @@ export function validateTimestamps(activity: any): ValidationResult {
  */
 export function validateActorKeyIdConsistency(
   activity: any,
-  keyId: string | undefined
+  keyId: string | undefined,
 ): ValidationResult {
   const errors: ValidationError[] = [];
 
@@ -329,8 +331,8 @@ export function validateActorKeyIdConsistency(
   if (!keyId.startsWith(actorUri)) {
     errors.push({
       type: ValidationErrorType.ACTOR_MISMATCH,
-      field: 'actor',
-      message: 'Activity actor does not match signature keyId',
+      field: "actor",
+      message: "Activity actor does not match signature keyId",
     });
   }
 
@@ -349,17 +351,14 @@ export function validateActorKeyIdConsistency(
  * @param keyId - Optional keyId from HTTP Signature
  * @returns Validation result
  */
-export function validateActivity(
-  activity: any,
-  keyId?: string
-): ValidationResult {
+export function validateActivity(activity: any, keyId?: string): ValidationResult {
   const results: ValidationResult[] = [
     validateRequiredFields(activity),
     validateTimestamps(activity),
     validateActorKeyIdConsistency(activity, keyId),
   ];
 
-  const allErrors = results.flatMap(r => r.errors);
+  const allErrors = results.flatMap((r) => r.errors);
 
   return {
     valid: allErrors.length === 0,
@@ -377,12 +376,12 @@ export function validateActivity(
  */
 export function formatValidationErrors(errors: ValidationError[]): string {
   if (errors.length === 0) {
-    return 'Invalid activity';
+    return "Invalid activity";
   }
 
   if (errors.length === 1) {
-    return errors[0]?.message ?? 'Invalid activity';
+    return errors[0]?.message ?? "Invalid activity";
   }
 
-  return `Multiple validation errors: ${errors.map(e => e.message).join('; ')}`;
+  return `Multiple validation errors: ${errors.map((e) => e.message).join("; ")}`;
 }

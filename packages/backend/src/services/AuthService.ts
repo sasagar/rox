@@ -7,13 +7,13 @@
  * @module services/AuthService
  */
 
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { ISessionRepository } from '../interfaces/repositories/ISessionRepository.js';
-import type { User, Session } from 'shared';
-import { hashPassword, verifyPassword } from '../utils/password.js';
-import { generateSessionToken, calculateSessionExpiry } from '../utils/session.js';
-import { generateId } from 'shared';
-import { generateKeyPair } from '../utils/crypto.js';
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
+import type { User, Session } from "shared";
+import { hashPassword, verifyPassword } from "../utils/password.js";
+import { generateSessionToken, calculateSessionExpiry } from "../utils/session.js";
+import { generateId } from "shared";
+import { generateKeyPair } from "../utils/crypto.js";
 
 /**
  * User Registration Input Data
@@ -53,7 +53,7 @@ export class AuthService {
    */
   constructor(
     private userRepository: IUserRepository,
-    private sessionRepository: ISessionRepository
+    private sessionRepository: ISessionRepository,
   ) {}
 
   /**
@@ -80,13 +80,13 @@ export class AuthService {
     // ユーザー名の重複チェック
     const existingUsername = await this.userRepository.findByUsername(input.username);
     if (existingUsername) {
-      throw new Error('Username already exists');
+      throw new Error("Username already exists");
     }
 
     // メールアドレスの重複チェック
     const existingEmail = await this.userRepository.findByEmail(input.email);
     if (existingEmail) {
-      throw new Error('Email already exists');
+      throw new Error("Email already exists");
     }
 
     // パスワードをハッシュ化
@@ -100,7 +100,7 @@ export class AuthService {
     const isFirstUser = localUserCount === 0;
 
     // ユーザー作成
-    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const baseUrl = process.env.URL || "http://localhost:3000";
     const user = await this.userRepository.create({
       id: generateId(),
       username: input.username,
@@ -128,6 +128,10 @@ export class AuthService {
       alsoKnownAs: [],
       movedTo: null,
       movedAt: null,
+      // Profile emojis (for remote users)
+      profileEmojis: [],
+      // Storage quota (null means use role default)
+      storageQuotaMb: null,
     });
 
     // セッション作成
@@ -158,18 +162,18 @@ export class AuthService {
     // ユーザー検索
     const user = await this.userRepository.findByUsername(input.username);
     if (!user) {
-      throw new Error('Invalid username or password');
+      throw new Error("Invalid username or password");
     }
 
     // パスワード検証
     const isValid = await verifyPassword(input.password, user.passwordHash);
     if (!isValid) {
-      throw new Error('Invalid username or password');
+      throw new Error("Invalid username or password");
     }
 
     // アカウント停止チェック
     if (user.isSuspended) {
-      throw new Error('Account is suspended');
+      throw new Error("Account is suspended");
     }
 
     // セッション作成
@@ -245,7 +249,7 @@ export class AuthService {
    * Create Session (Internal Method)
    */
   private async createSession(userId: string): Promise<Session> {
-    const sessionExpiryDays = Number.parseInt(process.env.SESSION_EXPIRY_DAYS || '30', 10);
+    const sessionExpiryDays = Number.parseInt(process.env.SESSION_EXPIRY_DAYS || "30", 10);
 
     const session = await this.sessionRepository.create({
       id: generateId(),

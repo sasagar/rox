@@ -7,9 +7,9 @@
  * @module middleware/validator
  */
 
-import { zValidator } from '@hono/zod-validator';
-import type { ZodSchema, ZodError } from 'zod';
-import type { Context } from 'hono';
+import { zValidator } from "@hono/zod-validator";
+import type { ZodSchema, ZodError } from "zod";
+import type { Context } from "hono";
 
 /**
  * Custom error handler for validation failures
@@ -17,19 +17,22 @@ import type { Context } from 'hono';
  * Returns a consistent error format with field-level details
  */
 function createValidationHook() {
-  return (result: { success: boolean; error?: ZodError; data: unknown }, c: Context): Response | undefined => {
+  return (
+    result: { success: boolean; error?: ZodError; data: unknown },
+    c: Context,
+  ): Response | undefined => {
     if (!result.success) {
       const errors = result.error!.flatten();
 
       return c.json(
         {
-          error: 'Validation failed',
+          error: "Validation failed",
           details: {
             fieldErrors: errors.fieldErrors,
             formErrors: errors.formErrors,
           },
         },
-        400
+        400,
       );
     }
     // Return undefined to continue to the next middleware
@@ -57,7 +60,7 @@ function createValidationHook() {
  * ```
  */
 export function validateJson<T extends ZodSchema>(schema: T) {
-  return zValidator('json', schema, createValidationHook() as any);
+  return zValidator("json", schema, createValidationHook() as any);
 }
 
 /**
@@ -80,7 +83,7 @@ export function validateJson<T extends ZodSchema>(schema: T) {
  * ```
  */
 export function validateQuery<T extends ZodSchema>(schema: T) {
-  return zValidator('query', schema, createValidationHook() as any);
+  return zValidator("query", schema, createValidationHook() as any);
 }
 
 /**
@@ -104,7 +107,7 @@ export function validateQuery<T extends ZodSchema>(schema: T) {
  * ```
  */
 export function validateParam<T extends ZodSchema>(schema: T) {
-  return zValidator('param', schema, createValidationHook() as any);
+  return zValidator("param", schema, createValidationHook() as any);
 }
 
 /**
@@ -128,5 +131,5 @@ export function validateParam<T extends ZodSchema>(schema: T) {
  * ```
  */
 export function validateForm<T extends ZodSchema>(schema: T) {
-  return zValidator('form', schema, createValidationHook() as any);
+  return zValidator("form", schema, createValidationHook() as any);
 }

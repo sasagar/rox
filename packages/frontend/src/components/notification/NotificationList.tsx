@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Notification list component
@@ -6,26 +6,20 @@
  * Displays a list of notifications with infinite scroll
  */
 
-import { useState } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { Bell, CheckCheck, Loader2 } from 'lucide-react';
-import { NotificationItem } from './NotificationItem';
-import { useNotifications } from '../../hooks/useNotifications';
-import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
-import type { Notification } from '../../lib/types/notification';
+import { useState } from "react";
+import { Trans } from "@lingui/react/macro";
+import { Bell, CheckCheck, Loader2 } from "lucide-react";
+import { NotificationItem } from "./NotificationItem";
+import { useNotifications } from "../../hooks/useNotifications";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import type { Notification } from "../../lib/types/notification";
 
 interface NotificationListProps {
   onNotificationClick?: (notification: Notification) => void;
 }
 
 export function NotificationList({ onNotificationClick }: NotificationListProps) {
-  const {
-    notifications,
-    loading,
-    markAsRead,
-    markAllAsRead,
-    loadMore,
-  } = useNotifications();
+  const { notifications, loading, markAsRead, markAllAsRead, loadMore } = useNotifications();
 
   const [hasMore, setHasMore] = useState(true);
 

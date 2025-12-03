@@ -7,11 +7,11 @@
  * @module services/UserService
  */
 
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { User } from '../db/schema/pg.js';
-import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { User } from "../db/schema/pg.js";
+import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 
 /**
  * User profile update input data

@@ -1,4 +1,4 @@
-import type { User } from '../../db/schema/pg.js';
+import type { User } from "../../db/schema/pg.js";
 
 /**
  * Pagination options for listing users
@@ -34,7 +34,7 @@ export interface IUserRepository {
   /**
    * ユーザーを作成
    */
-  create(user: Omit<User, 'createdAt' | 'updatedAt'>): Promise<User>;
+  create(user: Omit<User, "createdAt" | "updatedAt">): Promise<User>;
 
   /**
    * IDでユーザーを取得
@@ -75,7 +75,7 @@ export interface IUserRepository {
   /**
    * ユーザー情報を更新
    */
-  update(id: string, data: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<User>;
+  update(id: string, data: Partial<Omit<User, "id" | "createdAt">>): Promise<User>;
 
   /**
    * ユーザーを削除

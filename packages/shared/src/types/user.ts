@@ -1,5 +1,13 @@
-import type { ID, Timestamps } from './common.js';
-import type { UISettings } from './uiSettings.js';
+import type { ID, Timestamps } from "./common.js";
+import type { UISettings } from "./uiSettings.js";
+
+/**
+ * Profile emoji (custom emoji used in user profile from remote instances)
+ */
+export interface ProfileEmoji {
+  name: string;
+  url: string;
+}
 
 export interface User extends Timestamps {
   id: ID;
@@ -29,6 +37,10 @@ export interface User extends Timestamps {
   alsoKnownAs: string[] | null; // Alternative account URIs for migration
   movedTo: string | null; // URI of account this user moved to
   movedAt: Date | null; // When migration was completed
+  // Profile emojis from remote instances
+  profileEmojis: ProfileEmoji[] | null;
+  // Storage quota
+  storageQuotaMb: number | null; // Storage quota in MB (null means use role default)
 }
 
 export interface UserProfile {

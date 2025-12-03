@@ -97,6 +97,59 @@ Warning: Redis not available, using synchronous delivery fallback
    docker exec rox-dragonfly redis-cli ping
    ```
 
+## Nginx Rate Limiting Issues (503 Errors)
+
+### Symptoms
+
+- Browser console shows `503 (Service Unavailable)` errors
+- Multiple API requests fail on page load
+- SSE connections disconnect frequently
+- JSON parse errors (`Unexpected token '<'`) due to HTML error pages
+
+### Diagnosis
+
+Check Nginx error logs:
+```bash
+grep -E "(limiting|limit_req|limit_conn|503)" /var/log/nginx/rox.error.log | tail -50
+```
+
+### Common Errors and Solutions
+
+#### `limiting requests, excess: XX by zone "api_limit"`
+
+The API rate limit is too restrictive. Rox's frontend makes many concurrent API calls on page load (reactions for each note, instance info, user avatars, etc.).
+
+**Fix:**
+```nginx
+# In the limit_req_zone definition (outside server block)
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=50r/s;
+
+# In location /api/ block
+limit_req zone=api_limit burst=100 nodelay;
+```
+
+#### `limiting connections by zone "sse_conn"`
+
+SSE connection limit is too low. Multiple browser tabs, reconnection attempts after network issues, and mobile background activity can quickly exhaust low limits.
+
+**Fix:**
+```nginx
+# In location /api/notifications/stream block
+limit_conn sse_conn 50;
+```
+
+#### `upstream prematurely closed connection`
+
+This is normal behavior for Rox's SSE implementation which uses short-lived connections. The frontend handles reconnection automatically.
+
+### After Making Changes
+
+```bash
+nginx -t && systemctl reload nginx
+```
+
+---
+
 ## SSL/HTTPS Issues
 
 ### Certificate Not Issued

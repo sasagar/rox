@@ -7,9 +7,9 @@
  * @module services/ReceivedActivitiesCleanupService
  */
 
-import { getDatabase } from '../db/index.js';
-import { receivedActivities } from '../db/schema/pg.js';
-import { lt } from 'drizzle-orm';
+import { getDatabase } from "../db/index.js";
+import { receivedActivities } from "../db/schema/pg.js";
+import { lt } from "drizzle-orm";
 
 /**
  * Cleanup configuration
@@ -68,24 +68,24 @@ export class ReceivedActivitiesCleanupService {
    */
   public start(): void {
     if (this.isRunning) {
-      console.log('⚠️  ReceivedActivitiesCleanupService is already running');
+      console.log("⚠️  ReceivedActivitiesCleanupService is already running");
       return;
     }
 
     this.isRunning = true;
     console.log(
-      `🧹 Starting ReceivedActivitiesCleanupService (retention: ${this.config.retentionDays} days, interval: ${this.config.intervalMs}ms)`
+      `🧹 Starting ReceivedActivitiesCleanupService (retention: ${this.config.retentionDays} days, interval: ${this.config.intervalMs}ms)`,
     );
 
     // Run cleanup immediately on start
     this.cleanup().catch((error) => {
-      console.error('Initial cleanup failed:', error);
+      console.error("Initial cleanup failed:", error);
     });
 
     // Schedule periodic cleanup
     this.intervalId = setInterval(() => {
       this.cleanup().catch((error) => {
-        console.error('Scheduled cleanup failed:', error);
+        console.error("Scheduled cleanup failed:", error);
       });
     }, this.config.intervalMs);
   }
@@ -97,7 +97,7 @@ export class ReceivedActivitiesCleanupService {
    */
   public stop(): void {
     if (!this.isRunning) {
-      console.log('⚠️  ReceivedActivitiesCleanupService is not running');
+      console.log("⚠️  ReceivedActivitiesCleanupService is not running");
       return;
     }
 
@@ -107,7 +107,7 @@ export class ReceivedActivitiesCleanupService {
     }
 
     this.isRunning = false;
-    console.log('🧹 Stopped ReceivedActivitiesCleanupService');
+    console.log("🧹 Stopped ReceivedActivitiesCleanupService");
   }
 
   /**
@@ -130,15 +130,13 @@ export class ReceivedActivitiesCleanupService {
       const db = getDatabase();
 
       // Delete old entries
-      await db
-        .delete(receivedActivities)
-        .where(lt(receivedActivities.receivedAt, cutoffDate));
+      await db.delete(receivedActivities).where(lt(receivedActivities.receivedAt, cutoffDate));
 
       console.log(`✅ Cleanup completed`);
 
       return 0; // Return 0 as we don't have a reliable way to get the count across all DB types
     } catch (error) {
-      console.error('❌ Cleanup failed:', error);
+      console.error("❌ Cleanup failed:", error);
       throw error;
     }
   }

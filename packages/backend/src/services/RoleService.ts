@@ -6,11 +6,11 @@
  * Supports Redis caching for improved performance.
  */
 
-import type { IRoleRepository } from '../interfaces/repositories/IRoleRepository.js';
-import type { IRoleAssignmentRepository } from '../interfaces/repositories/IRoleAssignmentRepository.js';
-import type { RolePolicies, Role } from '../db/schema/pg.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
+import type { IRoleRepository } from "../interfaces/repositories/IRoleRepository.js";
+import type { IRoleAssignmentRepository } from "../interfaces/repositories/IRoleAssignmentRepository.js";
+import type { RolePolicies, Role } from "../db/schema/pg.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 
 /**
  * Default policies applied to all users (base permissions)
@@ -26,6 +26,9 @@ const DEFAULT_POLICIES: RolePolicies = {
   rateLimitFactor: 1.0,
   driveCapacityMb: 100,
   maxFileSizeMb: 10,
+  canManageStorageQuotas: false,
+  canViewSystemAcquiredFiles: false,
+  maxScheduledNotes: 10,
   canManageReports: false,
   canDeleteNotes: false,
   canSuspendUsers: false,
@@ -56,6 +59,8 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
     if (policy.canManageInstanceSettings) merged.canManageInstanceSettings = true;
     if (policy.canManageInstanceBlocks) merged.canManageInstanceBlocks = true;
     if (policy.canManageUsers) merged.canManageUsers = true;
+    if (policy.canManageStorageQuotas) merged.canManageStorageQuotas = true;
+    if (policy.canViewSystemAcquiredFiles) merged.canViewSystemAcquiredFiles = true;
 
     // Numeric values: take the highest (most permissive)
     if (
@@ -97,6 +102,16 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
     ) {
       merged.maxFileSizeMb = policy.maxFileSizeMb;
     }
+
+    // Max scheduled notes: take the highest (-1 = unlimited)
+    if (
+      policy.maxScheduledNotes !== undefined &&
+      (merged.maxScheduledNotes === undefined ||
+        policy.maxScheduledNotes === -1 ||
+        (merged.maxScheduledNotes !== -1 && policy.maxScheduledNotes > merged.maxScheduledNotes))
+    ) {
+      merged.maxScheduledNotes = policy.maxScheduledNotes;
+    }
   }
 
   return merged;
@@ -110,7 +125,7 @@ export class RoleService {
   constructor(
     roleRepository: IRoleRepository,
     roleAssignmentRepository: IRoleAssignmentRepository,
-    cacheService?: ICacheService
+    cacheService?: ICacheService,
   ) {
     this.roleRepository = roleRepository;
     this.roleAssignmentRepository = roleAssignmentRepository;
@@ -183,7 +198,7 @@ export class RoleService {
   async hasPermission(userId: string, permission: keyof RolePolicies): Promise<boolean> {
     const policies = await this.getEffectivePolicies(userId);
     const value = policies[permission];
-    return typeof value === 'boolean' ? value : false;
+    return typeof value === "boolean" ? value : false;
   }
 
   /**
@@ -265,7 +280,7 @@ export class RoleService {
     userId: string,
     roleId: string,
     assignedById?: string,
-    expiresAt?: Date
+    expiresAt?: Date,
   ): Promise<void> {
     await this.roleAssignmentRepository.assign(userId, roleId, assignedById, expiresAt);
     // Invalidate cached policies for the user
@@ -286,13 +301,13 @@ export class RoleService {
    * Create default admin role if it doesn't exist
    */
   async ensureAdminRole(): Promise<Role> {
-    const existingAdmin = await this.roleRepository.findByName('Admin');
+    const existingAdmin = await this.roleRepository.findByName("Admin");
     if (existingAdmin) return existingAdmin;
 
     return this.roleRepository.create({
-      name: 'Admin',
-      description: 'Administrator with full permissions',
-      color: '#ff0000',
+      name: "Admin",
+      description: "Administrator with full permissions",
+      color: "#ff0000",
       isPublic: false,
       isDefault: false,
       isAdminRole: true,
@@ -323,13 +338,13 @@ export class RoleService {
    * Create default moderator role if it doesn't exist
    */
   async ensureModeratorRole(): Promise<Role> {
-    const existingMod = await this.roleRepository.findByName('Moderator');
+    const existingMod = await this.roleRepository.findByName("Moderator");
     if (existingMod) return existingMod;
 
     return this.roleRepository.create({
-      name: 'Moderator',
-      description: 'Moderator with content management permissions',
-      color: '#00ff00',
+      name: "Moderator",
+      description: "Moderator with content management permissions",
+      color: "#00ff00",
       isPublic: false,
       isDefault: false,
       isAdminRole: false,
@@ -354,5 +369,30 @@ export class RoleService {
         canManageUsers: false,
       },
     });
+  }
+
+
+  /**
+   * Get user's max scheduled notes limit (-1 = unlimited, 0 = disabled)
+   */
+  async getMaxScheduledNotes(userId: string): Promise<number> {
+    const policies = await this.getEffectivePolicies(userId);
+    return policies.maxScheduledNotes ?? 10;
+  }
+
+  /**
+   * Check if user can manage storage quotas
+   */
+  async canManageStorageQuotas(userId: string): Promise<boolean> {
+    const policies = await this.getEffectivePolicies(userId);
+    return !!policies.canManageStorageQuotas;
+  }
+
+  /**
+   * Check if user can view system-acquired files
+   */
+  async canViewSystemAcquiredFiles(userId: string): Promise<boolean> {
+    const policies = await this.getEffectivePolicies(userId);
+    return !!policies.canViewSystemAcquiredFiles;
   }
 }

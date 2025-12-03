@@ -6,13 +6,13 @@
  * @module repositories/pg/PostgresCustomEmojiRepository
  */
 
-import { eq, and, isNull, like, inArray, count } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { customEmojis, type CustomEmoji, type NewCustomEmoji } from '../../db/schema/pg.js';
+import { eq, and, isNull, like, inArray, count } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { customEmojis, type CustomEmoji, type NewCustomEmoji } from "../../db/schema/pg.js";
 import type {
   ICustomEmojiRepository,
   ListCustomEmojisOptions,
-} from '../../interfaces/repositories/ICustomEmojiRepository.js';
+} from "../../interfaces/repositories/ICustomEmojiRepository.js";
 
 /**
  * PostgreSQL implementation of Custom Emoji Repository
@@ -24,7 +24,7 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
     const [result] = await this.db.insert(customEmojis).values(emoji).returning();
 
     if (!result) {
-      throw new Error('Failed to create custom emoji');
+      throw new Error("Failed to create custom emoji");
     }
 
     return result;
@@ -46,11 +46,7 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
         ? and(eq(customEmojis.name, name), isNull(customEmojis.host))
         : and(eq(customEmojis.name, name), eq(customEmojis.host, host));
 
-    const [result] = await this.db
-      .select()
-      .from(customEmojis)
-      .where(conditions)
-      .limit(1);
+    const [result] = await this.db.select().from(customEmojis).where(conditions).limit(1);
 
     return result ?? null;
   }
@@ -61,9 +57,7 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
     }
 
     const hostCondition =
-      host === null || host === undefined
-        ? isNull(customEmojis.host)
-        : eq(customEmojis.host, host);
+      host === null || host === undefined ? isNull(customEmojis.host) : eq(customEmojis.host, host);
 
     const results = await this.db
       .select()
@@ -134,9 +128,7 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
       .where(isNull(customEmojis.host))
       .orderBy(customEmojis.category);
 
-    return results
-      .map((r) => r.category)
-      .filter((c): c is string => c !== null);
+    return results.map((r) => r.category).filter((c): c is string => c !== null);
   }
 
   async update(id: string, updates: Partial<NewCustomEmoji>): Promise<CustomEmoji | null> {
@@ -199,13 +191,9 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
       conditions.push(eq(customEmojis.isSensitive, false));
     }
 
-    const query = this.db
-      .select({ count: count() })
-      .from(customEmojis);
+    const query = this.db.select({ count: count() }).from(customEmojis);
 
-    const [result] = conditions.length > 0
-      ? await query.where(and(...conditions))
-      : await query;
+    const [result] = conditions.length > 0 ? await query.where(and(...conditions)) : await query;
 
     return result?.count ?? 0;
   }

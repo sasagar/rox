@@ -3,7 +3,17 @@
  * Provides functions for interacting with the following API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+/**
+ * Get the API base URL
+ * In browser, uses same origin (proxy handles routing in dev)
+ * In SSR, uses localhost
+ */
+function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:3000";
+}
 
 /**
  * Follow relationship data structure
@@ -22,14 +32,11 @@ export interface Follow {
  * @param token - Authentication token
  * @returns Created follow relationship
  */
-export async function followUser(
-  userId: string,
-  token: string,
-): Promise<Follow> {
-  const response = await fetch(`${API_BASE}/api/following/create`, {
-    method: 'POST',
+export async function followUser(userId: string, token: string): Promise<Follow> {
+  const response = await fetch(`${getApiBase()}/api/following/create`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ userId }),
@@ -37,7 +44,7 @@ export async function followUser(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to follow user');
+    throw new Error(error.error || "Failed to follow user");
   }
 
   return response.json();
@@ -49,14 +56,11 @@ export async function followUser(
  * @param userId - User ID to unfollow
  * @param token - Authentication token
  */
-export async function unfollowUser(
-  userId: string,
-  token: string,
-): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/following/delete`, {
-    method: 'POST',
+export async function unfollowUser(userId: string, token: string): Promise<void> {
+  const response = await fetch(`${getApiBase()}/api/following/delete`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ userId }),
@@ -64,7 +68,7 @@ export async function unfollowUser(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to unfollow user');
+    throw new Error(error.error || "Failed to unfollow user");
   }
 }
 
@@ -75,20 +79,17 @@ export async function unfollowUser(
  * @param limit - Maximum number of followers to retrieve
  * @returns List of followers
  */
-export async function getFollowers(
-  userId: string,
-  limit?: number,
-): Promise<Follow[]> {
+export async function getFollowers(userId: string, limit?: number): Promise<Follow[]> {
   const params = new URLSearchParams({ userId });
   if (limit) {
-    params.append('limit', limit.toString());
+    params.append("limit", limit.toString());
   }
 
-  const response = await fetch(`${API_BASE}/api/users/followers?${params}`);
+  const response = await fetch(`${getApiBase()}/api/users/followers?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get followers');
+    throw new Error(error.error || "Failed to get followers");
   }
 
   return response.json();
@@ -101,20 +102,17 @@ export async function getFollowers(
  * @param limit - Maximum number of following to retrieve
  * @returns List of following
  */
-export async function getFollowing(
-  userId: string,
-  limit?: number,
-): Promise<Follow[]> {
+export async function getFollowing(userId: string, limit?: number): Promise<Follow[]> {
   const params = new URLSearchParams({ userId });
   if (limit) {
-    params.append('limit', limit.toString());
+    params.append("limit", limit.toString());
   }
 
-  const response = await fetch(`${API_BASE}/api/users/following?${params}`);
+  const response = await fetch(`${getApiBase()}/api/users/following?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get following');
+    throw new Error(error.error || "Failed to get following");
   }
 
   return response.json();
@@ -131,7 +129,7 @@ export async function isFollowing(userId: string): Promise<boolean> {
     const following = await getFollowing(userId);
     return following.length > 0;
   } catch (error) {
-    console.error('Failed to check follow status:', error);
+    console.error("Failed to check follow status:", error);
     return false;
   }
 }

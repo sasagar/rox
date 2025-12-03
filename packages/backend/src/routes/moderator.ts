@@ -7,13 +7,19 @@
  * @module routes/moderator
  */
 
-import { Hono } from 'hono';
-import { requireModeratorRole } from '../middleware/auth.js';
+import { Hono } from "hono";
+import { requireModeratorRole } from "../middleware/auth.js";
+import {
+  sanitizeUser,
+  parsePagination,
+  normalizeHostname,
+  errorResponse,
+} from "../lib/routeUtils.js";
 
 const app = new Hono();
 
 // All moderator routes require moderator authentication
-app.use('/*', requireModeratorRole());
+app.use("/*", requireModeratorRole());
 
 // ============================================================================
 // Report Management Endpoints
@@ -31,16 +37,15 @@ app.use('/*', requireModeratorRole());
  * - limit: Maximum number of reports (default: 100)
  * - offset: Number of reports to skip (default: 0)
  */
-app.get('/reports', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
+app.get("/reports", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const status = c.req.query('status') as 'pending' | 'resolved' | 'rejected' | undefined;
+  const { limit, offset } = parsePagination(c);
+  const status = c.req.query("status") as "pending" | "resolved" | "rejected" | undefined;
 
   const reports = await userReportRepository.findAll({ status, limit, offset });
   const total = await userReportRepository.count({ status });
-  const pendingCount = await userReportRepository.count({ status: 'pending' });
+  const pendingCount = await userReportRepository.count({ status: "pending" });
 
   return c.json({ reports, total, pendingCount });
 });
@@ -52,15 +57,15 @@ app.get('/reports', async (c) => {
  *
  * Returns detailed information about a specific report.
  */
-app.get('/reports/:id', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
-  const userRepository = c.get('userRepository');
-  const noteRepository = c.get('noteRepository');
-  const id = c.req.param('id');
+app.get("/reports/:id", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
+  const userRepository = c.get("userRepository");
+  const noteRepository = c.get("noteRepository");
+  const id = c.req.param("id");
 
   const report = await userReportRepository.findById(id);
   if (!report) {
-    return c.json({ error: 'Report not found' }, 404);
+    return errorResponse(c, "Report not found", 404);
   }
 
   // Fetch related data
@@ -73,7 +78,9 @@ app.get('/reports/:id', async (c) => {
   return c.json({
     ...report,
     reporter: reporter ? { id: reporter.id, username: reporter.username } : null,
-    targetUser: targetUser ? { id: targetUser.id, username: targetUser.username, host: targetUser.host } : null,
+    targetUser: targetUser
+      ? { id: targetUser.id, username: targetUser.username, host: targetUser.host }
+      : null,
     targetNote: targetNote ? { id: targetNote.id, text: targetNote.text } : null,
   });
 });
@@ -93,39 +100,39 @@ app.get('/reports/:id', async (c) => {
  * }
  * ```
  */
-app.post('/reports/:id/resolve', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const id = c.req.param('id');
+app.post("/reports/:id/resolve", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const id = c.req.param("id");
 
   const body = await c.req.json();
 
-  if (!['resolved', 'rejected'].includes(body.status)) {
-    return c.json({ error: 'status must be "resolved" or "rejected"' }, 400);
+  if (!["resolved", "rejected"].includes(body.status)) {
+    return errorResponse(c, 'status must be "resolved" or "rejected"');
   }
 
   const report = await userReportRepository.findById(id);
   if (!report) {
-    return c.json({ error: 'Report not found' }, 404);
+    return errorResponse(c, "Report not found", 404);
   }
 
-  if (report.status !== 'pending') {
-    return c.json({ error: 'Report has already been processed' }, 400);
+  if (report.status !== "pending") {
+    return errorResponse(c, "Report has already been processed");
   }
 
   const updated = await userReportRepository.resolve(
     id,
     moderator!.id,
-    body.resolution || '',
-    body.status
+    body.resolution || "",
+    body.status,
   );
 
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: body.status === 'resolved' ? 'resolve_report' : 'reject_report',
-    targetType: 'report',
+    action: body.status === "resolved" ? "resolve_report" : "reject_report",
+    targetType: "report",
     targetId: id,
     reason: body.resolution || undefined,
     details: {
@@ -158,23 +165,23 @@ app.post('/reports/:id/resolve', async (c) => {
  * }
  * ```
  */
-app.delete('/notes/:id', async (c) => {
-  const noteRepository = c.get('noteRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const id = c.req.param('id');
+app.delete("/notes/:id", async (c) => {
+  const noteRepository = c.get("noteRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const id = c.req.param("id");
 
   const body = await c.req.json().catch(() => ({}));
   const reason = body.reason as string | undefined;
 
   const note = await noteRepository.findById(id);
   if (!note) {
-    return c.json({ error: 'Note not found' }, 404);
+    return errorResponse(c, "Note not found", 404);
   }
 
   // Check if already deleted
   if (note.isDeleted) {
-    return c.json({ error: 'Note is already deleted' }, 400);
+    return errorResponse(c, "Note is already deleted");
   }
 
   // Soft-delete the note
@@ -183,8 +190,8 @@ app.delete('/notes/:id', async (c) => {
   // Log moderation action with original content
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'delete_note',
-    targetType: 'note',
+    action: "delete_note",
+    targetType: "note",
     targetId: id,
     reason,
     details: {
@@ -199,7 +206,7 @@ app.delete('/notes/:id', async (c) => {
     },
   });
 
-  return c.json({ success: true, message: 'Note deleted' });
+  return c.json({ success: true, message: "Note deleted" });
 });
 
 /**
@@ -216,23 +223,23 @@ app.delete('/notes/:id', async (c) => {
  * }
  * ```
  */
-app.post('/notes/:id/restore', async (c) => {
-  const noteRepository = c.get('noteRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const id = c.req.param('id');
+app.post("/notes/:id/restore", async (c) => {
+  const noteRepository = c.get("noteRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const id = c.req.param("id");
 
   const body = await c.req.json().catch(() => ({}));
   const reason = body.reason as string | undefined;
 
   const note = await noteRepository.findById(id);
   if (!note) {
-    return c.json({ error: 'Note not found' }, 404);
+    return errorResponse(c, "Note not found", 404);
   }
 
   // Check if actually deleted
   if (!note.isDeleted) {
-    return c.json({ error: 'Note is not deleted' }, 400);
+    return errorResponse(c, "Note is not deleted");
   }
 
   // Restore the note
@@ -241,8 +248,8 @@ app.post('/notes/:id/restore', async (c) => {
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'restore_note',
-    targetType: 'note',
+    action: "restore_note",
+    targetType: "note",
     targetId: id,
     reason,
     details: {
@@ -251,7 +258,7 @@ app.post('/notes/:id/restore', async (c) => {
     },
   });
 
-  return c.json({ success: true, message: 'Note restored', note: restored });
+  return c.json({ success: true, message: "Note restored", note: restored });
 });
 
 /**
@@ -266,12 +273,11 @@ app.post('/notes/:id/restore', async (c) => {
  * - limit: Maximum number of notes (default: 100)
  * - offset: Number of notes to skip (default: 0)
  */
-app.get('/notes/deleted', async (c) => {
-  const noteRepository = c.get('noteRepository');
+app.get("/notes/deleted", async (c) => {
+  const noteRepository = c.get("noteRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const deletedById = c.req.query('deletedById');
+  const { limit, offset } = parsePagination(c);
+  const deletedById = c.req.query("deletedById");
 
   const notes = await noteRepository.findDeletedNotes({ limit, offset, deletedById });
 
@@ -296,30 +302,30 @@ app.get('/notes/deleted', async (c) => {
  * }
  * ```
  */
-app.post('/users/:id/suspend', async (c) => {
-  const userRepository = c.get('userRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const userId = c.req.param('id');
+app.post("/users/:id/suspend", async (c) => {
+  const userRepository = c.get("userRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const userId = c.req.param("id");
 
   // Prevent self-suspension
   if (userId === moderator?.id) {
-    return c.json({ error: 'Cannot suspend yourself' }, 400);
+    return errorResponse(c, "Cannot suspend yourself");
   }
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Cannot suspend admins
   if (user.isAdmin) {
-    return c.json({ error: 'Cannot suspend an admin user' }, 400);
+    return errorResponse(c, "Cannot suspend an admin user");
   }
 
   // Check if already suspended
   if (user.isSuspended) {
-    return c.json({ error: 'User is already suspended' }, 400);
+    return errorResponse(c, "User is already suspended");
   }
 
   const body = await c.req.json().catch(() => ({}));
@@ -330,8 +336,8 @@ app.post('/users/:id/suspend', async (c) => {
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'suspend_user',
-    targetType: 'user',
+    action: "suspend_user",
+    targetType: "user",
     targetId: userId,
     reason,
     details: {
@@ -340,8 +346,7 @@ app.post('/users/:id/suspend', async (c) => {
     },
   });
 
-  const { passwordHash: _p, privateKey: _pk, ...userData } = updatedUser;
-  return c.json(userData);
+  return c.json(sanitizeUser(updatedUser));
 });
 
 /**
@@ -358,20 +363,20 @@ app.post('/users/:id/suspend', async (c) => {
  * }
  * ```
  */
-app.post('/users/:id/unsuspend', async (c) => {
-  const userRepository = c.get('userRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const userId = c.req.param('id');
+app.post("/users/:id/unsuspend", async (c) => {
+  const userRepository = c.get("userRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const userId = c.req.param("id");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Check if actually suspended
   if (!user.isSuspended) {
-    return c.json({ error: 'User is not suspended' }, 400);
+    return errorResponse(c, "User is not suspended");
   }
 
   const body = await c.req.json().catch(() => ({}));
@@ -382,8 +387,8 @@ app.post('/users/:id/unsuspend', async (c) => {
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'unsuspend_user',
-    targetType: 'user',
+    action: "unsuspend_user",
+    targetType: "user",
     targetId: userId,
     reason,
     details: {
@@ -392,8 +397,7 @@ app.post('/users/:id/unsuspend', async (c) => {
     },
   });
 
-  const { passwordHash: _p, privateKey: _pk, ...userData } = updatedUser;
-  return c.json(userData);
+  return c.json(sanitizeUser(updatedUser));
 });
 
 /**
@@ -403,15 +407,15 @@ app.post('/users/:id/unsuspend', async (c) => {
  *
  * Returns user details including moderation history.
  */
-app.get('/users/:id', async (c) => {
-  const userRepository = c.get('userRepository');
-  const userReportRepository = c.get('userReportRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const userId = c.req.param('id');
+app.get("/users/:id", async (c) => {
+  const userRepository = c.get("userRepository");
+  const userReportRepository = c.get("userReportRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const userId = c.req.param("id");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Get reports against this user
@@ -422,12 +426,14 @@ app.get('/users/:id', async (c) => {
   const reportsAgainstCount = await userReportRepository.count({ targetUserId: userId });
 
   // Get moderation history for this user
-  const moderationHistory = await moderationAuditLogRepository.findByTarget('user', userId, { limit: 20 });
+  const moderationHistory = await moderationAuditLogRepository.findByTarget("user", userId, {
+    limit: 20,
+  });
 
-  const { passwordHash: _p, privateKey: _pk, ...userData } = user;
+  const userData = sanitizeUser(user);
 
   // Get warnings for this user
-  const userWarningRepository = c.get('userWarningRepository');
+  const userWarningRepository = c.get("userWarningRepository");
   const warnings = await userWarningRepository.findByUserId(userId, { limit: 10 });
   const warningsCount = await userWarningRepository.countByUserId(userId);
 
@@ -464,32 +470,32 @@ app.get('/users/:id', async (c) => {
  * }
  * ```
  */
-app.post('/users/:id/warn', async (c) => {
-  const userRepository = c.get('userRepository');
-  const userWarningRepository = c.get('userWarningRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const userId = c.req.param('id');
+app.post("/users/:id/warn", async (c) => {
+  const userRepository = c.get("userRepository");
+  const userWarningRepository = c.get("userWarningRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const userId = c.req.param("id");
 
   // Prevent self-warning
   if (userId === moderator?.id) {
-    return c.json({ error: 'Cannot warn yourself' }, 400);
+    return errorResponse(c, "Cannot warn yourself");
   }
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Cannot warn admins
   if (user.isAdmin) {
-    return c.json({ error: 'Cannot warn an admin user' }, 400);
+    return errorResponse(c, "Cannot warn an admin user");
   }
 
   const body = await c.req.json();
 
-  if (!body.reason || typeof body.reason !== 'string' || body.reason.trim().length === 0) {
-    return c.json({ error: 'reason is required' }, 400);
+  if (!body.reason || typeof body.reason !== "string" || body.reason.trim().length === 0) {
+    return errorResponse(c, "reason is required");
   }
 
   const expiresAt = body.expiresAt ? new Date(body.expiresAt) : undefined;
@@ -504,8 +510,8 @@ app.post('/users/:id/warn', async (c) => {
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'warn_user',
-    targetType: 'user',
+    action: "warn_user",
+    targetType: "user",
     targetId: userId,
     reason: body.reason.trim(),
     details: {
@@ -531,21 +537,24 @@ app.post('/users/:id/warn', async (c) => {
  * - offset: Number of warnings to skip (default: 0)
  * - includeExpired: Include expired warnings (default: false)
  */
-app.get('/users/:id/warnings', async (c) => {
-  const userWarningRepository = c.get('userWarningRepository');
-  const userRepository = c.get('userRepository');
-  const userId = c.req.param('id');
+app.get("/users/:id/warnings", async (c) => {
+  const userWarningRepository = c.get("userWarningRepository");
+  const userRepository = c.get("userRepository");
+  const userId = c.req.param("id");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const includeExpired = c.req.query('includeExpired') === 'true';
+  const { limit, offset } = parsePagination(c);
+  const includeExpired = c.req.query("includeExpired") === "true";
 
-  const warnings = await userWarningRepository.findByUserId(userId, { limit, offset, includeExpired });
+  const warnings = await userWarningRepository.findByUserId(userId, {
+    limit,
+    offset,
+    includeExpired,
+  });
   const total = await userWarningRepository.countByUserId(userId, { includeExpired });
 
   return c.json({ warnings, total });
@@ -565,14 +574,13 @@ app.get('/users/:id/warnings', async (c) => {
  * - offset: Number of warnings to skip (default: 0)
  * - includeExpired: Include expired warnings (default: false)
  */
-app.get('/warnings', async (c) => {
-  const userWarningRepository = c.get('userWarningRepository');
+app.get("/warnings", async (c) => {
+  const userWarningRepository = c.get("userWarningRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const userId = c.req.query('userId');
-  const moderatorId = c.req.query('moderatorId');
-  const includeExpired = c.req.query('includeExpired') === 'true';
+  const { limit, offset } = parsePagination(c);
+  const userId = c.req.query("userId");
+  const moderatorId = c.req.query("moderatorId");
+  const includeExpired = c.req.query("includeExpired") === "true";
 
   const warnings = await userWarningRepository.findAll({
     userId,
@@ -593,21 +601,21 @@ app.get('/warnings', async (c) => {
  *
  * Deletes a warning.
  */
-app.delete('/warnings/:id', async (c) => {
-  const userWarningRepository = c.get('userWarningRepository');
-  const id = c.req.param('id');
+app.delete("/warnings/:id", async (c) => {
+  const userWarningRepository = c.get("userWarningRepository");
+  const id = c.req.param("id");
 
   const warning = await userWarningRepository.findById(id);
   if (!warning) {
-    return c.json({ error: 'Warning not found' }, 404);
+    return errorResponse(c, "Warning not found", 404);
   }
 
   const deleted = await userWarningRepository.delete(id);
   if (!deleted) {
-    return c.json({ error: 'Failed to delete warning' }, 500);
+    return errorResponse(c, "Failed to delete warning", 500);
   }
 
-  return c.json({ success: true, message: 'Warning deleted' });
+  return c.json({ success: true, message: "Warning deleted" });
 });
 
 // ============================================================================
@@ -628,14 +636,13 @@ app.delete('/warnings/:id', async (c) => {
  * - limit: Maximum number of logs (default: 100)
  * - offset: Number of logs to skip (default: 0)
  */
-app.get('/audit-logs', async (c) => {
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
+app.get("/audit-logs", async (c) => {
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const moderatorId = c.req.query('moderatorId');
-  const action = c.req.query('action') as any;
-  const targetType = c.req.query('targetType') as any;
+  const { limit, offset } = parsePagination(c);
+  const moderatorId = c.req.query("moderatorId");
+  const action = c.req.query("action") as any;
+  const targetType = c.req.query("targetType") as any;
 
   const logs = await moderationAuditLogRepository.findAll({
     moderatorId,
@@ -660,14 +667,14 @@ app.get('/audit-logs', async (c) => {
  *
  * Returns detailed information about a specific audit log entry.
  */
-app.get('/audit-logs/:id', async (c) => {
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const userRepository = c.get('userRepository');
-  const id = c.req.param('id');
+app.get("/audit-logs/:id", async (c) => {
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const userRepository = c.get("userRepository");
+  const id = c.req.param("id");
 
   const log = await moderationAuditLogRepository.findById(id);
   if (!log) {
-    return c.json({ error: 'Audit log not found' }, 404);
+    return errorResponse(c, "Audit log not found", 404);
   }
 
   // Fetch moderator details
@@ -694,11 +701,10 @@ app.get('/audit-logs/:id', async (c) => {
  * - limit: Maximum number of blocks (default: 100)
  * - offset: Number of blocks to skip (default: 0)
  */
-app.get('/instance-blocks', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
+app.get("/instance-blocks", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
+  const { limit, offset } = parsePagination(c);
 
   const blocks = await instanceBlockRepository.findAll(limit, offset);
   const total = await instanceBlockRepository.count();
@@ -716,12 +722,12 @@ app.get('/instance-blocks', async (c) => {
  * Query Parameters:
  * - host: Instance hostname to check
  */
-app.get('/instance-blocks/check', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const host = c.req.query('host');
+app.get("/instance-blocks/check", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const host = c.req.query("host");
 
   if (!host) {
-    return c.json({ error: 'host parameter is required' }, 400);
+    return errorResponse(c, "host parameter is required");
   }
 
   const isBlocked = await instanceBlockRepository.isBlocked(host);
@@ -745,24 +751,24 @@ app.get('/instance-blocks/check', async (c) => {
  * }
  * ```
  */
-app.post('/instance-blocks', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
+app.post("/instance-blocks", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
 
   const body = await c.req.json();
 
-  if (!body.host || typeof body.host !== 'string') {
-    return c.json({ error: 'host is required' }, 400);
+  if (!body.host || typeof body.host !== "string") {
+    return errorResponse(c, "host is required");
   }
 
   // Normalize hostname (lowercase, no protocol)
-  const host = body.host.toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const host = normalizeHostname(body.host);
 
   // Check if already blocked
   const existing = await instanceBlockRepository.findByHost(host);
   if (existing) {
-    return c.json({ error: `Instance ${host} is already blocked` }, 409);
+    return errorResponse(c, `Instance ${host} is already blocked`, 409);
   }
 
   const block = await instanceBlockRepository.create({
@@ -774,8 +780,8 @@ app.post('/instance-blocks', async (c) => {
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'block_instance',
-    targetType: 'instance',
+    action: "block_instance",
+    targetType: "instance",
     targetId: host,
     reason: body.reason || undefined,
   });
@@ -797,11 +803,11 @@ app.post('/instance-blocks', async (c) => {
  * }
  * ```
  */
-app.delete('/instance-blocks/:host', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const moderator = c.get('user');
-  const host = c.req.param('host');
+app.delete("/instance-blocks/:host", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const moderator = c.get("user");
+  const host = c.req.param("host");
 
   const body = await c.req.json().catch(() => ({}));
   const reason = body.reason as string | undefined;
@@ -809,19 +815,19 @@ app.delete('/instance-blocks/:host', async (c) => {
   // Get block details before deletion for audit log
   const block = await instanceBlockRepository.findByHost(host);
   if (!block) {
-    return c.json({ error: `Instance ${host} is not blocked` }, 404);
+    return errorResponse(c, `Instance ${host} is not blocked`, 404);
   }
 
   const deleted = await instanceBlockRepository.deleteByHost(host);
   if (!deleted) {
-    return c.json({ error: `Failed to unblock instance ${host}` }, 500);
+    return errorResponse(c, `Failed to unblock instance ${host}`, 500);
   }
 
   // Log moderation action
   await moderationAuditLogRepository.create({
     moderatorId: moderator!.id,
-    action: 'unblock_instance',
-    targetType: 'instance',
+    action: "unblock_instance",
+    targetType: "instance",
     targetId: host,
     reason,
     details: {
@@ -844,11 +850,11 @@ app.delete('/instance-blocks/:host', async (c) => {
  *
  * Returns moderation statistics.
  */
-app.get('/stats', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
-  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
-  const userRepository = c.get('userRepository');
-  const instanceBlockRepository = c.get('instanceBlockRepository');
+app.get("/stats", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
+  const moderationAuditLogRepository = c.get("moderationAuditLogRepository");
+  const userRepository = c.get("userRepository");
+  const instanceBlockRepository = c.get("instanceBlockRepository");
 
   const [
     pendingReports,
@@ -859,10 +865,10 @@ app.get('/stats', async (c) => {
     suspendedUsers,
     blockedInstances,
   ] = await Promise.all([
-    userReportRepository.count({ status: 'pending' }),
+    userReportRepository.count({ status: "pending" }),
     userReportRepository.count({}),
-    userReportRepository.count({ status: 'resolved' }),
-    userReportRepository.count({ status: 'rejected' }),
+    userReportRepository.count({ status: "resolved" }),
+    userReportRepository.count({ status: "rejected" }),
     moderationAuditLogRepository.count({}),
     userRepository.count(false).then(async () => {
       // Count suspended users - this is a workaround since we don't have a direct filter

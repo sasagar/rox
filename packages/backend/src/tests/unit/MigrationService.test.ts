@@ -8,7 +8,7 @@
  * - Cooldown period enforcement
  */
 
-import { describe, test, expect, mock, beforeEach } from 'bun:test';
+import { describe, test, expect, mock, beforeEach } from "bun:test";
 
 // Mock types
 interface MockUser {
@@ -27,28 +27,28 @@ interface MockFollow {
   followeeId: string;
 }
 
-describe('MigrationService', () => {
+describe("MigrationService", () => {
   // Mock repositories
   let mockUserRepository: any;
   let mockFollowRepository: any;
 
   // Test users
   const localUser: MockUser = {
-    id: 'local1',
-    username: 'localuser',
+    id: "local1",
+    username: "localuser",
     host: null,
-    uri: 'https://example.com/users/localuser',
+    uri: "https://example.com/users/localuser",
     alsoKnownAs: null,
     movedTo: null,
     movedAt: null,
   };
 
   const remoteUser: MockUser = {
-    id: 'remote1',
-    username: 'remoteuser',
-    host: 'remote.example.com',
-    uri: 'https://remote.example.com/users/remoteuser',
-    alsoKnownAs: ['https://example.com/users/localuser'],
+    id: "remote1",
+    username: "remoteuser",
+    host: "remote.example.com",
+    uri: "https://remote.example.com/users/remoteuser",
+    alsoKnownAs: ["https://example.com/users/localuser"],
     movedTo: null,
     movedAt: null,
   };
@@ -67,9 +67,9 @@ describe('MigrationService', () => {
     // Currently not needed for these unit tests
   });
 
-  describe('Alias Management', () => {
-    describe('getAliases', () => {
-      test('should return empty array when no aliases exist', async () => {
+  describe("Alias Management", () => {
+    describe("getAliases", () => {
+      test("should return empty array when no aliases exist", async () => {
         const user = { ...localUser, alsoKnownAs: null };
         mockUserRepository.findById = mock(() => Promise.resolve(user));
 
@@ -77,8 +77,8 @@ describe('MigrationService', () => {
         expect(aliases).toEqual([]);
       });
 
-      test('should return existing aliases', async () => {
-        const existingAliases = ['https://other.example.com/users/oldaccount'];
+      test("should return existing aliases", async () => {
+        const existingAliases = ["https://other.example.com/users/oldaccount"];
         const user = { ...localUser, alsoKnownAs: existingAliases };
         mockUserRepository.findById = mock(() => Promise.resolve(user));
 
@@ -87,9 +87,9 @@ describe('MigrationService', () => {
       });
     });
 
-    describe('addAlias', () => {
-      test('should add a valid alias', async () => {
-        const newAlias = 'https://other.example.com/users/oldaccount';
+    describe("addAlias", () => {
+      test("should add a valid alias", async () => {
+        const newAlias = "https://other.example.com/users/oldaccount";
         const user = { ...localUser, alsoKnownAs: null };
 
         // Simulate adding alias
@@ -99,8 +99,8 @@ describe('MigrationService', () => {
         expect(updatedAliases.length).toBe(1);
       });
 
-      test('should not add duplicate alias', async () => {
-        const existingAlias = 'https://other.example.com/users/oldaccount';
+      test("should not add duplicate alias", async () => {
+        const existingAlias = "https://other.example.com/users/oldaccount";
         const user = { ...localUser, alsoKnownAs: [existingAlias] };
 
         // Check for duplicate
@@ -109,13 +109,8 @@ describe('MigrationService', () => {
         expect(isDuplicate).toBe(true);
       });
 
-      test('should reject invalid URI format', () => {
-        const invalidUris = [
-          'not-a-url',
-          'ftp://invalid.protocol.com/users/test',
-          '',
-          'http://',
-        ];
+      test("should reject invalid URI format", () => {
+        const invalidUris = ["not-a-url", "ftp://invalid.protocol.com/users/test", "", "http://"];
 
         for (const uri of invalidUris) {
           const isValid = isValidActorUri(uri);
@@ -123,11 +118,11 @@ describe('MigrationService', () => {
         }
       });
 
-      test('should accept valid HTTPS URIs', () => {
+      test("should accept valid HTTPS URIs", () => {
         const validUris = [
-          'https://mastodon.social/users/test',
-          'https://example.com/users/alice',
-          'https://sub.domain.example.org/users/bob',
+          "https://mastodon.social/users/test",
+          "https://example.com/users/alice",
+          "https://sub.domain.example.org/users/bob",
         ];
 
         for (const uri of validUris) {
@@ -136,11 +131,11 @@ describe('MigrationService', () => {
         }
       });
 
-      test('should enforce maximum alias limit', () => {
+      test("should enforce maximum alias limit", () => {
         const MAX_ALIASES = 10;
         const existingAliases = Array.from(
           { length: MAX_ALIASES },
-          (_, i) => `https://example${i}.com/users/test`
+          (_, i) => `https://example${i}.com/users/test`,
         );
 
         const canAddMore = existingAliases.length < MAX_ALIASES;
@@ -148,9 +143,9 @@ describe('MigrationService', () => {
       });
     });
 
-    describe('removeAlias', () => {
-      test('should remove existing alias', async () => {
-        const aliasToRemove = 'https://other.example.com/users/oldaccount';
+    describe("removeAlias", () => {
+      test("should remove existing alias", async () => {
+        const aliasToRemove = "https://other.example.com/users/oldaccount";
         const user = { ...localUser, alsoKnownAs: [aliasToRemove] };
 
         const updatedAliases = (user.alsoKnownAs || []).filter((a) => a !== aliasToRemove);
@@ -159,9 +154,9 @@ describe('MigrationService', () => {
         expect(updatedAliases.length).toBe(0);
       });
 
-      test('should handle removing non-existent alias gracefully', async () => {
-        const user = { ...localUser, alsoKnownAs: ['https://example.com/users/existing'] };
-        const nonExistentAlias = 'https://other.com/users/nonexistent';
+      test("should handle removing non-existent alias gracefully", async () => {
+        const user = { ...localUser, alsoKnownAs: ["https://example.com/users/existing"] };
+        const nonExistentAlias = "https://other.com/users/nonexistent";
 
         const updatedAliases = (user.alsoKnownAs || []).filter((a) => a !== nonExistentAlias);
 
@@ -170,9 +165,9 @@ describe('MigrationService', () => {
     });
   });
 
-  describe('Migration Validation', () => {
-    describe('canMigrate', () => {
-      test('should allow migration when not in cooldown', () => {
+  describe("Migration Validation", () => {
+    describe("canMigrate", () => {
+      test("should allow migration when not in cooldown", () => {
         const MIGRATION_COOLDOWN_DAYS = 30;
         const user = { ...localUser, movedTo: null, movedAt: null };
 
@@ -180,14 +175,14 @@ describe('MigrationService', () => {
         expect(canMigrate).toBe(true);
       });
 
-      test('should prevent migration during cooldown period', () => {
+      test("should prevent migration during cooldown period", () => {
         const MIGRATION_COOLDOWN_DAYS = 30;
         const recentMigration = new Date();
         recentMigration.setDate(recentMigration.getDate() - 10); // 10 days ago
 
         const user = {
           ...localUser,
-          movedTo: 'https://new.example.com/users/newaccount',
+          movedTo: "https://new.example.com/users/newaccount",
           movedAt: recentMigration,
         };
 
@@ -195,14 +190,14 @@ describe('MigrationService', () => {
         expect(canMigrate).toBe(false);
       });
 
-      test('should allow migration after cooldown expires', () => {
+      test("should allow migration after cooldown expires", () => {
         const MIGRATION_COOLDOWN_DAYS = 30;
         const oldMigration = new Date();
         oldMigration.setDate(oldMigration.getDate() - 35); // 35 days ago
 
         const user = {
           ...localUser,
-          movedTo: 'https://new.example.com/users/newaccount',
+          movedTo: "https://new.example.com/users/newaccount",
           movedAt: oldMigration,
         };
 
@@ -211,9 +206,9 @@ describe('MigrationService', () => {
       });
     });
 
-    describe('validateMigration', () => {
-      test('should validate bi-directional alsoKnownAs', () => {
-        const sourceUri = 'https://example.com/users/localuser';
+    describe("validateMigration", () => {
+      test("should validate bi-directional alsoKnownAs", () => {
+        const sourceUri = "https://example.com/users/localuser";
         // targetUri would be used when fetching target actor document
 
         // Target has source in alsoKnownAs
@@ -226,31 +221,31 @@ describe('MigrationService', () => {
         expect(hasReverseAlias).toBe(true);
       });
 
-      test('should reject migration without bi-directional link', () => {
-        const sourceUri = 'https://example.com/users/localuser';
+      test("should reject migration without bi-directional link", () => {
+        const sourceUri = "https://example.com/users/localuser";
 
         // Target does NOT have source in alsoKnownAs
         const target = {
           ...remoteUser,
-          alsoKnownAs: ['https://other.com/users/different'],
+          alsoKnownAs: ["https://other.com/users/different"],
         };
 
         const hasReverseAlias = target.alsoKnownAs?.includes(sourceUri) || false;
         expect(hasReverseAlias).toBe(false);
       });
 
-      test('should reject migration to self', () => {
-        const sourceUri = 'https://example.com/users/localuser';
+      test("should reject migration to self", () => {
+        const sourceUri = "https://example.com/users/localuser";
         const targetUri = sourceUri;
 
         const isSelf = sourceUri === targetUri;
         expect(isSelf).toBe(true);
       });
 
-      test('should reject migration to already-migrated account', () => {
+      test("should reject migration to already-migrated account", () => {
         const target = {
           ...remoteUser,
-          movedTo: 'https://another.example.com/users/yetanother',
+          movedTo: "https://another.example.com/users/yetanother",
         };
 
         const isAlreadyMigrated = !!target.movedTo;
@@ -259,9 +254,9 @@ describe('MigrationService', () => {
     });
   });
 
-  describe('Migration Initiation', () => {
-    test('should set movedTo on source account', async () => {
-      const targetUri = 'https://remote.example.com/users/remoteuser';
+  describe("Migration Initiation", () => {
+    test("should set movedTo on source account", async () => {
+      const targetUri = "https://remote.example.com/users/remoteuser";
       const user = { ...localUser };
 
       // Simulate migration
@@ -275,50 +270,50 @@ describe('MigrationService', () => {
       expect(updatedUser.movedAt).toBeInstanceOf(Date);
     });
 
-    test('should notify followers during migration', async () => {
+    test("should notify followers during migration", async () => {
       const followers: MockFollow[] = [
-        { id: 'f1', followerId: 'follower1', followeeId: 'local1' },
-        { id: 'f2', followerId: 'follower2', followeeId: 'local1' },
+        { id: "f1", followerId: "follower1", followeeId: "local1" },
+        { id: "f2", followerId: "follower2", followeeId: "local1" },
       ];
 
       mockFollowRepository.findByFolloweeId = mock(() => Promise.resolve(followers));
 
-      const result = await mockFollowRepository.findByFolloweeId('local1');
+      const result = await mockFollowRepository.findByFolloweeId("local1");
       expect(result.length).toBe(2);
     });
   });
 
-  describe('Move Activity Handler', () => {
-    test('should validate incoming Move activity', () => {
+  describe("Move Activity Handler", () => {
+    test("should validate incoming Move activity", () => {
       const activity = {
-        type: 'Move',
-        actor: 'https://old.example.com/users/olduser',
-        object: 'https://old.example.com/users/olduser',
-        target: 'https://new.example.com/users/newuser',
+        type: "Move",
+        actor: "https://old.example.com/users/olduser",
+        object: "https://old.example.com/users/olduser",
+        target: "https://new.example.com/users/newuser",
       };
 
-      expect(activity.type).toBe('Move');
+      expect(activity.type).toBe("Move");
       expect(activity.actor).toBe(activity.object);
       expect(activity.target).toBeTruthy();
     });
 
-    test('should require actor and object to match', () => {
+    test("should require actor and object to match", () => {
       const activity = {
-        type: 'Move',
-        actor: 'https://old.example.com/users/olduser',
-        object: 'https://different.example.com/users/different',
-        target: 'https://new.example.com/users/newuser',
+        type: "Move",
+        actor: "https://old.example.com/users/olduser",
+        object: "https://different.example.com/users/different",
+        target: "https://new.example.com/users/newuser",
       };
 
       const isValid = activity.actor === activity.object;
       expect(isValid).toBe(false);
     });
 
-    test('should require target to be present', () => {
+    test("should require target to be present", () => {
       const activity = {
-        type: 'Move',
-        actor: 'https://old.example.com/users/olduser',
-        object: 'https://old.example.com/users/olduser',
+        type: "Move",
+        actor: "https://old.example.com/users/olduser",
+        object: "https://old.example.com/users/olduser",
         target: null,
       };
 
@@ -327,8 +322,8 @@ describe('MigrationService', () => {
     });
   });
 
-  describe('Migration Status', () => {
-    test('should return correct status for non-migrated account', async () => {
+  describe("Migration Status", () => {
+    test("should return correct status for non-migrated account", async () => {
       const user = { ...localUser };
 
       const status = {
@@ -344,13 +339,13 @@ describe('MigrationService', () => {
       expect(status.canMigrate).toBe(true);
     });
 
-    test('should return correct status for migrated account', async () => {
+    test("should return correct status for migrated account", async () => {
       const movedAt = new Date();
       movedAt.setDate(movedAt.getDate() - 10);
 
       const user = {
         ...localUser,
-        movedTo: 'https://new.example.com/users/newaccount',
+        movedTo: "https://new.example.com/users/newaccount",
         movedAt,
       };
 
@@ -365,7 +360,7 @@ describe('MigrationService', () => {
         cooldownEndsAt,
       };
 
-      expect(status.movedTo).toBe('https://new.example.com/users/newaccount');
+      expect(status.movedTo).toBe("https://new.example.com/users/newaccount");
       expect(status.canMigrate).toBe(false);
       expect(status.cooldownEndsAt).toBeInstanceOf(Date);
     });
@@ -376,7 +371,7 @@ describe('MigrationService', () => {
 function isValidActorUri(uri: string): boolean {
   try {
     const url = new URL(uri);
-    return url.protocol === 'https:' && url.pathname.length > 1;
+    return url.protocol === "https:" && url.pathname.length > 1;
   } catch {
     return false;
   }

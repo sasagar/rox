@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { toastsAtom, removeToastAtom, type Toast as ToastType } from '../../lib/atoms/toast';
+import { useEffect } from "react";
+import { useAtom } from "jotai";
+import { toastsAtom, removeToastAtom, type Toast as ToastType } from "../../lib/atoms/toast";
 
 /**
  * Individual toast notification component
@@ -20,21 +20,21 @@ function ToastItem({ toast }: { toast: ToastType }) {
   }, [toast.id, toast.duration, removeToast]);
 
   const bgColor = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    info: 'bg-blue-500',
+    success: "bg-green-500",
+    error: "bg-red-500",
+    info: "bg-blue-500",
   }[toast.type];
 
   const icon = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ',
+    success: "✓",
+    error: "✕",
+    info: "ℹ",
   }[toast.type];
 
   return (
     <div
       className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px] max-w-md`}
-      style={{ animation: 'slide-in 0.3s ease-out' }}
+      style={{ animation: "slide-in 0.3s ease-out" }}
       role="alert"
     >
       <span className="text-xl font-bold">{icon}</span>
@@ -62,7 +62,7 @@ export function ToastContainer() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-[calc(100vw-2rem)]">
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} />
       ))}

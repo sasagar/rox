@@ -7,17 +7,17 @@
  * @module services/ap/RemoteNoteService
  */
 
-import type { INoteRepository } from '../../interfaces/repositories/INoteRepository.js';
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
-import type { Note } from 'shared';
-import { generateId } from 'shared';
-import { RemoteActorService } from './RemoteActorService.js';
+import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
+import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
+import type { Note } from "shared";
+import { generateId } from "shared";
+import { RemoteActorService } from "./RemoteActorService.js";
 
 /**
  * ActivityPub Note object
  */
 interface APNote {
-  '@context'?: string | string[];
+  "@context"?: string | string[];
   id: string;
   type: string;
   attributedTo: string | { id: string };
@@ -49,7 +49,7 @@ export class RemoteNoteService {
   constructor(
     private noteRepository: INoteRepository,
     private userRepository: IUserRepository,
-    private remoteActorService?: RemoteActorService
+    private remoteActorService?: RemoteActorService,
   ) {}
 
   /**
@@ -78,7 +78,7 @@ export class RemoteNoteService {
     // Resolve author (use injected service or create new instance for backward compatibility)
     const actorService = this.remoteActorService ?? new RemoteActorService(this.userRepository);
     const authorUri =
-      typeof noteObject.attributedTo === 'string'
+      typeof noteObject.attributedTo === "string"
         ? noteObject.attributedTo
         : noteObject.attributedTo.id;
 
@@ -127,9 +127,7 @@ export class RemoteNoteService {
       deletionReason: null,
     });
 
-    console.log(
-      `✅ Remote note created: ${noteObject.id} by ${author.username}@${author.host}`
-    );
+    console.log(`✅ Remote note created: ${noteObject.id} by ${author.username}@${author.host}`);
 
     return note;
   }
@@ -146,12 +144,12 @@ export class RemoteNoteService {
   private stripHtml(html: string): string {
     // Simple HTML stripping (replace <br> with newlines, remove other tags)
     return html
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n')
-      .replace(/<[^>]+>/g, '')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&')
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&")
       .replace(/&quot;/g, '"')
       .trim();
   }
@@ -167,30 +165,30 @@ export class RemoteNoteService {
    */
   private determineVisibility(
     to?: string | string[],
-    cc?: string | string[]
-  ): 'public' | 'home' | 'followers' | 'specified' {
+    cc?: string | string[],
+  ): "public" | "home" | "followers" | "specified" {
     const toArray = Array.isArray(to) ? to : to ? [to] : [];
     const ccArray = Array.isArray(cc) ? cc : cc ? [cc] : [];
 
-    const PUBLIC = 'https://www.w3.org/ns/activitystreams#Public';
-    const AS_PUBLIC = 'as:Public';
+    const PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+    const AS_PUBLIC = "as:Public";
 
     // Check if public
     if (toArray.includes(PUBLIC) || toArray.includes(AS_PUBLIC)) {
-      return 'public';
+      return "public";
     }
 
     if (ccArray.includes(PUBLIC) || ccArray.includes(AS_PUBLIC)) {
-      return 'home'; // Unlisted (not in public timeline, but visible to everyone)
+      return "home"; // Unlisted (not in public timeline, but visible to everyone)
     }
 
     // If addressed to followers collection
-    if (toArray.some((uri) => uri.endsWith('/followers'))) {
-      return 'followers';
+    if (toArray.some((uri) => uri.endsWith("/followers"))) {
+      return "followers";
     }
 
     // Direct message
-    return 'specified';
+    return "specified";
   }
 
   /**
@@ -201,15 +199,13 @@ export class RemoteNoteService {
    * @param tags - ActivityPub tags array
    * @returns Array of user IDs
    */
-  private extractMentions(
-    tags?: Array<{ type: string; name?: string; href?: string }>
-  ): string[] {
+  private extractMentions(tags?: Array<{ type: string; name?: string; href?: string }>): string[] {
     if (!tags) return [];
 
     const mentions: string[] = [];
 
     for (const tag of tags) {
-      if (tag.type === 'Mention' && tag.href) {
+      if (tag.type === "Mention" && tag.href) {
         // TODO: Resolve mentioned user URI to local user ID
         // For now, we'll skip this and handle it later
         // mentions.push(userId);
@@ -225,17 +221,15 @@ export class RemoteNoteService {
    * @param tags - ActivityPub tags array
    * @returns Array of hashtag names (without #)
    */
-  private extractHashtags(
-    tags?: Array<{ type: string; name?: string; href?: string }>
-  ): string[] {
+  private extractHashtags(tags?: Array<{ type: string; name?: string; href?: string }>): string[] {
     if (!tags) return [];
 
     const hashtags: string[] = [];
 
     for (const tag of tags) {
-      if (tag.type === 'Hashtag' && tag.name) {
+      if (tag.type === "Hashtag" && tag.name) {
         // Remove # prefix if present
-        const tagName = tag.name.startsWith('#') ? tag.name.slice(1) : tag.name;
+        const tagName = tag.name.startsWith("#") ? tag.name.slice(1) : tag.name;
         hashtags.push(tagName);
       }
     }

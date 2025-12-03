@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Report Dialog Component
@@ -6,35 +6,35 @@
  * A modal dialog for reporting users or notes.
  */
 
-import { useState } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { AlertTriangle, X } from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../ui/Button';
-import { Spinner } from '../ui/Spinner';
-import { addToastAtom } from '../../lib/atoms/toast';
+import { useState } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { AlertTriangle, X } from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../ui/Button";
+import { Spinner } from "../ui/Spinner";
+import { addToastAtom } from "../../lib/atoms/toast";
 
 interface ReportDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  targetType: 'user' | 'note';
+  targetType: "user" | "note";
   targetUserId?: string;
   targetNoteId?: string;
   targetUsername?: string;
 }
 
 const REPORT_REASONS = [
-  { value: 'spam', label: 'Spam' },
-  { value: 'harassment', label: 'Harassment' },
-  { value: 'hate_speech', label: 'Hate Speech' },
-  { value: 'violence', label: 'Violence' },
-  { value: 'nsfw', label: 'NSFW Content' },
-  { value: 'impersonation', label: 'Impersonation' },
-  { value: 'copyright', label: 'Copyright Violation' },
-  { value: 'other', label: 'Other' },
+  { value: "spam", label: "Spam" },
+  { value: "harassment", label: "Harassment" },
+  { value: "hate_speech", label: "Hate Speech" },
+  { value: "violence", label: "Violence" },
+  { value: "nsfw", label: "NSFW Content" },
+  { value: "impersonation", label: "Impersonation" },
+  { value: "copyright", label: "Copyright Violation" },
+  { value: "other", label: "Other" },
 ] as const;
 
 export function ReportDialog({
@@ -48,8 +48,8 @@ export function ReportDialog({
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
-  const [reason, setReason] = useState<string>('');
-  const [comment, setComment] = useState('');
+  const [reason, setReason] = useState<string>("");
+  const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -58,7 +58,7 @@ export function ReportDialog({
     setIsSubmitting(true);
     try {
       apiClient.setToken(token);
-      await apiClient.post('/api/reports', {
+      await apiClient.post("/api/reports", {
         targetUserId: targetUserId || undefined,
         targetNoteId: targetNoteId || undefined,
         reason,
@@ -66,23 +66,23 @@ export function ReportDialog({
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Report submitted. Thank you for helping keep our community safe.`,
       });
 
       // Reset and close
-      setReason('');
-      setComment('');
+      setReason("");
+      setComment("");
       onClose();
     } catch (err: any) {
-      if (err.message?.includes('already reported')) {
+      if (err.message?.includes("already reported")) {
         addToast({
-          type: 'error',
+          type: "error",
           message: t`You have already reported this`,
         });
       } else {
         addToast({
-          type: 'error',
+          type: "error",
           message: err.message || t`Failed to submit report`,
         });
       }
@@ -102,19 +102,10 @@ export function ReportDialog({
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-500" />
               <h2 className="text-lg font-bold text-(--text-primary)">
-                {targetType === 'user' ? (
-                  <Trans>Report User</Trans>
-                ) : (
-                  <Trans>Report Note</Trans>
-                )}
+                {targetType === "user" ? <Trans>Report User</Trans> : <Trans>Report Note</Trans>}
               </h2>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={onClose}
-              aria-label={t`Close`}
-            >
+            <Button variant="ghost" size="sm" onPress={onClose} aria-label={t`Close`}>
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -123,7 +114,7 @@ export function ReportDialog({
           {targetUsername && (
             <div className="mb-4 p-3 rounded-lg bg-(--bg-secondary) border border-(--border-color)">
               <p className="text-sm text-(--text-secondary)">
-                <Trans>Reporting</Trans>:{' '}
+                <Trans>Reporting</Trans>:{" "}
                 <span className="font-medium text-(--text-primary)">@{targetUsername}</span>
               </p>
             </div>
@@ -142,8 +133,8 @@ export function ReportDialog({
                   onClick={() => setReason(r.value)}
                   className={`px-3 py-2 text-sm rounded-lg border transition-colors text-left ${
                     reason === r.value
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                      : 'border-(--border-color) bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-secondary)'
+                      ? "border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400"
+                      : "border-(--border-color) bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-secondary)"
                   }`}
                 >
                   {r.label}
@@ -165,9 +156,7 @@ export function ReportDialog({
               rows={3}
               maxLength={1000}
             />
-            <p className="text-xs text-(--text-muted) mt-1">
-              {comment.length}/1000
-            </p>
+            <p className="text-xs text-(--text-muted) mt-1">{comment.length}/1000</p>
           </div>
 
           {/* Actions */}
@@ -186,20 +175,13 @@ export function ReportDialog({
               className="flex-1"
               isDisabled={isSubmitting || !reason}
             >
-              {isSubmitting ? (
-                <Spinner size="sm" />
-              ) : (
-                <Trans>Submit Report</Trans>
-              )}
+              {isSubmitting ? <Spinner size="sm" /> : <Trans>Submit Report</Trans>}
             </Button>
           </div>
 
           {/* Privacy note */}
           <p className="text-xs text-(--text-muted) mt-4 text-center">
-            <Trans>
-              Reports are reviewed by moderators. Your report will remain
-              confidential.
-            </Trans>
+            <Trans>Reports are reviewed by moderators. Your report will remain confidential.</Trans>
           </p>
         </div>
       </div>

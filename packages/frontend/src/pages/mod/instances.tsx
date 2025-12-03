@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Moderator Instance Blocks Page
@@ -6,10 +6,10 @@
  * Allows moderators to manage blocked instances.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   RefreshCw,
   Globe,
@@ -20,16 +20,16 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { ModeratorNav } from '../../components/moderator/ModeratorNav';
+} from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { ModeratorNav } from "../../components/moderator/ModeratorNav";
 
 interface InstanceBlock {
   id: string;
@@ -64,12 +64,12 @@ export default function ModeratorInstanceBlocksPage() {
 
   // Form state for adding new block
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newHost, setNewHost] = useState('');
-  const [newReason, setNewReason] = useState('');
+  const [newHost, setNewHost] = useState("");
+  const [newReason, setNewReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Check block state
-  const [checkHost, setCheckHost] = useState('');
+  const [checkHost, setCheckHost] = useState("");
   const [checkResult, setCheckResult] = useState<CheckBlockResponse | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
@@ -80,15 +80,17 @@ export default function ModeratorInstanceBlocksPage() {
     try {
       apiClient.setToken(token);
       const params = new URLSearchParams();
-      params.set('limit', String(limit));
-      params.set('offset', String(offset));
+      params.set("limit", String(limit));
+      params.set("offset", String(offset));
 
-      const response = await apiClient.get<InstanceBlocksResponse>(`/api/mod/instance-blocks?${params}`);
+      const response = await apiClient.get<InstanceBlocksResponse>(
+        `/api/mod/instance-blocks?${params}`,
+      );
       setBlocks(response.blocks);
       setTotal(response.total);
     } catch (err) {
-      console.error('Failed to load instance blocks:', err);
-      setError('Failed to load instance blocks');
+      console.error("Failed to load instance blocks:", err);
+      setError("Failed to load instance blocks");
     } finally {
       setIsLoading(false);
     }
@@ -97,18 +99,18 @@ export default function ModeratorInstanceBlocksPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
       try {
         await loadBlocks();
       } catch (err: any) {
-        console.error('Access check failed:', err);
+        console.error("Access check failed:", err);
         if (err.status === 403) {
-          setError('Moderator access required');
+          setError("Moderator access required");
         } else {
-          setError('Access denied');
+          setError("Access denied");
         }
         setIsLoading(false);
       }
@@ -127,24 +129,24 @@ export default function ModeratorInstanceBlocksPage() {
     setIsSubmitting(true);
     try {
       apiClient.setToken(token);
-      await apiClient.post('/api/mod/instance-blocks', {
+      await apiClient.post("/api/mod/instance-blocks", {
         host: newHost.trim(),
         reason: newReason.trim() || undefined,
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Instance blocked successfully`,
       });
 
       // Reset form and reload
-      setNewHost('');
-      setNewReason('');
+      setNewHost("");
+      setNewReason("");
       setShowAddForm(false);
       await loadBlocks();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to block instance`,
       });
     } finally {
@@ -160,14 +162,14 @@ export default function ModeratorInstanceBlocksPage() {
       await apiClient.delete(`/api/mod/instance-blocks/${encodeURIComponent(host)}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Instance unblocked successfully`,
       });
 
       await loadBlocks();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to unblock instance`,
       });
     }
@@ -181,12 +183,12 @@ export default function ModeratorInstanceBlocksPage() {
     try {
       apiClient.setToken(token);
       const result = await apiClient.get<CheckBlockResponse>(
-        `/api/mod/instance-blocks/check?host=${encodeURIComponent(checkHost.trim())}`
+        `/api/mod/instance-blocks/check?host=${encodeURIComponent(checkHost.trim())}`,
       );
       setCheckResult(result);
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to check instance`,
       });
     } finally {
@@ -272,17 +274,26 @@ export default function ModeratorInstanceBlocksPage() {
                   type="text"
                   value={checkHost}
                   onChange={(e) => setCheckHost(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCheckBlock()}
+                  onKeyDown={(e) => e.key === "Enter" && handleCheckBlock()}
                   placeholder={t`Enter instance hostname (e.g., spam.example.com)`}
                   className="w-full px-4 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <Button onPress={handleCheckBlock} isDisabled={isChecking || !checkHost.trim()}>
-                {isChecking ? <Spinner size="sm" /> : <><Search className="w-4 h-4 mr-2" /><Trans>Check</Trans></>}
+                {isChecking ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <>
+                    <Search className="w-4 h-4 mr-2" />
+                    <Trans>Check</Trans>
+                  </>
+                )}
               </Button>
             </div>
             {checkResult && (
-              <div className={`mt-4 p-4 rounded-lg ${checkResult.isBlocked ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'}`}>
+              <div
+                className={`mt-4 p-4 rounded-lg ${checkResult.isBlocked ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800" : "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"}`}
+              >
                 <div className="flex items-center gap-2">
                   {checkResult.isBlocked ? (
                     <>
@@ -303,9 +314,13 @@ export default function ModeratorInstanceBlocksPage() {
                 {checkResult.block && (
                   <div className="mt-2 text-sm text-(--text-muted)">
                     {checkResult.block.reason && (
-                      <p><Trans>Reason:</Trans> {checkResult.block.reason}</p>
+                      <p>
+                        <Trans>Reason:</Trans> {checkResult.block.reason}
+                      </p>
                     )}
-                    <p><Trans>Blocked at:</Trans> {formatDate(checkResult.block.createdAt)}</p>
+                    <p>
+                      <Trans>Blocked at:</Trans> {formatDate(checkResult.block.createdAt)}
+                    </p>
                   </div>
                 )}
               </div>
@@ -325,7 +340,7 @@ export default function ModeratorInstanceBlocksPage() {
                 <Trans>Block Instance</Trans>
               </Button>
               <Button variant="ghost" size="sm" onPress={loadBlocks} isDisabled={isLoading}>
-                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </CardHeader>
@@ -378,7 +393,14 @@ export default function ModeratorInstanceBlocksPage() {
                       onPress={handleAddBlock}
                       isDisabled={isSubmitting || !newHost.trim()}
                     >
-                      {isSubmitting ? <Spinner size="sm" /> : <><Shield className="w-4 h-4 mr-2" /><Trans>Block Instance</Trans></>}
+                      {isSubmitting ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <>
+                          <Shield className="w-4 h-4 mr-2" />
+                          <Trans>Block Instance</Trans>
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -404,24 +426,16 @@ export default function ModeratorInstanceBlocksPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <Globe className="w-4 h-4 text-(--text-muted)" />
-                            <span className="font-medium text-(--text-primary)">
-                              {block.host}
-                            </span>
+                            <span className="font-medium text-(--text-primary)">{block.host}</span>
                           </div>
                           {block.reason && (
-                            <p className="text-sm text-(--text-secondary) mb-2">
-                              {block.reason}
-                            </p>
+                            <p className="text-sm text-(--text-secondary) mb-2">{block.reason}</p>
                           )}
                           <p className="text-xs text-(--text-muted)">
                             <Trans>Blocked:</Trans> {formatDate(block.createdAt)}
                           </p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onPress={() => handleUnblock(block.host)}
-                        >
+                        <Button variant="ghost" size="sm" onPress={() => handleUnblock(block.host)}>
                           <ShieldOff className="w-4 h-4 mr-2" />
                           <Trans>Unblock</Trans>
                         </Button>

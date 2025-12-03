@@ -54,7 +54,9 @@ upstream rox_frontend {
 }
 
 # Rate limiting zones
-limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+# IMPORTANT: Rox frontend makes many concurrent API calls on page load
+# (reactions, instance info, avatars for each note). Lower values cause 503 errors.
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=50r/s;
 limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/m;
 limit_conn_zone $binary_remote_addr zone=sse_conn:10m;
 
@@ -120,7 +122,7 @@ server {
 
     # API endpoints
     location /api/ {
-        limit_req zone=api_limit burst=20 nodelay;
+        limit_req zone=api_limit burst=100 nodelay;
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
@@ -138,7 +140,7 @@ server {
 
     # SSE endpoint (special configuration for long-lived connections)
     location /api/notifications/stream {
-        limit_conn sse_conn 5;  # Max 5 SSE connections per IP
+        limit_conn sse_conn 50;  # Multiple tabs, reconnections need higher limit
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
@@ -313,11 +315,16 @@ location /api/notifications/stream {
 
 ### Connection Limits
 
-The `limit_conn sse_conn 5` directive limits each IP address to 5 concurrent SSE connections. Adjust based on your needs:
+The `limit_conn sse_conn 50` directive limits each IP address to 50 concurrent SSE connections. This high limit is necessary because:
 
-- **Single user per IP**: 2-3 connections (multiple tabs)
-- **Shared IP (NAT/office)**: 10-20 connections
-- **No limit**: Remove the `limit_conn` directive
+- Multiple browser tabs open SSE connections
+- Network issues cause reconnection attempts (can stack up quickly)
+- Mobile apps may keep background connections
+
+**Recommended values:**
+- **Default**: 50 connections (handles most scenarios)
+- **High traffic**: 100+ connections
+- **No limit**: Remove the `limit_conn` directive (not recommended)
 
 ## Docker Compose Integration
 

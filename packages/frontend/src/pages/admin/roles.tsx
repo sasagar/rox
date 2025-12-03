@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Roles Page
@@ -6,20 +6,20 @@
  * Allows administrators to manage roles and permissions.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Trash2, Plus, RefreshCw, Edit2, Users, Shield, ShieldCheck } from 'lucide-react';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { AdminNav } from '../../components/admin/AdminNav';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Trash2, Plus, RefreshCw, Edit2, Users, Shield, ShieldCheck } from "lucide-react";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { AdminNav } from "../../components/admin/AdminNav";
 
 interface RolePolicies {
   canViewGlobalTimeline?: boolean;
@@ -77,9 +77,9 @@ export default function AdminRolesPage() {
 
   // Create form state
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    color: '#3b82f6',
+    name: "",
+    description: "",
+    color: "#3b82f6",
     isPublic: false,
     isDefault: false,
     isAdminRole: false,
@@ -97,12 +97,12 @@ export default function AdminRolesPage() {
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<RolesResponse>('/api/admin/roles');
+      const response = await apiClient.get<RolesResponse>("/api/admin/roles");
       setRoles(response.roles);
       setTotal(response.total);
     } catch (err) {
-      console.error('Failed to load roles:', err);
-      setError('Failed to load roles');
+      console.error("Failed to load roles:", err);
+      setError("Failed to load roles");
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +112,7 @@ export default function AdminRolesPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -120,9 +120,9 @@ export default function AdminRolesPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
+        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
-          window.location.href = '/timeline';
+          window.location.href = "/timeline";
           return;
         }
 
@@ -131,8 +131,8 @@ export default function AdminRolesPage() {
 
         await loadRoles();
       } catch (err) {
-        console.error('Access check failed:', err);
-        setError('Access denied');
+        console.error("Access check failed:", err);
+        setError("Access denied");
         setIsLoading(false);
       }
     };
@@ -173,11 +173,11 @@ export default function AdminRolesPage() {
         });
 
         addToast({
-          type: 'success',
+          type: "success",
           message: t`Role updated`,
         });
       } else {
-        await apiClient.post<Role>('/api/admin/roles', {
+        await apiClient.post<Role>("/api/admin/roles", {
           name: formData.name,
           description: formData.description || undefined,
           color: formData.color,
@@ -189,16 +189,16 @@ export default function AdminRolesPage() {
         });
 
         addToast({
-          type: 'success',
+          type: "success",
           message: t`Role created`,
         });
       }
 
       // Reset form
       setFormData({
-        name: '',
-        description: '',
-        color: '#3b82f6',
+        name: "",
+        description: "",
+        color: "#3b82f6",
         isPublic: false,
         isDefault: false,
         isAdminRole: false,
@@ -216,7 +216,7 @@ export default function AdminRolesPage() {
       await loadRoles();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to save role`,
       });
     } finally {
@@ -228,8 +228,8 @@ export default function AdminRolesPage() {
     setEditingRole(role);
     setFormData({
       name: role.name,
-      description: role.description || '',
-      color: role.color || '#3b82f6',
+      description: role.description || "",
+      color: role.color || "#3b82f6",
       isPublic: role.isPublic,
       isDefault: role.isDefault,
       isAdminRole: role.isAdminRole,
@@ -246,9 +246,9 @@ export default function AdminRolesPage() {
   const handleCancelEdit = () => {
     setEditingRole(null);
     setFormData({
-      name: '',
-      description: '',
-      color: '#3b82f6',
+      name: "",
+      description: "",
+      color: "#3b82f6",
       isPublic: false,
       isDefault: false,
       isAdminRole: false,
@@ -270,7 +270,7 @@ export default function AdminRolesPage() {
       await apiClient.delete(`/api/admin/roles/${id}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Role deleted`,
       });
 
@@ -278,7 +278,7 @@ export default function AdminRolesPage() {
       await loadRoles();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to delete role`,
       });
     }
@@ -339,7 +339,7 @@ export default function AdminRolesPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-3xl font-bold text-green-500">
-                {roles.filter(r => r.isDefault).length}
+                {roles.filter((r) => r.isDefault).length}
               </div>
               <div className="text-sm text-(--text-muted)">
                 <Trans>Default Roles</Trans>
@@ -364,7 +364,7 @@ export default function AdminRolesPage() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder={t`Role name`}
                   className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   maxLength={50}
@@ -377,7 +377,7 @@ export default function AdminRolesPage() {
                 <input
                   type="color"
                   value={formData.color}
-                  onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
                   className="w-full h-10 px-1 py-1 border border-(--border-color) rounded-lg bg-(--bg-primary)"
                 />
               </div>
@@ -390,7 +390,7 @@ export default function AdminRolesPage() {
               <input
                 type="text"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                 placeholder={t`Role description`}
                 className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
@@ -402,7 +402,7 @@ export default function AdminRolesPage() {
                 <input
                   type="checkbox"
                   checked={formData.isPublic}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, isPublic: e.target.checked }))}
                   className="rounded"
                 />
                 <span className="text-sm text-(--text-secondary)">
@@ -413,7 +413,9 @@ export default function AdminRolesPage() {
                 <input
                   type="checkbox"
                   checked={formData.isDefault}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, isDefault: e.target.checked }))
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-(--text-secondary)">
@@ -424,7 +426,9 @@ export default function AdminRolesPage() {
                 <input
                   type="checkbox"
                   checked={formData.isAdminRole}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isAdminRole: e.target.checked }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, isAdminRole: e.target.checked }))
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-(--text-secondary)">
@@ -435,7 +439,9 @@ export default function AdminRolesPage() {
                 <input
                   type="checkbox"
                   checked={formData.isModeratorRole}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isModeratorRole: e.target.checked }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, isModeratorRole: e.target.checked }))
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-(--text-secondary)">
@@ -454,7 +460,9 @@ export default function AdminRolesPage() {
                   <input
                     type="checkbox"
                     checked={formData.canInvite}
-                    onChange={(e) => setFormData(prev => ({ ...prev, canInvite: e.target.checked }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, canInvite: e.target.checked }))
+                    }
                     className="rounded"
                   />
                   <span className="text-sm text-(--text-secondary)">
@@ -468,7 +476,12 @@ export default function AdminRolesPage() {
                   <input
                     type="number"
                     value={formData.inviteLimit}
-                    onChange={(e) => setFormData(prev => ({ ...prev, inviteLimit: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        inviteLimit: parseInt(e.target.value) || 0,
+                      }))
+                    }
                     className="w-20 px-2 py-1 border border-(--border-color) rounded bg-(--bg-primary) text-(--text-primary)"
                     min={-1}
                     disabled={!formData.canInvite}
@@ -479,7 +492,9 @@ export default function AdminRolesPage() {
                   <input
                     type="checkbox"
                     checked={formData.canManageReports}
-                    onChange={(e) => setFormData(prev => ({ ...prev, canManageReports: e.target.checked }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, canManageReports: e.target.checked }))
+                    }
                     className="rounded"
                   />
                   <span className="text-sm text-(--text-secondary)">
@@ -490,7 +505,9 @@ export default function AdminRolesPage() {
                   <input
                     type="checkbox"
                     checked={formData.canDeleteNotes}
-                    onChange={(e) => setFormData(prev => ({ ...prev, canDeleteNotes: e.target.checked }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, canDeleteNotes: e.target.checked }))
+                    }
                     className="rounded"
                   />
                   <span className="text-sm text-(--text-secondary)">
@@ -501,7 +518,9 @@ export default function AdminRolesPage() {
                   <input
                     type="checkbox"
                     checked={formData.canSuspendUsers}
-                    onChange={(e) => setFormData(prev => ({ ...prev, canSuspendUsers: e.target.checked }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, canSuspendUsers: e.target.checked }))
+                    }
                     className="rounded"
                   />
                   <span className="text-sm text-(--text-secondary)">
@@ -512,7 +531,9 @@ export default function AdminRolesPage() {
                   <input
                     type="checkbox"
                     checked={formData.canManageCustomEmojis}
-                    onChange={(e) => setFormData(prev => ({ ...prev, canManageCustomEmojis: e.target.checked }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, canManageCustomEmojis: e.target.checked }))
+                    }
                     className="rounded"
                   />
                   <span className="text-sm text-(--text-secondary)">
@@ -543,10 +564,7 @@ export default function AdminRolesPage() {
                 )}
               </Button>
               {editingRole && (
-                <Button
-                  variant="secondary"
-                  onPress={handleCancelEdit}
-                >
+                <Button variant="secondary" onPress={handleCancelEdit}>
                   <Trans>Cancel</Trans>
                 </Button>
               )}
@@ -560,11 +578,7 @@ export default function AdminRolesPage() {
             <CardTitle>
               <Trans>Roles</Trans>
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={loadRoles}
-            >
+            <Button variant="ghost" size="sm" onPress={loadRoles}>
               <RefreshCw className="w-4 h-4" />
             </Button>
           </CardHeader>
@@ -576,7 +590,7 @@ export default function AdminRolesPage() {
             ) : (
               <div className="space-y-3">
                 {roles.map((role) => {
-                  const isBuiltIn = role.name === 'Admin' || role.name === 'Moderator';
+                  const isBuiltIn = role.name === "Admin" || role.name === "Moderator";
 
                   return (
                     <div
@@ -588,7 +602,7 @@ export default function AdminRolesPage() {
                           {getRoleIcon(role)}
                           <span
                             className="text-lg font-semibold"
-                            style={{ color: role.color || 'var(--text-primary)' }}
+                            style={{ color: role.color || "var(--text-primary)" }}
                           >
                             {role.name}
                           </span>
@@ -604,9 +618,7 @@ export default function AdminRolesPage() {
                           )}
                         </div>
                         {role.description && (
-                          <p className="text-sm text-(--text-muted) mt-1">
-                            {role.description}
-                          </p>
+                          <p className="text-sm text-(--text-muted) mt-1">{role.description}</p>
                         )}
                         <div className="text-xs text-(--text-muted) mt-2 flex flex-wrap gap-2">
                           {role.policies.canInvite && (

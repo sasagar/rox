@@ -1,12 +1,12 @@
-import type { IAuthProvider, AuthResult, OAuthConfig, OAuthCredentials } from '../types';
-import { apiClient } from '../../api/client';
+import type { IAuthProvider, AuthResult, OAuthConfig, OAuthCredentials } from "../types";
+import { apiClient } from "../../api/client";
 
 /**
  * OAuth authentication provider
  * Supports GitHub, Google, Discord, Mastodon OAuth flows
  */
 export class OAuthProvider implements IAuthProvider {
-  readonly method = 'oauth' as const;
+  readonly method = "oauth" as const;
   private config: OAuthConfig;
 
   constructor(config: OAuthConfig) {
@@ -32,14 +32,14 @@ export class OAuthProvider implements IAuthProvider {
    */
   initiateFlow(): void {
     const state = this.generateState();
-    localStorage.setItem('oauth_state', state);
+    localStorage.setItem("oauth_state", state);
 
     const params = new URLSearchParams({
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
-      scope: this.config.scope.join(' '),
+      scope: this.config.scope.join(" "),
       state,
-      response_type: 'code',
+      response_type: "code",
     });
 
     window.location.href = `${this.config.authUrl}?${params.toString()}`;
@@ -68,14 +68,14 @@ export class OAuthProvider implements IAuthProvider {
    */
   async authenticate(credentials: OAuthCredentials): Promise<AuthResult> {
     // Verify state to prevent CSRF
-    const savedState = localStorage.getItem('oauth_state');
+    const savedState = localStorage.getItem("oauth_state");
     if (credentials.state !== savedState) {
-      throw new Error('OAuth state mismatch - possible CSRF attack');
+      throw new Error("OAuth state mismatch - possible CSRF attack");
     }
-    localStorage.removeItem('oauth_state');
+    localStorage.removeItem("oauth_state");
 
     // Exchange authorization code for access token via backend
-    const response = await apiClient.post<AuthResult>('/api/auth/oauth/callback', {
+    const response = await apiClient.post<AuthResult>("/api/auth/oauth/callback", {
       provider: credentials.provider,
       code: credentials.code,
       redirectUri: credentials.redirectUri,
@@ -102,6 +102,6 @@ export class OAuthProvider implements IAuthProvider {
   private generateState(): string {
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
-    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
   }
 }

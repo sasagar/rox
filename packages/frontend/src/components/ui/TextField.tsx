@@ -6,7 +6,7 @@ import {
   type TextFieldProps as AriaTextFieldProps,
   type TextAreaProps,
   type InputProps,
-} from 'react-aria-components';
+} from "react-aria-components";
 
 /**
  * Props for the TextField component
@@ -20,11 +20,11 @@ export interface TextFieldProps extends AriaTextFieldProps {
   /** Error message displayed in red below the input */
   errorMessage?: string;
   /** HTML input type (text, password, email, etc.) */
-  type?: InputProps['type'];
+  type?: InputProps["type"];
   /** Whether to render a multiline textarea instead of single-line input */
   multiline?: boolean;
   /** Number of visible text rows for textarea (only applies when multiline=true) */
-  rows?: TextAreaProps['rows'];
+  rows?: TextAreaProps["rows"];
   /** Placeholder text shown when input is empty */
   placeholder?: string;
 }
@@ -71,7 +71,7 @@ export function TextField({
   label,
   description,
   errorMessage,
-  type = 'text',
+  type = "text",
   multiline = false,
   rows = 4,
   placeholder,
@@ -79,8 +79,10 @@ export function TextField({
   ...props
 }: TextFieldProps) {
   return (
-    <AriaTextField {...props} className={`flex flex-col gap-1 ${className || ''}`}>
-      {label && <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</Label>}
+    <AriaTextField {...props} className={`flex flex-col gap-1 ${className || ""}`}>
+      {label && (
+        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</Label>
+      )}
       {multiline ? (
         <TextArea
           rows={rows}
@@ -97,9 +99,7 @@ export function TextField({
       {description && !errorMessage && (
         <div className="text-sm text-gray-600 dark:text-gray-400">{description}</div>
       )}
-      {errorMessage && (
-        <div className="text-sm text-red-600 dark:text-red-400">{errorMessage}</div>
-      )}
+      {errorMessage && <div className="text-sm text-red-600 dark:text-red-400">{errorMessage}</div>}
     </AriaTextField>
   );
 }

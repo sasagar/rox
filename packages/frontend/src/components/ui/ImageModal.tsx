@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Trans } from "@lingui/react/macro";
+import { X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 /**
  * Image modal/lightbox component with zoom and gallery support
@@ -23,7 +23,7 @@ export interface ImageModalProps {
 /**
  * Full-screen image modal with zoom, pan, and gallery navigation
  */
-export function ImageModal({ images, initialIndex = 0, onClose, alt = 'Image' }: ImageModalProps) {
+export function ImageModal({ images, initialIndex = 0, onClose, alt = "Image" }: ImageModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -113,34 +113,34 @@ export function ImageModal({ images, initialIndex = 0, onClose, alt = 'Image' }:
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           handlePrevious();
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           handleNext();
           break;
-        case '+':
-        case '=':
+        case "+":
+        case "=":
           handleZoomIn();
           break;
-        case '-':
+        case "-":
           handleZoomOut();
           break;
-        case '0':
+        case "0":
           handleResetZoom();
           break;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handlePrevious, handleNext, handleZoomIn, handleZoomOut, handleResetZoom]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, []);
 
@@ -247,7 +247,7 @@ export function ImageModal({ images, initialIndex = 0, onClose, alt = 'Image' }:
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+        style={{ cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default" }}
       >
         <img
           src={currentImage}
@@ -255,7 +255,7 @@ export function ImageModal({ images, initialIndex = 0, onClose, alt = 'Image' }:
           className="max-w-full max-h-[90vh] object-contain transition-transform"
           style={{
             transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
-            transformOrigin: 'center',
+            transformOrigin: "center",
           }}
           draggable={false}
         />
@@ -275,11 +275,15 @@ export function ImageModal({ images, initialIndex = 0, onClose, alt = 'Image' }:
               }}
               className={`relative w-16 h-16 shrink-0 rounded overflow-hidden transition-opacity ${
                 index === currentIndex
-                  ? 'ring-2 ring-white opacity-100'
-                  : 'opacity-50 hover:opacity-75'
+                  ? "ring-2 ring-white opacity-100"
+                  : "opacity-50 hover:opacity-75"
               }`}
             >
-              <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+              <img
+                src={image}
+                alt={`Thumbnail ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
             </button>
           ))}
         </div>

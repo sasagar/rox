@@ -6,8 +6,8 @@
  * @module routes/metrics
  */
 
-import { Hono } from 'hono';
-import { getMetrics, getMetricsContentType } from '../lib/metrics.js';
+import { Hono } from "hono";
+import { getMetrics, getMetricsContentType } from "../lib/metrics.js";
 
 const app = new Hono();
 
@@ -29,17 +29,17 @@ const app = new Hono();
  * ...
  * ```
  */
-app.get('/', async (c) => {
+app.get("/", async (c) => {
   try {
     const metrics = await getMetrics();
     return new Response(metrics, {
       headers: {
-        'Content-Type': getMetricsContentType(),
+        "Content-Type": getMetricsContentType(),
       },
     });
   } catch (error) {
-    console.error('Failed to get metrics:', error);
-    return c.text('Error collecting metrics', 500);
+    console.error("Failed to get metrics:", error);
+    return c.text("Error collecting metrics", 500);
   }
 });
 

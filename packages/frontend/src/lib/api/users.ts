@@ -4,8 +4,8 @@
  * Provides methods for user-related API operations
  */
 
-import { apiClient } from './client';
-import type { User } from '../types/user';
+import { apiClient } from "./client";
+import type { User } from "../types/user";
 
 export type { User };
 
@@ -38,9 +38,15 @@ export const usersApi = {
    * Get user by username
    *
    * @param username - Username
+   * @param host - Optional host for remote users
    * @returns User data
    */
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string, host?: string | null): Promise<User> {
+    if (host) {
+      // For remote users, use resolve endpoint
+      const acct = `${username}@${host}`;
+      return apiClient.get<User>(`/api/users/resolve?acct=${encodeURIComponent(acct)}`);
+    }
     return apiClient.get<User>(`/api/users/show?username=${username}`);
   },
 
@@ -50,7 +56,7 @@ export const usersApi = {
    * @returns User data
    */
   async getMe(): Promise<User> {
-    return apiClient.get<User>('/api/users/@me');
+    return apiClient.get<User>("/api/users/@me");
   },
 
   /**
@@ -66,7 +72,7 @@ export const usersApi = {
     bannerUrl?: string;
     customCss?: string;
   }): Promise<User> {
-    return apiClient.patch<User>('/api/users/@me', data);
+    return apiClient.patch<User>("/api/users/@me", data);
   },
 
   /**
@@ -78,7 +84,7 @@ export const usersApi = {
    */
   async getFollowers(userId: string, limit?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
-    if (limit) params.append('limit', limit.toString());
+    if (limit) params.append("limit", limit.toString());
     return apiClient.get<Follow[]>(`/api/users/followers?${params.toString()}`);
   },
 
@@ -91,7 +97,7 @@ export const usersApi = {
    */
   async getFollowing(userId: string, limit?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
-    if (limit) params.append('limit', limit.toString());
+    if (limit) params.append("limit", limit.toString());
     return apiClient.get<Follow[]>(`/api/users/following?${params.toString()}`);
   },
 
@@ -102,7 +108,7 @@ export const usersApi = {
    * @returns Follow relationship
    */
   async follow(userId: string): Promise<Follow> {
-    return apiClient.post<Follow>('/api/following/create', { userId });
+    return apiClient.post<Follow>("/api/following/create", { userId });
   },
 
   /**
@@ -112,6 +118,6 @@ export const usersApi = {
    * @returns Success status
    */
   async unfollow(userId: string): Promise<{ success: boolean }> {
-    return apiClient.post<{ success: boolean }>('/api/following/delete', { userId });
+    return apiClient.post<{ success: boolean }>("/api/following/delete", { userId });
   },
 };

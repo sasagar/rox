@@ -7,15 +7,15 @@
  * @module services/ap/inbox
  */
 
-export { InboxService, getInboxService, resetInboxService } from './InboxService.js';
+export { InboxService, getInboxService, resetInboxService } from "./InboxService.js";
 export type {
   Activity,
   HandlerContext,
   HandlerResult,
   IActivityHandler,
   Repositories,
-} from './types.js';
-export { getActorUri, getObjectUri } from './types.js';
+} from "./types.js";
+export { getActorUri, getObjectUri } from "./types.js";
 
 // Re-export handlers for extension/testing
-export * from './handlers/index.js';
+export * from "./handlers/index.js";

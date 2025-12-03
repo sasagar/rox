@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Role Badge Component
@@ -15,7 +15,7 @@ interface PublicRole {
 
 interface RoleBadgeProps {
   role: PublicRole;
-  size?: 'sm' | 'md';
+  size?: "sm" | "md";
 }
 
 /**
@@ -23,7 +23,7 @@ interface RoleBadgeProps {
  */
 function isLightColor(hexColor: string): boolean {
   // Remove # if present
-  const hex = hexColor.replace('#', '');
+  const hex = hexColor.replace("#", "");
 
   // Parse RGB values
   const r = parseInt(hex.substring(0, 2), 16);
@@ -36,13 +36,13 @@ function isLightColor(hexColor: string): boolean {
   return luminance > 0.5;
 }
 
-export function RoleBadge({ role, size = 'sm' }: RoleBadgeProps) {
-  const bgColor = role.color || '#6366f1'; // Default to indigo if no color
-  const textColor = isLightColor(bgColor) ? '#000000' : '#ffffff';
+export function RoleBadge({ role, size = "sm" }: RoleBadgeProps) {
+  const bgColor = role.color || "#6366f1"; // Default to indigo if no color
+  const textColor = isLightColor(bgColor) ? "#000000" : "#ffffff";
 
   const sizeClasses = {
-    sm: 'text-xs px-2 py-0.5',
-    md: 'text-sm px-2.5 py-1',
+    sm: "text-xs px-2 py-0.5",
+    md: "text-sm px-2.5 py-1",
   };
 
   return (
@@ -54,11 +54,7 @@ export function RoleBadge({ role, size = 'sm' }: RoleBadgeProps) {
       }}
     >
       {role.iconUrl && (
-        <img
-          src={role.iconUrl}
-          alt=""
-          className={size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'}
-        />
+        <img src={role.iconUrl} alt="" className={size === "sm" ? "w-3 h-3" : "w-4 h-4"} />
       )}
       {role.name}
     </span>
@@ -67,10 +63,10 @@ export function RoleBadge({ role, size = 'sm' }: RoleBadgeProps) {
 
 interface RoleBadgeListProps {
   roles: PublicRole[];
-  size?: 'sm' | 'md';
+  size?: "sm" | "md";
 }
 
-export function RoleBadgeList({ roles, size = 'sm' }: RoleBadgeListProps) {
+export function RoleBadgeList({ roles, size = "sm" }: RoleBadgeListProps) {
   if (roles.length === 0) return null;
 
   return (

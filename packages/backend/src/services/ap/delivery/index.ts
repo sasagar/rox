@@ -11,4 +11,4 @@ export {
   type Activity,
   type NoteObject,
   type ActorObject,
-} from './ActivityBuilder.js';
+} from "./ActivityBuilder.js";

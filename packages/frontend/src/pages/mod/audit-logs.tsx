@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Moderator Audit Logs Page
@@ -6,10 +6,10 @@
  * Allows moderators to view moderation audit logs.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   RefreshCw,
   History,
@@ -23,15 +23,15 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { Layout } from '../../components/layout/Layout';
-import { ModeratorNav } from '../../components/moderator/ModeratorNav';
+} from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { Layout } from "../../components/layout/Layout";
+import { ModeratorNav } from "../../components/moderator/ModeratorNav";
 
 interface AuditLog {
   id: string;
@@ -61,17 +61,17 @@ const ACTION_ICONS: Record<string, any> = {
 };
 
 const ACTION_LABELS: Record<string, string> = {
-  delete_note: 'Delete Note',
-  restore_note: 'Restore Note',
-  suspend_user: 'Suspend User',
-  unsuspend_user: 'Unsuspend User',
-  resolve_report: 'Resolve Report',
-  reject_report: 'Reject Report',
-  assign_role: 'Assign Role',
-  unassign_role: 'Remove Role',
-  warn_user: 'Warn User',
-  block_instance: 'Block Instance',
-  unblock_instance: 'Unblock Instance',
+  delete_note: "Delete Note",
+  restore_note: "Restore Note",
+  suspend_user: "Suspend User",
+  unsuspend_user: "Unsuspend User",
+  resolve_report: "Resolve Report",
+  reject_report: "Reject Report",
+  assign_role: "Assign Role",
+  unassign_role: "Remove Role",
+  warn_user: "Warn User",
+  block_instance: "Block Instance",
+  unblock_instance: "Unblock Instance",
 };
 
 const TARGET_TYPE_ICONS: Record<string, any> = {
@@ -90,8 +90,8 @@ export default function ModeratorAuditLogsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [offset, setOffset] = useState(0);
-  const [actionFilter, setActionFilter] = useState<string>('');
-  const [targetTypeFilter, setTargetTypeFilter] = useState<string>('');
+  const [actionFilter, setActionFilter] = useState<string>("");
+  const [targetTypeFilter, setTargetTypeFilter] = useState<string>("");
   const limit = 50;
 
   const loadLogs = useCallback(async () => {
@@ -101,17 +101,17 @@ export default function ModeratorAuditLogsPage() {
     try {
       apiClient.setToken(token);
       const params = new URLSearchParams();
-      params.set('limit', String(limit));
-      params.set('offset', String(offset));
-      if (actionFilter) params.set('action', actionFilter);
-      if (targetTypeFilter) params.set('targetType', targetTypeFilter);
+      params.set("limit", String(limit));
+      params.set("offset", String(offset));
+      if (actionFilter) params.set("action", actionFilter);
+      if (targetTypeFilter) params.set("targetType", targetTypeFilter);
 
       const response = await apiClient.get<AuditLogsResponse>(`/api/mod/audit-logs?${params}`);
       setLogs(response.logs);
       setTotal(response.total);
     } catch (err) {
-      console.error('Failed to load audit logs:', err);
-      setError('Failed to load audit logs');
+      console.error("Failed to load audit logs:", err);
+      setError("Failed to load audit logs");
     } finally {
       setIsLoading(false);
     }
@@ -120,18 +120,18 @@ export default function ModeratorAuditLogsPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
       try {
         await loadLogs();
       } catch (err: any) {
-        console.error('Access check failed:', err);
+        console.error("Access check failed:", err);
         if (err.status === 403) {
-          setError('Moderator access required');
+          setError("Moderator access required");
         } else {
-          setError('Access denied');
+          setError("Access denied");
         }
         setIsLoading(false);
       }
@@ -155,13 +155,13 @@ export default function ModeratorAuditLogsPage() {
   };
 
   const getActionColor = (action: string) => {
-    if (action.includes('delete') || action.includes('suspend') || action.includes('reject')) {
-      return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
+    if (action.includes("delete") || action.includes("suspend") || action.includes("reject")) {
+      return "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30";
     }
-    if (action.includes('restore') || action.includes('unsuspend') || action.includes('resolve')) {
-      return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
+    if (action.includes("restore") || action.includes("unsuspend") || action.includes("resolve")) {
+      return "text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30";
     }
-    return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30';
+    return "text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30";
   };
 
   const handlePrevPage = () => {
@@ -234,7 +234,10 @@ export default function ModeratorAuditLogsPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <select
                 value={actionFilter}
-                onChange={(e) => { setActionFilter(e.target.value); setOffset(0); }}
+                onChange={(e) => {
+                  setActionFilter(e.target.value);
+                  setOffset(0);
+                }}
                 className="px-3 py-1 text-sm border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">{t`All Actions`}</option>
@@ -247,7 +250,10 @@ export default function ModeratorAuditLogsPage() {
               </select>
               <select
                 value={targetTypeFilter}
-                onChange={(e) => { setTargetTypeFilter(e.target.value); setOffset(0); }}
+                onChange={(e) => {
+                  setTargetTypeFilter(e.target.value);
+                  setOffset(0);
+                }}
                 className="px-3 py-1 text-sm border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">{t`All Types`}</option>
@@ -256,7 +262,7 @@ export default function ModeratorAuditLogsPage() {
                 <option value="report">{t`Reports`}</option>
               </select>
               <Button variant="ghost" size="sm" onPress={loadLogs} isDisabled={isLoading}>
-                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </CardHeader>
@@ -279,7 +285,9 @@ export default function ModeratorAuditLogsPage() {
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${getActionColor(log.action)}`}>
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded ${getActionColor(log.action)}`}
+                            >
                               {getActionIcon(log.action)}
                               {ACTION_LABELS[log.action] || log.action}
                             </span>
@@ -290,16 +298,17 @@ export default function ModeratorAuditLogsPage() {
                           </div>
                           {log.reason && (
                             <p className="text-sm text-(--text-secondary) mb-2">
-                              <span className="font-medium"><Trans>Reason:</Trans></span> {log.reason}
+                              <span className="font-medium">
+                                <Trans>Reason:</Trans>
+                              </span>{" "}
+                              {log.reason}
                             </p>
                           )}
                           <div className="text-xs text-(--text-muted)">
                             <span className="mr-4">
                               <Trans>Target ID:</Trans> {log.targetId.substring(0, 12)}...
                             </span>
-                            <span>
-                              {formatDate(log.createdAt)}
-                            </span>
+                            <span>{formatDate(log.createdAt)}</span>
                           </div>
                         </div>
                       </div>

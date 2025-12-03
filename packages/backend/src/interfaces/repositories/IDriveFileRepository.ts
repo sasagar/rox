@@ -1,15 +1,20 @@
-import type { DriveFile } from 'shared';
+import type { DriveFile } from "shared";
 
 export interface IDriveFileRepository {
   /**
    * ファイルを作成
    */
-  create(file: Omit<DriveFile, 'createdAt' | 'updatedAt'>): Promise<DriveFile>;
+  create(file: Omit<DriveFile, "createdAt" | "updatedAt">): Promise<DriveFile>;
 
   /**
    * IDでファイルを取得
    */
   findById(id: string): Promise<DriveFile | null>;
+
+  /**
+   * 全ファイルを取得（管理者用）
+   */
+  findAll(options?: { limit?: number; offset?: number }): Promise<DriveFile[]>;
 
   /**
    * MD5ハッシュでファイルを取得（重複チェック用）
@@ -25,8 +30,14 @@ export interface IDriveFileRepository {
       limit?: number;
       sinceId?: string;
       untilId?: string;
-    }
+      folderId?: string | null;
+    },
   ): Promise<DriveFile[]>;
+
+  /**
+   * ファイルを別のフォルダに移動
+   */
+  moveToFolder(id: string, folderId: string | null): Promise<DriveFile>;
 
   /**
    * 複数のIDでファイルを取得
@@ -38,7 +49,7 @@ export interface IDriveFileRepository {
    */
   update(
     id: string,
-    data: Partial<Omit<DriveFile, 'id' | 'userId' | 'createdAt'>>
+    data: Partial<Omit<DriveFile, "id" | "userId" | "createdAt">>,
   ): Promise<DriveFile>;
 
   /**

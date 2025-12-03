@@ -4,15 +4,15 @@
  * @module lib/i18n
  */
 
-import { i18n } from '@lingui/core';
-import { messages as enMessages } from '../../locales/en/messages.js';
+import { i18n } from "@lingui/core";
+import { messages as enMessages } from "../../locales/en/messages.js";
 
 /**
  * Available locales with display names
  */
 export const locales = {
-  en: 'English',
-  ja: '日本語',
+  en: "English",
+  ja: "日本語",
 } as const;
 
 /**
@@ -23,7 +23,7 @@ export type Locale = keyof typeof locales;
 /**
  * Default locale used when no preference is saved
  */
-export const defaultLocale: Locale = 'en';
+export const defaultLocale: Locale = "en";
 
 /**
  * Load and activate locale messages
@@ -41,29 +41,29 @@ export const defaultLocale: Locale = 'en';
  * ```
  */
 export async function loadLocale(locale: Locale) {
-  if (locale === 'ja') {
+  if (locale === "ja") {
     // Dynamic import for Japanese to enable code splitting
-    const { messages } = await import('../../locales/ja/messages.js');
+    const { messages } = await import("../../locales/ja/messages.js");
     i18n.load(locale, messages);
     i18n.activate(locale);
   } else {
     // English is already loaded (static import)
-    i18n.load('en', enMessages);
-    i18n.activate('en');
+    i18n.load("en", enMessages);
+    i18n.activate("en");
   }
 }
 
 // Initialize with default English locale synchronously
-i18n.load('en', enMessages);
-i18n.activate('en');
+i18n.load("en", enMessages);
+i18n.activate("en");
 
 // On client side, restore saved locale from localStorage
-if (typeof window !== 'undefined') {
-  const savedLocale = (localStorage.getItem('locale') as Locale) || defaultLocale;
-  if (savedLocale !== 'en') {
+if (typeof window !== "undefined") {
+  const savedLocale = (localStorage.getItem("locale") as Locale) || defaultLocale;
+  if (savedLocale !== "en") {
     // Async load non-default locale
     loadLocale(savedLocale).catch((error) => {
-      console.error('Failed to load locale:', error);
+      console.error("Failed to load locale:", error);
       // Already using English as fallback
     });
   }

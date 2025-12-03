@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { I18nProvider as LinguiI18nProvider } from '@lingui/react';
-import { useEffect } from 'react';
-import { i18n, loadLocale, defaultLocale, type Locale } from '../lib/i18n/index.js';
+import { I18nProvider as LinguiI18nProvider } from "@lingui/react";
+import { useEffect } from "react";
+import { i18n, loadLocale, defaultLocale, type Locale } from "../lib/i18n/index.js";
 
 /**
  * Client-side i18n provider component
@@ -24,7 +24,7 @@ import { i18n, loadLocale, defaultLocale, type Locale } from '../lib/i18n/index.
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // After hydration, load user's preferred locale from localStorage
-    const savedLocale = (localStorage.getItem('locale') as Locale) || defaultLocale;
+    const savedLocale = (localStorage.getItem("locale") as Locale) || defaultLocale;
     if (savedLocale !== defaultLocale) {
       loadLocale(savedLocale);
     }

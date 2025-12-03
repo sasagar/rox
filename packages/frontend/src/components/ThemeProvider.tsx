@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Theme Provider Component
@@ -9,10 +9,10 @@
  * - System preference detection
  */
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { ThemeSettings } from '../lib/types/instance';
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import type { ThemeSettings } from "../lib/types/instance";
 
-type ColorMode = 'light' | 'dark';
+type ColorMode = "light" | "dark";
 
 interface ThemeContextValue {
   colorMode: ColorMode;
@@ -103,17 +103,17 @@ function generateColorPalette(hex: string): string {
 /**
  * Get initial color mode based on settings and system preference
  */
-function getInitialColorMode(darkModeSetting: ThemeSettings['darkMode']): ColorMode {
-  if (darkModeSetting === 'light' || darkModeSetting === 'dark') {
+function getInitialColorMode(darkModeSetting: ThemeSettings["darkMode"]): ColorMode {
+  if (darkModeSetting === "light" || darkModeSetting === "dark") {
     return darkModeSetting;
   }
 
   // System preference
-  if (typeof window !== 'undefined') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  if (typeof window !== "undefined") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
-  return 'light';
+  return "light";
 }
 
 interface ThemeProviderProps {
@@ -128,46 +128,46 @@ interface ThemeProviderProps {
  */
 export function ThemeProvider({ children, theme }: ThemeProviderProps) {
   const defaultTheme: ThemeSettings = {
-    primaryColor: '#3b82f6',
-    darkMode: 'system',
+    primaryColor: "#3b82f6",
+    darkMode: "system",
   };
 
   const themeSettings = theme || defaultTheme;
 
   const [colorMode, setColorMode] = useState<ColorMode>(() =>
-    getInitialColorMode(themeSettings.darkMode)
+    getInitialColorMode(themeSettings.darkMode),
   );
 
   // Listen for system color scheme changes
   useEffect(() => {
-    if (themeSettings.darkMode !== 'system') return;
+    if (themeSettings.darkMode !== "system") return;
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = (e: MediaQueryListEvent) => {
-      setColorMode(e.matches ? 'dark' : 'light');
+      setColorMode(e.matches ? "dark" : "light");
     };
 
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, [themeSettings.darkMode]);
 
   // Apply color mode class to document
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
-    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(colorMode);
   }, [colorMode]);
 
   // Apply primary color CSS variables
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
-    const styleId = 'rox-theme-colors';
+    const styleId = "rox-theme-colors";
     let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
 
     if (!styleEl) {
-      styleEl = document.createElement('style');
+      styleEl = document.createElement("style");
       styleEl.id = styleId;
       document.head.appendChild(styleEl);
     }
@@ -180,7 +180,7 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
   }, [themeSettings.primaryColor]);
 
   const toggleColorMode = () => {
-    setColorMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setColorMode((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   const contextValue: ThemeContextValue = {
@@ -190,11 +190,7 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
     setColorMode,
   };
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
 /**
@@ -203,7 +199,7 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
 export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 }

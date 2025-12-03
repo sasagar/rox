@@ -7,8 +7,8 @@
  * @module routes/ap/actor
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
+import { Hono } from "hono";
+import type { Context } from "hono";
 
 const actor = new Hono();
 
@@ -26,20 +26,20 @@ const actor = new Hono();
  * curl -H "Accept: application/activity+json" https://example.com/alice
  * ```
  */
-actor.get('/:username', async (c: Context) => {
+actor.get("/:username", async (c: Context) => {
   const { username } = c.req.param();
-  const accept = c.req.header('Accept') || '';
+  const accept = c.req.header("Accept") || "";
 
   // ActivityPub content negotiation
   const isActivityPubRequest =
-    accept.includes('application/activity+json') || accept.includes('application/ld+json');
+    accept.includes("application/activity+json") || accept.includes("application/ld+json");
 
   // If not an ActivityPub request, redirect to frontend
   if (!isActivityPubRequest) {
     return c.redirect(`/@${username}`);
   }
 
-  const userRepository = c.get('userRepository');
+  const userRepository = c.get("userRepository");
   const user = await userRepository.findByUsername(username as string);
 
   // 404 if user not found or is a remote user
@@ -47,34 +47,31 @@ actor.get('/:username', async (c: Context) => {
     return c.notFound();
   }
 
-  const baseUrl = process.env.URL || 'http://localhost:3000';
+  const baseUrl = process.env.URL || "http://localhost:3000";
 
   // Build ActivityPub Actor document
   const actorDocument: Record<string, unknown> = {
-    '@context': [
-      'https://www.w3.org/ns/activitystreams',
-      'https://w3id.org/security/v1',
-    ],
+    "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
     id: `${baseUrl}/users/${user.username}`,
-    type: 'Person',
+    type: "Person",
     preferredUsername: user.username,
     name: user.displayName || user.username,
-    summary: user.bio || '',
+    summary: user.bio || "",
     inbox: `${baseUrl}/users/${user.username}/inbox`,
     outbox: `${baseUrl}/users/${user.username}/outbox`,
     followers: `${baseUrl}/users/${user.username}/followers`,
     following: `${baseUrl}/users/${user.username}/following`,
     icon: user.avatarUrl
       ? {
-          type: 'Image',
-          mediaType: 'image/jpeg',
+          type: "Image",
+          mediaType: "image/jpeg",
           url: user.avatarUrl,
         }
       : undefined,
     image: user.bannerUrl
       ? {
-          type: 'Image',
-          mediaType: 'image/jpeg',
+          type: "Image",
+          mediaType: "image/jpeg",
           url: user.bannerUrl,
         }
       : undefined,
@@ -94,7 +91,7 @@ actor.get('/:username', async (c: Context) => {
   }
 
   return c.json(actorDocument, 200, {
-    'Content-Type': 'application/activity+json; charset=utf-8',
+    "Content-Type": "application/activity+json; charset=utf-8",
   });
 });
 

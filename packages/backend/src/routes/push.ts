@@ -4,11 +4,11 @@
  * Handles Web Push subscription management
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { requireAuth } from '../middleware/auth.js';
-import type { AppContainer } from '../di/container.js';
-import type { User } from '../db/schema/pg.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { requireAuth } from "../middleware/auth.js";
+import type { AppContainer } from "../di/container.js";
+import type { User } from "../db/schema/pg.js";
 
 const push = new Hono();
 
@@ -16,14 +16,14 @@ const push = new Hono();
  * Get VAPID public key for client subscription
  * GET /api/push/vapid-public-key
  */
-push.get('/vapid-public-key', (c: Context) => {
-  const container = c.get('container') as AppContainer;
+push.get("/vapid-public-key", (c: Context) => {
+  const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
   const publicKey = webPushService.getVapidPublicKey();
 
   if (!publicKey) {
-    return c.json({ error: 'Web Push is not configured' }, 503);
+    return c.json({ error: "Web Push is not configured" }, 503);
   }
 
   return c.json({ publicKey });
@@ -33,8 +33,8 @@ push.get('/vapid-public-key', (c: Context) => {
  * Check if Web Push is available
  * GET /api/push/status
  */
-push.get('/status', (c: Context) => {
-  const container = c.get('container') as AppContainer;
+push.get("/status", (c: Context) => {
+  const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
   return c.json({
@@ -47,13 +47,13 @@ push.get('/status', (c: Context) => {
  * Subscribe to push notifications
  * POST /api/push/subscribe
  */
-push.post('/subscribe', requireAuth(), async (c: Context) => {
-  const user = c.get('user') as User;
-  const container = c.get('container') as AppContainer;
+push.post("/subscribe", requireAuth(), async (c: Context) => {
+  const user = c.get("user") as User;
+  const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
   if (!webPushService.isAvailable()) {
-    return c.json({ error: 'Web Push is not configured' }, 503);
+    return c.json({ error: "Web Push is not configured" }, 503);
   }
 
   try {
@@ -61,7 +61,7 @@ push.post('/subscribe', requireAuth(), async (c: Context) => {
 
     // Validate subscription data
     if (!body.endpoint || !body.keys?.p256dh || !body.keys?.auth) {
-      return c.json({ error: 'Invalid subscription data' }, 400);
+      return c.json({ error: "Invalid subscription data" }, 400);
     }
 
     const subscription = await webPushService.subscribe(
@@ -73,7 +73,7 @@ push.post('/subscribe', requireAuth(), async (c: Context) => {
           auth: body.keys.auth,
         },
       },
-      c.req.header('user-agent')
+      c.req.header("user-agent"),
     );
 
     return c.json({
@@ -85,8 +85,8 @@ push.post('/subscribe', requireAuth(), async (c: Context) => {
       },
     });
   } catch (error) {
-    console.error('Failed to subscribe:', error);
-    return c.json({ error: 'Failed to subscribe' }, 500);
+    console.error("Failed to subscribe:", error);
+    return c.json({ error: "Failed to subscribe" }, 500);
   }
 });
 
@@ -94,24 +94,24 @@ push.post('/subscribe', requireAuth(), async (c: Context) => {
  * Unsubscribe from push notifications
  * POST /api/push/unsubscribe
  */
-push.post('/unsubscribe', requireAuth(), async (c: Context) => {
-  const user = c.get('user') as User;
-  const container = c.get('container') as AppContainer;
+push.post("/unsubscribe", requireAuth(), async (c: Context) => {
+  const user = c.get("user") as User;
+  const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
   try {
     const body = await c.req.json();
 
     if (!body.endpoint) {
-      return c.json({ error: 'Endpoint is required' }, 400);
+      return c.json({ error: "Endpoint is required" }, 400);
     }
 
     const success = await webPushService.unsubscribe(user.id, body.endpoint);
 
     return c.json({ success });
   } catch (error) {
-    console.error('Failed to unsubscribe:', error);
-    return c.json({ error: 'Failed to unsubscribe' }, 500);
+    console.error("Failed to unsubscribe:", error);
+    return c.json({ error: "Failed to unsubscribe" }, 500);
   }
 });
 
@@ -119,9 +119,9 @@ push.post('/unsubscribe', requireAuth(), async (c: Context) => {
  * Get user's push subscriptions
  * GET /api/push/subscriptions
  */
-push.get('/subscriptions', requireAuth(), async (c: Context) => {
-  const user = c.get('user') as User;
-  const container = c.get('container') as AppContainer;
+push.get("/subscriptions", requireAuth(), async (c: Context) => {
+  const user = c.get("user") as User;
+  const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
   try {
@@ -136,8 +136,8 @@ push.get('/subscriptions', requireAuth(), async (c: Context) => {
       })),
     });
   } catch (error) {
-    console.error('Failed to get subscriptions:', error);
-    return c.json({ error: 'Failed to get subscriptions' }, 500);
+    console.error("Failed to get subscriptions:", error);
+    return c.json({ error: "Failed to get subscriptions" }, 500);
   }
 });
 
@@ -145,35 +145,54 @@ push.get('/subscriptions', requireAuth(), async (c: Context) => {
  * Send test push notification (for debugging)
  * POST /api/push/test
  */
-push.post('/test', requireAuth(), async (c: Context) => {
-  const user = c.get('user') as User;
-  const container = c.get('container') as AppContainer;
-  const { webPushService } = container;
+push.post("/test", requireAuth(), async (c: Context) => {
+  const user = c.get("user") as User;
+  const container = c.get("container") as AppContainer;
+  const { webPushService, instanceSettingsService } = container;
+
+  console.log("[Push Test] Request received for user:", user.id);
 
   if (!webPushService.isAvailable()) {
-    return c.json({ error: 'Web Push is not configured' }, 503);
+    console.log("[Push Test] Web Push not available");
+    return c.json({ error: "Web Push is not configured" }, 503);
   }
 
-  try {
-    const count = await webPushService.sendToUser(user.id, {
-      title: 'Test Notification',
-      body: 'This is a test push notification from Rox!',
-      icon: `${process.env.URL || 'http://localhost:3000'}/icon-192.png`,
-      tag: 'test-notification',
+  // Get instance settings for notification
+  const [instanceName, iconUrl] = await Promise.all([
+    instanceSettingsService.getInstanceName(),
+    instanceSettingsService.getIconUrl(),
+  ]);
+
+  const baseUrl = process.env.URL || "http://localhost:3000";
+  // Use instance icon if available, otherwise fall back to default icon
+  const notificationIcon = iconUrl || `${baseUrl}/icon-192.png`;
+
+  // Send notification asynchronously (fire-and-forget) to avoid blocking the response
+  console.log("[Push Test] Queuing test notification...");
+  const timestamp = Date.now();
+  webPushService
+    .sendToUser(user.id, {
+      title: instanceName,
+      body: `This is a test push notification! (${new Date(timestamp).toLocaleTimeString()})`,
+      icon: notificationIcon,
+      tag: `test-notification-${timestamp}`,
       data: {
-        url: `${process.env.URL || 'http://localhost:3000'}/notifications`,
-        type: 'follow' as const,
+        url: `${baseUrl}/notifications`,
+        type: "follow" as const,
       },
+    })
+    .then((count) => {
+      console.log("[Push Test] Sent to", count, "subscriptions");
+    })
+    .catch((error) => {
+      console.error("[Push Test] Failed to send test notification:", error);
     });
 
-    return c.json({
-      success: true,
-      sentTo: count,
-    });
-  } catch (error) {
-    console.error('Failed to send test notification:', error);
-    return c.json({ error: 'Failed to send test notification' }, 500);
-  }
+  // Return immediately
+  return c.json({
+    success: true,
+    sentTo: -1, // -1 indicates async sending
+  });
 });
 
 export default push;

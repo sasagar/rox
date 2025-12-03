@@ -7,9 +7,9 @@
  * @module lib/atoms/customEmoji
  */
 
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import { apiClient } from '../api/client';
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { apiClient } from "../api/client";
 
 /**
  * Custom emoji type
@@ -26,7 +26,7 @@ export interface CustomEmoji {
 /**
  * Local storage key for emoji cache
  */
-const EMOJI_CACHE_KEY = 'rox-custom-emoji-cache';
+const EMOJI_CACHE_KEY = "rox-custom-emoji-cache";
 
 /**
  * Cache expiry time (5 minutes)
@@ -122,7 +122,7 @@ export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false)
   set(emojiErrorAtom, null);
 
   try {
-    const response = await apiClient.get<{ emojis: CustomEmoji[] }>('/api/emojis');
+    const response = await apiClient.get<{ emojis: CustomEmoji[] }>("/api/emojis");
     const emojis = response.emojis;
 
     // Update cache
@@ -135,7 +135,7 @@ export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false)
     return emojis;
   } catch (error) {
     set(emojiLoadingAtom, false);
-    set(emojiErrorAtom, error instanceof Error ? error.message : 'Failed to load emojis');
+    set(emojiErrorAtom, error instanceof Error ? error.message : "Failed to load emojis");
     throw error;
   }
 });
@@ -193,8 +193,8 @@ export async function lookupEmojis(names: string[]): Promise<Map<string, string>
         if (namesToLookup.length > 0) {
           try {
             const response = await apiClient.post<{ emojis: Record<string, string> }>(
-              '/api/emojis/lookup',
-              { names: namesToLookup }
+              "/api/emojis/lookup",
+              { names: namesToLookup },
             );
 
             // Update cache
@@ -202,7 +202,7 @@ export async function lookupEmojis(names: string[]): Promise<Map<string, string>
               emojiUrlCache.set(name, url);
             }
           } catch (error) {
-            console.error('Failed to lookup emojis:', error);
+            console.error("Failed to lookup emojis:", error);
           }
         }
 

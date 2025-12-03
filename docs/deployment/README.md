@@ -1,5 +1,7 @@
 # Deployment Documentation
 
+**Languages**: English | [日本語](./README.ja.md)
+
 Guides for deploying Rox in various environments.
 
 ## Deployment Options

@@ -1,8 +1,12 @@
-import { mkdir, unlink } from 'node:fs/promises';
-import { join, dirname, extname } from 'node:path';
-import { existsSync } from 'node:fs';
-import type { IFileStorage, FileMetadata, EmojiFileMetadata } from '../../interfaces/IFileStorage.js';
-import { generateId } from 'shared';
+import { mkdir, unlink } from "node:fs/promises";
+import { join, dirname, extname } from "node:path";
+import { existsSync } from "node:fs";
+import type {
+  IFileStorage,
+  FileMetadata,
+  EmojiFileMetadata,
+} from "../../interfaces/IFileStorage.js";
+import { generateId } from "shared";
 
 /**
  * Local Filesystem Storage Adapter
@@ -25,7 +29,7 @@ export class LocalStorageAdapter implements IFileStorage {
    */
   constructor(
     private basePath: string,
-    private baseUrl: string
+    private baseUrl: string,
   ) {}
 
   /**
@@ -74,7 +78,7 @@ export class LocalStorageAdapter implements IFileStorage {
       await unlink(fullPath);
     } catch (error) {
       // ファイルが存在しない場合は無視
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
       }
     }
@@ -100,7 +104,7 @@ export class LocalStorageAdapter implements IFileStorage {
     const filename = `${fileId}${ext}`;
 
     // Save to dedicated emojis directory (not user-specific)
-    const relativePath = join('emojis', filename);
+    const relativePath = join("emojis", filename);
     const fullPath = join(this.basePath, relativePath);
 
     // Create directory if it doesn't exist

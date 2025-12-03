@@ -7,13 +7,13 @@
  * @module services/ReactionService
  */
 
-import type { IReactionRepository } from '../interfaces/repositories/IReactionRepository.js';
-import type { INoteRepository } from '../interfaces/repositories/INoteRepository.js';
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { Reaction } from '../../../shared/src/types/reaction.js';
-import { generateId } from '../../../shared/src/utils/id.js';
-import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
-import type { NotificationService } from './NotificationService.js';
+import type { IReactionRepository } from "../interfaces/repositories/IReactionRepository.js";
+import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { Reaction } from "../../../shared/src/types/reaction.js";
+import { generateId } from "../../../shared/src/utils/id.js";
+import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
+import type { NotificationService } from "./NotificationService.js";
 
 /**
  * Reaction creation input data
@@ -93,19 +93,17 @@ export class ReactionService {
 
     // バリデーション: リアクション文字列長
     if (!reaction || reaction.length === 0) {
-      throw new Error('Reaction cannot be empty');
+      throw new Error("Reaction cannot be empty");
     }
 
     if (reaction.length > this.maxReactionLength) {
-      throw new Error(
-        `Reaction exceeds maximum length of ${this.maxReactionLength} characters`,
-      );
+      throw new Error(`Reaction exceeds maximum length of ${this.maxReactionLength} characters`);
     }
 
     // ノートの存在確認
     const note = await this.noteRepository.findById(noteId);
     if (!note) {
-      throw new Error('Note not found');
+      throw new Error("Note not found");
     }
 
     // 同じリアクションが既に存在するか確認
@@ -137,21 +135,25 @@ export class ReactionService {
       // 1. Reactor is a local user (reactor.host is null)
       // 2. Note author is a remote user (noteAuthor.host is not null)
       // 3. Note author has an inbox URL
-      this.deliveryService.deliverLikeActivity(
-        note.id,
-        note.uri || `${process.env.URL || 'http://localhost:3000'}/notes/${note.id}`,
-        noteAuthor.inbox,
-        reactor
-      ).catch((error) => {
-        console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
-      });
+      this.deliveryService
+        .deliverLikeActivity(
+          note.id,
+          note.uri || `${process.env.URL || "http://localhost:3000"}/notes/${note.id}`,
+          noteAuthor.inbox,
+          reactor,
+        )
+        .catch((error) => {
+          console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
+        });
     }
 
     // Create notification for the note author (only for local users and not self-reaction)
     if (this.notificationService && noteAuthor && !noteAuthor.host && noteAuthor.id !== userId) {
-      this.notificationService.createReactionNotification(noteAuthor.id, userId, noteId, reaction).catch((error) => {
-        console.error(`Failed to create reaction notification:`, error);
-      });
+      this.notificationService
+        .createReactionNotification(noteAuthor.id, userId, noteId, reaction)
+        .catch((error) => {
+          console.error(`Failed to create reaction notification:`, error);
+        });
     }
 
     return newReaction;
@@ -181,7 +183,7 @@ export class ReactionService {
     );
 
     if (!existingReaction) {
-      throw new Error('Reaction not found');
+      throw new Error("Reaction not found");
     }
 
     // Get user and note data before deletion for ActivityPub delivery
@@ -197,11 +199,7 @@ export class ReactionService {
       // Only deliver if:
       // 1. Reactor is a local user (reactor.host is null)
       // 2. Note author is a remote user (noteAuthor.host is not null)
-      this.deliveryService.deliverUndoLike(
-        reactor,
-        note,
-        noteAuthor
-      ).catch((error) => {
+      this.deliveryService.deliverUndoLike(reactor, note, noteAuthor).catch((error) => {
         console.error(`Failed to deliver Undo Like activity:`, error);
       });
     }
@@ -284,9 +282,7 @@ export class ReactionService {
    * // }
    * ```
    */
-  async getReactionCountsForNotes(
-    noteIds: string[],
-  ): Promise<Map<string, Record<string, number>>> {
+  async getReactionCountsForNotes(noteIds: string[]): Promise<Map<string, Record<string, number>>> {
     return await this.reactionRepository.countByNoteIds(noteIds);
   }
 

@@ -8,9 +8,9 @@
 import type {
   IInstanceSettingsRepository,
   InstanceSettingKey,
-} from '../interfaces/repositories/IInstanceSettingsRepository.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
+} from "../interfaces/repositories/IInstanceSettingsRepository.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 
 /**
  * Instance registration settings
@@ -30,6 +30,7 @@ export interface InstanceMetadata {
   maintainerEmail: string;
   iconUrl: string | null;
   bannerUrl: string | null;
+  faviconUrl: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
 }
@@ -39,7 +40,7 @@ export interface InstanceMetadata {
  */
 export interface ThemeSettings {
   primaryColor: string;
-  darkMode: 'light' | 'dark' | 'system';
+  darkMode: "light" | "dark" | "system";
 }
 
 /**
@@ -55,11 +56,12 @@ const DEFAULT_REGISTRATION: RegistrationSettings = {
  * Default instance metadata
  */
 const DEFAULT_METADATA: InstanceMetadata = {
-  name: 'Rox Instance',
-  description: 'A lightweight ActivityPub server',
-  maintainerEmail: '',
+  name: "Rox Instance",
+  description: "A lightweight ActivityPub server",
+  maintainerEmail: "",
   iconUrl: null,
   bannerUrl: null,
+  faviconUrl: null,
   tosUrl: null,
   privacyPolicyUrl: null,
 };
@@ -69,18 +71,15 @@ const DEFAULT_METADATA: InstanceMetadata = {
  * Primary color is in OKLCH format hue value (0-360)
  */
 const DEFAULT_THEME: ThemeSettings = {
-  primaryColor: '#3b82f6', // Blue as default
-  darkMode: 'system',
+  primaryColor: "#3b82f6", // Blue as default
+  darkMode: "system",
 };
 
 export class InstanceSettingsService {
   private readonly settingsRepository: IInstanceSettingsRepository;
   private readonly cacheService: ICacheService | null;
 
-  constructor(
-    settingsRepository: IInstanceSettingsRepository,
-    cacheService?: ICacheService
-  ) {
+  constructor(settingsRepository: IInstanceSettingsRepository, cacheService?: ICacheService) {
     this.settingsRepository = settingsRepository;
     this.cacheService = cacheService ?? null;
   }
@@ -140,45 +139,48 @@ export class InstanceSettingsService {
    * Check if user registration is enabled
    */
   async isRegistrationEnabled(): Promise<boolean> {
-    return this.getCachedValue('registration.enabled', DEFAULT_REGISTRATION.enabled);
+    return this.getCachedValue("registration.enabled", DEFAULT_REGISTRATION.enabled);
   }
 
   /**
    * Set registration enabled/disabled
    */
   async setRegistrationEnabled(enabled: boolean, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('registration.enabled', enabled, updatedById);
-    await this.invalidateCache('registration.enabled');
+    await this.settingsRepository.set("registration.enabled", enabled, updatedById);
+    await this.invalidateCache("registration.enabled");
   }
 
   /**
    * Check if registration requires an invitation code
    */
   async isInviteOnly(): Promise<boolean> {
-    return this.getCachedValue('registration.inviteOnly', DEFAULT_REGISTRATION.inviteOnly);
+    return this.getCachedValue("registration.inviteOnly", DEFAULT_REGISTRATION.inviteOnly);
   }
 
   /**
    * Set invite-only mode
    */
   async setInviteOnly(inviteOnly: boolean, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('registration.inviteOnly', inviteOnly, updatedById);
-    await this.invalidateCache('registration.inviteOnly');
+    await this.settingsRepository.set("registration.inviteOnly", inviteOnly, updatedById);
+    await this.invalidateCache("registration.inviteOnly");
   }
 
   /**
    * Check if registration requires admin approval
    */
   async isApprovalRequired(): Promise<boolean> {
-    return this.getCachedValue('registration.approvalRequired', DEFAULT_REGISTRATION.approvalRequired);
+    return this.getCachedValue(
+      "registration.approvalRequired",
+      DEFAULT_REGISTRATION.approvalRequired,
+    );
   }
 
   /**
    * Set approval-required mode
    */
   async setApprovalRequired(required: boolean, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('registration.approvalRequired', required, updatedById);
-    await this.invalidateCache('registration.approvalRequired');
+    await this.settingsRepository.set("registration.approvalRequired", required, updatedById);
+    await this.invalidateCache("registration.approvalRequired");
   }
 
   /**
@@ -196,18 +198,18 @@ export class InstanceSettingsService {
     }
 
     const keys: InstanceSettingKey[] = [
-      'registration.enabled',
-      'registration.inviteOnly',
-      'registration.approvalRequired',
+      "registration.enabled",
+      "registration.inviteOnly",
+      "registration.approvalRequired",
     ];
     const values = await this.settingsRepository.getMany(keys);
 
     const result: RegistrationSettings = {
-      enabled: (values.get('registration.enabled') as boolean) ?? DEFAULT_REGISTRATION.enabled,
+      enabled: (values.get("registration.enabled") as boolean) ?? DEFAULT_REGISTRATION.enabled,
       inviteOnly:
-        (values.get('registration.inviteOnly') as boolean) ?? DEFAULT_REGISTRATION.inviteOnly,
+        (values.get("registration.inviteOnly") as boolean) ?? DEFAULT_REGISTRATION.inviteOnly,
       approvalRequired:
-        (values.get('registration.approvalRequired') as boolean) ??
+        (values.get("registration.approvalRequired") as boolean) ??
         DEFAULT_REGISTRATION.approvalRequired,
     };
 
@@ -224,18 +226,18 @@ export class InstanceSettingsService {
    */
   async updateRegistrationSettings(
     settings: Partial<RegistrationSettings>,
-    updatedById?: string
+    updatedById?: string,
   ): Promise<void> {
     const updates: Array<{ key: InstanceSettingKey; value: boolean }> = [];
 
     if (settings.enabled !== undefined) {
-      updates.push({ key: 'registration.enabled', value: settings.enabled });
+      updates.push({ key: "registration.enabled", value: settings.enabled });
     }
     if (settings.inviteOnly !== undefined) {
-      updates.push({ key: 'registration.inviteOnly', value: settings.inviteOnly });
+      updates.push({ key: "registration.inviteOnly", value: settings.inviteOnly });
     }
     if (settings.approvalRequired !== undefined) {
-      updates.push({ key: 'registration.approvalRequired', value: settings.approvalRequired });
+      updates.push({ key: "registration.approvalRequired", value: settings.approvalRequired });
     }
 
     for (const { key, value } of updates) {
@@ -252,52 +254,52 @@ export class InstanceSettingsService {
    * Get instance name
    */
   async getInstanceName(): Promise<string> {
-    return this.getCachedValue('instance.name', DEFAULT_METADATA.name);
+    return this.getCachedValue("instance.name", DEFAULT_METADATA.name);
   }
 
   /**
    * Set instance name
    */
   async setInstanceName(name: string, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('instance.name', name, updatedById);
-    await this.invalidateCache('instance.name');
+    await this.settingsRepository.set("instance.name", name, updatedById);
+    await this.invalidateCache("instance.name");
   }
 
   /**
    * Get instance description
    */
   async getInstanceDescription(): Promise<string> {
-    return this.getCachedValue('instance.description', DEFAULT_METADATA.description);
+    return this.getCachedValue("instance.description", DEFAULT_METADATA.description);
   }
 
   /**
    * Set instance description
    */
   async setInstanceDescription(description: string, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('instance.description', description, updatedById);
-    await this.invalidateCache('instance.description');
+    await this.settingsRepository.set("instance.description", description, updatedById);
+    await this.invalidateCache("instance.description");
   }
 
   /**
    * Get maintainer email
    */
   async getMaintainerEmail(): Promise<string> {
-    return this.getCachedValue('instance.maintainerEmail', DEFAULT_METADATA.maintainerEmail);
+    return this.getCachedValue("instance.maintainerEmail", DEFAULT_METADATA.maintainerEmail);
   }
 
   /**
    * Set maintainer email
    */
   async setMaintainerEmail(email: string, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('instance.maintainerEmail', email, updatedById);
-    await this.invalidateCache('instance.maintainerEmail');
+    await this.settingsRepository.set("instance.maintainerEmail", email, updatedById);
+    await this.invalidateCache("instance.maintainerEmail");
   }
 
   /**
    * Get instance icon URL
    */
   async getIconUrl(): Promise<string | null> {
-    return this.getCachedValue<string | null>('instance.iconUrl', DEFAULT_METADATA.iconUrl);
+    return this.getCachedValue<string | null>("instance.iconUrl", DEFAULT_METADATA.iconUrl);
   }
 
   /**
@@ -305,18 +307,18 @@ export class InstanceSettingsService {
    */
   async setIconUrl(url: string | null, updatedById?: string): Promise<void> {
     if (url === null) {
-      await this.settingsRepository.delete('instance.iconUrl');
+      await this.settingsRepository.delete("instance.iconUrl");
     } else {
-      await this.settingsRepository.set('instance.iconUrl', url, updatedById);
+      await this.settingsRepository.set("instance.iconUrl", url, updatedById);
     }
-    await this.invalidateCache('instance.iconUrl');
+    await this.invalidateCache("instance.iconUrl");
   }
 
   /**
    * Get instance banner URL
    */
   async getBannerUrl(): Promise<string | null> {
-    return this.getCachedValue<string | null>('instance.bannerUrl', DEFAULT_METADATA.bannerUrl);
+    return this.getCachedValue<string | null>("instance.bannerUrl", DEFAULT_METADATA.bannerUrl);
   }
 
   /**
@@ -324,18 +326,37 @@ export class InstanceSettingsService {
    */
   async setBannerUrl(url: string | null, updatedById?: string): Promise<void> {
     if (url === null) {
-      await this.settingsRepository.delete('instance.bannerUrl');
+      await this.settingsRepository.delete("instance.bannerUrl");
     } else {
-      await this.settingsRepository.set('instance.bannerUrl', url, updatedById);
+      await this.settingsRepository.set("instance.bannerUrl", url, updatedById);
     }
-    await this.invalidateCache('instance.bannerUrl');
+    await this.invalidateCache("instance.bannerUrl");
+  }
+
+  /**
+   * Get instance favicon URL
+   */
+  async getFaviconUrl(): Promise<string | null> {
+    return this.getCachedValue<string | null>("instance.faviconUrl", DEFAULT_METADATA.faviconUrl);
+  }
+
+  /**
+   * Set instance favicon URL
+   */
+  async setFaviconUrl(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.faviconUrl");
+    } else {
+      await this.settingsRepository.set("instance.faviconUrl", url, updatedById);
+    }
+    await this.invalidateCache("instance.faviconUrl");
   }
 
   /**
    * Get Terms of Service URL
    */
   async getTosUrl(): Promise<string | null> {
-    return this.getCachedValue<string | null>('instance.tosUrl', DEFAULT_METADATA.tosUrl);
+    return this.getCachedValue<string | null>("instance.tosUrl", DEFAULT_METADATA.tosUrl);
   }
 
   /**
@@ -343,18 +364,21 @@ export class InstanceSettingsService {
    */
   async setTosUrl(url: string | null, updatedById?: string): Promise<void> {
     if (url === null) {
-      await this.settingsRepository.delete('instance.tosUrl');
+      await this.settingsRepository.delete("instance.tosUrl");
     } else {
-      await this.settingsRepository.set('instance.tosUrl', url, updatedById);
+      await this.settingsRepository.set("instance.tosUrl", url, updatedById);
     }
-    await this.invalidateCache('instance.tosUrl');
+    await this.invalidateCache("instance.tosUrl");
   }
 
   /**
    * Get Privacy Policy URL
    */
   async getPrivacyPolicyUrl(): Promise<string | null> {
-    return this.getCachedValue<string | null>('instance.privacyPolicyUrl', DEFAULT_METADATA.privacyPolicyUrl);
+    return this.getCachedValue<string | null>(
+      "instance.privacyPolicyUrl",
+      DEFAULT_METADATA.privacyPolicyUrl,
+    );
   }
 
   /**
@@ -362,11 +386,11 @@ export class InstanceSettingsService {
    */
   async setPrivacyPolicyUrl(url: string | null, updatedById?: string): Promise<void> {
     if (url === null) {
-      await this.settingsRepository.delete('instance.privacyPolicyUrl');
+      await this.settingsRepository.delete("instance.privacyPolicyUrl");
     } else {
-      await this.settingsRepository.set('instance.privacyPolicyUrl', url, updatedById);
+      await this.settingsRepository.set("instance.privacyPolicyUrl", url, updatedById);
     }
-    await this.invalidateCache('instance.privacyPolicyUrl');
+    await this.invalidateCache("instance.privacyPolicyUrl");
   }
 
   /**
@@ -384,26 +408,29 @@ export class InstanceSettingsService {
     }
 
     const keys: InstanceSettingKey[] = [
-      'instance.name',
-      'instance.description',
-      'instance.maintainerEmail',
-      'instance.iconUrl',
-      'instance.bannerUrl',
-      'instance.tosUrl',
-      'instance.privacyPolicyUrl',
+      "instance.name",
+      "instance.description",
+      "instance.maintainerEmail",
+      "instance.iconUrl",
+      "instance.bannerUrl",
+      "instance.faviconUrl",
+      "instance.tosUrl",
+      "instance.privacyPolicyUrl",
     ];
     const values = await this.settingsRepository.getMany(keys);
 
     const result: InstanceMetadata = {
-      name: (values.get('instance.name') as string) ?? DEFAULT_METADATA.name,
-      description: (values.get('instance.description') as string) ?? DEFAULT_METADATA.description,
+      name: (values.get("instance.name") as string) ?? DEFAULT_METADATA.name,
+      description: (values.get("instance.description") as string) ?? DEFAULT_METADATA.description,
       maintainerEmail:
-        (values.get('instance.maintainerEmail') as string) ?? DEFAULT_METADATA.maintainerEmail,
-      iconUrl: (values.get('instance.iconUrl') as string | null) ?? DEFAULT_METADATA.iconUrl,
-      bannerUrl: (values.get('instance.bannerUrl') as string | null) ?? DEFAULT_METADATA.bannerUrl,
-      tosUrl: (values.get('instance.tosUrl') as string | null) ?? DEFAULT_METADATA.tosUrl,
+        (values.get("instance.maintainerEmail") as string) ?? DEFAULT_METADATA.maintainerEmail,
+      iconUrl: (values.get("instance.iconUrl") as string | null) ?? DEFAULT_METADATA.iconUrl,
+      bannerUrl: (values.get("instance.bannerUrl") as string | null) ?? DEFAULT_METADATA.bannerUrl,
+      faviconUrl:
+        (values.get("instance.faviconUrl") as string | null) ?? DEFAULT_METADATA.faviconUrl,
+      tosUrl: (values.get("instance.tosUrl") as string | null) ?? DEFAULT_METADATA.tosUrl,
       privacyPolicyUrl:
-        (values.get('instance.privacyPolicyUrl') as string | null) ??
+        (values.get("instance.privacyPolicyUrl") as string | null) ??
         DEFAULT_METADATA.privacyPolicyUrl,
     };
 
@@ -420,29 +447,32 @@ export class InstanceSettingsService {
    */
   async updateInstanceMetadata(
     metadata: Partial<InstanceMetadata>,
-    updatedById?: string
+    updatedById?: string,
   ): Promise<void> {
     if (metadata.name !== undefined) {
-      await this.settingsRepository.set('instance.name', metadata.name, updatedById);
-      await this.invalidateCache('instance.name');
+      await this.settingsRepository.set("instance.name", metadata.name, updatedById);
+      await this.invalidateCache("instance.name");
     }
     if (metadata.description !== undefined) {
-      await this.settingsRepository.set('instance.description', metadata.description, updatedById);
-      await this.invalidateCache('instance.description');
+      await this.settingsRepository.set("instance.description", metadata.description, updatedById);
+      await this.invalidateCache("instance.description");
     }
     if (metadata.maintainerEmail !== undefined) {
       await this.settingsRepository.set(
-        'instance.maintainerEmail',
+        "instance.maintainerEmail",
         metadata.maintainerEmail,
-        updatedById
+        updatedById,
       );
-      await this.invalidateCache('instance.maintainerEmail');
+      await this.invalidateCache("instance.maintainerEmail");
     }
     if (metadata.iconUrl !== undefined) {
       await this.setIconUrl(metadata.iconUrl, updatedById);
     }
     if (metadata.bannerUrl !== undefined) {
       await this.setBannerUrl(metadata.bannerUrl, updatedById);
+    }
+    if (metadata.faviconUrl !== undefined) {
+      await this.setFaviconUrl(metadata.faviconUrl, updatedById);
     }
     if (metadata.tosUrl !== undefined) {
       await this.setTosUrl(metadata.tosUrl, updatedById);
@@ -460,31 +490,31 @@ export class InstanceSettingsService {
    * Get theme primary color (hex format)
    */
   async getPrimaryColor(): Promise<string> {
-    return this.getCachedValue('theme.primaryColor', DEFAULT_THEME.primaryColor);
+    return this.getCachedValue("theme.primaryColor", DEFAULT_THEME.primaryColor);
   }
 
   /**
    * Set theme primary color
    */
   async setPrimaryColor(color: string, updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('theme.primaryColor', color, updatedById);
-    await this.invalidateCache('theme.primaryColor');
+    await this.settingsRepository.set("theme.primaryColor", color, updatedById);
+    await this.invalidateCache("theme.primaryColor");
   }
 
   /**
    * Get dark mode preference
    */
-  async getDarkMode(): Promise<'light' | 'dark' | 'system'> {
-    const value = await this.getCachedValue<string>('theme.darkMode', DEFAULT_THEME.darkMode);
-    return value as 'light' | 'dark' | 'system';
+  async getDarkMode(): Promise<"light" | "dark" | "system"> {
+    const value = await this.getCachedValue<string>("theme.darkMode", DEFAULT_THEME.darkMode);
+    return value as "light" | "dark" | "system";
   }
 
   /**
    * Set dark mode preference
    */
-  async setDarkMode(mode: 'light' | 'dark' | 'system', updatedById?: string): Promise<void> {
-    await this.settingsRepository.set('theme.darkMode', mode, updatedById);
-    await this.invalidateCache('theme.darkMode');
+  async setDarkMode(mode: "light" | "dark" | "system", updatedById?: string): Promise<void> {
+    await this.settingsRepository.set("theme.darkMode", mode, updatedById);
+    await this.invalidateCache("theme.darkMode");
   }
 
   /**
@@ -501,12 +531,13 @@ export class InstanceSettingsService {
       }
     }
 
-    const keys: InstanceSettingKey[] = ['theme.primaryColor', 'theme.darkMode'];
+    const keys: InstanceSettingKey[] = ["theme.primaryColor", "theme.darkMode"];
     const values = await this.settingsRepository.getMany(keys);
 
     const result: ThemeSettings = {
-      primaryColor: (values.get('theme.primaryColor') as string) ?? DEFAULT_THEME.primaryColor,
-      darkMode: (values.get('theme.darkMode') as 'light' | 'dark' | 'system') ?? DEFAULT_THEME.darkMode,
+      primaryColor: (values.get("theme.primaryColor") as string) ?? DEFAULT_THEME.primaryColor,
+      darkMode:
+        (values.get("theme.darkMode") as "light" | "dark" | "system") ?? DEFAULT_THEME.darkMode,
     };
 
     // Cache the result
@@ -520,17 +551,14 @@ export class InstanceSettingsService {
   /**
    * Update theme settings
    */
-  async updateThemeSettings(
-    settings: Partial<ThemeSettings>,
-    updatedById?: string
-  ): Promise<void> {
+  async updateThemeSettings(settings: Partial<ThemeSettings>, updatedById?: string): Promise<void> {
     if (settings.primaryColor !== undefined) {
-      await this.settingsRepository.set('theme.primaryColor', settings.primaryColor, updatedById);
-      await this.invalidateCache('theme.primaryColor');
+      await this.settingsRepository.set("theme.primaryColor", settings.primaryColor, updatedById);
+      await this.invalidateCache("theme.primaryColor");
     }
     if (settings.darkMode !== undefined) {
-      await this.settingsRepository.set('theme.darkMode', settings.darkMode, updatedById);
-      await this.invalidateCache('theme.darkMode');
+      await this.settingsRepository.set("theme.darkMode", settings.darkMode, updatedById);
+      await this.invalidateCache("theme.darkMode");
     }
   }
 
@@ -547,6 +575,7 @@ export class InstanceSettingsService {
     maintainerEmail: string;
     iconUrl: string | null;
     bannerUrl: string | null;
+    faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
     registrationEnabled: boolean;
@@ -566,7 +595,8 @@ export class InstanceSettingsService {
 
     // Try cache first
     if (this.cacheService?.isAvailable()) {
-      const cached = await this.cacheService.get<ReturnType<typeof this.publicInstanceInfoType>>(cacheKey);
+      const cached =
+        await this.cacheService.get<ReturnType<typeof this.publicInstanceInfoType>>(cacheKey);
       if (cached) {
         return cached;
       }

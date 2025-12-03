@@ -6,14 +6,14 @@
  * @module routes/notifications
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { streamSSE } from 'hono/streaming';
-import { requireAuth } from '../middleware/auth.js';
-import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
-import { NotificationService } from '../services/NotificationService.js';
-import { getNotificationStreamService } from '../services/NotificationStreamService.js';
-import type { NotificationType } from '../db/schema/pg.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { streamSSE } from "hono/streaming";
+import { requireAuth } from "../middleware/auth.js";
+import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
+import { NotificationService } from "../services/NotificationService.js";
+import { getNotificationStreamService } from "../services/NotificationStreamService.js";
+import type { NotificationType } from "../db/schema/pg.js";
 
 const notifications = new Hono();
 
@@ -30,44 +30,35 @@ const notifications = new Hono();
  * @query {boolean} [unreadOnly] - Only return unread notifications
  * @returns {Notification[]} List of notifications
  */
-notifications.get('/', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const notificationRepository = c.get('notificationRepository');
-  const userRepository = c.get('userRepository');
+notifications.get("/", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const notificationRepository = c.get("notificationRepository");
+  const userRepository = c.get("userRepository");
 
-  const notificationService = new NotificationService(
-    notificationRepository,
-    userRepository
-  );
+  const notificationService = new NotificationService(notificationRepository, userRepository);
 
-  const limit = c.req.query('limit')
-    ? Math.min(Number.parseInt(c.req.query('limit')!, 10), 100)
+  const limit = c.req.query("limit")
+    ? Math.min(Number.parseInt(c.req.query("limit")!, 10), 100)
     : 40;
-  const sinceId = c.req.query('sinceId') ?? undefined;
-  const untilId = c.req.query('untilId') ?? undefined;
-  const typesParam = c.req.query('types');
-  const unreadOnly = c.req.query('unreadOnly') === 'true';
+  const sinceId = c.req.query("sinceId") ?? undefined;
+  const untilId = c.req.query("untilId") ?? undefined;
+  const typesParam = c.req.query("types");
+  const unreadOnly = c.req.query("unreadOnly") === "true";
 
-  const types = typesParam
-    ? (typesParam.split(',') as NotificationType[])
-    : undefined;
+  const types = typesParam ? (typesParam.split(",") as NotificationType[]) : undefined;
 
   try {
-    const notificationsList = await notificationService.getNotifications(
-      user.id,
-      {
-        limit,
-        sinceId,
-        untilId,
-        types,
-        unreadOnly,
-      }
-    );
+    const notificationsList = await notificationService.getNotifications(user.id, {
+      limit,
+      sinceId,
+      untilId,
+      types,
+      unreadOnly,
+    });
 
     return c.json(notificationsList);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to get notifications';
+    const message = error instanceof Error ? error.message : "Failed to get notifications";
     return c.json({ error: message }, 400);
   }
 });
@@ -80,24 +71,19 @@ notifications.get('/', requireAuth(), async (c: Context) => {
  * @auth Required
  * @returns {object} { count: number }
  */
-notifications.get('/unread-count', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const notificationRepository = c.get('notificationRepository');
-  const userRepository = c.get('userRepository');
+notifications.get("/unread-count", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const notificationRepository = c.get("notificationRepository");
+  const userRepository = c.get("userRepository");
 
-  const notificationService = new NotificationService(
-    notificationRepository,
-    userRepository
-  );
+  const notificationService = new NotificationService(notificationRepository, userRepository);
 
   try {
     const count = await notificationService.getUnreadCount(user.id);
     return c.json({ count });
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : 'Failed to get unread notification count';
+      error instanceof Error ? error.message : "Failed to get unread notification count";
     return c.json({ error: message }, 400);
   }
 });
@@ -112,44 +98,36 @@ notifications.get('/unread-count', requireAuth(), async (c: Context) => {
  * @returns {Notification} Updated notification
  */
 notifications.post(
-  '/mark-as-read',
+  "/mark-as-read",
   requireAuth(),
   userRateLimit(RateLimitPresets.write),
   async (c: Context) => {
-    const user = c.get('user')!;
-    const notificationRepository = c.get('notificationRepository');
-    const userRepository = c.get('userRepository');
+    const user = c.get("user")!;
+    const notificationRepository = c.get("notificationRepository");
+    const userRepository = c.get("userRepository");
 
-    const notificationService = new NotificationService(
-      notificationRepository,
-      userRepository
-    );
+    const notificationService = new NotificationService(notificationRepository, userRepository);
 
     const body = await c.req.json();
 
     if (!body.notificationId) {
-      return c.json({ error: 'notificationId is required' }, 400);
+      return c.json({ error: "notificationId is required" }, 400);
     }
 
     try {
-      const notification = await notificationService.markAsRead(
-        body.notificationId,
-        user.id
-      );
+      const notification = await notificationService.markAsRead(body.notificationId, user.id);
 
       if (!notification) {
-        return c.json({ error: 'Notification not found' }, 404);
+        return c.json({ error: "Notification not found" }, 404);
       }
 
       return c.json(notification);
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to mark notification as read';
+        error instanceof Error ? error.message : "Failed to mark notification as read";
       return c.json({ error: message }, 400);
     }
-  }
+  },
 );
 
 /**
@@ -161,30 +139,25 @@ notifications.post(
  * @returns {object} { count: number } Number of notifications marked as read
  */
 notifications.post(
-  '/mark-all-as-read',
+  "/mark-all-as-read",
   requireAuth(),
   userRateLimit(RateLimitPresets.write),
   async (c: Context) => {
-    const user = c.get('user')!;
-    const notificationRepository = c.get('notificationRepository');
-    const userRepository = c.get('userRepository');
+    const user = c.get("user")!;
+    const notificationRepository = c.get("notificationRepository");
+    const userRepository = c.get("userRepository");
 
-    const notificationService = new NotificationService(
-      notificationRepository,
-      userRepository
-    );
+    const notificationService = new NotificationService(notificationRepository, userRepository);
 
     try {
       const count = await notificationService.markAllAsRead(user.id);
       return c.json({ count });
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to mark all notifications as read';
+        error instanceof Error ? error.message : "Failed to mark all notifications as read";
       return c.json({ error: message }, 400);
     }
-  }
+  },
 );
 
 /**
@@ -197,39 +170,31 @@ notifications.post(
  * @returns {object} { count: number } Number of notifications marked as read
  */
 notifications.post(
-  '/mark-as-read-until',
+  "/mark-as-read-until",
   requireAuth(),
   userRateLimit(RateLimitPresets.write),
   async (c: Context) => {
-    const user = c.get('user')!;
-    const notificationRepository = c.get('notificationRepository');
-    const userRepository = c.get('userRepository');
+    const user = c.get("user")!;
+    const notificationRepository = c.get("notificationRepository");
+    const userRepository = c.get("userRepository");
 
-    const notificationService = new NotificationService(
-      notificationRepository,
-      userRepository
-    );
+    const notificationService = new NotificationService(notificationRepository, userRepository);
 
     const body = await c.req.json();
 
     if (!body.untilId) {
-      return c.json({ error: 'untilId is required' }, 400);
+      return c.json({ error: "untilId is required" }, 400);
     }
 
     try {
-      const count = await notificationService.markAsReadUntil(
-        user.id,
-        body.untilId
-      );
+      const count = await notificationService.markAsReadUntil(user.id, body.untilId);
       return c.json({ count });
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to mark notifications as read';
+        error instanceof Error ? error.message : "Failed to mark notifications as read";
       return c.json({ error: message }, 400);
     }
-  }
+  },
 );
 
 /**
@@ -242,44 +207,35 @@ notifications.post(
  * @returns {object} { success: boolean }
  */
 notifications.post(
-  '/delete',
+  "/delete",
   requireAuth(),
   userRateLimit(RateLimitPresets.write),
   async (c: Context) => {
-    const user = c.get('user')!;
-    const notificationRepository = c.get('notificationRepository');
-    const userRepository = c.get('userRepository');
+    const user = c.get("user")!;
+    const notificationRepository = c.get("notificationRepository");
+    const userRepository = c.get("userRepository");
 
-    const notificationService = new NotificationService(
-      notificationRepository,
-      userRepository
-    );
+    const notificationService = new NotificationService(notificationRepository, userRepository);
 
     const body = await c.req.json();
 
     if (!body.notificationId) {
-      return c.json({ error: 'notificationId is required' }, 400);
+      return c.json({ error: "notificationId is required" }, 400);
     }
 
     try {
-      const deleted = await notificationService.deleteNotification(
-        body.notificationId,
-        user.id
-      );
+      const deleted = await notificationService.deleteNotification(body.notificationId, user.id);
 
       if (!deleted) {
-        return c.json({ error: 'Notification not found' }, 404);
+        return c.json({ error: "Notification not found" }, 404);
       }
 
       return c.json({ success: true });
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to delete notification';
+      const message = error instanceof Error ? error.message : "Failed to delete notification";
       return c.json({ error: message }, 400);
     }
-  }
+  },
 );
 
 /**
@@ -291,30 +247,24 @@ notifications.post(
  * @returns {object} { count: number } Number of notifications deleted
  */
 notifications.post(
-  '/delete-all',
+  "/delete-all",
   requireAuth(),
   userRateLimit(RateLimitPresets.write),
   async (c: Context) => {
-    const user = c.get('user')!;
-    const notificationRepository = c.get('notificationRepository');
-    const userRepository = c.get('userRepository');
+    const user = c.get("user")!;
+    const notificationRepository = c.get("notificationRepository");
+    const userRepository = c.get("userRepository");
 
-    const notificationService = new NotificationService(
-      notificationRepository,
-      userRepository
-    );
+    const notificationService = new NotificationService(notificationRepository, userRepository);
 
     try {
       const count = await notificationService.deleteAllNotifications(user.id);
       return c.json({ count });
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to delete all notifications';
+      const message = error instanceof Error ? error.message : "Failed to delete all notifications";
       return c.json({ error: message }, 400);
     }
-  }
+  },
 );
 
 /**
@@ -331,27 +281,27 @@ notifications.post(
  * @query {string} [token] - Auth token (alternative to Authorization header for EventSource)
  * @returns {SSE stream} Real-time notification events
  */
-notifications.get('/stream', async (c: Context) => {
+notifications.get("/stream", async (c: Context) => {
   // SSE-compatible auth: support token from query param since EventSource doesn't support headers
-  const tokenFromQuery = c.req.query('token');
-  const authHeader = c.req.header('Authorization');
-  const token = tokenFromQuery || (authHeader ? authHeader.replace(/^Bearer\s+/i, '') : null);
+  const tokenFromQuery = c.req.query("token");
+  const authHeader = c.req.header("Authorization");
+  const token = tokenFromQuery || (authHeader ? authHeader.replace(/^Bearer\s+/i, "") : null);
 
   if (!token) {
-    return c.json({ error: 'Authentication required' }, 401);
+    return c.json({ error: "Authentication required" }, 401);
   }
 
   // Validate session
-  const { AuthService } = await import('../services/AuthService.js');
-  const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+  const { AuthService } = await import("../services/AuthService.js");
+  const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
   const result = await authService.validateSession(token);
 
   if (!result) {
-    return c.json({ error: 'Invalid or expired token' }, 401);
+    return c.json({ error: "Invalid or expired token" }, 401);
   }
 
   if (result.user.isSuspended) {
-    return c.json({ error: 'Your account has been suspended' }, 403);
+    return c.json({ error: "Your account has been suspended" }, 403);
   }
 
   const user = result.user;
@@ -359,49 +309,70 @@ notifications.get('/stream', async (c: Context) => {
 
   return streamSSE(c, async (stream) => {
     let eventId = 0;
+    let running = true;
+
+    // Clean up on disconnect
+    stream.onAbort(() => {
+      running = false;
+    });
 
     // Send initial connection event
     await stream.writeSSE({
-      event: 'connected',
+      event: "connected",
       data: JSON.stringify({ userId: user.id }),
       id: String(eventId++),
     });
 
+    // Queue for notifications received from subscription
+    const notificationQueue: Array<{ type: string; data: unknown }> = [];
+
     // Subscribe to notification events for this user
-    const unsubscribe = streamService.subscribe(user.id, async (event) => {
-      try {
-        await stream.writeSSE({
-          event: event.type,
-          data: JSON.stringify(event.data),
-          id: String(eventId++),
-        });
-      } catch {
-        // Connection closed, will be cleaned up
-      }
+    const unsubscribe = streamService.subscribe(user.id, (event) => {
+      notificationQueue.push(event);
     });
 
-    // Keep connection alive with periodic heartbeats
-    const heartbeatInterval = setInterval(async () => {
+    // Main loop: send heartbeats and process notification queue
+    // Using while loop pattern as recommended by Hono docs for proper stream maintenance
+    while (running) {
+      // Process any pending notifications
+      while (notificationQueue.length > 0) {
+        const event = notificationQueue.shift();
+        if (event) {
+          try {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event.data),
+              id: String(eventId++),
+            });
+          } catch {
+            // Connection closed
+            running = false;
+            break;
+          }
+        }
+      }
+
+      if (!running) break;
+
+      // Send heartbeat
       try {
         await stream.writeSSE({
-          event: 'heartbeat',
+          event: "heartbeat",
           data: JSON.stringify({ timestamp: Date.now() }),
           id: String(eventId++),
         });
       } catch {
         // Connection closed
-        clearInterval(heartbeatInterval);
+        running = false;
+        break;
       }
-    }, 30000); // Send heartbeat every 30 seconds
 
-    // Clean up on disconnect
-    stream.onAbort(() => {
-      unsubscribe();
-      clearInterval(heartbeatInterval);
-    });
+      // Wait before next heartbeat (15 seconds)
+      await stream.sleep(15000);
+    }
 
-    // Keep the stream open
-    await new Promise(() => {});
+    // Cleanup
+    unsubscribe();
   });
 });
 

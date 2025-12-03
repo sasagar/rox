@@ -4,21 +4,21 @@
  * Manages user UI preferences using Jotai atoms.
  */
 
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import type { UISettings, Theme } from '../types/uiSettings';
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import type { UISettings, Theme } from "../types/uiSettings";
 import {
   defaultUISettings,
   fontSizeValues,
   lineHeightValues,
   contentWidthValues,
-} from '../types/uiSettings';
+} from "../types/uiSettings";
 
 /**
  * UI Settings atom with localStorage persistence
  * This stores the user's preferences locally for immediate access
  */
-export const uiSettingsAtom = atomWithStorage<UISettings>('rox-ui-settings', defaultUISettings);
+export const uiSettingsAtom = atomWithStorage<UISettings>("rox-ui-settings", defaultUISettings);
 
 /**
  * Derived atom that computes CSS variables from UI settings
@@ -31,9 +31,9 @@ export const uiCssVariablesAtom = atom((get) => {
   const contentWidth = settings.contentWidth || defaultUISettings.contentWidth;
 
   return {
-    '--rox-font-size': fontSizeValues[fontSize],
-    '--rox-line-height': lineHeightValues[lineHeight],
-    '--rox-content-width': contentWidthValues[contentWidth],
+    "--rox-font-size": fontSizeValues[fontSize],
+    "--rox-line-height": lineHeightValues[lineHeight],
+    "--rox-content-width": contentWidthValues[contentWidth],
   };
 });
 
@@ -45,23 +45,18 @@ export const themeAtom = atom(
   (get, set, newTheme: Theme) => {
     const current = get(uiSettingsAtom);
     set(uiSettingsAtom, { ...current, theme: newTheme });
-  }
+  },
 );
 
 /**
  * Update UI setting atom
  */
-export const updateUISettingAtom = atom(
-  null,
-  (get, set, update: Partial<UISettings>) => {
-    const current = get(uiSettingsAtom);
-    set(uiSettingsAtom, { ...current, ...update });
-  }
-);
+export const updateUISettingAtom = atom(null, (get, set, update: Partial<UISettings>) => {
+  const current = get(uiSettingsAtom);
+  set(uiSettingsAtom, { ...current, ...update });
+});
 
 /**
  * App custom CSS atom (derived from UI settings)
  */
-export const appCustomCssAtom = atom(
-  (get) => get(uiSettingsAtom).appCustomCss || ''
-);
+export const appCustomCssAtom = atom((get) => get(uiSettingsAtom).appCustomCss || "");

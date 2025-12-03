@@ -7,13 +7,19 @@
  * @module routes/admin
  */
 
-import { Hono } from 'hono';
-import { requireAdmin } from '../middleware/auth.js';
+import { Hono } from "hono";
+import { requireAdmin } from "../middleware/auth.js";
+import {
+  sanitizeUser,
+  parsePagination,
+  normalizeHostname,
+  errorResponse,
+} from "../lib/routeUtils.js";
 
 const app = new Hono();
 
 // All admin routes require admin authentication
-app.use('/*', requireAdmin());
+app.use("/*", requireAdmin());
 
 // ============================================================================
 // User Management Endpoints
@@ -41,18 +47,15 @@ app.use('/*', requireAdmin());
  * }
  * ```
  */
-app.get('/users', async (c) => {
-  const userRepository = c.get('userRepository');
+app.get("/users", async (c) => {
+  const userRepository = c.get("userRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const localOnly = c.req.query('localOnly') === 'true';
-  const isAdmin = c.req.query('isAdmin') !== undefined
-    ? c.req.query('isAdmin') === 'true'
-    : undefined;
-  const isSuspended = c.req.query('isSuspended') !== undefined
-    ? c.req.query('isSuspended') === 'true'
-    : undefined;
+  const { limit, offset } = parsePagination(c);
+  const localOnly = c.req.query("localOnly") === "true";
+  const isAdmin =
+    c.req.query("isAdmin") !== undefined ? c.req.query("isAdmin") === "true" : undefined;
+  const isSuspended =
+    c.req.query("isSuspended") !== undefined ? c.req.query("isSuspended") === "true" : undefined;
 
   const users = await userRepository.findAll({
     limit,
@@ -65,10 +68,7 @@ app.get('/users', async (c) => {
   const total = await userRepository.count(localOnly);
 
   // Remove sensitive data
-  const sanitizedUsers = users.map((user: any) => {
-    const { passwordHash: _p, privateKey: _pk, ...publicUser } = user;
-    return publicUser;
-  });
+  const sanitizedUsers = users.map((user: any) => sanitizeUser(user));
 
   return c.json({ users: sanitizedUsers, total });
 });
@@ -80,18 +80,17 @@ app.get('/users', async (c) => {
  *
  * Returns detailed information about a specific user including admin fields.
  */
-app.get('/users/:id', async (c) => {
-  const userRepository = c.get('userRepository');
-  const userId = c.req.param('id');
+app.get("/users/:id", async (c) => {
+  const userRepository = c.get("userRepository");
+  const userId = c.req.param("id");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Remove password hash but keep other admin-relevant info
-  const { passwordHash: _p, privateKey: _pk, ...userData } = user;
-  return c.json(userData);
+  return c.json(sanitizeUser(user));
 });
 
 /**
@@ -108,35 +107,34 @@ app.get('/users/:id', async (c) => {
  * }
  * ```
  */
-app.post('/users/:id/admin', async (c) => {
-  const userRepository = c.get('userRepository');
-  const currentAdmin = c.get('user');
-  const userId = c.req.param('id');
+app.post("/users/:id/admin", async (c) => {
+  const userRepository = c.get("userRepository");
+  const currentAdmin = c.get("user");
+  const userId = c.req.param("id");
 
   // Prevent self-demotion
   if (userId === currentAdmin?.id) {
-    return c.json({ error: 'Cannot change your own admin status' }, 400);
+    return errorResponse(c, "Cannot change your own admin status");
   }
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Cannot modify remote users
   if (user.host !== null) {
-    return c.json({ error: 'Cannot modify remote user admin status' }, 400);
+    return errorResponse(c, "Cannot modify remote user admin status");
   }
 
   const body = await c.req.json();
-  if (typeof body.isAdmin !== 'boolean') {
-    return c.json({ error: 'isAdmin must be a boolean' }, 400);
+  if (typeof body.isAdmin !== "boolean") {
+    return errorResponse(c, "isAdmin must be a boolean");
   }
 
   const updatedUser = await userRepository.update(userId, { isAdmin: body.isAdmin });
 
-  const { passwordHash: _p, privateKey: _pk, ...userData } = updatedUser;
-  return c.json(userData);
+  return c.json(sanitizeUser(updatedUser));
 });
 
 /**
@@ -153,35 +151,34 @@ app.post('/users/:id/admin', async (c) => {
  * }
  * ```
  */
-app.post('/users/:id/suspend', async (c) => {
-  const userRepository = c.get('userRepository');
-  const currentAdmin = c.get('user');
-  const userId = c.req.param('id');
+app.post("/users/:id/suspend", async (c) => {
+  const userRepository = c.get("userRepository");
+  const currentAdmin = c.get("user");
+  const userId = c.req.param("id");
 
   // Prevent self-suspension
   if (userId === currentAdmin?.id) {
-    return c.json({ error: 'Cannot suspend yourself' }, 400);
+    return errorResponse(c, "Cannot suspend yourself");
   }
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Cannot suspend other admins
   if (user.isAdmin) {
-    return c.json({ error: 'Cannot suspend an admin user. Remove admin status first.' }, 400);
+    return errorResponse(c, "Cannot suspend an admin user. Remove admin status first.");
   }
 
   const body = await c.req.json();
-  if (typeof body.isSuspended !== 'boolean') {
-    return c.json({ error: 'isSuspended must be a boolean' }, 400);
+  if (typeof body.isSuspended !== "boolean") {
+    return errorResponse(c, "isSuspended must be a boolean");
   }
 
   const updatedUser = await userRepository.update(userId, { isSuspended: body.isSuspended });
 
-  const { passwordHash: _p, privateKey: _pk, ...userData } = updatedUser;
-  return c.json(userData);
+  return c.json(sanitizeUser(updatedUser));
 });
 
 /**
@@ -192,24 +189,24 @@ app.post('/users/:id/suspend', async (c) => {
  * Permanently deletes a user and all associated data.
  * Use with caution - this cannot be undone.
  */
-app.delete('/users/:id', async (c) => {
-  const userRepository = c.get('userRepository');
-  const currentAdmin = c.get('user');
-  const userId = c.req.param('id');
+app.delete("/users/:id", async (c) => {
+  const userRepository = c.get("userRepository");
+  const currentAdmin = c.get("user");
+  const userId = c.req.param("id");
 
   // Prevent self-deletion
   if (userId === currentAdmin?.id) {
-    return c.json({ error: 'Cannot delete yourself' }, 400);
+    return errorResponse(c, "Cannot delete yourself");
   }
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   // Cannot delete other admins
   if (user.isAdmin) {
-    return c.json({ error: 'Cannot delete an admin user. Remove admin status first.' }, 400);
+    return errorResponse(c, "Cannot delete an admin user. Remove admin status first.");
   }
 
   await userRepository.delete(userId);
@@ -232,11 +229,10 @@ app.delete('/users/:id', async (c) => {
  * - limit: Maximum number of blocks (default: 100)
  * - offset: Number of blocks to skip (default: 0)
  */
-app.get('/instance-blocks', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
+app.get("/instance-blocks", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
+  const { limit, offset } = parsePagination(c);
 
   const blocks = await instanceBlockRepository.findAll(limit, offset);
   const total = await instanceBlockRepository.count();
@@ -254,12 +250,12 @@ app.get('/instance-blocks', async (c) => {
  * Query Parameters:
  * - host: Instance hostname to check
  */
-app.get('/instance-blocks/check', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const host = c.req.query('host');
+app.get("/instance-blocks/check", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const host = c.req.query("host");
 
   if (!host) {
-    return c.json({ error: 'host parameter is required' }, 400);
+    return errorResponse(c, "host parameter is required");
   }
 
   const isBlocked = await instanceBlockRepository.isBlocked(host);
@@ -283,23 +279,23 @@ app.get('/instance-blocks/check', async (c) => {
  * }
  * ```
  */
-app.post('/instance-blocks', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const admin = c.get('user');
+app.post("/instance-blocks", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const admin = c.get("user");
 
   const body = await c.req.json();
 
-  if (!body.host || typeof body.host !== 'string') {
-    return c.json({ error: 'host is required' }, 400);
+  if (!body.host || typeof body.host !== "string") {
+    return errorResponse(c, "host is required");
   }
 
   // Normalize hostname (lowercase, no protocol)
-  const host = body.host.toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const host = normalizeHostname(body.host);
 
   // Check if already blocked
   const existing = await instanceBlockRepository.findByHost(host);
   if (existing) {
-    return c.json({ error: `Instance ${host} is already blocked` }, 409);
+    return errorResponse(c, `Instance ${host} is already blocked`, 409);
   }
 
   const block = await instanceBlockRepository.create({
@@ -318,16 +314,103 @@ app.post('/instance-blocks', async (c) => {
  *
  * Removes an instance from the block list.
  */
-app.delete('/instance-blocks/:host', async (c) => {
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const host = c.req.param('host');
+app.delete("/instance-blocks/:host", async (c) => {
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const host = c.req.param("host");
 
   const deleted = await instanceBlockRepository.deleteByHost(host);
   if (!deleted) {
-    return c.json({ error: `Instance ${host} is not blocked` }, 404);
+    return errorResponse(c, `Instance ${host} is not blocked`, 404);
   }
 
   return c.json({ success: true, message: `Instance ${host} has been unblocked` });
+});
+
+// ============================================================================
+// Remote Instance Management Endpoints
+// ============================================================================
+
+/**
+ * List Remote Instances
+ *
+ * GET /api/admin/remote-instances
+ *
+ * Returns a paginated list of remote instances with their metadata and error info.
+ */
+app.get("/remote-instances", async (c) => {
+  const remoteInstanceService = c.get("remoteInstanceService");
+
+  const { limit, offset } = parsePagination(c);
+
+  const { instances, total } = await remoteInstanceService.getAllInstances({
+    limit,
+    offset,
+  });
+
+  return c.json({ instances, total });
+});
+
+/**
+ * Get Remote Instance Details
+ *
+ * GET /api/admin/remote-instances/:host
+ *
+ * Returns detailed information about a specific remote instance.
+ */
+app.get("/remote-instances/:host", async (c) => {
+  const remoteInstanceRepository = c.get("remoteInstanceRepository");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceRepository.findByHost(host);
+  if (!instance) {
+    return errorResponse(c, `Instance ${host} not found`, 404);
+  }
+
+  return c.json(instance);
+});
+
+/**
+ * Refresh Remote Instance Info
+ *
+ * POST /api/admin/remote-instances/:host/refresh
+ *
+ * Forces a refresh of the remote instance information.
+ */
+app.post("/remote-instances/:host/refresh", async (c) => {
+  const remoteInstanceService = c.get("remoteInstanceService");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceService.refreshInstanceInfo(host);
+  if (!instance) {
+    return errorResponse(c, `Failed to refresh instance ${host}`, 500);
+  }
+
+  return c.json({
+    success: true,
+    message: instance.fetchErrorCount > 0 ? "Refresh attempted but encountered errors" : "Instance info refreshed successfully",
+    instance,
+  });
+});
+
+/**
+ * Delete Remote Instance
+ *
+ * DELETE /api/admin/remote-instances/:host
+ *
+ * Removes a remote instance from the cache (will be re-fetched when needed).
+ */
+app.delete("/remote-instances/:host", async (c) => {
+  const remoteInstanceRepository = c.get("remoteInstanceRepository");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceRepository.findByHost(host);
+  if (!instance) {
+    return errorResponse(c, `Instance ${host} not found`, 404);
+  }
+
+  await remoteInstanceRepository.delete(host);
+
+  return c.json({ success: true, message: `Instance ${host} has been removed` });
 });
 
 // ============================================================================
@@ -338,8 +421,8 @@ app.delete('/instance-blocks/:host', async (c) => {
  * Generate a random invitation code
  */
 const generateInvitationCode = (): string => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid confusing characters
-  let code = '';
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Avoid confusing characters
+  let code = "";
   for (let i = 0; i < 8; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -353,11 +436,10 @@ const generateInvitationCode = (): string => {
  *
  * Returns a paginated list of invitation codes.
  */
-app.get('/invitations', async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
+app.get("/invitations", async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
+  const { limit, offset } = parsePagination(c);
 
   const codes = await invitationCodeRepository.findAll(limit, offset);
   const total = await invitationCodeRepository.count();
@@ -382,9 +464,9 @@ app.get('/invitations', async (c) => {
  * }
  * ```
  */
-app.post('/invitations', async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const admin = c.get('user');
+app.post("/invitations", async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const admin = c.get("user");
 
   const body = await c.req.json().catch(() => ({}));
 
@@ -393,7 +475,7 @@ app.post('/invitations', async (c) => {
   // Check if code already exists
   const existing = await invitationCodeRepository.findByCode(code);
   if (existing) {
-    return c.json({ error: 'Invitation code already exists' }, 409);
+    return errorResponse(c, "Invitation code already exists", 409);
   }
 
   const invitation = await invitationCodeRepository.create({
@@ -413,16 +495,16 @@ app.post('/invitations', async (c) => {
  *
  * Deletes an invitation code.
  */
-app.delete('/invitations/:id', async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const id = c.req.param('id');
+app.delete("/invitations/:id", async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const id = c.req.param("id");
 
   const deleted = await invitationCodeRepository.delete(id);
   if (!deleted) {
-    return c.json({ error: 'Invitation code not found' }, 404);
+    return errorResponse(c, "Invitation code not found", 404);
   }
 
-  return c.json({ success: true, message: 'Invitation code deleted' });
+  return c.json({ success: true, message: "Invitation code deleted" });
 });
 
 // ============================================================================
@@ -441,16 +523,15 @@ app.delete('/invitations/:id', async (c) => {
  * - limit: Maximum number of reports (default: 100)
  * - offset: Number of reports to skip (default: 0)
  */
-app.get('/reports', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
+app.get("/reports", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
-  const status = c.req.query('status') as 'pending' | 'resolved' | 'rejected' | undefined;
+  const { limit, offset } = parsePagination(c);
+  const status = c.req.query("status") as "pending" | "resolved" | "rejected" | undefined;
 
   const reports = await userReportRepository.findAll({ status, limit, offset });
   const total = await userReportRepository.count({ status });
-  const pendingCount = await userReportRepository.count({ status: 'pending' });
+  const pendingCount = await userReportRepository.count({ status: "pending" });
 
   return c.json({ reports, total, pendingCount });
 });
@@ -462,15 +543,15 @@ app.get('/reports', async (c) => {
  *
  * Returns detailed information about a specific report.
  */
-app.get('/reports/:id', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
-  const userRepository = c.get('userRepository');
-  const noteRepository = c.get('noteRepository');
-  const id = c.req.param('id');
+app.get("/reports/:id", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
+  const userRepository = c.get("userRepository");
+  const noteRepository = c.get("noteRepository");
+  const id = c.req.param("id");
 
   const report = await userReportRepository.findById(id);
   if (!report) {
-    return c.json({ error: 'Report not found' }, 404);
+    return errorResponse(c, "Report not found", 404);
   }
 
   // Fetch related data
@@ -483,7 +564,9 @@ app.get('/reports/:id', async (c) => {
   return c.json({
     ...report,
     reporter: reporter ? { id: reporter.id, username: reporter.username } : null,
-    targetUser: targetUser ? { id: targetUser.id, username: targetUser.username, host: targetUser.host } : null,
+    targetUser: targetUser
+      ? { id: targetUser.id, username: targetUser.username, host: targetUser.host }
+      : null,
     targetNote: targetNote ? { id: targetNote.id, text: targetNote.text } : null,
   });
 });
@@ -503,31 +586,31 @@ app.get('/reports/:id', async (c) => {
  * }
  * ```
  */
-app.post('/reports/:id/resolve', async (c) => {
-  const userReportRepository = c.get('userReportRepository');
-  const admin = c.get('user');
-  const id = c.req.param('id');
+app.post("/reports/:id/resolve", async (c) => {
+  const userReportRepository = c.get("userReportRepository");
+  const admin = c.get("user");
+  const id = c.req.param("id");
 
   const body = await c.req.json();
 
-  if (!['resolved', 'rejected'].includes(body.status)) {
-    return c.json({ error: 'status must be "resolved" or "rejected"' }, 400);
+  if (!["resolved", "rejected"].includes(body.status)) {
+    return errorResponse(c, 'status must be "resolved" or "rejected"');
   }
 
   const report = await userReportRepository.findById(id);
   if (!report) {
-    return c.json({ error: 'Report not found' }, 404);
+    return errorResponse(c, "Report not found", 404);
   }
 
-  if (report.status !== 'pending') {
-    return c.json({ error: 'Report has already been processed' }, 400);
+  if (report.status !== "pending") {
+    return errorResponse(c, "Report has already been processed");
   }
 
   const updated = await userReportRepository.resolve(
     id,
     admin!.id,
-    body.resolution || '',
-    body.status
+    body.resolution || "",
+    body.status,
   );
 
   return c.json(updated);
@@ -540,18 +623,18 @@ app.post('/reports/:id/resolve', async (c) => {
  *
  * Deletes a note as a moderation action.
  */
-app.delete('/notes/:id', async (c) => {
-  const noteRepository = c.get('noteRepository');
-  const id = c.req.param('id');
+app.delete("/notes/:id", async (c) => {
+  const noteRepository = c.get("noteRepository");
+  const id = c.req.param("id");
 
   const note = await noteRepository.findById(id);
   if (!note) {
-    return c.json({ error: 'Note not found' }, 404);
+    return errorResponse(c, "Note not found", 404);
   }
 
   await noteRepository.delete(id);
 
-  return c.json({ success: true, message: 'Note deleted' });
+  return c.json({ success: true, message: "Note deleted" });
 });
 
 // ============================================================================
@@ -565,11 +648,10 @@ app.delete('/notes/:id', async (c) => {
  *
  * Returns all roles.
  */
-app.get('/roles', async (c) => {
-  const roleRepository = c.get('roleRepository');
+app.get("/roles", async (c) => {
+  const roleRepository = c.get("roleRepository");
 
-  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
-  const offset = parseInt(c.req.query('offset') || '0');
+  const { limit, offset } = parsePagination(c);
 
   const roles = await roleRepository.findAll(limit, offset);
   const total = await roleRepository.count();
@@ -582,13 +664,13 @@ app.get('/roles', async (c) => {
  *
  * GET /api/admin/roles/:id
  */
-app.get('/roles/:id', async (c) => {
-  const roleRepository = c.get('roleRepository');
-  const id = c.req.param('id');
+app.get("/roles/:id", async (c) => {
+  const roleRepository = c.get("roleRepository");
+  const id = c.req.param("id");
 
   const role = await roleRepository.findById(id);
   if (!role) {
-    return c.json({ error: 'Role not found' }, 404);
+    return errorResponse(c, "Role not found", 404);
   }
 
   return c.json(role);
@@ -612,19 +694,19 @@ app.get('/roles/:id', async (c) => {
  * }
  * ```
  */
-app.post('/roles', async (c) => {
-  const roleRepository = c.get('roleRepository');
+app.post("/roles", async (c) => {
+  const roleRepository = c.get("roleRepository");
 
   const body = await c.req.json();
 
-  if (!body.name || typeof body.name !== 'string') {
-    return c.json({ error: 'name is required' }, 400);
+  if (!body.name || typeof body.name !== "string") {
+    return errorResponse(c, "name is required");
   }
 
   // Check if name already exists
   const existing = await roleRepository.findByName(body.name);
   if (existing) {
-    return c.json({ error: 'Role with this name already exists' }, 409);
+    return errorResponse(c, "Role with this name already exists", 409);
   }
 
   const role = await roleRepository.create({
@@ -648,13 +730,13 @@ app.post('/roles', async (c) => {
  *
  * PATCH /api/admin/roles/:id
  */
-app.patch('/roles/:id', async (c) => {
-  const roleRepository = c.get('roleRepository');
-  const id = c.req.param('id');
+app.patch("/roles/:id", async (c) => {
+  const roleRepository = c.get("roleRepository");
+  const id = c.req.param("id");
 
   const role = await roleRepository.findById(id);
   if (!role) {
-    return c.json({ error: 'Role not found' }, 404);
+    return errorResponse(c, "Role not found", 404);
   }
 
   const body = await c.req.json();
@@ -663,7 +745,7 @@ app.patch('/roles/:id', async (c) => {
   if (body.name && body.name !== role.name) {
     const existing = await roleRepository.findByName(body.name);
     if (existing) {
-      return c.json({ error: 'Role with this name already exists' }, 409);
+      return errorResponse(c, "Role with this name already exists", 409);
     }
   }
 
@@ -688,18 +770,18 @@ app.patch('/roles/:id', async (c) => {
  *
  * DELETE /api/admin/roles/:id
  */
-app.delete('/roles/:id', async (c) => {
-  const roleRepository = c.get('roleRepository');
-  const id = c.req.param('id');
+app.delete("/roles/:id", async (c) => {
+  const roleRepository = c.get("roleRepository");
+  const id = c.req.param("id");
 
   const role = await roleRepository.findById(id);
   if (!role) {
-    return c.json({ error: 'Role not found' }, 404);
+    return errorResponse(c, "Role not found", 404);
   }
 
   // Don't allow deleting built-in roles
-  if (role.name === 'Admin' || role.name === 'Moderator') {
-    return c.json({ error: 'Cannot delete built-in roles' }, 400);
+  if (role.name === "Admin" || role.name === "Moderator") {
+    return errorResponse(c, "Cannot delete built-in roles");
   }
 
   await roleRepository.delete(id);
@@ -720,20 +802,20 @@ app.delete('/roles/:id', async (c) => {
  * }
  * ```
  */
-app.post('/roles/:roleId/assign', async (c) => {
-  const roleRepository = c.get('roleRepository');
-  const roleService = c.get('roleService');
-  const admin = c.get('user');
-  const roleId = c.req.param('roleId');
+app.post("/roles/:roleId/assign", async (c) => {
+  const roleRepository = c.get("roleRepository");
+  const roleService = c.get("roleService");
+  const admin = c.get("user");
+  const roleId = c.req.param("roleId");
 
   const role = await roleRepository.findById(roleId);
   if (!role) {
-    return c.json({ error: 'Role not found' }, 404);
+    return errorResponse(c, "Role not found", 404);
   }
 
   const body = await c.req.json();
   if (!body.userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return errorResponse(c, "userId is required");
   }
 
   const expiresAt = body.expiresAt ? new Date(body.expiresAt) : undefined;
@@ -755,24 +837,24 @@ app.post('/roles/:roleId/assign', async (c) => {
  * }
  * ```
  */
-app.post('/roles/:roleId/unassign', async (c) => {
-  const roleRepository = c.get('roleRepository');
-  const roleService = c.get('roleService');
-  const roleId = c.req.param('roleId');
+app.post("/roles/:roleId/unassign", async (c) => {
+  const roleRepository = c.get("roleRepository");
+  const roleService = c.get("roleService");
+  const roleId = c.req.param("roleId");
 
   const role = await roleRepository.findById(roleId);
   if (!role) {
-    return c.json({ error: 'Role not found' }, 404);
+    return errorResponse(c, "Role not found", 404);
   }
 
   const body = await c.req.json();
   if (!body.userId) {
-    return c.json({ error: 'userId is required' }, 400);
+    return errorResponse(c, "userId is required");
   }
 
   const removed = await roleService.unassignRole(body.userId, roleId);
   if (!removed) {
-    return c.json({ error: 'User does not have this role' }, 404);
+    return errorResponse(c, "User does not have this role", 404);
   }
 
   return c.json({ success: true, message: `Role "${role.name}" removed from user` });
@@ -783,14 +865,14 @@ app.post('/roles/:roleId/unassign', async (c) => {
  *
  * GET /api/admin/users/:userId/roles
  */
-app.get('/users/:userId/roles', async (c) => {
-  const userRepository = c.get('userRepository');
-  const roleService = c.get('roleService');
-  const userId = c.req.param('userId');
+app.get("/users/:userId/roles", async (c) => {
+  const userRepository = c.get("userRepository");
+  const roleService = c.get("roleService");
+  const userId = c.req.param("userId");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return errorResponse(c, "User not found", 404);
   }
 
   const roles = await roleService.getUserRoles(userId);
@@ -810,8 +892,8 @@ app.get('/users/:userId/roles', async (c) => {
  *
  * Returns all instance settings.
  */
-app.get('/settings', async (c) => {
-  const instanceSettingsService = c.get('instanceSettingsService');
+app.get("/settings", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
 
   const [registration, metadata, theme] = await Promise.all([
     instanceSettingsService.getRegistrationSettings(),
@@ -840,9 +922,9 @@ app.get('/settings', async (c) => {
  * }
  * ```
  */
-app.patch('/settings/registration', async (c) => {
-  const instanceSettingsService = c.get('instanceSettingsService');
-  const admin = c.get('user');
+app.patch("/settings/registration", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
+  const admin = c.get("user");
 
   const body = await c.req.json();
 
@@ -852,7 +934,7 @@ app.patch('/settings/registration', async (c) => {
       inviteOnly: body.inviteOnly,
       approvalRequired: body.approvalRequired,
     },
-    admin?.id
+    admin?.id,
   );
 
   const settings = await instanceSettingsService.getRegistrationSettings();
@@ -873,9 +955,9 @@ app.patch('/settings/registration', async (c) => {
  * }
  * ```
  */
-app.patch('/settings/instance', async (c) => {
-  const instanceSettingsService = c.get('instanceSettingsService');
-  const admin = c.get('user');
+app.patch("/settings/instance", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
+  const admin = c.get("user");
 
   const body = await c.req.json();
 
@@ -889,7 +971,7 @@ app.patch('/settings/instance', async (c) => {
       tosUrl: body.tosUrl,
       privacyPolicyUrl: body.privacyPolicyUrl,
     },
-    admin?.id
+    admin?.id,
   );
 
   const metadata = await instanceSettingsService.getInstanceMetadata();
@@ -909,9 +991,9 @@ app.patch('/settings/instance', async (c) => {
  * }
  * ```
  */
-app.patch('/settings/theme', async (c) => {
-  const instanceSettingsService = c.get('instanceSettingsService');
-  const admin = c.get('user');
+app.patch("/settings/theme", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
+  const admin = c.get("user");
 
   const body = await c.req.json();
 
@@ -919,13 +1001,13 @@ app.patch('/settings/theme', async (c) => {
   if (body.primaryColor !== undefined) {
     const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
     if (!hexColorRegex.test(body.primaryColor)) {
-      return c.json({ error: 'primaryColor must be a valid hex color (e.g., #3b82f6)' }, 400);
+      return c.json({ error: "primaryColor must be a valid hex color (e.g., #3b82f6)" }, 400);
     }
   }
 
   // Validate darkMode
   if (body.darkMode !== undefined) {
-    if (!['light', 'dark', 'system'].includes(body.darkMode)) {
+    if (!["light", "dark", "system"].includes(body.darkMode)) {
       return c.json({ error: 'darkMode must be "light", "dark", or "system"' }, 400);
     }
   }
@@ -935,7 +1017,7 @@ app.patch('/settings/theme', async (c) => {
       primaryColor: body.primaryColor,
       darkMode: body.darkMode,
     },
-    admin?.id
+    admin?.id,
   );
 
   const theme = await instanceSettingsService.getThemeSettings();
@@ -953,12 +1035,12 @@ app.patch('/settings/theme', async (c) => {
  *
  * Returns various statistics about the instance.
  */
-app.get('/stats', async (c) => {
-  const userRepository = c.get('userRepository');
-  const noteRepository = c.get('noteRepository');
-  const instanceBlockRepository = c.get('instanceBlockRepository');
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const userReportRepository = c.get('userReportRepository');
+app.get("/stats", async (c) => {
+  const userRepository = c.get("userRepository");
+  const noteRepository = c.get("noteRepository");
+  const instanceBlockRepository = c.get("instanceBlockRepository");
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const userReportRepository = c.get("userReportRepository");
 
   const [
     totalUsers,
@@ -975,7 +1057,7 @@ app.get('/stats', async (c) => {
     instanceBlockRepository.count(),
     invitationCodeRepository.count(),
     invitationCodeRepository.countUnused(),
-    userReportRepository.count({ status: 'pending' }),
+    userReportRepository.count({ status: "pending" }),
   ]);
 
   return c.json({
@@ -997,6 +1079,432 @@ app.get('/stats', async (c) => {
     moderation: {
       pendingReports,
     },
+  });
+});
+
+// ============================================================================
+// Storage Management Endpoints
+// ============================================================================
+
+/**
+ * Get Instance-wide Storage Statistics
+ *
+ * GET /api/admin/storage/stats
+ *
+ * Returns total storage usage across all users and system files.
+ */
+app.get("/storage/stats", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+
+  // Get all files (this might need pagination for very large instances)
+  const allFiles = await driveFileRepository.findAll({ limit: 100000 });
+
+  // Calculate totals
+  let totalSize = 0;
+  let userFilesSize = 0;
+  let systemFilesSize = 0;
+  let userFilesCount = 0;
+  let systemFilesCount = 0;
+
+  const byType: Record<string, { count: number; size: number }> = {};
+  const byUser: Record<string, { count: number; size: number; username?: string }> = {};
+
+  for (const file of allFiles) {
+    totalSize += file.size;
+    const source = (file as any).source || "user";
+
+    if (source === "system") {
+      systemFilesSize += file.size;
+      systemFilesCount++;
+    } else {
+      userFilesSize += file.size;
+      userFilesCount++;
+    }
+
+    // By type
+    const category = getFileCategoryAdmin(file.type);
+    if (!byType[category]) {
+      byType[category] = { count: 0, size: 0 };
+    }
+    byType[category].count++;
+    byType[category].size += file.size;
+
+    // By user
+    if (!byUser[file.userId]) {
+      byUser[file.userId] = { count: 0, size: 0 };
+    }
+    const userData = byUser[file.userId];
+    if (userData) {
+      userData.count++;
+      userData.size += file.size;
+    }
+  }
+
+  // Get top users by storage
+  const topUsers = Object.entries(byUser)
+    .sort((a, b) => b[1].size - a[1].size)
+    .slice(0, 10);
+
+  // Fetch usernames for top users
+  for (const [userId, data] of topUsers) {
+    const user = await userRepository.findById(userId);
+    if (user) {
+      data.username = user.username;
+    }
+  }
+
+  return c.json({
+    totalFiles: allFiles.length,
+    totalSize,
+    totalSizeMB: Math.round((totalSize / (1024 * 1024)) * 100) / 100,
+    userFiles: {
+      count: userFilesCount,
+      size: userFilesSize,
+      sizeMB: Math.round((userFilesSize / (1024 * 1024)) * 100) / 100,
+    },
+    systemFiles: {
+      count: systemFilesCount,
+      size: systemFilesSize,
+      sizeMB: Math.round((systemFilesSize / (1024 * 1024)) * 100) / 100,
+    },
+    byType,
+    topUsers: topUsers.map(([userId, data]) => ({
+      userId,
+      ...data,
+      sizeMB: Math.round((data.size / (1024 * 1024)) * 100) / 100,
+    })),
+  });
+});
+
+/**
+ * Get System Files
+ *
+ * GET /api/admin/storage/system-files
+ *
+ * Returns files marked as system files (emojis, instance assets, etc.)
+ */
+app.get("/storage/system-files", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const { limit, offset } = parsePagination(c);
+
+  const allFiles = await driveFileRepository.findAll({ limit: 10000 });
+  const systemFiles = allFiles.filter((f: any) => f.source === "system");
+
+  const paginatedFiles = systemFiles.slice(offset, offset + limit);
+
+  return c.json({
+    files: paginatedFiles,
+    total: systemFiles.length,
+  });
+});
+
+/**
+ * Get User's Storage Details (Admin)
+ *
+ * GET /api/admin/storage/users/:userId
+ *
+ * Returns detailed storage information for a specific user.
+ */
+app.get("/storage/users/:userId", async (c) => {
+  const userRepository = c.get("userRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const roleService = c.get("roleService");
+  const userId = c.req.param("userId");
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  const files = await driveFileRepository.findByUserId(userId);
+  const quotaMb = await roleService.getDriveCapacity(userId);
+
+  const totalSize = files.reduce((sum: number, f: any) => sum + f.size, 0);
+
+  // Group by source
+  const userFiles = files.filter((f: any) => f.source === "user" || !f.source);
+  const systemFiles = files.filter((f: any) => f.source === "system");
+
+  return c.json({
+    user: {
+      id: user.id,
+      username: user.username,
+      host: user.host,
+    },
+    storage: {
+      totalFiles: files.length,
+      totalSize,
+      totalSizeMB: Math.round((totalSize / (1024 * 1024)) * 100) / 100,
+      quotaMB: quotaMb,
+      isUnlimited: quotaMb === -1,
+      usagePercent: quotaMb === -1 ? 0 : Math.round((totalSize / (quotaMb * 1024 * 1024)) * 100),
+    },
+    fileCount: {
+      user: userFiles.length,
+      system: systemFiles.length,
+    },
+    files,
+  });
+});
+
+/**
+ * Delete File (Admin)
+ *
+ * DELETE /api/admin/storage/files/:fileId
+ *
+ * Deletes a file regardless of ownership.
+ */
+app.delete("/storage/files/:fileId", async (c) => {
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const fileId = c.req.param("fileId");
+
+  const file = await driveFileRepository.findById(fileId);
+  if (!file) {
+    return errorResponse(c, "File not found", 404);
+  }
+
+  // Delete from storage
+  try {
+    await fileStorage.delete(file.storageKey);
+  } catch (error) {
+    console.error("Failed to delete file from storage:", error);
+    // Continue to delete database record even if storage deletion fails
+  }
+
+  // Delete from database
+  await driveFileRepository.delete(fileId);
+
+  return c.json({ success: true, message: "File deleted" });
+});
+
+/**
+ * Update User's Storage Quota
+ *
+ * PATCH /api/admin/storage/users/:userId/quota
+ *
+ * Updates a user's storage quota.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "quotaMB": 500  // -1 for unlimited
+ * }
+ * ```
+ */
+app.patch("/storage/users/:userId/quota", async (c) => {
+  const userRepository = c.get("userRepository");
+  const userId = c.req.param("userId");
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  // Cannot modify remote users
+  if (user.host !== null) {
+    return errorResponse(c, "Cannot modify remote user storage quota");
+  }
+
+  const body = await c.req.json();
+  if (typeof body.quotaMB !== "number") {
+    return errorResponse(c, "quotaMB must be a number");
+  }
+
+  // Update user's storageQuotaMb
+  const updatedUser = await userRepository.update(userId, {
+    storageQuotaMb: body.quotaMB === -1 ? null : body.quotaMB,
+  });
+
+  return c.json({
+    success: true,
+    user: sanitizeUser(updatedUser),
+    quotaMB: body.quotaMB,
+  });
+});
+
+/**
+ * Categorize file by MIME type (admin version)
+ */
+function getFileCategoryAdmin(mimeType: string): string {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType.startsWith("text/")) return "text";
+  if (mimeType.includes("pdf")) return "document";
+  return "other";
+}
+
+// ============================================================================
+// Server Asset Management Endpoints
+// ============================================================================
+
+/**
+ * Upload Server Asset
+ *
+ * POST /api/admin/assets/upload
+ *
+ * Uploads a file as a server asset (icon, banner, favicon).
+ * The file is stored as a system file (not counted against user storage).
+ *
+ * Form Data:
+ * - file: The file to upload
+ * - type: Asset type ("icon" | "banner" | "favicon")
+ *
+ * Response:
+ * ```json
+ * {
+ *   "url": "https://example.com/files/abc123.webp",
+ *   "type": "icon"
+ * }
+ * ```
+ */
+app.post("/assets/upload", async (c) => {
+  const admin = c.get("user");
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  // Import FileService dynamically to avoid circular dependencies
+  const { FileService } = await import("../services/FileService.js");
+  const fileService = new FileService(driveFileRepository, fileStorage);
+
+  const body = await c.req.parseBody();
+  const file = body.file as File;
+  const assetType = body.type as string;
+
+  if (!file) {
+    return errorResponse(c, "No file provided");
+  }
+
+  // Validate asset type
+  const validAssetTypes = ["icon", "banner", "favicon"];
+  if (!assetType || !validAssetTypes.includes(assetType)) {
+    return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
+  }
+
+  // Validate file type (must be an image)
+  if (!file.type.startsWith("image/")) {
+    return errorResponse(c, "File must be an image");
+  }
+
+  // Size limits based on asset type
+  const sizeLimits: Record<string, number> = {
+    icon: 2 * 1024 * 1024, // 2MB
+    banner: 5 * 1024 * 1024, // 5MB
+    favicon: 512 * 1024, // 512KB
+  };
+
+  if (file.size > sizeLimits[assetType]!) {
+    const limitMB = sizeLimits[assetType]! / 1024 / 1024;
+    return errorResponse(c, `File size exceeds ${limitMB}MB limit for ${assetType}`);
+  }
+
+  try {
+    // Convert file to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload as system file
+    const driveFile = await fileService.upload({
+      file: buffer,
+      name: `${assetType}-${Date.now()}-${file.name}`,
+      type: file.type,
+      userId: admin!.id,
+      source: "system",
+      comment: `Server ${assetType} asset`,
+    });
+
+    // Update instance settings with the new URL
+    const updateData: Record<string, string | null> = {};
+    switch (assetType) {
+      case "icon":
+        updateData.iconUrl = driveFile.url;
+        break;
+      case "banner":
+        updateData.bannerUrl = driveFile.url;
+        break;
+      case "favicon":
+        updateData.faviconUrl = driveFile.url;
+        break;
+    }
+
+    await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
+
+    return c.json({
+      url: driveFile.url,
+      type: assetType,
+      fileId: driveFile.id,
+    }, 201);
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Server Asset
+ *
+ * DELETE /api/admin/assets/:type
+ *
+ * Removes a server asset and clears the corresponding instance setting.
+ *
+ * URL Parameters:
+ * - type: Asset type ("icon" | "banner" | "favicon")
+ */
+app.delete("/assets/:type", async (c) => {
+  const admin = c.get("user");
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  const assetType = c.req.param("type");
+
+  // Validate asset type
+  const validAssetTypes = ["icon", "banner", "favicon"];
+  if (!validAssetTypes.includes(assetType)) {
+    return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
+  }
+
+  // Clear the instance setting
+  const updateData: Record<string, string | null> = {};
+  switch (assetType) {
+    case "icon":
+      updateData.iconUrl = null;
+      break;
+    case "banner":
+      updateData.bannerUrl = null;
+      break;
+    case "favicon":
+      updateData.faviconUrl = null;
+      break;
+  }
+
+  await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
+
+  return c.json({
+    success: true,
+    message: `${assetType} asset removed`,
+  });
+});
+
+/**
+ * Get Server Assets
+ *
+ * GET /api/admin/assets
+ *
+ * Returns current server asset URLs.
+ */
+app.get("/assets", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  const metadata = await instanceSettingsService.getInstanceMetadata();
+
+  return c.json({
+    icon: metadata.iconUrl,
+    banner: metadata.bannerUrl,
+    favicon: metadata.faviconUrl,
   });
 });
 

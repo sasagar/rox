@@ -1,15 +1,13 @@
-import { eq, and, inArray, sql } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { reactions } from '../../db/schema/pg.js';
-import type { IReactionRepository } from '../../interfaces/repositories/IReactionRepository.js';
-import type { Reaction } from 'shared';
+import { eq, and, inArray, sql } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { reactions } from "../../db/schema/pg.js";
+import type { IReactionRepository } from "../../interfaces/repositories/IReactionRepository.js";
+import type { Reaction } from "shared";
 
 export class PostgresReactionRepository implements IReactionRepository {
   constructor(private db: Database) {}
 
-  async create(
-    reaction: Omit<Reaction, 'createdAt' | 'updatedAt'>
-  ): Promise<Reaction> {
+  async create(reaction: Omit<Reaction, "createdAt" | "updatedAt">): Promise<Reaction> {
     const now = new Date();
     const [result] = await this.db
       .insert(reactions)
@@ -21,26 +19,19 @@ export class PostgresReactionRepository implements IReactionRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create reaction');
+      throw new Error("Failed to create reaction");
     }
 
     return result as Reaction;
   }
 
   async findById(id: string): Promise<Reaction | null> {
-    const [result] = await this.db
-      .select()
-      .from(reactions)
-      .where(eq(reactions.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(reactions).where(eq(reactions.id, id)).limit(1);
 
     return (result as Reaction) ?? null;
   }
 
-  async findByUserAndNote(
-    userId: string,
-    noteId: string
-  ): Promise<Reaction | null> {
+  async findByUserAndNote(userId: string, noteId: string): Promise<Reaction | null> {
     const [result] = await this.db
       .select()
       .from(reactions)
@@ -53,7 +44,7 @@ export class PostgresReactionRepository implements IReactionRepository {
   async findByUserNoteAndReaction(
     userId: string,
     noteId: string,
-    reaction: string
+    reaction: string,
   ): Promise<Reaction | null> {
     const [result] = await this.db
       .select()
@@ -62,8 +53,8 @@ export class PostgresReactionRepository implements IReactionRepository {
         and(
           eq(reactions.userId, userId),
           eq(reactions.noteId, noteId),
-          eq(reactions.reaction, reaction)
-        )
+          eq(reactions.reaction, reaction),
+        ),
       )
       .limit(1);
 
@@ -140,9 +131,7 @@ export class PostgresReactionRepository implements IReactionRepository {
     return { counts, emojis };
   }
 
-  async countByNoteIds(
-    noteIds: string[]
-  ): Promise<Map<string, Record<string, number>>> {
+  async countByNoteIds(noteIds: string[]): Promise<Map<string, Record<string, number>>> {
     if (noteIds.length === 0) {
       return new Map();
     }
@@ -181,7 +170,7 @@ export class PostgresReactionRepository implements IReactionRepository {
   async deleteByUserNoteAndReaction(
     userId: string,
     noteId: string,
-    reaction: string
+    reaction: string,
   ): Promise<void> {
     await this.db
       .delete(reactions)
@@ -189,8 +178,8 @@ export class PostgresReactionRepository implements IReactionRepository {
         and(
           eq(reactions.userId, userId),
           eq(reactions.noteId, noteId),
-          eq(reactions.reaction, reaction)
-        )
+          eq(reactions.reaction, reaction),
+        ),
       );
   }
 

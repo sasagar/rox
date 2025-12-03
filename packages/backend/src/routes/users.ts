@@ -6,10 +6,10 @@
  * @module routes/users
  */
 
-import { Hono } from 'hono';
-import { AuthService } from '../services/AuthService.js';
-import { UserService } from '../services/UserService.js';
-import { requireAuth } from '../middleware/auth.js';
+import { Hono } from "hono";
+import { AuthService } from "../services/AuthService.js";
+import { UserService } from "../services/UserService.js";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
 
 const app = new Hono();
 
@@ -50,45 +50,48 @@ const app = new Hono();
  * - 403: Registration disabled
  * - 409: Username or email already exists
  */
-app.post('/', async (c) => {
+app.post("/", async (c) => {
   // 登録機能が無効な場合
-  if (process.env.ENABLE_REGISTRATION !== 'true') {
-    return c.json({ error: 'Registration is disabled' }, 403);
+  if (process.env.ENABLE_REGISTRATION !== "true") {
+    return c.json({ error: "Registration is disabled" }, 403);
   }
 
   const body = await c.req.json();
 
   // バリデーション
-  if (!body.username || typeof body.username !== 'string') {
-    return c.json({ error: 'Username is required' }, 400);
+  if (!body.username || typeof body.username !== "string") {
+    return c.json({ error: "Username is required" }, 400);
   }
-  if (!body.email || typeof body.email !== 'string') {
-    return c.json({ error: 'Email is required' }, 400);
+  if (!body.email || typeof body.email !== "string") {
+    return c.json({ error: "Email is required" }, 400);
   }
-  if (!body.password || typeof body.password !== 'string') {
-    return c.json({ error: 'Password is required' }, 400);
+  if (!body.password || typeof body.password !== "string") {
+    return c.json({ error: "Password is required" }, 400);
   }
 
   // ユーザー名のバリデーション（英数字とアンダースコアのみ、3-20文字）
   if (!/^[a-zA-Z0-9_]{3,20}$/.test(body.username)) {
     return c.json(
-      { error: 'Username must be 3-20 characters and contain only letters, numbers, and underscores' },
-      400
+      {
+        error:
+          "Username must be 3-20 characters and contain only letters, numbers, and underscores",
+      },
+      400,
     );
   }
 
   // メールアドレスの簡易バリデーション
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    return c.json({ error: 'Invalid email address' }, 400);
+    return c.json({ error: "Invalid email address" }, 400);
   }
 
   // パスワードの長さチェック（最低8文字）
   if (body.password.length < 8) {
-    return c.json({ error: 'Password must be at least 8 characters' }, 400);
+    return c.json({ error: "Password must be at least 8 characters" }, 400);
   }
 
   try {
-    const authService = new AuthService(c.get('userRepository'), c.get('sessionRepository'));
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
     const { user, session } = await authService.register({
       username: body.username,
       email: body.email,
@@ -104,11 +107,11 @@ app.post('/', async (c) => {
         user: publicUser,
         token: session.token,
       },
-      201
+      201,
     );
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes('already exists')) {
+      if (error.message.includes("already exists")) {
         return c.json({ error: error.message }, 409);
       }
     }
@@ -144,10 +147,10 @@ app.post('/', async (c) => {
  * Errors:
  * - 401: Authentication required, or invalid token
  */
-app.get('/@me', requireAuth(), async (c) => {
-  const user = c.get('user');
+app.get("/@me", requireAuth(), async (c) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // メールアドレスは含めるが、パスワードハッシュは除外
@@ -194,20 +197,20 @@ app.get('/@me', requireAuth(), async (c) => {
  * - Remote users may not be searchable by display name if not cached locally
  * - Suspended users are excluded from results
  */
-app.get('/search', async (c) => {
-  const userRepository = c.get('userRepository');
-  const query = c.req.query('q');
-  const limitParam = c.req.query('limit');
-  const offsetParam = c.req.query('offset');
-  const localOnlyParam = c.req.query('localOnly');
+app.get("/search", async (c) => {
+  const userRepository = c.get("userRepository");
+  const query = c.req.query("q");
+  const limitParam = c.req.query("limit");
+  const offsetParam = c.req.query("offset");
+  const localOnlyParam = c.req.query("localOnly");
 
   if (!query || query.trim().length === 0) {
-    return c.json({ error: 'Search query is required' }, 400);
+    return c.json({ error: "Search query is required" }, 400);
   }
 
-  const limit = Math.min(Math.max(parseInt(limitParam || '20', 10) || 20, 1), 50);
-  const offset = Math.max(parseInt(offsetParam || '0', 10) || 0, 0);
-  const localOnly = localOnlyParam === 'true';
+  const limit = Math.min(Math.max(parseInt(limitParam || "20", 10) || 20, 1), 50);
+  const offset = Math.max(parseInt(offsetParam || "0", 10) || 0, 0);
+  const localOnly = localOnlyParam === "true";
 
   const searchResults = await userRepository.search({
     query: query.trim(),
@@ -218,7 +221,12 @@ app.get('/search', async (c) => {
 
   // Remove sensitive fields
   const publicUsers = searchResults.map((user) => {
-    const { passwordHash: _passwordHash, email: _email, privateKey: _privateKey, ...publicUser } = user;
+    const {
+      passwordHash: _passwordHash,
+      email: _email,
+      privateKey: _privateKey,
+      ...publicUser
+    } = user;
     return publicUser;
   });
 
@@ -253,13 +261,15 @@ app.get('/search', async (c) => {
  * - 400: userId or username is required
  * - 404: User not found
  */
-app.get('/show', async (c) => {
-  const userRepository = c.get('userRepository');
-  const userId = c.req.query('userId');
-  const username = c.req.query('username');
+app.get("/show", optionalAuth(), async (c) => {
+  const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
+  const noteRepository = c.get("noteRepository");
+  const userId = c.req.query("userId");
+  const username = c.req.query("username");
 
   if (!userId && !username) {
-    return c.json({ error: 'userId or username is required' }, 400);
+    return c.json({ error: "userId or username is required" }, 400);
   }
 
   let user;
@@ -270,13 +280,27 @@ app.get('/show', async (c) => {
   }
 
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return c.json({ error: "User not found" }, 404);
   }
 
   // パスワードハッシュとメールアドレスを除外
   const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
 
-  return c.json(publicUser);
+  // Check if current user is following this user (if authenticated)
+  let isFollowed = false;
+  const currentUser = c.get("user");
+  if (currentUser && currentUser.id !== user.id) {
+    isFollowed = await followRepository.exists(currentUser.id, user.id);
+  }
+
+  // Fetch counts in parallel
+  const [notesCount, followersCount, followingCount] = await Promise.all([
+    noteRepository.countByUserId(user.id),
+    followRepository.countFollowers(user.id),
+    followRepository.countFollowing(user.id),
+  ]);
+
+  return c.json({ ...publicUser, isFollowed, notesCount, followersCount, followingCount });
 });
 
 /**
@@ -310,22 +334,23 @@ app.get('/show', async (c) => {
  * - 404: User not found on remote server
  * - 502: Failed to fetch remote user (network error, invalid response)
  */
-app.get('/resolve', async (c) => {
-  const userRepository = c.get('userRepository');
-  const remoteActorService = c.get('remoteActorService');
-  const acct = c.req.query('acct');
+app.get("/resolve", optionalAuth(), async (c) => {
+  const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
+  const remoteActorService = c.get("remoteActorService");
+  const acct = c.req.query("acct");
 
   if (!acct) {
-    return c.json({ error: 'acct parameter is required' }, 400);
+    return c.json({ error: "acct parameter is required" }, 400);
   }
 
   try {
     // Get an instance actor (local user with private key) for HTTP Signature
     // GoToSocial requires HTTP signatures for actor fetches
     // Try to find 'alice' as default instance actor, or any local user
-    const instanceActor = await userRepository.findByUsername('alice', null);
+    const instanceActor = await userRepository.findByUsername("alice", null);
 
-    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const baseUrl = process.env.URL || "http://localhost:3000";
     if (instanceActor?.privateKey) {
       remoteActorService.setSignatureConfig({
         keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
@@ -338,15 +363,22 @@ app.get('/resolve', async (c) => {
     // パスワードハッシュとメールアドレスを除外
     const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
 
-    return c.json(publicUser);
+    // Check if current user is following this user (if authenticated)
+    let isFollowed = false;
+    const currentUser = c.get("user");
+    if (currentUser && currentUser.id !== user.id) {
+      isFollowed = await followRepository.exists(currentUser.id, user.id);
+    }
+
+    return c.json({ ...publicUser, isFollowed });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to resolve user';
+    const message = error instanceof Error ? error.message : "Failed to resolve user";
 
     // Determine appropriate error code
-    if (message.includes('Invalid acct format')) {
+    if (message.includes("Invalid acct format")) {
       return c.json({ error: message }, 400);
     }
-    if (message.includes('not found') || message.includes('No ActivityPub actor link')) {
+    if (message.includes("not found") || message.includes("No ActivityPub actor link")) {
       return c.json({ error: message }, 404);
     }
     // Network/fetch errors
@@ -380,15 +412,15 @@ app.get('/resolve', async (c) => {
  * Errors:
  * - 404: User not found
  */
-app.get('/:id/public-roles', async (c) => {
-  const userId = c.req.param('id');
-  const userRepository = c.get('userRepository');
-  const roleAssignmentRepository = c.get('roleAssignmentRepository');
+app.get("/:id/public-roles", async (c) => {
+  const userId = c.req.param("id");
+  const userRepository = c.get("userRepository");
+  const roleAssignmentRepository = c.get("roleAssignmentRepository");
 
   // Check if user exists
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return c.json({ error: "User not found" }, 404);
   }
 
   // Get all roles for user
@@ -431,13 +463,13 @@ app.get('/:id/public-roles', async (c) => {
  * Errors:
  * - 404: User not found
  */
-app.get('/:id', async (c) => {
-  const userId = c.req.param('id');
-  const userRepository = c.get('userRepository');
+app.get("/:id", async (c) => {
+  const userId = c.req.param("id");
+  const userRepository = c.get("userRepository");
 
   const user = await userRepository.findById(userId);
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return c.json({ error: "User not found" }, 404);
   }
 
   // パスワードハッシュとメールアドレスを除外
@@ -483,23 +515,19 @@ app.get('/:id', async (c) => {
  * Errors:
  * - 401: Authentication required, or invalid token
  */
-app.patch('/@me', requireAuth(), async (c) => {
-  const user = c.get('user');
+app.patch("/@me", requireAuth(), async (c) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const body = await c.req.json();
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const cacheService = c.get('cacheService');
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
 
   // Initialize UserService with ActivityPub delivery support and caching
-  const userService = new UserService(
-    userRepository,
-    deliveryService,
-    cacheService,
-  );
+  const userService = new UserService(userRepository, deliveryService, cacheService);
 
   // 更新可能なフィールドのみを抽出
   const updateData: any = {};
@@ -510,17 +538,17 @@ app.patch('/@me', requireAuth(), async (c) => {
   if (body.customCss !== undefined) {
     // Sanitize CSS to prevent XSS (allow basic safe CSS)
     // Limit to 10KB to prevent abuse
-    if (typeof body.customCss === 'string' && body.customCss.length <= 10240) {
+    if (typeof body.customCss === "string" && body.customCss.length <= 10240) {
       updateData.customCss = body.customCss;
     }
   }
 
   // Handle UI settings
   if (body.uiSettings !== undefined) {
-    const validFontSizes = ['small', 'medium', 'large', 'xlarge'];
-    const validLineHeights = ['compact', 'normal', 'relaxed'];
-    const validContentWidths = ['narrow', 'normal', 'wide'];
-    const validThemes = ['light', 'dark', 'system'];
+    const validFontSizes = ["small", "medium", "large", "xlarge"];
+    const validLineHeights = ["compact", "normal", "relaxed"];
+    const validContentWidths = ["narrow", "normal", "wide"];
+    const validThemes = ["light", "dark", "system"];
 
     const uiSettings: Record<string, unknown> = {};
 
@@ -537,7 +565,10 @@ app.patch('/@me', requireAuth(), async (c) => {
       uiSettings.theme = body.uiSettings.theme;
     }
     // Custom CSS for app (limit to 10KB)
-    if (typeof body.uiSettings.appCustomCss === 'string' && body.uiSettings.appCustomCss.length <= 10240) {
+    if (
+      typeof body.uiSettings.appCustomCss === "string" &&
+      body.uiSettings.appCustomCss.length <= 10240
+    ) {
       uiSettings.appCustomCss = body.uiSettings.appCustomCss;
     }
 
@@ -549,7 +580,7 @@ app.patch('/@me', requireAuth(), async (c) => {
     const { passwordHash: _passwordHash, ...userData } = updatedUser;
     return c.json(userData);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to update profile';
+    const message = error instanceof Error ? error.message : "Failed to update profile";
     return c.json({ error: message }, 400);
   }
 });

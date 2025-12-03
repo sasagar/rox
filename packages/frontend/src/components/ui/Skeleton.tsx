@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Skeleton loading component for content placeholders
@@ -11,7 +11,7 @@ interface SkeletonProps {
   /** Height of the skeleton (CSS value) */
   height?: string;
   /** Border radius (default: 'md') */
-  rounded?: 'sm' | 'md' | 'lg' | 'full' | 'none';
+  rounded?: "sm" | "md" | "lg" | "full" | "none";
   /** Additional CSS classes */
   className?: string;
 }
@@ -19,13 +19,13 @@ interface SkeletonProps {
 /**
  * Base skeleton component with pulse animation
  */
-export function Skeleton({ width, height, rounded = 'md', className = '' }: SkeletonProps) {
+export function Skeleton({ width, height, rounded = "md", className = "" }: SkeletonProps) {
   const roundedClass = {
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    full: 'rounded-full',
-    none: '',
+    sm: "rounded-sm",
+    md: "rounded-md",
+    lg: "rounded-lg",
+    full: "rounded-full",
+    none: "",
   }[rounded];
 
   return (

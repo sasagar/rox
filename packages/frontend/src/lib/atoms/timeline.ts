@@ -1,5 +1,5 @@
-import { atom } from 'jotai';
-import type { Note } from '../types/note';
+import { atom } from "jotai";
+import type { Note } from "../types/note";
 
 /**
  * Timeline notes atom
@@ -34,5 +34,5 @@ export const timelineCursorAtom = atom<string | null>(null);
  */
 export const timelineLastNoteIdAtom = atom((get) => {
   const notes = get(timelineNotesAtom);
-  return notes.length > 0 ? notes[notes.length - 1]?.id ?? null : null;
+  return notes.length > 0 ? (notes[notes.length - 1]?.id ?? null) : null;
 });

@@ -2,6 +2,8 @@
 
 このディレクトリには、Roxプロジェクトの実装計画と進捗管理に関するドキュメントが含まれています。
 
+**言語**: [English](./README.en.md) | 日本語
+
 ## ドキュメント構成
 
 - [overview.md](./overview.md) - プロジェクト全体の概要と実装アプローチ
@@ -19,7 +21,10 @@
 | Phase 0: Foundation | ✅ 完了 | 100% | 全ての基盤コンポーネント実装・テスト完了 |
 | Phase 1: Misskey API | ✅ 完了 | 100% | 全コアエンドポイント実装・動作確認完了 |
 | Phase 2: Frontend | ✅ 完了 | 100% | Waku Client完全実装（アクセシビリティ対応含む） |
-| Phase 3: Federation | ⏳ 次 | 0% | Phase 2完了により開始可能 |
+| Phase 3: Federation | ✅ 完了 | 100% | ActivityPub連合機能実装済み |
+| Phase 4: Refactoring | ✅ 完了 | 100% | コード最適化・テストカバレッジ向上 |
+| Phase 5: Administration | ✅ 完了 | 100% | ロールシステム・モデレーションツール |
+| Phase 6: Production | ✅ 完了 | 100% | 本番環境デプロイ準備完了 |
 
 ## 直近の実装内容
 
@@ -79,94 +84,10 @@
 
 このドキュメントは実装の進行に合わせて更新されます。
 
-**最終更新:** 2025-11-25
-**現在のフェーズ:** Phase 2 完了 ✅
-**次のマイルストーン:** Phase 3 (ActivityPub Federation) の開始
+**最終更新:** 2025-12-02
+**現在のフェーズ:** Phase 6 完了 ✅
+**次のマイルストーン:** Phase 7 (Plugin System) - 計画中
 
-## Phase 1 完了のお知らせ
+## アーカイブ
 
-**2025-11-19に Phase 1 (Misskey-Compatible API) が完了しました！**
-
-- 全32エンドポイント実装・動作確認完了
-- 認証、ユーザー管理、フォロー、ノート投稿、タイムライン、リアクション、ファイル管理すべて動作
-- ローカルSNSとして完全に機能するバックエンドが完成
-
-次のステップ:
-- **Phase 2 (Frontend)**: Waku + Jotai でフロントエンド実装
-- **Phase 3 (Federation)**: ActivityPub連合機能の実装
-- または、両フェーズを並行して進行可能
-
-## Phase 2 完了のお知らせ
-
-**2025-11-25に Phase 2 (Frontend - Waku Client) が完了しました！**
-
-### 実装完了機能
-
-**環境構築:**
-- ✅ Waku 0.27.1 + Jotai セットアップ
-- ✅ Tailwind CSS v4 + OKLCH色空間カスタムカラー
-- ✅ Lingui i18n対応（日本語・英語、127メッセージ）
-- ✅ React Aria Components 導入
-- ✅ Lucide React アイコンライブラリ統合
-
-**認証フロー:**
-- ✅ ログイン/サインアップページ
-- ✅ Passkey認証対応（WebAuthn）
-- ✅ パスワード認証対応
-- ✅ セッション管理（localStorage永続化）
-
-**タイムライン機能:**
-- ✅ ローカル/ソーシャル/ホームタイムライン表示
-- ✅ 無限スクロール（Intersection Observer + カスタムフック）
-- ✅ スケルトンローディング、エラー表示
-- ✅ タイムラインタブ切り替え
-
-**投稿機能 (NoteComposer):**
-- ✅ テキスト投稿、画像添付（複数対応）
-- ✅ ドラッグ&ドロップでのファイルアップロード
-- ✅ 画像プレビュー表示
-- ✅ 返信、リノート機能
-- ✅ CW（Content Warning）対応
-- ✅ 公開範囲設定（React Aria Select使用、アイコン付き、多言語対応）
-- ✅ ファイルアップロード進捗表示
-
-**投稿表示 (NoteCard):**
-- ✅ リアクション表示・追加・削除（ReactionPicker使用、アイコンボタン）
-- ✅ リノート機能（Lucide Repeat2アイコン）
-- ✅ 返信機能（Lucide MessageCircleアイコン）
-- ✅ フォロー/アンフォローボタン
-- ✅ 画像モーダル（ズーム、パン、ギャラリーナビゲーション）
-- ✅ 投稿削除機能
-- ✅ Content Warning 展開機能
-
-**ユーザープロフィールページ:**
-- ✅ プロフィール情報表示（アバター、バナー、自己紹介）
-- ✅ 統計情報（投稿数、フォロワー数、フォロー中数）
-- ✅ フォロー/アンフォローボタン
-- ✅ ユーザーの投稿一覧
-- ✅ 動的ルーティング（`/[username]`）
-
-**UI/UXの改善:**
-- ✅ ローディングインジケーター（Spinner, ProgressBar, Skeleton）
-- ✅ エラー表示とリトライ機能
-- ✅ 画像全画面表示モーダル（Lucide アイコン使用）
-- ✅ レスポンシブデザイン
-- ✅ アイコンシステム統一（Lucide React、Unicode絵文字から移行）
-- ✅ カスタムコンポーネント（EmojiPicker, ImageModal, ReactionPicker）
-
-**アクセシビリティ対応:**
-- ✅ キーボードナビゲーション（j/k, 矢印キー, Home/End）
-- ✅ フォーカス管理（モーダルのフォーカストラップ）
-- ✅ ARIA属性の適切な設定（role, aria-label, aria-expanded等）
-- ✅ スクリーンリーダー対応（sr-only クラス活用）
-
-### 技術的成果
-
-- 完全に機能するソーシャルネットワーククライアントの実装
-- WCAG 2.1 Level AA準拠のアクセシビリティ実装
-- カスタムフック（`useKeyboardNavigation`, `useFocusTrap`）による再利用可能なロジック
-- React Server Components (RSC) を活用した高速な初期ロード
-- Jotaiによる効率的な状態管理とグローバルステート（認証、トースト）
-
-次のステップ:
-- **Phase 3 (Federation)**: ActivityPub連合機能の実装開始可能
+過去のタスクサマリーや計画ドキュメントは [archive](./archive/) ディレクトリで参照できます。

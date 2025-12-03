@@ -1,149 +1,682 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Smile, X, Clock, Hand, Dog, Pizza, Plane, Lightbulb, Heart, Flag, Sparkles } from 'lucide-react';
-import { Button } from './Button';
-import { Dialog, DialogTrigger, Modal, ModalOverlay } from 'react-aria-components';
+import { useState, useRef, useEffect } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import {
+  Smile,
+  X,
+  Clock,
+  Hand,
+  Dog,
+  Pizza,
+  Plane,
+  Lightbulb,
+  Heart,
+  Flag,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "./Button";
+import { Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components";
 import {
   emojiListAtom,
   emojiCategoriesAtom,
   fetchEmojisAtom,
   type CustomEmoji,
-} from '../../lib/atoms/customEmoji';
+} from "../../lib/atoms/customEmoji";
 
 /**
  * Emoji categories with their emojis
  */
 const EMOJI_CATEGORIES = {
   recent: {
-    name: 'Recently Used',
+    name: "Recently Used",
     icon: <Clock className="w-5 h-5" />,
     emojis: [] as string[], // Will be populated from localStorage
   },
   smileys: {
-    name: 'Smileys & Emotion',
+    name: "Smileys & Emotion",
     icon: <Smile className="w-5 h-5" />,
     emojis: [
-      '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-      '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙',
-      '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔',
-      '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥',
-      '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮',
-      '🤧', '🥵', '🥶', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐',
+      "😀",
+      "😃",
+      "😄",
+      "😁",
+      "😆",
+      "😅",
+      "🤣",
+      "😂",
+      "🙂",
+      "🙃",
+      "😉",
+      "😊",
+      "😇",
+      "🥰",
+      "😍",
+      "🤩",
+      "😘",
+      "😗",
+      "😚",
+      "😙",
+      "😋",
+      "😛",
+      "😜",
+      "🤪",
+      "😝",
+      "🤑",
+      "🤗",
+      "🤭",
+      "🤫",
+      "🤔",
+      "🤐",
+      "🤨",
+      "😐",
+      "😑",
+      "😶",
+      "😏",
+      "😒",
+      "🙄",
+      "😬",
+      "🤥",
+      "😌",
+      "😔",
+      "😪",
+      "🤤",
+      "😴",
+      "😷",
+      "🤒",
+      "🤕",
+      "🤢",
+      "🤮",
+      "🤧",
+      "🥵",
+      "🥶",
+      "😵",
+      "🤯",
+      "🤠",
+      "🥳",
+      "😎",
+      "🤓",
+      "🧐",
     ],
   },
   people: {
-    name: 'People & Body',
+    name: "People & Body",
     icon: <Hand className="w-5 h-5" />,
     emojis: [
-      '👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤏', '✌️', '🤞', '🤟',
-      '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎',
-      '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏',
-      '💪', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀',
-      '👁️', '👅', '👄', '💋', '🩸',
+      "👋",
+      "🤚",
+      "🖐️",
+      "✋",
+      "🖖",
+      "👌",
+      "🤏",
+      "✌️",
+      "🤞",
+      "🤟",
+      "🤘",
+      "🤙",
+      "👈",
+      "👉",
+      "👆",
+      "🖕",
+      "👇",
+      "☝️",
+      "👍",
+      "👎",
+      "✊",
+      "👊",
+      "🤛",
+      "🤜",
+      "👏",
+      "🙌",
+      "👐",
+      "🤲",
+      "🤝",
+      "🙏",
+      "💪",
+      "🦵",
+      "🦶",
+      "👂",
+      "🦻",
+      "👃",
+      "🧠",
+      "🦷",
+      "🦴",
+      "👀",
+      "👁️",
+      "👅",
+      "👄",
+      "💋",
+      "🩸",
     ],
   },
   animals: {
-    name: 'Animals & Nature',
+    name: "Animals & Nature",
     icon: <Dog className="w-5 h-5" />,
     emojis: [
-      '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯',
-      '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆',
-      '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋',
-      '🐌', '🐞', '🐜', '🦟', '🦗', '🕷️', '🦂', '🐢', '🐍', '🦎',
-      '🦖', '🦕', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟',
-      '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🦍', '🦧',
+      "🐶",
+      "🐱",
+      "🐭",
+      "🐹",
+      "🐰",
+      "🦊",
+      "🐻",
+      "🐼",
+      "🐨",
+      "🐯",
+      "🦁",
+      "🐮",
+      "🐷",
+      "🐸",
+      "🐵",
+      "🐔",
+      "🐧",
+      "🐦",
+      "🐤",
+      "🦆",
+      "🦅",
+      "🦉",
+      "🦇",
+      "🐺",
+      "🐗",
+      "🐴",
+      "🦄",
+      "🐝",
+      "🐛",
+      "🦋",
+      "🐌",
+      "🐞",
+      "🐜",
+      "🦟",
+      "🦗",
+      "🕷️",
+      "🦂",
+      "🐢",
+      "🐍",
+      "🦎",
+      "🦖",
+      "🦕",
+      "🐙",
+      "🦑",
+      "🦐",
+      "🦞",
+      "🦀",
+      "🐡",
+      "🐠",
+      "🐟",
+      "🐬",
+      "🐳",
+      "🐋",
+      "🦈",
+      "🐊",
+      "🐅",
+      "🐆",
+      "🦓",
+      "🦍",
+      "🦧",
     ],
   },
   food: {
-    name: 'Food & Drink',
+    name: "Food & Drink",
     icon: <Pizza className="w-5 h-5" />,
     emojis: [
-      '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒',
-      '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬',
-      '🥒', '🌶️', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯',
-      '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓',
-      '🥩', '🍗', '🍖', '🌭', '🍔', '🍟', '🍕', '🥪', '🥙', '🧆',
-      '🌮', '🌯', '🥗', '🥘', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱',
+      "🍎",
+      "🍐",
+      "🍊",
+      "🍋",
+      "🍌",
+      "🍉",
+      "🍇",
+      "🍓",
+      "🍈",
+      "🍒",
+      "🍑",
+      "🥭",
+      "🍍",
+      "🥥",
+      "🥝",
+      "🍅",
+      "🍆",
+      "🥑",
+      "🥦",
+      "🥬",
+      "🥒",
+      "🌶️",
+      "🌽",
+      "🥕",
+      "🧄",
+      "🧅",
+      "🥔",
+      "🍠",
+      "🥐",
+      "🥯",
+      "🍞",
+      "🥖",
+      "🥨",
+      "🧀",
+      "🥚",
+      "🍳",
+      "🧈",
+      "🥞",
+      "🧇",
+      "🥓",
+      "🥩",
+      "🍗",
+      "🍖",
+      "🌭",
+      "🍔",
+      "🍟",
+      "🍕",
+      "🥪",
+      "🥙",
+      "🧆",
+      "🌮",
+      "🌯",
+      "🥗",
+      "🥘",
+      "🍝",
+      "🍜",
+      "🍲",
+      "🍛",
+      "🍣",
+      "🍱",
     ],
   },
   activities: {
-    name: 'Activities',
+    name: "Activities",
     icon: <Lightbulb className="w-5 h-5" />,
     emojis: [
-      '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱',
-      '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🥅', '⛳', '🪁',
-      '🏹', '🎣', '🤿', '🥊', '🥋', '🎽', '🛹', '🛷', '⛸️', '🥌',
-      '🎿', '⛷️', '🏂', '🪂', '🏋️', '🤼', '🤸', '🤾', '🏌️', '🏇',
-      '🧘', '🏊', '🤽', '🚣', '🧗', '🚴', '🚵', '🤹', '🎪', '🎨',
+      "⚽",
+      "🏀",
+      "🏈",
+      "⚾",
+      "🥎",
+      "🎾",
+      "🏐",
+      "🏉",
+      "🥏",
+      "🎱",
+      "🪀",
+      "🏓",
+      "🏸",
+      "🏒",
+      "🏑",
+      "🥍",
+      "🏏",
+      "🥅",
+      "⛳",
+      "🪁",
+      "🏹",
+      "🎣",
+      "🤿",
+      "🥊",
+      "🥋",
+      "🎽",
+      "🛹",
+      "🛷",
+      "⛸️",
+      "🥌",
+      "🎿",
+      "⛷️",
+      "🏂",
+      "🪂",
+      "🏋️",
+      "🤼",
+      "🤸",
+      "🤾",
+      "🏌️",
+      "🏇",
+      "🧘",
+      "🏊",
+      "🤽",
+      "🚣",
+      "🧗",
+      "🚴",
+      "🚵",
+      "🤹",
+      "🎪",
+      "🎨",
     ],
   },
   travel: {
-    name: 'Travel & Places',
+    name: "Travel & Places",
     icon: <Plane className="w-5 h-5" />,
     emojis: [
-      '🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐',
-      '🚚', '🚛', '🚜', '🛴', '🚲', '🛵', '🏍️', '🛺', '🚨', '🚔',
-      '🚍', '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚞', '🚝',
-      '🚄', '🚅', '🚈', '🚂', '🚆', '🚇', '🚊', '🚉', '✈️', '🛫',
-      '🛬', '🛩️', '💺', '🛰️', '🚀', '🛸', '🚁', '🛶', '⛵', '🚤',
-      '🛳️', '⛴️', '🛥️', '🚢', '⚓', '⛽', '🚧', '🚦', '🚥', '🗺️',
+      "🚗",
+      "🚕",
+      "🚙",
+      "🚌",
+      "🚎",
+      "🏎️",
+      "🚓",
+      "🚑",
+      "🚒",
+      "🚐",
+      "🚚",
+      "🚛",
+      "🚜",
+      "🛴",
+      "🚲",
+      "🛵",
+      "🏍️",
+      "🛺",
+      "🚨",
+      "🚔",
+      "🚍",
+      "🚘",
+      "🚖",
+      "🚡",
+      "🚠",
+      "🚟",
+      "🚃",
+      "🚋",
+      "🚞",
+      "🚝",
+      "🚄",
+      "🚅",
+      "🚈",
+      "🚂",
+      "🚆",
+      "🚇",
+      "🚊",
+      "🚉",
+      "✈️",
+      "🛫",
+      "🛬",
+      "🛩️",
+      "💺",
+      "🛰️",
+      "🚀",
+      "🛸",
+      "🚁",
+      "🛶",
+      "⛵",
+      "🚤",
+      "🛳️",
+      "⛴️",
+      "🛥️",
+      "🚢",
+      "⚓",
+      "⛽",
+      "🚧",
+      "🚦",
+      "🚥",
+      "🗺️",
     ],
   },
   objects: {
-    name: 'Objects',
+    name: "Objects",
     icon: <Lightbulb className="w-5 h-5" />,
     emojis: [
-      '⌚', '📱', '📲', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '🖲️', '🕹️',
-      '🗜️', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥',
-      '📽️', '🎞️', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙️', '🎚️',
-      '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', '🔋',
-      '🔌', '💡', '🔦', '🕯️', '🪔', '🧯', '🛢️', '💸', '💵', '💴',
-      '💶', '💷', '💰', '💳', '🪙', '💎', '⚖️', '🪜', '🧰', '🪛',
+      "⌚",
+      "📱",
+      "📲",
+      "💻",
+      "⌨️",
+      "🖥️",
+      "🖨️",
+      "🖱️",
+      "🖲️",
+      "🕹️",
+      "🗜️",
+      "💽",
+      "💾",
+      "💿",
+      "📀",
+      "📼",
+      "📷",
+      "📸",
+      "📹",
+      "🎥",
+      "📽️",
+      "🎞️",
+      "📞",
+      "☎️",
+      "📟",
+      "📠",
+      "📺",
+      "📻",
+      "🎙️",
+      "🎚️",
+      "🎛️",
+      "🧭",
+      "⏱️",
+      "⏲️",
+      "⏰",
+      "🕰️",
+      "⌛",
+      "⏳",
+      "📡",
+      "🔋",
+      "🔌",
+      "💡",
+      "🔦",
+      "🕯️",
+      "🪔",
+      "🧯",
+      "🛢️",
+      "💸",
+      "💵",
+      "💴",
+      "💶",
+      "💷",
+      "💰",
+      "💳",
+      "🪙",
+      "💎",
+      "⚖️",
+      "🪜",
+      "🧰",
+      "🪛",
     ],
   },
   symbols: {
-    name: 'Symbols',
+    name: "Symbols",
     icon: <Heart className="w-5 h-5" />,
     emojis: [
-      '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔',
-      '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️',
-      '✝️', '☪️', '🕉️', '☸️', '✡️', '🔯', '🕎', '☯️', '☦️', '🛐',
-      '⛎', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐',
-      '♑', '♒', '♓', '🆔', '⚛️', '🉑', '☢️', '☣️', '📴', '📳',
-      '🈶', '🈚', '🈸', '🈺', '🈷️', '✴️', '🆚', '💮', '🉐', '㊙️',
+      "❤️",
+      "🧡",
+      "💛",
+      "💚",
+      "💙",
+      "💜",
+      "🖤",
+      "🤍",
+      "🤎",
+      "💔",
+      "❣️",
+      "💕",
+      "💞",
+      "💓",
+      "💗",
+      "💖",
+      "💘",
+      "💝",
+      "💟",
+      "☮️",
+      "✝️",
+      "☪️",
+      "🕉️",
+      "☸️",
+      "✡️",
+      "🔯",
+      "🕎",
+      "☯️",
+      "☦️",
+      "🛐",
+      "⛎",
+      "♈",
+      "♉",
+      "♊",
+      "♋",
+      "♌",
+      "♍",
+      "♎",
+      "♏",
+      "♐",
+      "♑",
+      "♒",
+      "♓",
+      "🆔",
+      "⚛️",
+      "🉑",
+      "☢️",
+      "☣️",
+      "📴",
+      "📳",
+      "🈶",
+      "🈚",
+      "🈸",
+      "🈺",
+      "🈷️",
+      "✴️",
+      "🆚",
+      "💮",
+      "🉐",
+      "㊙️",
     ],
   },
   flags: {
-    name: 'Flags',
+    name: "Flags",
     icon: <Flag className="w-5 h-5" />,
     emojis: [
-      '🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️',
-      '🇦🇨', '🇦🇩', '🇦🇪', '🇦🇫', '🇦🇬', '🇦🇮', '🇦🇱', '🇦🇲',
-      '🇦🇴', '🇦🇶', '🇦🇷', '🇦🇸', '🇦🇹', '🇦🇺', '🇦🇼', '🇦🇽',
-      '🇦🇿', '🇧🇦', '🇧🇧', '🇧🇩', '🇧🇪', '🇧🇫', '🇧🇬', '🇧🇭',
-      '🇧🇮', '🇧🇯', '🇧🇱', '🇧🇲', '🇧🇳', '🇧🇴', '🇧🇶', '🇧🇷',
-      '🇧🇸', '🇧🇹', '🇧🇻', '🇧🇼', '🇧🇾', '🇧🇿', '🇨🇦', '🇨🇨',
-      '🇨🇩', '🇨🇫', '🇨🇬', '🇨🇭', '🇨🇮', '🇨🇰', '🇨🇱', '🇨🇲',
-      '🇨🇳', '🇨🇴', '🇨🇵', '🇨🇷', '🇨🇺', '🇨🇻', '🇨🇼', '🇨🇽',
-      '🇨🇾', '🇨🇿', '🇩🇪', '🇩🇬', '🇩🇯', '🇩🇰', '🇩🇲', '🇩🇴',
-      '🇩🇿', '🇪🇦', '🇪🇨', '🇪🇪', '🇪🇬', '🇪🇭', '🇪🇷', '🇪🇸',
-      '🇪🇹', '🇪🇺', '🇫🇮', '🇫🇯', '🇫🇰', '🇫🇲', '🇫🇴', '🇫🇷',
-      '🇬🇦', '🇬🇧', '🇬🇩', '🇬🇪', '🇬🇫', '🇬🇬', '🇬🇭', '🇬🇮',
-      '🇬🇱', '🇬🇲', '🇬🇳', '🇬🇵', '🇬🇶', '🇬🇷', '🇬🇸', '🇬🇹',
-      '🇬🇺', '🇬🇼', '🇬🇾', '🇭🇰', '🇭🇲', '🇭🇳', '🇭🇷', '🇭🇹',
-      '🇭🇺', '🇮🇨', '🇮🇩', '🇮🇪', '🇮🇱', '🇮🇲', '🇮🇳', '🇮🇴',
-      '🇮🇶', '🇮🇷', '🇮🇸', '🇮🇹', '🇯🇪', '🇯🇲', '🇯🇴', '🇯🇵',
+      "🏁",
+      "🚩",
+      "🎌",
+      "🏴",
+      "🏳️",
+      "🏳️‍🌈",
+      "🏳️‍⚧️",
+      "🏴‍☠️",
+      "🇦🇨",
+      "🇦🇩",
+      "🇦🇪",
+      "🇦🇫",
+      "🇦🇬",
+      "🇦🇮",
+      "🇦🇱",
+      "🇦🇲",
+      "🇦🇴",
+      "🇦🇶",
+      "🇦🇷",
+      "🇦🇸",
+      "🇦🇹",
+      "🇦🇺",
+      "🇦🇼",
+      "🇦🇽",
+      "🇦🇿",
+      "🇧🇦",
+      "🇧🇧",
+      "🇧🇩",
+      "🇧🇪",
+      "🇧🇫",
+      "🇧🇬",
+      "🇧🇭",
+      "🇧🇮",
+      "🇧🇯",
+      "🇧🇱",
+      "🇧🇲",
+      "🇧🇳",
+      "🇧🇴",
+      "🇧🇶",
+      "🇧🇷",
+      "🇧🇸",
+      "🇧🇹",
+      "🇧🇻",
+      "🇧🇼",
+      "🇧🇾",
+      "🇧🇿",
+      "🇨🇦",
+      "🇨🇨",
+      "🇨🇩",
+      "🇨🇫",
+      "🇨🇬",
+      "🇨🇭",
+      "🇨🇮",
+      "🇨🇰",
+      "🇨🇱",
+      "🇨🇲",
+      "🇨🇳",
+      "🇨🇴",
+      "🇨🇵",
+      "🇨🇷",
+      "🇨🇺",
+      "🇨🇻",
+      "🇨🇼",
+      "🇨🇽",
+      "🇨🇾",
+      "🇨🇿",
+      "🇩🇪",
+      "🇩🇬",
+      "🇩🇯",
+      "🇩🇰",
+      "🇩🇲",
+      "🇩🇴",
+      "🇩🇿",
+      "🇪🇦",
+      "🇪🇨",
+      "🇪🇪",
+      "🇪🇬",
+      "🇪🇭",
+      "🇪🇷",
+      "🇪🇸",
+      "🇪🇹",
+      "🇪🇺",
+      "🇫🇮",
+      "🇫🇯",
+      "🇫🇰",
+      "🇫🇲",
+      "🇫🇴",
+      "🇫🇷",
+      "🇬🇦",
+      "🇬🇧",
+      "🇬🇩",
+      "🇬🇪",
+      "🇬🇫",
+      "🇬🇬",
+      "🇬🇭",
+      "🇬🇮",
+      "🇬🇱",
+      "🇬🇲",
+      "🇬🇳",
+      "🇬🇵",
+      "🇬🇶",
+      "🇬🇷",
+      "🇬🇸",
+      "🇬🇹",
+      "🇬🇺",
+      "🇬🇼",
+      "🇬🇾",
+      "🇭🇰",
+      "🇭🇲",
+      "🇭🇳",
+      "🇭🇷",
+      "🇭🇹",
+      "🇭🇺",
+      "🇮🇨",
+      "🇮🇩",
+      "🇮🇪",
+      "🇮🇱",
+      "🇮🇲",
+      "🇮🇳",
+      "🇮🇴",
+      "🇮🇶",
+      "🇮🇷",
+      "🇮🇸",
+      "🇮🇹",
+      "🇯🇪",
+      "🇯🇲",
+      "🇯🇴",
+      "🇯🇵",
     ],
   },
 } as const;
 
 type EmojiCategory = keyof typeof EMOJI_CATEGORIES;
 
-const RECENT_EMOJIS_KEY = 'rox-recent-emojis';
+const RECENT_EMOJIS_KEY = "rox-recent-emojis";
 const MAX_RECENT_EMOJIS = 30;
 
 /**
@@ -182,8 +715,8 @@ export interface EmojiPickerProps {
  * ```
  */
 export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerProps) {
-  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | 'custom'>('smileys');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | "custom">("smileys");
+  const [searchQuery, setSearchQuery] = useState("");
   const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -201,7 +734,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         setRecentEmojis(JSON.parse(stored));
       }
     } catch (error) {
-      console.error('Failed to load recent emojis:', error);
+      console.error("Failed to load recent emojis:", error);
     }
   }, []);
 
@@ -215,12 +748,12 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     try {
       const updated = [emoji, ...recentEmojis.filter((e) => e !== emoji)].slice(
         0,
-        MAX_RECENT_EMOJIS
+        MAX_RECENT_EMOJIS,
       );
       setRecentEmojis(updated);
       localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save recent emoji:', error);
+      console.error("Failed to save recent emoji:", error);
     }
   };
 
@@ -240,10 +773,10 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
   // Get emojis for the selected category
   const getEmojisForCategory = (): string[] => {
-    if (selectedCategory === 'recent') {
+    if (selectedCategory === "recent") {
       return recentEmojis;
     }
-    if (selectedCategory === 'custom') {
+    if (selectedCategory === "custom") {
       return []; // Custom emojis are handled separately
     }
     return [...EMOJI_CATEGORIES[selectedCategory].emojis];
@@ -251,7 +784,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
   // Get custom emojis for current view
   const getCustomEmojisForCategory = (): CustomEmoji[] => {
-    if (selectedCategory !== 'custom') {
+    if (selectedCategory !== "custom") {
       return [];
     }
     return customEmojis;
@@ -269,7 +802,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     ? customEmojis.filter(
         (emoji) =>
           emoji.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          emoji.aliases.some((alias) => alias.toLowerCase().includes(searchQuery.toLowerCase()))
+          emoji.aliases.some((alias) => alias.toLowerCase().includes(searchQuery.toLowerCase())),
       )
     : getCustomEmojisForCategory();
 
@@ -330,9 +863,11 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                     {/* Custom emojis tab (if available) */}
                     {customEmojis.length > 0 && (
                       <button
-                        onClick={() => setSelectedCategory('custom')}
+                        onClick={() => setSelectedCategory("custom")}
                         className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === 'custom' ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                          selectedCategory === "custom"
+                            ? "bg-primary-100 dark:bg-primary-900/30"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
                         }`}
                         title="Custom Emojis"
                         aria-label="Custom Emojis"
@@ -342,9 +877,11 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                     )}
                     {recentEmojis.length > 0 && (
                       <button
-                        onClick={() => setSelectedCategory('recent')}
+                        onClick={() => setSelectedCategory("recent")}
                         className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === 'recent' ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                          selectedCategory === "recent"
+                            ? "bg-primary-100 dark:bg-primary-900/30"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
                         }`}
                         title={EMOJI_CATEGORIES.recent.name}
                         aria-label={EMOJI_CATEGORIES.recent.name}
@@ -353,13 +890,15 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                       </button>
                     )}
                     {(Object.keys(EMOJI_CATEGORIES) as EmojiCategory[])
-                      .filter((cat) => cat !== 'recent')
+                      .filter((cat) => cat !== "recent")
                       .map((category) => (
                         <button
                           key={category}
                           onClick={() => setSelectedCategory(category)}
                           className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                            selectedCategory === category ? 'bg-primary-100 dark:bg-primary-900/30' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                            selectedCategory === category
+                              ? "bg-primary-100 dark:bg-primary-900/30"
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
                           }`}
                           title={EMOJI_CATEGORIES[category].name}
                           aria-label={EMOJI_CATEGORIES[category].name}
@@ -375,7 +914,11 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   {/* Custom emojis when searching or custom category selected */}
                   {filteredCustomEmojis.length > 0 && (
                     <>
-                      {searchQuery && <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"><Trans>Custom Emojis</Trans></h3>}
+                      {searchQuery && (
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                          <Trans>Custom Emojis</Trans>
+                        </h3>
+                      )}
                       <div className="grid grid-cols-8 gap-2 mb-4">
                         {filteredCustomEmojis.map((emoji) => (
                           <button
@@ -401,7 +944,9 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   {filteredEmojis.length > 0 && (
                     <>
                       {searchQuery && filteredCustomEmojis.length > 0 && (
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2"><Trans>Standard Emojis</Trans></h3>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                          <Trans>Standard Emojis</Trans>
+                        </h3>
                       )}
                       <div className="grid grid-cols-8 gap-2">
                         {filteredEmojis.map((emoji, index) => (

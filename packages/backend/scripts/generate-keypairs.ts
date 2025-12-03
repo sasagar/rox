@@ -8,13 +8,13 @@
  *   bun run scripts/generate-keypairs.ts
  */
 
-import { getDatabase } from '../src/db/index.js';
-import { users } from '../src/db/schema/pg.js';
-import { generateKeyPair } from '../src/utils/crypto.js';
-import { eq, isNull, and } from 'drizzle-orm';
+import { getDatabase } from "../src/db/index.js";
+import { users } from "../src/db/schema/pg.js";
+import { generateKeyPair } from "../src/utils/crypto.js";
+import { eq, isNull, and } from "drizzle-orm";
 
 async function main() {
-  console.log('🔑 Generating RSA key pairs for existing users...\n');
+  console.log("🔑 Generating RSA key pairs for existing users...\n");
 
   const db = getDatabase();
 
@@ -25,12 +25,12 @@ async function main() {
     .where(
       and(
         isNull(users.host), // ローカルユーザーのみ
-        isNull(users.publicKey) // 鍵がまだ生成されていない
-      )
+        isNull(users.publicKey), // 鍵がまだ生成されていない
+      ),
     );
 
   if (usersWithoutKeys.length === 0) {
-    console.log('✅ All local users already have key pairs.');
+    console.log("✅ All local users already have key pairs.");
     process.exit(0);
   }
 
@@ -60,6 +60,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('❌ Error generating key pairs:', error);
+  console.error("❌ Error generating key pairs:", error);
   process.exit(1);
 });

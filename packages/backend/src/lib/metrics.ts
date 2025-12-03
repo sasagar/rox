@@ -7,15 +7,15 @@
  * @module lib/metrics
  */
 
-import client from 'prom-client';
+import client from "prom-client";
 
 /**
  * Initialize default metrics collection
  */
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics({
-  prefix: 'rox_',
-  labels: { app: 'rox' },
+  prefix: "rox_",
+  labels: { app: "rox" },
 });
 
 /**
@@ -24,9 +24,9 @@ collectDefaultMetrics({
  * Tracks the duration of HTTP requests by method, route, and status.
  */
 export const httpRequestDuration = new client.Histogram({
-  name: 'rox_http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  labelNames: ['method', 'route', 'status_code'],
+  name: "rox_http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
   buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
 });
 
@@ -36,9 +36,9 @@ export const httpRequestDuration = new client.Histogram({
  * Counts the total number of HTTP requests by method, route, and status.
  */
 export const httpRequestTotal = new client.Counter({
-  name: 'rox_http_requests_total',
-  help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status_code'],
+  name: "rox_http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
 });
 
 /**
@@ -47,9 +47,9 @@ export const httpRequestTotal = new client.Counter({
  * Counts the total number of ActivityPub delivery attempts.
  */
 export const activityDeliveryTotal = new client.Counter({
-  name: 'rox_activitypub_delivery_total',
-  help: 'Total number of ActivityPub delivery attempts',
-  labelNames: ['activity_type', 'status'],
+  name: "rox_activitypub_delivery_total",
+  help: "Total number of ActivityPub delivery attempts",
+  labelNames: ["activity_type", "status"],
 });
 
 /**
@@ -58,9 +58,9 @@ export const activityDeliveryTotal = new client.Counter({
  * Tracks the duration of ActivityPub delivery attempts.
  */
 export const activityDeliveryDuration = new client.Histogram({
-  name: 'rox_activitypub_delivery_duration_seconds',
-  help: 'Duration of ActivityPub delivery attempts in seconds',
-  labelNames: ['activity_type'],
+  name: "rox_activitypub_delivery_duration_seconds",
+  help: "Duration of ActivityPub delivery attempts in seconds",
+  labelNames: ["activity_type"],
   buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60],
 });
 
@@ -70,9 +70,9 @@ export const activityDeliveryDuration = new client.Histogram({
  * Counts the total number of ActivityPub inbox activities processed.
  */
 export const activityInboxTotal = new client.Counter({
-  name: 'rox_activitypub_inbox_total',
-  help: 'Total number of ActivityPub inbox activities processed',
-  labelNames: ['activity_type', 'status'],
+  name: "rox_activitypub_inbox_total",
+  help: "Total number of ActivityPub inbox activities processed",
+  labelNames: ["activity_type", "status"],
 });
 
 /**
@@ -81,9 +81,9 @@ export const activityInboxTotal = new client.Counter({
  * Counts the total number of database queries by operation type.
  */
 export const dbQueryTotal = new client.Counter({
-  name: 'rox_db_queries_total',
-  help: 'Total number of database queries',
-  labelNames: ['operation', 'table'],
+  name: "rox_db_queries_total",
+  help: "Total number of database queries",
+  labelNames: ["operation", "table"],
 });
 
 /**
@@ -92,9 +92,9 @@ export const dbQueryTotal = new client.Counter({
  * Counts cache hits, misses, and sets.
  */
 export const cacheOperationTotal = new client.Counter({
-  name: 'rox_cache_operations_total',
-  help: 'Total number of cache operations',
-  labelNames: ['operation', 'result'],
+  name: "rox_cache_operations_total",
+  help: "Total number of cache operations",
+  labelNames: ["operation", "result"],
 });
 
 /**
@@ -103,9 +103,9 @@ export const cacheOperationTotal = new client.Counter({
  * Tracks the current number of jobs in the activity delivery queue.
  */
 export const queueDepth = new client.Gauge({
-  name: 'rox_queue_depth',
-  help: 'Current number of jobs in queue',
-  labelNames: ['queue_name', 'state'],
+  name: "rox_queue_depth",
+  help: "Current number of jobs in queue",
+  labelNames: ["queue_name", "state"],
 });
 
 /**
@@ -114,8 +114,8 @@ export const queueDepth = new client.Gauge({
  * Tracks the number of active users (sessions in last 24 hours).
  */
 export const activeUsers = new client.Gauge({
-  name: 'rox_active_users',
-  help: 'Number of active users',
+  name: "rox_active_users",
+  help: "Number of active users",
 });
 
 /**
@@ -124,8 +124,8 @@ export const activeUsers = new client.Gauge({
  * Tracks the total number of notes in the database.
  */
 export const totalNotes = new client.Gauge({
-  name: 'rox_total_notes',
-  help: 'Total number of notes',
+  name: "rox_total_notes",
+  help: "Total number of notes",
 });
 
 /**
@@ -134,9 +134,9 @@ export const totalNotes = new client.Gauge({
  * Tracks the total number of users in the database.
  */
 export const totalUsers = new client.Gauge({
-  name: 'rox_total_users',
-  help: 'Total number of users',
-  labelNames: ['type'], // 'local' or 'remote'
+  name: "rox_total_users",
+  help: "Total number of users",
+  labelNames: ["type"], // 'local' or 'remote'
 });
 
 /**
@@ -156,7 +156,7 @@ export function recordHttpRequest(
   method: string,
   route: string,
   statusCode: number,
-  duration: number
+  duration: number,
 ): void {
   const labels = {
     method,
@@ -178,11 +178,11 @@ export function recordHttpRequest(
 export function recordActivityDelivery(
   activityType: string,
   success: boolean,
-  duration: number
+  duration: number,
 ): void {
   activityDeliveryTotal.inc({
     activity_type: activityType,
-    status: success ? 'success' : 'failure',
+    status: success ? "success" : "failure",
   });
   activityDeliveryDuration.observe({ activity_type: activityType }, duration);
 }
@@ -196,7 +196,7 @@ export function recordActivityDelivery(
 export function recordInboxActivity(activityType: string, success: boolean): void {
   activityInboxTotal.inc({
     activity_type: activityType,
-    status: success ? 'success' : 'failure',
+    status: success ? "success" : "failure",
   });
 }
 
@@ -206,19 +206,16 @@ export function recordInboxActivity(activityType: string, success: boolean): voi
  * @param operation - Cache operation (get, set, delete)
  * @param hit - Whether it was a cache hit (for get operations)
  */
-export function recordCacheOperation(
-  operation: 'get' | 'set' | 'delete',
-  hit?: boolean
-): void {
-  if (operation === 'get') {
+export function recordCacheOperation(operation: "get" | "set" | "delete", hit?: boolean): void {
+  if (operation === "get") {
     cacheOperationTotal.inc({
       operation,
-      result: hit ? 'hit' : 'miss',
+      result: hit ? "hit" : "miss",
     });
   } else {
     cacheOperationTotal.inc({
       operation,
-      result: 'success',
+      result: "success",
     });
   }
 }
@@ -234,9 +231,9 @@ export function recordCacheOperation(
 function normalizeRoute(route: string): string {
   // Replace IDs and usernames with placeholders
   return route
-    .replace(/\/[a-z0-9]{16,}/gi, '/:id')
-    .replace(/\/@[^/]+/, '/@:username')
-    .replace(/\/users\/[^/]+/, '/users/:username');
+    .replace(/\/[a-z0-9]{16,}/gi, "/:id")
+    .replace(/\/@[^/]+/, "/@:username")
+    .replace(/\/users\/[^/]+/, "/users/:username");
 }
 
 /**

@@ -7,8 +7,8 @@
  * @module routes/ap/webfinger
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
+import { Hono } from "hono";
+import type { Context } from "hono";
 
 const webfinger = new Hono();
 
@@ -25,36 +25,36 @@ const webfinger = new Hono();
  * curl "https://example.com/.well-known/webfinger?resource=acct:alice@example.com"
  * ```
  */
-webfinger.get('/.well-known/webfinger', async (c: Context) => {
-  const resource = c.req.query('resource');
+webfinger.get("/.well-known/webfinger", async (c: Context) => {
+  const resource = c.req.query("resource");
 
   if (!resource) {
-    return c.json({ error: 'Missing resource parameter' }, 400);
+    return c.json({ error: "Missing resource parameter" }, 400);
   }
 
   // Validate acct: URI format
-  if (!resource.startsWith('acct:')) {
-    return c.json({ error: 'Invalid resource format (must start with acct:)' }, 400);
+  if (!resource.startsWith("acct:")) {
+    return c.json({ error: "Invalid resource format (must start with acct:)" }, 400);
   }
 
   // Parse acct:username@domain
   const match = resource.match(/^acct:([^@]+)@(.+)$/);
   if (!match) {
-    return c.json({ error: 'Invalid acct: URI format' }, 400);
+    return c.json({ error: "Invalid acct: URI format" }, 400);
   }
 
   const [, username, domain] = match;
 
   // Validate domain matches our server
-  const baseUrl = process.env.URL || 'http://localhost:3000';
+  const baseUrl = process.env.URL || "http://localhost:3000";
   const ourDomain = new URL(baseUrl).hostname;
 
   if (domain !== ourDomain) {
-    return c.json({ error: 'Domain mismatch' }, 404);
+    return c.json({ error: "Domain mismatch" }, 404);
   }
 
   // Look up user
-  const userRepository = c.get('userRepository');
+  const userRepository = c.get("userRepository");
   const user = await userRepository.findByUsername(username as string);
 
   // 404 if user not found or is a remote user
@@ -67,16 +67,16 @@ webfinger.get('/.well-known/webfinger', async (c: Context) => {
     subject: resource,
     links: [
       {
-        rel: 'self',
-        type: 'application/activity+json',
+        rel: "self",
+        type: "application/activity+json",
         href: `${baseUrl}/users/${username}`,
       },
     ],
   };
 
   return c.json(jrd, 200, {
-    'Content-Type': 'application/jrd+json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
+    "Content-Type": "application/jrd+json; charset=utf-8",
+    "Access-Control-Allow-Origin": "*",
   });
 });
 

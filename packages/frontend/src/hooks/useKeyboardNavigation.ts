@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from "react";
 
 /**
  * Options for keyboard navigation
@@ -61,7 +61,7 @@ export interface UseKeyboardNavigationOptions {
  */
 export function useKeyboardNavigation(
   containerRef: React.RefObject<HTMLElement | null>,
-  options: UseKeyboardNavigationOptions = {}
+  options: UseKeyboardNavigationOptions = {},
 ) {
   const {
     enabled = true,
@@ -74,9 +74,7 @@ export function useKeyboardNavigation(
 
   const getItems = useCallback(() => {
     if (!containerRef.current) return [];
-    return Array.from(
-      containerRef.current.querySelectorAll<HTMLElement>(itemSelector)
-    );
+    return Array.from(containerRef.current.querySelectorAll<HTMLElement>(itemSelector));
   }, [containerRef, itemSelector]);
 
   const focusItem = useCallback(
@@ -92,14 +90,14 @@ export function useKeyboardNavigation(
 
       // Scroll into view if needed
       item.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
+        behavior: "smooth",
+        block: "nearest",
       });
 
       currentIndexRef.current = index;
       onItemFocus?.(index);
     },
-    [getItems, onItemFocus]
+    [getItems, onItemFocus],
   );
 
   const handleKeyDown = useCallback(
@@ -108,11 +106,7 @@ export function useKeyboardNavigation(
 
       // Don't handle keyboard navigation if user is typing in an input/textarea
       const target = event.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
         return;
       }
 
@@ -127,8 +121,8 @@ export function useKeyboardNavigation(
       let handled = false;
 
       switch (event.key) {
-        case 'j':
-        case 'ArrowDown':
+        case "j":
+        case "ArrowDown":
           // Move to next item
           event.preventDefault();
           if (currentIndexRef.current < items.length - 1) {
@@ -137,8 +131,8 @@ export function useKeyboardNavigation(
           handled = true;
           break;
 
-        case 'k':
-        case 'ArrowUp':
+        case "k":
+        case "ArrowUp":
           // Move to previous item
           event.preventDefault();
           if (currentIndexRef.current > 0) {
@@ -147,7 +141,7 @@ export function useKeyboardNavigation(
           handled = true;
           break;
 
-        case 'Enter':
+        case "Enter":
           // Activate current item
           if (currentIndexRef.current >= 0) {
             event.preventDefault();
@@ -156,14 +150,14 @@ export function useKeyboardNavigation(
           }
           break;
 
-        case 'Home':
+        case "Home":
           // Jump to first item
           event.preventDefault();
           focusItem(0);
           handled = true;
           break;
 
-        case 'End':
+        case "End":
           // Jump to last item
           event.preventDefault();
           focusItem(items.length - 1);
@@ -175,17 +169,17 @@ export function useKeyboardNavigation(
         event.stopPropagation();
       }
     },
-    [enabled, getItems, focusItem, onItemActivate]
+    [enabled, getItems, focusItem, onItemActivate],
   );
 
   useEffect(() => {
     if (!enabled) return;
 
     // Add keyboard event listener
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [enabled, handleKeyDown]);
 

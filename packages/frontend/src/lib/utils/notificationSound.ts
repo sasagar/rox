@@ -4,7 +4,7 @@
  * Generates and plays notification sounds using Web Audio API
  */
 
-import type { NotificationSound } from '../types/uiSettings';
+import type { NotificationSound } from "../types/uiSettings";
 
 let audioContext: AudioContext | null = null;
 
@@ -26,7 +26,7 @@ function playTone(
   frequency: number,
   duration: number,
   volume: number,
-  type: OscillatorType = 'sine'
+  type: OscillatorType = "sine",
 ): void {
   const oscillator = ctx.createOscillator();
   const gainNode = ctx.createGain();
@@ -55,9 +55,9 @@ function playDefaultSound(volume: number): void {
   const vol = volume * 0.3; // Scale down for comfortable listening
 
   // Two ascending tones
-  playTone(ctx, 880, 0.1, vol, 'sine'); // A5
+  playTone(ctx, 880, 0.1, vol, "sine"); // A5
   setTimeout(() => {
-    playTone(ctx, 1047, 0.15, vol, 'sine'); // C6
+    playTone(ctx, 1047, 0.15, vol, "sine"); // C6
   }, 100);
 }
 
@@ -69,7 +69,7 @@ function playSoftSound(volume: number): void {
   const vol = volume * 0.2;
 
   // Single soft tone with harmonics
-  playTone(ctx, 523, 0.2, vol, 'sine'); // C5
+  playTone(ctx, 523, 0.2, vol, "sine"); // C5
 }
 
 /**
@@ -83,7 +83,7 @@ function playBellSound(volume: number): void {
   const frequencies = [523, 659, 784]; // C5, E5, G5 (C major chord)
   frequencies.forEach((freq, i) => {
     setTimeout(() => {
-      playTone(ctx, freq, 0.3, vol * (1 - i * 0.2), 'triangle');
+      playTone(ctx, freq, 0.3, vol * (1 - i * 0.2), "triangle");
     }, i * 30);
   });
 }
@@ -96,14 +96,14 @@ function playBellSound(volume: number): void {
  */
 export function playNotificationSound(
   soundType: NotificationSound,
-  volumePercent: number = 50
+  volumePercent: number = 50,
 ): void {
-  if (soundType === 'none' || volumePercent === 0) {
+  if (soundType === "none" || volumePercent === 0) {
     return;
   }
 
   // Check if we can play audio
-  if (typeof window === 'undefined' || !window.AudioContext) {
+  if (typeof window === "undefined" || !window.AudioContext) {
     return;
   }
 
@@ -111,18 +111,18 @@ export function playNotificationSound(
 
   try {
     switch (soundType) {
-      case 'default':
+      case "default":
         playDefaultSound(volume);
         break;
-      case 'soft':
+      case "soft":
         playSoftSound(volume);
         break;
-      case 'bell':
+      case "bell":
         playBellSound(volume);
         break;
     }
   } catch (error) {
-    console.error('Failed to play notification sound:', error);
+    console.error("Failed to play notification sound:", error);
   }
 }
 
@@ -131,10 +131,10 @@ export function playNotificationSound(
  */
 export function testNotificationSound(
   soundType: NotificationSound,
-  volumePercent: number = 50
+  volumePercent: number = 50,
 ): void {
   // Resume audio context if suspended (required for user gesture)
-  if (audioContext?.state === 'suspended') {
+  if (audioContext?.state === "suspended") {
     audioContext.resume();
   }
   playNotificationSound(soundType, volumePercent);

@@ -4,12 +4,12 @@
  */
 
 // Core manager
-export { AuthManager, authManager } from './AuthManager';
+export { AuthManager, authManager } from "./AuthManager";
 
 // Providers
-export { PasswordAuthProvider } from './providers/PasswordAuthProvider';
-export { OAuthProvider } from './providers/OAuthProvider';
-export { PasskeyProvider } from './providers/PasskeyProvider';
+export { PasswordAuthProvider } from "./providers/PasswordAuthProvider";
+export { OAuthProvider } from "./providers/OAuthProvider";
+export { PasskeyProvider } from "./providers/PasskeyProvider";
 
 // Types
 export type {
@@ -22,4 +22,4 @@ export type {
   IAuthProvider,
   OAuthConfig,
   PasskeyConfig,
-} from './types';
+} from "./types";

@@ -116,30 +116,40 @@ The project uses **Repository Pattern** and **Adapter Pattern** to decouple busi
 ### Directory Structure
 
 ```text
-src/
-├── adapters/           # Infrastructure implementations (Adapter Pattern)
-│   ├── storage/
-│   │   ├── LocalStorageAdapter.ts
-│   │   └── S3StorageAdapter.ts
-│   └── email/          # (Future)
-├── db/
-│   ├── schema/         # Drizzle schema definitions
-│   │   ├── pg.ts       # PostgreSQL
-│   │   ├── mysql.ts    # MySQL/MariaDB
-│   │   └── sqlite.ts   # SQLite/D1
-│   └── index.ts        # DB connection initialization
-├── interfaces/         # Abstract definitions (Interfaces)
-│   ├── IFileStorage.ts
-│   └── repositories/
-│       ├── INoteRepository.ts
-│       └── IUserRepository.ts
-├── repositories/       # DB operations (Repository Pattern)
-│   ├── pg/             # PostgreSQL implementations
-│   ├── mysql/          # MySQL implementations
-│   └── d1/             # D1 (SQLite) implementations
-├── services/           # Business logic
-├── routes/             # Hono endpoints
-└── index.ts            # Application entry point
+packages/
+├── shared/             # Shared code between frontend and backend
+│   └── src/
+│       ├── types/      # Shared TypeScript types
+│       ├── utils/      # Shared utility functions
+│       └── constants/  # Shared validation constants
+├── backend/
+│   └── src/
+│       ├── adapters/       # Infrastructure implementations (Adapter Pattern)
+│       │   ├── storage/
+│       │   │   ├── LocalStorageAdapter.ts
+│       │   │   └── S3StorageAdapter.ts
+│       │   └── cache/      # Cache adapters (Dragonfly)
+│       ├── db/
+│       │   ├── schema/     # Drizzle schema definitions
+│       │   │   └── pg.ts   # PostgreSQL
+│       │   └── index.ts    # DB connection initialization
+│       ├── interfaces/     # Abstract definitions (Interfaces)
+│       │   ├── IFileStorage.ts
+│       │   └── repositories/
+│       ├── repositories/   # DB operations (Repository Pattern)
+│       │   └── pg/         # PostgreSQL implementations
+│       ├── services/       # Business logic
+│       ├── routes/         # Hono endpoints
+│       ├── lib/            # Shared utilities
+│       │   ├── routeUtils.ts   # Route handler utilities
+│       │   └── validation.ts   # Zod validation schemas
+│       └── index.ts        # Application entry point
+└── frontend/
+    └── src/
+        ├── components/     # React components
+        ├── lib/            # Frontend utilities
+        ├── pages/          # Waku pages
+        └── locales/        # i18n translations (en, ja)
 ```
 
 ## Supported Infrastructure Configurations
@@ -215,6 +225,75 @@ URL=<public-url>
 - **Delivery System**:
   - Inbox (`/users/:id/inbox`) for activity reception and verification
   - Job Queue (Dragonfly/BullMQ) for async outbound delivery to remote servers
+
+## Shared Package (`packages/shared`)
+
+The shared package contains code used by both frontend and backend to ensure consistency.
+
+### Validation Constants (`constants/validation.ts`)
+
+Centralized validation rules to keep frontend and backend in sync:
+
+```typescript
+import {
+  USERNAME_MIN_LENGTH,      // 3
+  USERNAME_MAX_LENGTH,      // 20
+  USERNAME_PATTERN,         // /^[a-zA-Z0-9_]+$/
+  PASSWORD_MIN_LENGTH,      // 8
+  NOTE_TEXT_MAX_LENGTH,     // 3000
+  NOTE_CW_MAX_LENGTH,       // 100
+  NOTE_MAX_FILES,           // 4
+  DISPLAY_NAME_MAX_LENGTH,  // 100
+  BIO_MAX_LENGTH,           // 500
+  REACTION_MAX_LENGTH,      // 50
+  FILE_COMMENT_MAX_LENGTH,  // 512
+  DEFAULT_PAGE_LIMIT,       // 20
+  MAX_PAGE_LIMIT,           // 100
+} from "shared";
+```
+
+### Shared Types
+
+Common TypeScript types used across packages:
+
+- `User`, `UserProfile` - User entity types
+- `Note`, `NoteWithRelations` - Note entity types
+- `Visibility` - Note visibility enum (`public`, `home`, `followers`, `specified`)
+- `UISettings` - User UI preferences
+
+## Backend Utilities
+
+### Route Utilities (`lib/routeUtils.ts`)
+
+Common utilities for Hono route handlers to reduce code duplication:
+
+```typescript
+import {
+  sanitizeUser,      // Remove passwordHash/privateKey from user objects
+  parsePagination,   // Parse limit/offset query params with defaults
+  normalizeHostname, // Normalize hostname for instance blocking
+  errorResponse,     // Standardized JSON error responses
+} from "../lib/routeUtils.js";
+
+// Usage examples:
+const { limit, offset } = parsePagination(c);
+return c.json(sanitizeUser(user));
+return errorResponse(c, "User not found", 404);
+```
+
+### Validation Schemas (`lib/validation.ts`)
+
+Zod schemas for API request validation, using shared constants:
+
+```typescript
+import { createNoteSchema, updateProfileSchema } from "../lib/validation.js";
+
+// Used with @hono/zod-validator middleware
+app.post("/api/notes/create", zValidator("json", createNoteSchema), async (c) => {
+  const data = c.req.valid("json");
+  // ...
+});
+```
 
 ## Key Architectural Considerations
 

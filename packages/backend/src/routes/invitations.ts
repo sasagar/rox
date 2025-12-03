@@ -7,8 +7,8 @@
  * @module routes/invitations
  */
 
-import { Hono } from 'hono';
-import { requirePermission, requireAuth } from '../middleware/auth.js';
+import { Hono } from "hono";
+import { requirePermission, requireAuth } from "../middleware/auth.js";
 
 const app = new Hono();
 
@@ -16,8 +16,8 @@ const app = new Hono();
  * Generate a random invitation code
  */
 const generateInvitationCode = (): string => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid confusing characters
-  let code = '';
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Avoid confusing characters
+  let code = "";
   for (let i = 0; i < 8; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -31,12 +31,12 @@ const generateInvitationCode = (): string => {
  *
  * Returns invitation codes created by the authenticated user.
  */
-app.get('/', requireAuth(), async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const user = c.get('user');
+app.get("/", requireAuth(), async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const codes = await invitationCodeRepository.findByCreatedBy(user.id);
@@ -51,12 +51,12 @@ app.get('/', requireAuth(), async (c) => {
  *
  * Returns the user's invitation permissions (can invite, limit, etc.)
  */
-app.get('/permissions', requireAuth(), async (c) => {
-  const roleService = c.get('roleService');
-  const user = c.get('user');
+app.get("/permissions", requireAuth(), async (c) => {
+  const roleService = c.get("roleService");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const canInvite = await roleService.canInvite(user.id);
@@ -85,19 +85,19 @@ app.get('/permissions', requireAuth(), async (c) => {
  * }
  * ```
  */
-app.post('/', requirePermission('canInvite'), async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const roleService = c.get('roleService');
-  const user = c.get('user');
+app.post("/", requirePermission("canInvite"), async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const roleService = c.get("roleService");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Check invite limit
   const inviteLimit = await roleService.getInviteLimit(user.id);
   if (inviteLimit === 0) {
-    return c.json({ error: 'You do not have permission to create invitations' }, 403);
+    return c.json({ error: "You do not have permission to create invitations" }, 403);
   }
 
   // Check if user has reached their limit (if not unlimited)
@@ -114,7 +114,7 @@ app.post('/', requirePermission('canInvite'), async (c) => {
           used: recentCount,
           cycleHours,
         },
-        429
+        429,
       );
     }
   }
@@ -153,33 +153,33 @@ app.post('/', requirePermission('canInvite'), async (c) => {
  *
  * Deletes an invitation code created by the authenticated user.
  */
-app.delete('/:id', requireAuth(), async (c) => {
-  const invitationCodeRepository = c.get('invitationCodeRepository');
-  const user = c.get('user');
-  const id = c.req.param('id');
+app.delete("/:id", requireAuth(), async (c) => {
+  const invitationCodeRepository = c.get("invitationCodeRepository");
+  const user = c.get("user");
+  const id = c.req.param("id");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Find the invitation
   const invitation = await invitationCodeRepository.findById(id);
   if (!invitation) {
-    return c.json({ error: 'Invitation code not found' }, 404);
+    return c.json({ error: "Invitation code not found" }, 404);
   }
 
   // Check ownership (unless admin)
   if (invitation.createdById !== user.id && !user.isAdmin) {
-    const roleService = c.get('roleService');
+    const roleService = c.get("roleService");
     const isAdmin = await roleService.isAdmin(user.id);
     if (!isAdmin) {
-      return c.json({ error: 'You can only delete your own invitation codes' }, 403);
+      return c.json({ error: "You can only delete your own invitation codes" }, 403);
     }
   }
 
   await invitationCodeRepository.delete(id);
 
-  return c.json({ success: true, message: 'Invitation code deleted' });
+  return c.json({ success: true, message: "Invitation code deleted" });
 });
 
 export default app;

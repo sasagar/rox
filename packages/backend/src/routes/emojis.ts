@@ -7,19 +7,14 @@
  * @module routes/emojis
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { generateId } from 'shared';
-import type { ICustomEmojiRepository } from '../interfaces/repositories/ICustomEmojiRepository.js';
-import type { IFileStorage } from '../interfaces/IFileStorage.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { generateId } from "shared";
+import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
+import type { IFileStorage } from "../interfaces/IFileStorage.js";
 
 /** Allowed emoji file types */
-const ALLOWED_MIME_TYPES = [
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/apng',
-];
+const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"];
 
 /** Maximum emoji file size (256KB) */
 const MAX_EMOJI_SIZE = 256 * 1024;
@@ -40,13 +35,13 @@ const app = new Hono();
  * - limit: Max results (default: 100)
  * - offset: Pagination offset
  */
-app.get('/', async (c: Context) => {
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
+app.get("/", async (c: Context) => {
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
 
-  const category = c.req.query('category');
-  const search = c.req.query('search');
-  const limit = Math.min(parseInt(c.req.query('limit') || '100', 10), 500);
-  const offset = parseInt(c.req.query('offset') || '0', 10);
+  const category = c.req.query("category");
+  const search = c.req.query("search");
+  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
+  const offset = parseInt(c.req.query("offset") || "0", 10);
 
   const emojis = await customEmojiRepository.list({
     host: null, // Local emojis only
@@ -77,8 +72,8 @@ app.get('/', async (c: Context) => {
  *
  * Returns all available emoji categories.
  */
-app.get('/categories', async (c: Context) => {
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
+app.get("/categories", async (c: Context) => {
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
 
   const categories = await customEmojiRepository.listCategories();
 
@@ -95,8 +90,8 @@ app.get('/categories', async (c: Context) => {
  *
  * Body: { names: string[] }
  */
-app.post('/lookup', async (c: Context) => {
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
+app.post("/lookup", async (c: Context) => {
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
 
   const body = await c.req.json<{ names?: string[] }>();
 
@@ -123,14 +118,14 @@ app.post('/lookup', async (c: Context) => {
  *
  * GET /api/emojis/:id
  */
-app.get('/:id', async (c: Context) => {
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
-  const id = c.req.param('id');
+app.get("/:id", async (c: Context) => {
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+  const id = c.req.param("id");
 
   const emoji = await customEmojiRepository.findById(id);
 
   if (!emoji) {
-    return c.json({ error: 'Emoji not found' }, 404);
+    return c.json({ error: "Emoji not found" }, 404);
   }
 
   return c.json({
@@ -158,41 +153,47 @@ app.get('/:id', async (c: Context) => {
  * Requires admin role.
  * Accepts multipart/form-data with 'file' field.
  */
-app.post('/upload', async (c: Context) => {
-  const user = c.get('user');
+app.post("/upload", async (c: Context) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Check admin permission
-  const roleService = c.get('roleService');
+  const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
   if (!policies.canManageCustomEmojis) {
-    return c.json({ error: 'Forbidden: Admin permission required' }, 403);
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
-  const fileStorage = c.get('fileStorage') as IFileStorage;
+  const fileStorage = c.get("fileStorage") as IFileStorage;
 
   // Parse multipart form data
   const body = await c.req.parseBody();
   const file = body.file as File;
 
   if (!file) {
-    return c.json({ error: 'No file provided' }, 400);
+    return c.json({ error: "No file provided" }, 400);
   }
 
   // Validate file type
   if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-    return c.json({
-      error: `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`,
-    }, 400);
+    return c.json(
+      {
+        error: `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(", ")}`,
+      },
+      400,
+    );
   }
 
   // Validate file size
   if (file.size > MAX_EMOJI_SIZE) {
-    return c.json({
-      error: `File too large. Maximum size: ${MAX_EMOJI_SIZE / 1024}KB`,
-    }, 400);
+    return c.json(
+      {
+        error: `File too large. Maximum size: ${MAX_EMOJI_SIZE / 1024}KB`,
+      },
+      400,
+    );
   }
 
   // Convert file to buffer
@@ -209,12 +210,15 @@ app.post('/upload', async (c: Context) => {
   // Get public URL
   const url = fileStorage.getUrl(filePath);
 
-  return c.json({
-    url,
-    filePath,
-    type: file.type,
-    size: file.size,
-  }, 201);
+  return c.json(
+    {
+      url,
+      filePath,
+      type: file.type,
+      size: file.size,
+    },
+    201,
+  );
 });
 
 /**
@@ -224,20 +228,20 @@ app.post('/upload', async (c: Context) => {
  *
  * Requires admin role.
  */
-app.post('/create', async (c: Context) => {
-  const user = c.get('user');
+app.post("/create", async (c: Context) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Check admin permission
-  const roleService = c.get('roleService');
+  const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
   if (!policies.canManageCustomEmojis) {
-    return c.json({ error: 'Forbidden: Admin permission required' }, 403);
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
 
   const body = await c.req.json<{
     name: string;
@@ -251,18 +255,18 @@ app.post('/create', async (c: Context) => {
 
   // Validate required fields
   if (!body.name || !body.url) {
-    return c.json({ error: 'Name and URL are required' }, 400);
+    return c.json({ error: "Name and URL are required" }, 400);
   }
 
   // Validate name format (alphanumeric and underscores only)
   if (!/^[a-zA-Z0-9_]+$/.test(body.name)) {
-    return c.json({ error: 'Emoji name must contain only letters, numbers, and underscores' }, 400);
+    return c.json({ error: "Emoji name must contain only letters, numbers, and underscores" }, 400);
   }
 
   // Check if name already exists
   const exists = await customEmojiRepository.exists(body.name, null);
   if (exists) {
-    return c.json({ error: 'Emoji with this name already exists' }, 409);
+    return c.json({ error: "Emoji with this name already exists" }, 409);
   }
 
   const emoji = await customEmojiRepository.create({
@@ -278,14 +282,17 @@ app.post('/create', async (c: Context) => {
     localOnly: body.localOnly || false,
   });
 
-  return c.json({
-    id: emoji.id,
-    name: emoji.name,
-    category: emoji.category,
-    aliases: emoji.aliases,
-    url: emoji.publicUrl || emoji.url,
-    isSensitive: emoji.isSensitive,
-  }, 201);
+  return c.json(
+    {
+      id: emoji.id,
+      name: emoji.name,
+      category: emoji.category,
+      aliases: emoji.aliases,
+      url: emoji.publicUrl || emoji.url,
+      isSensitive: emoji.isSensitive,
+    },
+    201,
+  );
 });
 
 /**
@@ -293,20 +300,20 @@ app.post('/create', async (c: Context) => {
  *
  * PATCH /api/emojis/:id
  */
-app.patch('/:id', async (c: Context) => {
-  const user = c.get('user');
+app.patch("/:id", async (c: Context) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const roleService = c.get('roleService');
+  const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
   if (!policies.canManageCustomEmojis) {
-    return c.json({ error: 'Forbidden: Admin permission required' }, 403);
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
-  const id = c.req.param('id');
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+  const id = c.req.param("id");
 
   const body = await c.req.json<{
     name?: string;
@@ -319,7 +326,7 @@ app.patch('/:id', async (c: Context) => {
 
   // Validate name format if provided
   if (body.name && !/^[a-zA-Z0-9_]+$/.test(body.name)) {
-    return c.json({ error: 'Emoji name must contain only letters, numbers, and underscores' }, 400);
+    return c.json({ error: "Emoji name must contain only letters, numbers, and underscores" }, 400);
   }
 
   const emoji = await customEmojiRepository.update(id, {
@@ -332,7 +339,7 @@ app.patch('/:id', async (c: Context) => {
   });
 
   if (!emoji) {
-    return c.json({ error: 'Emoji not found' }, 404);
+    return c.json({ error: "Emoji not found" }, 404);
   }
 
   return c.json({
@@ -350,25 +357,25 @@ app.patch('/:id', async (c: Context) => {
  *
  * DELETE /api/emojis/:id
  */
-app.delete('/:id', async (c: Context) => {
-  const user = c.get('user');
+app.delete("/:id", async (c: Context) => {
+  const user = c.get("user");
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const roleService = c.get('roleService');
+  const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
   if (!policies.canManageCustomEmojis) {
-    return c.json({ error: 'Forbidden: Admin permission required' }, 403);
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
-  const customEmojiRepository = c.get('customEmojiRepository') as ICustomEmojiRepository;
-  const id = c.req.param('id');
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+  const id = c.req.param("id");
 
   const deleted = await customEmojiRepository.delete(id);
 
   if (!deleted) {
-    return c.json({ error: 'Emoji not found' }, 404);
+    return c.json({ error: "Emoji not found" }, 404);
   }
 
   return c.json({ success: true });

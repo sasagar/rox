@@ -1,4 +1,4 @@
-import type { ID, Timestamps } from './common.js';
+import type { ID, Timestamps } from "./common.js";
 
 export interface Session extends Timestamps {
   id: ID;

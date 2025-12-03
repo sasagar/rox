@@ -1,5 +1,5 @@
-import { apiClient } from './client';
-import type { Note, CreateNoteParams, TimelineOptions, NoteVisibility } from '../types/note';
+import { apiClient } from "./client";
+import type { Note, CreateNoteParams, TimelineOptions, NoteVisibility } from "../types/note";
 
 // Re-export types for convenience
 export type { Note, CreateNoteParams, TimelineOptions, NoteVisibility };
@@ -29,12 +29,12 @@ export class NotesApi {
    */
   async getLocalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
     const params = new URLSearchParams();
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.sinceId) params.set('sinceId', options.sinceId);
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
 
     const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/local-timeline${query ? `?${query}` : ''}`);
+    return apiClient.get<Note[]>(`/api/notes/local-timeline${query ? `?${query}` : ""}`);
   }
 
   /**
@@ -45,12 +45,28 @@ export class NotesApi {
    */
   async getSocialTimeline(options: TimelineOptions = {}): Promise<Note[]> {
     const params = new URLSearchParams();
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.sinceId) params.set('sinceId', options.sinceId);
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
 
     const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/social-timeline${query ? `?${query}` : ''}`);
+    return apiClient.get<Note[]>(`/api/notes/social-timeline${query ? `?${query}` : ""}`);
+  }
+
+  /**
+   * Fetch global timeline (all public posts from local and remote users)
+   *
+   * @param options - Timeline fetch options
+   * @returns Array of notes
+   */
+  async getGlobalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
+    const params = new URLSearchParams();
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
+
+    const query = params.toString();
+    return apiClient.get<Note[]>(`/api/notes/global-timeline${query ? `?${query}` : ""}`);
   }
 
   /**
@@ -61,12 +77,12 @@ export class NotesApi {
    */
   async getHomeTimeline(options: TimelineOptions = {}): Promise<Note[]> {
     const params = new URLSearchParams();
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.sinceId) params.set('sinceId', options.sinceId);
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
 
     const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/timeline${query ? `?${query}` : ''}`);
+    return apiClient.get<Note[]>(`/api/notes/timeline${query ? `?${query}` : ""}`);
   }
 
   /**
@@ -76,7 +92,7 @@ export class NotesApi {
    * @returns Note object
    */
   async getNote(noteId: string): Promise<Note> {
-    return apiClient.post<Note>('/api/notes/show', { noteId });
+    return apiClient.post<Note>("/api/notes/show", { noteId });
   }
 
   /**
@@ -103,7 +119,7 @@ export class NotesApi {
    * ```
    */
   async createNote(params: CreateNoteParams): Promise<Note> {
-    return apiClient.post<Note>('/api/notes/create', params);
+    return apiClient.post<Note>("/api/notes/create", params);
   }
 
   /**
@@ -112,7 +128,7 @@ export class NotesApi {
    * @param noteId - ID of note to delete
    */
   async deleteNote(noteId: string): Promise<void> {
-    await apiClient.post('/api/notes/delete', { noteId });
+    await apiClient.post("/api/notes/delete", { noteId });
   }
 
   /**
@@ -122,7 +138,7 @@ export class NotesApi {
    * @param reaction - Reaction emoji (e.g., '👍', '❤️', ':custom_emoji:')
    */
   async createReaction(noteId: string, reaction: string): Promise<void> {
-    await apiClient.post('/api/notes/reactions/create', { noteId, reaction });
+    await apiClient.post("/api/notes/reactions/create", { noteId, reaction });
   }
 
   /**
@@ -131,7 +147,7 @@ export class NotesApi {
    * @param noteId - Note ID
    */
   async deleteReaction(noteId: string): Promise<void> {
-    await apiClient.post('/api/notes/reactions/delete', { noteId });
+    await apiClient.post("/api/notes/reactions/delete", { noteId });
   }
 
   /**
@@ -157,9 +173,9 @@ export class NotesApi {
    */
   async getUserNotes(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
     const params = new URLSearchParams({ userId });
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.sinceId) params.set('sinceId', options.sinceId);
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
 
     return apiClient.get<Note[]>(`/api/notes/user-notes?${params.toString()}`);
   }
@@ -173,9 +189,9 @@ export class NotesApi {
    */
   async getReplies(noteId: string, options: TimelineOptions = {}): Promise<Note[]> {
     const params = new URLSearchParams({ noteId });
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.sinceId) params.set('sinceId', options.sinceId);
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
 
     return apiClient.get<Note[]>(`/api/notes/replies?${params.toString()}`);
   }

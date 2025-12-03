@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from "react";
 
 /**
  * Options for focus trap
@@ -59,14 +59,9 @@ export interface UseFocusTrapOptions {
  */
 export function useFocusTrap(
   containerRef: React.RefObject<HTMLElement | null>,
-  options: UseFocusTrapOptions = {}
+  options: UseFocusTrapOptions = {},
 ) {
-  const {
-    active = true,
-    initialFocusRef,
-    returnFocusRef,
-    onEscape,
-  } = options;
+  const { active = true, initialFocusRef, returnFocusRef, onEscape } = options;
 
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
@@ -74,22 +69,17 @@ export function useFocusTrap(
     if (!containerRef.current) return [];
 
     const selector = [
-      'a[href]',
-      'button:not([disabled])',
-      'textarea:not([disabled])',
-      'input:not([disabled])',
-      'select:not([disabled])',
+      "a[href]",
+      "button:not([disabled])",
+      "textarea:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
       '[tabindex]:not([tabindex="-1"])',
-    ].join(', ');
+    ].join(", ");
 
-    return Array.from(
-      containerRef.current.querySelectorAll<HTMLElement>(selector)
-    ).filter((el) => {
+    return Array.from(containerRef.current.querySelectorAll<HTMLElement>(selector)).filter((el) => {
       // Filter out elements that are hidden or have display: none
-      return (
-        el.offsetParent !== null &&
-        window.getComputedStyle(el).visibility !== 'hidden'
-      );
+      return el.offsetParent !== null && window.getComputedStyle(el).visibility !== "hidden";
     });
   }, [containerRef]);
 
@@ -98,14 +88,14 @@ export function useFocusTrap(
       if (!active) return;
 
       // Handle Escape key
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         event.preventDefault();
         onEscape?.();
         return;
       }
 
       // Handle Tab key for focus trapping
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         const focusableElements = getFocusableElements();
         if (focusableElements.length === 0) return;
 
@@ -127,7 +117,7 @@ export function useFocusTrap(
         }
       }
     },
-    [active, getFocusableElements, onEscape]
+    [active, getFocusableElements, onEscape],
   );
 
   useEffect(() => {
@@ -145,15 +135,15 @@ export function useFocusTrap(
     }
 
     // Add event listener
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     // Cleanup function
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
 
       // Restore focus to previously focused element or return focus element
       const elementToFocus = returnFocusRef?.current || previouslyFocusedElement.current;
-      if (elementToFocus && typeof elementToFocus.focus === 'function') {
+      if (elementToFocus && typeof elementToFocus.focus === "function") {
         elementToFocus.focus();
       }
     };

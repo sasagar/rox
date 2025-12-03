@@ -1,4 +1,4 @@
-import type { UserWarning } from '../../db/schema/pg.js';
+import type { UserWarning } from "../../db/schema/pg.js";
 
 /**
  * User Warning Repository Interface
@@ -37,7 +37,7 @@ export interface IUserWarningRepository {
    */
   findByUserId(
     userId: string,
-    options?: { limit?: number; offset?: number; includeExpired?: boolean }
+    options?: { limit?: number; offset?: number; includeExpired?: boolean },
   ): Promise<UserWarning[]>;
 
   /**
@@ -49,7 +49,7 @@ export interface IUserWarningRepository {
    */
   findByModeratorId(
     moderatorId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<UserWarning[]>;
 
   /**
@@ -85,7 +85,7 @@ export interface IUserWarningRepository {
    */
   countByUserId(
     userId: string,
-    options?: { includeExpired?: boolean; unreadOnly?: boolean }
+    options?: { includeExpired?: boolean; unreadOnly?: boolean },
   ): Promise<number>;
 
   /**

@@ -8,9 +8,13 @@
  * @module routes/ap/nodeinfo
  */
 
-import { Hono } from 'hono';
+import { Hono } from "hono";
+import rootPackageJson from "../../../../../package.json";
 
 const app = new Hono();
+
+// Get version from root package.json
+const ROX_VERSION = rootPackageJson.version;
 
 /**
  * NodeInfo Discovery Endpoint
@@ -20,22 +24,23 @@ const app = new Hono();
  * Returns links to available NodeInfo schema versions.
  * This is the entry point for NodeInfo discovery.
  */
-app.get('/.well-known/nodeinfo', (c) => {
+app.get("/.well-known/nodeinfo", (c) => {
   // Use process.env.URL if available (respects reverse proxy HTTPS)
   // Otherwise fall back to constructing from request
-  const baseUrl = process.env.URL ||
-    (c.req.header('host')
-      ? `${c.req.url.split('//')[0]}//${c.req.header('host')}`
-      : 'http://localhost:3000');
+  const baseUrl =
+    process.env.URL ||
+    (c.req.header("host")
+      ? `${c.req.url.split("//")[0]}//${c.req.header("host")}`
+      : "http://localhost:3000");
 
   return c.json({
     links: [
       {
-        rel: 'http://nodeinfo.diaspora.software/ns/schema/2.1',
+        rel: "http://nodeinfo.diaspora.software/ns/schema/2.1",
         href: `${baseUrl}/nodeinfo/2.1`,
       },
       {
-        rel: 'http://nodeinfo.diaspora.software/ns/schema/2.0',
+        rel: "http://nodeinfo.diaspora.software/ns/schema/2.0",
         href: `${baseUrl}/nodeinfo/2.0`,
       },
     ],
@@ -49,9 +54,9 @@ app.get('/.well-known/nodeinfo', (c) => {
  *
  * Returns detailed server metadata in NodeInfo 2.1 format.
  */
-app.get('/nodeinfo/2.1', async (c) => {
-  const userRepository = c.get('userRepository');
-  const noteRepository = c.get('noteRepository');
+app.get("/nodeinfo/2.1", async (c) => {
+  const userRepository = c.get("userRepository");
+  const noteRepository = c.get("noteRepository");
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
   let totalUsers = 0;
@@ -59,31 +64,31 @@ app.get('/nodeinfo/2.1', async (c) => {
 
   try {
     // These methods may not exist yet, so we wrap in try-catch
-    if (typeof (userRepository as any).countLocal === 'function') {
+    if (typeof (userRepository as any).countLocal === "function") {
       totalUsers = await (userRepository as any).countLocal();
     }
-    if (typeof (noteRepository as any).countLocal === 'function') {
+    if (typeof (noteRepository as any).countLocal === "function") {
       localPosts = await (noteRepository as any).countLocal();
     }
   } catch {
     // Gracefully handle missing count methods
-    console.warn('NodeInfo: Count methods not available, using default values');
+    console.warn("NodeInfo: Count methods not available, using default values");
   }
 
   return c.json({
-    version: '2.1',
+    version: "2.1",
     software: {
-      name: 'rox',
-      version: '0.1.0', // TODO: Read from package.json
-      repository: 'https://github.com/your-org/rox', // TODO: Update with actual repo
-      homepage: 'https://github.com/your-org/rox', // TODO: Update with actual homepage
+      name: "rox",
+      version: ROX_VERSION,
+      repository: "https://github.com/sasapiyo/rox",
+      homepage: "https://github.com/sasapiyo/rox",
     },
-    protocols: ['activitypub'],
+    protocols: ["activitypub"],
     services: {
       inbound: [],
       outbound: [],
     },
-    openRegistrations: process.env.ENABLE_REGISTRATION === 'true',
+    openRegistrations: process.env.ENABLE_REGISTRATION === "true",
     usage: {
       users: {
         total: totalUsers,
@@ -94,22 +99,16 @@ app.get('/nodeinfo/2.1', async (c) => {
       localComments: 0, // Rox doesn't distinguish comments from posts
     },
     metadata: {
-      nodeName: 'Rox Instance',
-      nodeDescription: 'A lightweight ActivityPub server with Misskey API compatibility',
+      nodeName: "Rox Instance",
+      nodeDescription: "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
-        name: 'Administrator',
+        name: "Administrator",
         email: process.env.ADMIN_EMAIL || null,
       },
-      langs: ['en', 'ja'],
+      langs: ["en", "ja"],
       tosUrl: null, // TODO: Add Terms of Service URL if available
       privacyPolicyUrl: null, // TODO: Add Privacy Policy URL if available
-      features: [
-        'activitypub',
-        'misskey_api',
-        'notes',
-        'reactions',
-        'following',
-      ],
+      features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });
 });
@@ -122,9 +121,9 @@ app.get('/nodeinfo/2.1', async (c) => {
  * Returns server metadata in NodeInfo 2.0 format (legacy compatibility).
  * This is a simplified version without the 2.1-specific fields.
  */
-app.get('/nodeinfo/2.0', async (c) => {
-  const userRepository = c.get('userRepository');
-  const noteRepository = c.get('noteRepository');
+app.get("/nodeinfo/2.0", async (c) => {
+  const userRepository = c.get("userRepository");
+  const noteRepository = c.get("noteRepository");
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
   let totalUsers = 0;
@@ -132,29 +131,29 @@ app.get('/nodeinfo/2.0', async (c) => {
 
   try {
     // These methods may not exist yet, so we wrap in try-catch
-    if (typeof (userRepository as any).countLocal === 'function') {
+    if (typeof (userRepository as any).countLocal === "function") {
       totalUsers = await (userRepository as any).countLocal();
     }
-    if (typeof (noteRepository as any).countLocal === 'function') {
+    if (typeof (noteRepository as any).countLocal === "function") {
       localPosts = await (noteRepository as any).countLocal();
     }
   } catch {
     // Gracefully handle missing count methods
-    console.warn('NodeInfo: Count methods not available, using default values');
+    console.warn("NodeInfo: Count methods not available, using default values");
   }
 
   return c.json({
-    version: '2.0',
+    version: "2.0",
     software: {
-      name: 'rox',
-      version: '0.1.0',
+      name: "rox",
+      version: ROX_VERSION,
     },
-    protocols: ['activitypub'],
+    protocols: ["activitypub"],
     services: {
       inbound: [],
       outbound: [],
     },
-    openRegistrations: process.env.ENABLE_REGISTRATION === 'true',
+    openRegistrations: process.env.ENABLE_REGISTRATION === "true",
     usage: {
       users: {
         total: totalUsers,
@@ -162,22 +161,16 @@ app.get('/nodeinfo/2.0', async (c) => {
       localPosts,
     },
     metadata: {
-      nodeName: 'Rox Instance',
-      nodeDescription: 'A lightweight ActivityPub server with Misskey API compatibility',
+      nodeName: "Rox Instance",
+      nodeDescription: "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
-        name: 'Administrator',
+        name: "Administrator",
         email: process.env.ADMIN_EMAIL || null,
       },
-      langs: ['en', 'ja'],
+      langs: ["en", "ja"],
       tosUrl: null,
       privacyPolicyUrl: null,
-      features: [
-        'activitypub',
-        'misskey_api',
-        'notes',
-        'reactions',
-        'following',
-      ],
+      features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });
 });

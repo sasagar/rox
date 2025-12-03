@@ -8,11 +8,14 @@
  * @module routes/health
  */
 
-import { Hono } from 'hono';
-import { getDatabase } from '../db/index.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import { getNotificationStreamService, type ConnectionMetrics } from '../services/NotificationStreamService.js';
-import packageJson from '../../../../package.json';
+import { Hono } from "hono";
+import { getDatabase } from "../db/index.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import {
+  getNotificationStreamService,
+  type ConnectionMetrics,
+} from "../services/NotificationStreamService.js";
+import packageJson from "../../../../package.json";
 
 const app = new Hono();
 
@@ -20,7 +23,7 @@ const app = new Hono();
  * Health check response type
  */
 interface HealthResponse {
-  status: 'ok' | 'degraded' | 'unhealthy';
+  status: "ok" | "degraded" | "unhealthy";
   timestamp: string;
   version: string;
   uptime: number;
@@ -32,16 +35,16 @@ interface HealthResponse {
 interface ReadinessResponse extends HealthResponse {
   checks: {
     database: {
-      status: 'ok' | 'error';
+      status: "ok" | "error";
       latency?: number;
       error?: string;
     };
     cache: {
-      status: 'ok' | 'unavailable';
+      status: "ok" | "unavailable";
       latency?: number;
     };
     queue?: {
-      status: 'ok' | 'unavailable';
+      status: "ok" | "unavailable";
     };
   };
 }
@@ -62,9 +65,9 @@ const startTime = Date.now();
  *
  * @returns Health status with version and uptime
  */
-app.get('/', (c) => {
+app.get("/", (c) => {
   const response: HealthResponse = {
-    status: 'ok',
+    status: "ok",
     timestamp: new Date().toISOString(),
     version: packageJson.version,
     uptime: Math.floor((Date.now() - startTime) / 1000),
@@ -87,8 +90,8 @@ app.get('/', (c) => {
  *
  * @returns Detailed health status including database and cache status
  */
-app.get('/ready', async (c) => {
-  const cacheService = c.get('cacheService') as ICacheService | undefined;
+app.get("/ready", async (c) => {
+  const cacheService = c.get("cacheService") as ICacheService | undefined;
 
   // Check database connection
   const dbCheck = await checkDatabase();
@@ -97,11 +100,11 @@ app.get('/ready', async (c) => {
   const cacheCheck = checkCache(cacheService);
 
   // Determine overall status
-  const isHealthy = dbCheck.status === 'ok';
-  const isDegraded = dbCheck.status === 'ok' && cacheCheck.status === 'unavailable';
+  const isHealthy = dbCheck.status === "ok";
+  const isDegraded = dbCheck.status === "ok" && cacheCheck.status === "unavailable";
 
   const response: ReadinessResponse = {
-    status: isHealthy ? (isDegraded ? 'degraded' : 'ok') : 'unhealthy',
+    status: isHealthy ? (isDegraded ? "degraded" : "ok") : "unhealthy",
     timestamp: new Date().toISOString(),
     version: packageJson.version,
     uptime: Math.floor((Date.now() - startTime) / 1000),
@@ -127,7 +130,7 @@ app.get('/ready', async (c) => {
  * @returns Database check result with status and latency
  */
 async function checkDatabase(): Promise<{
-  status: 'ok' | 'error';
+  status: "ok" | "error";
   latency?: number;
   error?: string;
 }> {
@@ -136,17 +139,17 @@ async function checkDatabase(): Promise<{
   try {
     const db = getDatabase();
     // Execute a simple query to check connectivity
-    await db.execute('SELECT 1');
+    await db.execute("SELECT 1");
 
     return {
-      status: 'ok',
+      status: "ok",
       latency: Date.now() - start,
     };
   } catch (error) {
     return {
-      status: 'error',
+      status: "error",
       latency: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -160,18 +163,18 @@ async function checkDatabase(): Promise<{
  * @returns Cache check result with status
  */
 function checkCache(cacheService?: ICacheService): {
-  status: 'ok' | 'unavailable';
+  status: "ok" | "unavailable";
   latency?: number;
 } {
   if (!cacheService) {
-    return { status: 'unavailable' };
+    return { status: "unavailable" };
   }
 
   const start = Date.now();
   const isAvailable = cacheService.isAvailable();
 
   return {
-    status: isAvailable ? 'ok' : 'unavailable',
+    status: isAvailable ? "ok" : "unavailable",
     latency: Date.now() - start,
   };
 }
@@ -180,7 +183,7 @@ function checkCache(cacheService?: ICacheService): {
  * SSE health response type
  */
 interface SSEHealthResponse {
-  status: 'ok' | 'degraded' | 'unhealthy';
+  status: "ok" | "degraded" | "unhealthy";
   timestamp: string;
   metrics: ConnectionMetrics;
   health: {
@@ -203,7 +206,7 @@ interface SSEHealthResponse {
  *
  * @returns SSE metrics including connections, messages sent, and memory usage
  */
-app.get('/sse', (c) => {
+app.get("/sse", (c) => {
   const streamService = getNotificationStreamService();
   const metrics = streamService.getMetrics();
   const isHealthy = streamService.isHealthy();
@@ -213,11 +216,11 @@ app.get('/sse', (c) => {
   const connectionUsagePercent = (metrics.totalConnections / connectionLimit) * 100;
 
   // Determine status
-  let status: 'ok' | 'degraded' | 'unhealthy' = 'ok';
+  let status: "ok" | "degraded" | "unhealthy" = "ok";
   if (!isHealthy) {
-    status = 'unhealthy';
+    status = "unhealthy";
   } else if (connectionUsagePercent > 80) {
-    status = 'degraded';
+    status = "degraded";
   }
 
   const response: SSEHealthResponse = {

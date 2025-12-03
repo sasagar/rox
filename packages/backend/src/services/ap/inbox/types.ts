@@ -6,7 +6,7 @@
  * @module services/ap/inbox/types
  */
 
-import type { Context } from 'hono';
+import type { Context } from "hono";
 
 /**
  * ActivityPub Activity object
@@ -15,7 +15,7 @@ import type { Context } from 'hono';
  * Using a more specific type than `any` for better type safety.
  */
 export interface Activity {
-  '@context'?: string | string[] | Record<string, unknown>[];
+  "@context"?: string | string[] | Record<string, unknown>[];
   id?: string;
   type: string;
   actor: string | { id: string; [key: string]: unknown };
@@ -106,7 +106,7 @@ export interface Repositories {
  * @returns Actor URI string
  */
 export function getActorUri(actor: string | { id: string; [key: string]: unknown }): string {
-  return typeof actor === 'string' ? actor : actor.id;
+  return typeof actor === "string" ? actor : actor.id;
 }
 
 /**
@@ -116,10 +116,10 @@ export function getActorUri(actor: string | { id: string; [key: string]: unknown
  * @returns Object URI string or undefined
  */
 export function getObjectUri(object: unknown): string | undefined {
-  if (typeof object === 'string') {
+  if (typeof object === "string") {
     return object;
   }
-  if (object && typeof object === 'object' && 'id' in object) {
+  if (object && typeof object === "object" && "id" in object) {
     return (object as { id: string }).id;
   }
   return undefined;

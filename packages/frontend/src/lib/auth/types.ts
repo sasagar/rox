@@ -3,17 +3,17 @@
  * Supports multiple authentication methods: Password, OAuth, Passkey
  */
 
-import type { AuthResult as UserAuthResult } from '../types/user';
+import type { AuthResult as UserAuthResult } from "../types/user";
 
 /**
  * Authentication method types
  */
-export type AuthMethod = 'password' | 'oauth' | 'passkey';
+export type AuthMethod = "password" | "oauth" | "passkey";
 
 /**
  * OAuth provider types
  */
-export type OAuthProvider = 'github' | 'google' | 'discord' | 'mastodon';
+export type OAuthProvider = "github" | "google" | "discord" | "mastodon";
 
 /**
  * Base authentication result
@@ -108,7 +108,7 @@ export interface PasskeyConfig {
   /** Relying Party name */
   rpName: string;
   /** User verification requirement */
-  userVerification: 'required' | 'preferred' | 'discouraged';
+  userVerification: "required" | "preferred" | "discouraged";
   /** Attestation conveyance preference */
-  attestation: 'none' | 'indirect' | 'direct';
+  attestation: "none" | "indirect" | "direct";
 }

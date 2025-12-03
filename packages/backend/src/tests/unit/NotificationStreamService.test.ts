@@ -9,14 +9,14 @@
  * @module tests/unit/NotificationStreamService.test
  */
 
-import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
+import { describe, expect, it, beforeEach, afterEach } from "bun:test";
 import {
   NotificationStreamService,
   getNotificationStreamService,
   type NotificationEvent,
-} from '../../services/NotificationStreamService.js';
+} from "../../services/NotificationStreamService.js";
 
-describe('NotificationStreamService', () => {
+describe("NotificationStreamService", () => {
   let service: NotificationStreamService;
 
   beforeEach(() => {
@@ -29,9 +29,9 @@ describe('NotificationStreamService', () => {
     // Since we're using singleton, we need to be careful
   });
 
-  describe('subscribe', () => {
-    it('should allow subscribing to user events', () => {
-      const userId = 'test-user-1';
+  describe("subscribe", () => {
+    it("should allow subscribing to user events", () => {
+      const userId = "test-user-1";
       const events: NotificationEvent[] = [];
 
       const unsubscribe = service.subscribe(userId, (event) => {
@@ -45,8 +45,8 @@ describe('NotificationStreamService', () => {
       expect(service.getListenerCount(userId)).toBe(0);
     });
 
-    it('should support multiple subscriptions for same user', () => {
-      const userId = 'test-user-2';
+    it("should support multiple subscriptions for same user", () => {
+      const userId = "test-user-2";
       const events1: NotificationEvent[] = [];
       const events2: NotificationEvent[] = [];
 
@@ -60,7 +60,7 @@ describe('NotificationStreamService', () => {
       expect(service.getListenerCount(userId)).toBe(2);
 
       // Send a notification
-      service.pushNotification(userId, { message: 'test' });
+      service.pushNotification(userId, { message: "test" });
 
       expect(events1.length).toBe(1);
       expect(events2.length).toBe(1);
@@ -71,29 +71,29 @@ describe('NotificationStreamService', () => {
     });
   });
 
-  describe('pushNotification', () => {
-    it('should emit notification event to subscribers', () => {
-      const userId = 'test-user-3';
+  describe("pushNotification", () => {
+    it("should emit notification event to subscribers", () => {
+      const userId = "test-user-3";
       const receivedEvents: NotificationEvent[] = [];
 
       const unsubscribe = service.subscribe(userId, (event) => {
         receivedEvents.push(event);
       });
 
-      const testData = { id: '123', message: 'Hello' };
+      const testData = { id: "123", message: "Hello" };
       service.pushNotification(userId, testData);
 
       expect(receivedEvents.length).toBe(1);
-      expect(receivedEvents[0]?.type).toBe('notification');
+      expect(receivedEvents[0]?.type).toBe("notification");
       expect(receivedEvents[0]?.data).toEqual(testData);
 
       unsubscribe();
     });
   });
 
-  describe('pushUnreadCount', () => {
-    it('should emit unreadCount event to subscribers', () => {
-      const userId = 'test-user-4';
+  describe("pushUnreadCount", () => {
+    it("should emit unreadCount event to subscribers", () => {
+      const userId = "test-user-4";
       const receivedEvents: NotificationEvent[] = [];
 
       const unsubscribe = service.subscribe(userId, (event) => {
@@ -103,32 +103,32 @@ describe('NotificationStreamService', () => {
       service.pushUnreadCount(userId, 5);
 
       expect(receivedEvents.length).toBe(1);
-      expect(receivedEvents[0]?.type).toBe('unreadCount');
+      expect(receivedEvents[0]?.type).toBe("unreadCount");
       expect(receivedEvents[0]?.data).toEqual({ count: 5 });
 
       unsubscribe();
     });
   });
 
-  describe('getMetrics', () => {
-    it('should return connection metrics', () => {
+  describe("getMetrics", () => {
+    it("should return connection metrics", () => {
       const metrics = service.getMetrics();
 
-      expect(metrics).toHaveProperty('totalConnections');
-      expect(metrics).toHaveProperty('uniqueUsers');
-      expect(metrics).toHaveProperty('totalNotificationsSent');
-      expect(metrics).toHaveProperty('totalUnreadCountsSent');
-      expect(metrics).toHaveProperty('peakConnections');
-      expect(metrics).toHaveProperty('uptimeMs');
-      expect(metrics).toHaveProperty('memoryUsageBytes');
+      expect(metrics).toHaveProperty("totalConnections");
+      expect(metrics).toHaveProperty("uniqueUsers");
+      expect(metrics).toHaveProperty("totalNotificationsSent");
+      expect(metrics).toHaveProperty("totalUnreadCountsSent");
+      expect(metrics).toHaveProperty("peakConnections");
+      expect(metrics).toHaveProperty("uptimeMs");
+      expect(metrics).toHaveProperty("memoryUsageBytes");
 
-      expect(typeof metrics.totalConnections).toBe('number');
-      expect(typeof metrics.uniqueUsers).toBe('number');
-      expect(typeof metrics.memoryUsageBytes).toBe('number');
+      expect(typeof metrics.totalConnections).toBe("number");
+      expect(typeof metrics.uniqueUsers).toBe("number");
+      expect(typeof metrics.memoryUsageBytes).toBe("number");
     });
 
-    it('should track total connections correctly', () => {
-      const userId = 'test-user-metrics-1';
+    it("should track total connections correctly", () => {
+      const userId = "test-user-metrics-1";
 
       const metricsBefore = service.getMetrics();
       const connectionsBefore = metricsBefore.totalConnections;
@@ -145,8 +145,8 @@ describe('NotificationStreamService', () => {
       expect(metricsCleanup.totalConnections).toBe(connectionsBefore);
     });
 
-    it('should track notifications sent', () => {
-      const userId = 'test-user-metrics-2';
+    it("should track notifications sent", () => {
+      const userId = "test-user-metrics-2";
       const unsubscribe = service.subscribe(userId, () => {});
 
       const metricsBefore = service.getMetrics();
@@ -160,8 +160,8 @@ describe('NotificationStreamService', () => {
       unsubscribe();
     });
 
-    it('should track unread count updates sent', () => {
-      const userId = 'test-user-metrics-3';
+    it("should track unread count updates sent", () => {
+      const userId = "test-user-metrics-3";
       const unsubscribe = service.subscribe(userId, () => {});
 
       const metricsBefore = service.getMetrics();
@@ -176,10 +176,10 @@ describe('NotificationStreamService', () => {
     });
   });
 
-  describe('getTotalConnections', () => {
-    it('should return total number of active connections', () => {
-      const userId1 = 'test-user-conn-1';
-      const userId2 = 'test-user-conn-2';
+  describe("getTotalConnections", () => {
+    it("should return total number of active connections", () => {
+      const userId1 = "test-user-conn-1";
+      const userId2 = "test-user-conn-2";
 
       const connectionsBefore = service.getTotalConnections();
 
@@ -197,9 +197,9 @@ describe('NotificationStreamService', () => {
     });
   });
 
-  describe('getConnectedUsers', () => {
-    it('should return map of connected users with connection counts', () => {
-      const userId = 'test-user-map-1';
+  describe("getConnectedUsers", () => {
+    it("should return map of connected users with connection counts", () => {
+      const userId = "test-user-map-1";
 
       const unsub1 = service.subscribe(userId, () => {});
       const unsub2 = service.subscribe(userId, () => {});
@@ -212,14 +212,14 @@ describe('NotificationStreamService', () => {
     });
   });
 
-  describe('isHealthy', () => {
-    it('should return true when service is operating normally', () => {
+  describe("isHealthy", () => {
+    it("should return true when service is operating normally", () => {
       expect(service.isHealthy()).toBe(true);
     });
   });
 
-  describe('singleton', () => {
-    it('should return the same instance', () => {
+  describe("singleton", () => {
+    it("should return the same instance", () => {
       const instance1 = getNotificationStreamService();
       const instance2 = getNotificationStreamService();
 

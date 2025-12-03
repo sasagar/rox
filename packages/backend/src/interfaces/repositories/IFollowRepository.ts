@@ -1,10 +1,10 @@
-import type { Follow } from 'shared';
+import type { Follow } from "shared";
 
 export interface IFollowRepository {
   /**
    * フォロー関係を作成
    */
-  create(follow: Omit<Follow, 'createdAt' | 'updatedAt'>): Promise<Follow>;
+  create(follow: Omit<Follow, "createdAt" | "updatedAt">): Promise<Follow>;
 
   /**
    * IDでフォロー関係を取得

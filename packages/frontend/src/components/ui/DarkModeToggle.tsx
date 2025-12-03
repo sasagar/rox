@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Dark Mode Toggle Component
@@ -7,7 +7,7 @@
  * Uses the theme context to manage the color mode state.
  */
 
-import { useTheme } from '../ThemeProvider.js';
+import { useTheme } from "../ThemeProvider.js";
 
 interface DarkModeToggleProps {
   className?: string;
@@ -16,7 +16,7 @@ interface DarkModeToggleProps {
 /**
  * Toggle button for switching between light and dark color modes
  */
-export function DarkModeToggle({ className = '' }: DarkModeToggleProps) {
+export function DarkModeToggle({ className = "" }: DarkModeToggleProps) {
   const { colorMode, toggleColorMode } = useTheme();
 
   return (
@@ -24,10 +24,10 @@ export function DarkModeToggle({ className = '' }: DarkModeToggleProps) {
       type="button"
       onClick={toggleColorMode}
       className={`p-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors ${className}`}
-      aria-label={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      title={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={colorMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      title={colorMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {colorMode === 'dark' ? (
+      {colorMode === "dark" ? (
         // Sun icon for dark mode (click to switch to light)
         <svg
           xmlns="http://www.w3.org/2000/svg"

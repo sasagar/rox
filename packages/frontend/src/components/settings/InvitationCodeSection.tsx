@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Invitation Code Section Component
@@ -6,17 +6,17 @@
  * Allows users with invitation permissions to create and manage their invitation codes.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Copy, Trash2, Plus, RefreshCw, Ticket } from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Spinner } from '../ui/Spinner';
-import { addToastAtom } from '../../lib/atoms/toast';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Copy, Trash2, Plus, RefreshCw, Ticket } from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Spinner } from "../ui/Spinner";
+import { addToastAtom } from "../../lib/atoms/toast";
 
 interface InvitationCode {
   id: string;
@@ -53,16 +53,16 @@ export function InvitationCodeSection() {
       apiClient.setToken(token);
 
       // Load permissions
-      const permsResponse = await apiClient.get<InvitePermissions>('/api/invitations/permissions');
+      const permsResponse = await apiClient.get<InvitePermissions>("/api/invitations/permissions");
       setPermissions(permsResponse);
 
       // Only load codes if user can invite
       if (permsResponse.canInvite) {
-        const codesResponse = await apiClient.get<{ codes: InvitationCode[] }>('/api/invitations');
+        const codesResponse = await apiClient.get<{ codes: InvitationCode[] }>("/api/invitations");
         setCodes(codesResponse.codes);
       }
     } catch (err) {
-      console.error('Failed to load invitation data:', err);
+      console.error("Failed to load invitation data:", err);
     } finally {
       setIsLoading(false);
     }
@@ -78,24 +78,24 @@ export function InvitationCodeSection() {
     setIsCreating(true);
     try {
       apiClient.setToken(token);
-      const newCode = await apiClient.post<InvitationCode>('/api/invitations', {
+      const newCode = await apiClient.post<InvitationCode>("/api/invitations", {
         maxUses: 1,
       });
 
       setCodes((prev) => [newCode, ...prev]);
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Invitation code created`,
       });
     } catch (err: any) {
-      if (err.message?.includes('limit')) {
+      if (err.message?.includes("limit")) {
         addToast({
-          type: 'error',
+          type: "error",
           message: t`You have reached your invitation limit`,
         });
       } else {
         addToast({
-          type: 'error',
+          type: "error",
           message: err.message || t`Failed to create invitation code`,
         });
       }
@@ -113,12 +113,12 @@ export function InvitationCodeSection() {
 
       setCodes((prev) => prev.filter((c) => c.id !== id));
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Invitation code deleted`,
       });
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to delete invitation code`,
       });
     }
@@ -127,13 +127,13 @@ export function InvitationCodeSection() {
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     addToast({
-      type: 'success',
+      type: "success",
       message: t`Code copied to clipboard`,
     });
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -171,12 +171,7 @@ export function InvitationCodeSection() {
           <Ticket className="w-5 h-5" />
           <Trans>Invitation Codes</Trans>
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onPress={loadData}
-          aria-label={t`Refresh`}
-        >
+        <Button variant="ghost" size="sm" onPress={loadData} aria-label={t`Refresh`}>
           <RefreshCw className="w-4 h-4" />
         </Button>
       </CardHeader>
@@ -187,18 +182,14 @@ export function InvitationCodeSection() {
             <Trans>You can create unlimited invitation codes</Trans>
           ) : (
             <Trans>
-              You can create up to {permissions.inviteLimit} invitation codes per{' '}
+              You can create up to {permissions.inviteLimit} invitation codes per{" "}
               {permissions.inviteLimitCycle} hours
             </Trans>
           )}
         </div>
 
         {/* Create button */}
-        <Button
-          onPress={handleCreateCode}
-          isDisabled={isCreating}
-          className="mb-4 w-full"
-        >
+        <Button onPress={handleCreateCode} isDisabled={isCreating} className="mb-4 w-full">
           {isCreating ? (
             <Spinner size="sm" />
           ) : (
@@ -226,8 +217,8 @@ export function InvitationCodeSection() {
                   key={code.id}
                   className={`flex items-center justify-between p-3 rounded-lg border ${
                     available
-                      ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                      : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60'
+                      ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
@@ -252,7 +243,9 @@ export function InvitationCodeSection() {
                       )}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <Trans>Uses: {code.useCount}/{code.maxUses}</Trans>
+                      <Trans>
+                        Uses: {code.useCount}/{code.maxUses}
+                      </Trans>
                       {code.expiresAt && (
                         <span className="ml-2">
                           <Trans>Expires: {formatDate(code.expiresAt)}</Trans>

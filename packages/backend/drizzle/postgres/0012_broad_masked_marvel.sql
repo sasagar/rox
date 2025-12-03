@@ -1,1 +1,0 @@
-ALTER TABLE "users" ADD COLUMN "ui_settings" jsonb;

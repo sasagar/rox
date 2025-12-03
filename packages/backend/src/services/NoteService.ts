@@ -7,17 +7,17 @@
  * @module services/NoteService
  */
 
-import type { INoteRepository } from '../interfaces/repositories/INoteRepository.js';
-import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
-import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import type { Note } from '../../../shared/src/types/note.js';
-import type { Visibility } from '../../../shared/src/types/common.js';
-import { generateId } from '../../../shared/src/utils/id.js';
-import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
-import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
-import type { NotificationService } from './NotificationService.js';
+import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
+import type { IDriveFileRepository } from "../interfaces/repositories/IDriveFileRepository.js";
+import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import type { Note } from "../../../shared/src/types/note.js";
+import type { Visibility } from "../../../shared/src/types/common.js";
+import { generateId } from "../../../shared/src/utils/id.js";
+import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
+import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
+import type { NotificationService } from "./NotificationService.js";
 
 /**
  * Note creation input data
@@ -130,7 +130,7 @@ export class NoteService {
       userId,
       text = null,
       cw = null,
-      visibility = 'public',
+      visibility = "public",
       localOnly = false,
       replyId = null,
       renoteId = null,
@@ -139,7 +139,7 @@ export class NoteService {
 
     // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
     if (!renoteId && !text && fileIds.length === 0) {
-      throw new Error('Note must have text or files');
+      throw new Error("Note must have text or files");
     }
 
     // バリデーション: ファイル数制限
@@ -156,7 +156,7 @@ export class NoteService {
     if (replyId) {
       const replyNote = await this.noteRepository.findById(replyId);
       if (!replyNote) {
-        throw new Error('Reply target note not found');
+        throw new Error("Reply target note not found");
       }
     }
 
@@ -165,22 +165,22 @@ export class NoteService {
     if (renoteId) {
       renoteTarget = await this.noteRepository.findById(renoteId);
       if (!renoteTarget) {
-        throw new Error('Renote target note not found');
+        throw new Error("Renote target note not found");
       }
     }
 
     // メンション抽出（簡易実装、Phase 1.1で拡張予定）
-    const mentions = this.extractMentions(text || '');
+    const mentions = this.extractMentions(text || "");
 
     // ハッシュタグ抽出（簡易実装、Phase 1.1で拡張予定）
-    const tags = this.extractHashtags(text || '');
+    const tags = this.extractHashtags(text || "");
 
     // 絵文字抽出（簡易実装、Phase 1.1で拡張予定）
-    const emojis = this.extractEmojis(text || '');
+    const emojis = this.extractEmojis(text || "");
 
     // ノート作成
     const noteId = generateId();
-    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const baseUrl = process.env.URL || "http://localhost:3000";
 
     const note = await this.noteRepository.create({
       id: noteId,
@@ -204,7 +204,7 @@ export class NoteService {
 
     // Deliver Create activity to followers (async, non-blocking)
     const author = await this.userRepository.findById(userId);
-    if (author && !author.host && !localOnly && visibility === 'public') {
+    if (author && !author.host && !localOnly && visibility === "public") {
       // Fire and forget - don't await to avoid blocking the response
       this.deliveryService.deliverCreateNote(note, author).catch((error) => {
         console.error(`Failed to deliver Create activity for note ${noteId}:`, error);
@@ -212,28 +212,32 @@ export class NoteService {
     }
 
     // Deliver Announce activity to remote note author (async, non-blocking)
-    if (renoteTarget && author && !author.host && !localOnly && visibility === 'public') {
+    if (renoteTarget && author && !author.host && !localOnly && visibility === "public") {
       const renoteAuthor = await this.userRepository.findById(renoteTarget.userId);
       if (renoteAuthor && renoteAuthor.host && renoteAuthor.inbox) {
         // Only deliver if renote target is a remote user with inbox
-        this.deliveryService.deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor).catch((error) => {
-          console.error(`Failed to deliver Announce activity for renote ${noteId}:`, error);
-        });
+        this.deliveryService
+          .deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor)
+          .catch((error) => {
+            console.error(`Failed to deliver Announce activity for renote ${noteId}:`, error);
+          });
       }
     }
 
     // Invalidate timeline cache on new local note
-    if (this.cacheService?.isAvailable() && visibility === 'public') {
+    if (this.cacheService?.isAvailable() && visibility === "public") {
       this.cacheService.deletePattern(`${CachePrefix.TIMELINE_LOCAL}:*`).catch((error) => {
-        console.warn('Failed to invalidate timeline cache:', error);
+        console.warn("Failed to invalidate timeline cache:", error);
       });
     }
 
     // Create notifications (async, non-blocking)
     if (this.notificationService) {
-      this.createNotifications(note, userId, mentions, replyId, renoteId, renoteTarget).catch((error) => {
-        console.error(`Failed to create notifications for note ${noteId}:`, error);
-      });
+      this.createNotifications(note, userId, mentions, replyId, renoteId, renoteTarget).catch(
+        (error) => {
+          console.error(`Failed to create notifications for note ${noteId}:`, error);
+        },
+      );
     }
 
     return note;
@@ -275,12 +279,12 @@ export class NoteService {
     const note = await this.noteRepository.findById(noteId);
 
     if (!note) {
-      throw new Error('Note not found');
+      throw new Error("Note not found");
     }
 
     // 所有者確認
     if (note.userId !== userId) {
-      throw new Error('Access denied');
+      throw new Error("Access denied");
     }
 
     // Get author info before deletion for ActivityPub delivery
@@ -413,6 +417,50 @@ export class NoteService {
       sinceId: options.sinceId,
       untilId: options.untilId,
     });
+  }
+
+  /**
+   * Get global timeline
+   *
+   * Returns all public posts from local and remote users.
+   *
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getGlobalTimeline({
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getGlobalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    // Cache only the first page (no cursor) for performance
+    const isFirstPage = !options.sinceId && !options.untilId;
+    const cacheKey = `${CachePrefix.TIMELINE_GLOBAL}:${limit}`;
+
+    // Try cache for first page
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      const cached = await this.cacheService.get<Note[]>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    const notes = await this.noteRepository.getGlobalTimeline({
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+
+    // Cache first page results
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      await this.cacheService.set(cacheKey, notes, { ttl: CacheTTL.SHORT });
+    }
+
+    return notes;
   }
 
   /**
@@ -563,7 +611,7 @@ export class NoteService {
     mentions: string[],
     replyId: string | null | undefined,
     renoteId: string | null | undefined,
-    renoteTarget: Note | null
+    renoteTarget: Note | null,
   ): Promise<void> {
     if (!this.notificationService) return;
 
@@ -577,7 +625,7 @@ export class NoteService {
           await this.notificationService.createReplyNotification(
             replyTarget.userId,
             authorId,
-            note.id
+            note.id,
           );
         }
       }
@@ -591,7 +639,7 @@ export class NoteService {
           await this.notificationService.createRenoteNotification(
             renoteTarget.userId,
             authorId,
-            note.id
+            note.id,
           );
         }
       }
@@ -605,7 +653,7 @@ export class NoteService {
           await this.notificationService.createQuoteNotification(
             renoteTarget.userId,
             authorId,
-            note.id
+            note.id,
           );
         }
       }
@@ -627,7 +675,7 @@ export class NoteService {
           await this.notificationService.createMentionNotification(
             mentionedUser.id,
             authorId,
-            note.id
+            note.id,
           );
         }
       }

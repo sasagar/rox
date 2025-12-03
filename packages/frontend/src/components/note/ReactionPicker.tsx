@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from 'react-aria-components';
-import { SmilePlus } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "react-aria-components";
+import { SmilePlus } from "lucide-react";
 
 /**
  * Default reaction emojis
  * Common reactions used in social networks
  */
 const DEFAULT_REACTIONS = [
-  '👍', // Thumbs up
-  '❤️', // Heart
-  '😂', // Laughing
-  '🎉', // Party
-  '🤔', // Thinking
-  '👀', // Eyes
-  '🔥', // Fire
-  '✨', // Sparkles
+  "👍", // Thumbs up
+  "❤️", // Heart
+  "😂", // Laughing
+  "🎉", // Party
+  "🤔", // Thinking
+  "👀", // Eyes
+  "🔥", // Fire
+  "✨", // Sparkles
 ];
 
 /**
@@ -68,7 +68,7 @@ export function ReactionPicker({
             className={`
               w-10 h-10 flex items-center justify-center text-2xl rounded-md
               transition-all hover:scale-110 hover:bg-gray-100 dark:hover:bg-gray-700
-              ${isSelected ? 'bg-primary-100 dark:bg-primary-900/30 ring-2 ring-primary-500' : 'bg-gray-50 dark:bg-gray-700'}
+              ${isSelected ? "bg-primary-100 dark:bg-primary-900/30 ring-2 ring-primary-500" : "bg-gray-50 dark:bg-gray-700"}
             `}
           >
             {reaction}
@@ -137,10 +137,7 @@ export function ReactionButton({
       {isOpen && (
         <>
           {/* Backdrop to close picker */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
 
           {/* Picker popover */}
           <div className="absolute bottom-full left-0 mb-2 z-20">

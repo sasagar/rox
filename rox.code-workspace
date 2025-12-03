@@ -7,6 +7,8 @@
 	"settings": {
 		"files.associations": {
 			"*.css": "tailwindcss"
-		}
+		},
+		"oxc.fmt.configPath": ".oxfmtrc.json",
+		"oxc.fmt.experimental": true
 	}
 }

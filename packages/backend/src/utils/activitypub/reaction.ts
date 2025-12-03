@@ -30,7 +30,7 @@ export function extractReactionFromLike(activity: any): ExtractedReaction {
   // Check for Misskey extension: _misskey_reaction or content field
   const misskeyReaction = activity._misskey_reaction || activity.content;
 
-  if (misskeyReaction && typeof misskeyReaction === 'string') {
+  if (misskeyReaction && typeof misskeyReaction === "string") {
     // Check if it's a custom emoji (format: :emoji_name:)
     const customEmojiMatch = misskeyReaction.match(/^:([^:]+):$/);
 
@@ -41,8 +41,7 @@ export function extractReactionFromLike(activity: any): ExtractedReaction {
       if (Array.isArray(activity.tag)) {
         const emojiTag = activity.tag.find(
           (tag: any) =>
-            tag.type === 'Emoji' &&
-            (tag.name === misskeyReaction || tag.name === `:${emojiName}:`)
+            tag.type === "Emoji" && (tag.name === misskeyReaction || tag.name === `:${emojiName}:`),
         );
 
         if (emojiTag?.icon?.url) {
@@ -62,5 +61,5 @@ export function extractReactionFromLike(activity: any): ExtractedReaction {
   }
 
   // Standard ActivityPub Like - default to heart
-  return { reaction: '❤️' };
+  return { reaction: "❤️" };
 }

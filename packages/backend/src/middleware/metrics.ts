@@ -6,8 +6,8 @@
  * @module middleware/metrics
  */
 
-import type { Context, Next } from 'hono';
-import { recordHttpRequest } from '../lib/metrics.js';
+import type { Context, Next } from "hono";
+import { recordHttpRequest } from "../lib/metrics.js";
 
 /**
  * Metrics Middleware
@@ -31,7 +31,7 @@ export function metricsMiddleware() {
     const path = c.req.path;
 
     // Skip metrics endpoint to avoid recursion
-    if (path === '/metrics') {
+    if (path === "/metrics") {
       return next();
     }
 

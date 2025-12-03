@@ -5,9 +5,9 @@
  * querying, and filtering of audit log entries
  */
 
-import { describe, test, expect, beforeEach } from 'bun:test';
-import type { IModerationAuditLogRepository } from '../../interfaces/repositories/IModerationAuditLogRepository.js';
-import type { ModerationAuditLog } from '../../db/schema/pg.js';
+import { describe, test, expect, beforeEach } from "bun:test";
+import type { IModerationAuditLogRepository } from "../../interfaces/repositories/IModerationAuditLogRepository.js";
+import type { ModerationAuditLog } from "../../db/schema/pg.js";
 
 /**
  * Mock implementation of IModerationAuditLogRepository for testing
@@ -100,14 +100,14 @@ class MockModerationAuditLogRepository implements IModerationAuditLogRepository 
   async findByTarget(
     targetType: any,
     targetId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]> {
     return this.findAll({ targetType, targetId, ...options });
   }
 
   async findByModerator(
     moderatorId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]> {
     return this.findAll({ moderatorId, ...options });
   }
@@ -123,61 +123,61 @@ class MockModerationAuditLogRepository implements IModerationAuditLogRepository 
   }
 }
 
-describe('ModerationAuditLogRepository', () => {
+describe("ModerationAuditLogRepository", () => {
   let repo: MockModerationAuditLogRepository;
 
   beforeEach(() => {
     repo = new MockModerationAuditLogRepository();
   });
 
-  describe('create', () => {
-    test('should create audit log entry with all fields', async () => {
+  describe("create", () => {
+    test("should create audit log entry with all fields", async () => {
       const log = await repo.create({
-        moderatorId: 'mod-123',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-456',
-        reason: 'Spam content',
-        details: { originalText: 'Buy cheap watches!' },
+        moderatorId: "mod-123",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-456",
+        reason: "Spam content",
+        details: { originalText: "Buy cheap watches!" },
       });
 
       expect(log.id).toBeDefined();
-      expect(log.moderatorId).toBe('mod-123');
-      expect(log.action).toBe('delete_note');
-      expect(log.targetType).toBe('note');
-      expect(log.targetId).toBe('note-456');
-      expect(log.reason).toBe('Spam content');
-      expect(log.details).toEqual({ originalText: 'Buy cheap watches!' });
+      expect(log.moderatorId).toBe("mod-123");
+      expect(log.action).toBe("delete_note");
+      expect(log.targetType).toBe("note");
+      expect(log.targetId).toBe("note-456");
+      expect(log.reason).toBe("Spam content");
+      expect(log.details).toEqual({ originalText: "Buy cheap watches!" });
       expect(log.createdAt).toBeInstanceOf(Date);
     });
 
-    test('should create audit log entry without optional fields', async () => {
+    test("should create audit log entry without optional fields", async () => {
       const log = await repo.create({
-        moderatorId: 'mod-123',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-789',
+        moderatorId: "mod-123",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-789",
       });
 
       expect(log.id).toBeDefined();
-      expect(log.moderatorId).toBe('mod-123');
+      expect(log.moderatorId).toBe("mod-123");
       expect(log.reason).toBeNull();
       expect(log.details).toBeNull();
     });
 
-    test('should create multiple distinct log entries', async () => {
+    test("should create multiple distinct log entries", async () => {
       const log1 = await repo.create({
-        moderatorId: 'mod-123',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
+        moderatorId: "mod-123",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
       });
 
       const log2 = await repo.create({
-        moderatorId: 'mod-123',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-2',
+        moderatorId: "mod-123",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-2",
       });
 
       expect(log1.id).not.toBe(log2.id);
@@ -185,110 +185,110 @@ describe('ModerationAuditLogRepository', () => {
     });
   });
 
-  describe('findById', () => {
-    test('should find existing log by ID', async () => {
+  describe("findById", () => {
+    test("should find existing log by ID", async () => {
       const created = await repo.create({
-        moderatorId: 'mod-123',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-456',
+        moderatorId: "mod-123",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-456",
       });
 
       const found = await repo.findById(created.id);
 
       expect(found).not.toBeNull();
       expect(found?.id).toBe(created.id);
-      expect(found?.moderatorId).toBe('mod-123');
+      expect(found?.moderatorId).toBe("mod-123");
     });
 
-    test('should return null for non-existent ID', async () => {
-      const found = await repo.findById('non-existent-id');
+    test("should return null for non-existent ID", async () => {
+      const found = await repo.findById("non-existent-id");
 
       expect(found).toBeNull();
     });
   });
 
-  describe('findAll', () => {
+  describe("findAll", () => {
     beforeEach(async () => {
       // Create test data
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
+        moderatorId: "mod-1",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
       });
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-1',
+        moderatorId: "mod-1",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-1",
       });
       await repo.create({
-        moderatorId: 'mod-2',
-        action: 'resolve_report',
-        targetType: 'report',
-        targetId: 'report-1',
+        moderatorId: "mod-2",
+        action: "resolve_report",
+        targetType: "report",
+        targetId: "report-1",
       });
       await repo.create({
-        moderatorId: 'mod-2',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-2',
+        moderatorId: "mod-2",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-2",
       });
     });
 
-    test('should return all logs without filters', async () => {
+    test("should return all logs without filters", async () => {
       const logs = await repo.findAll();
 
       expect(logs).toHaveLength(4);
     });
 
-    test('should filter by moderatorId', async () => {
-      const logs = await repo.findAll({ moderatorId: 'mod-1' });
+    test("should filter by moderatorId", async () => {
+      const logs = await repo.findAll({ moderatorId: "mod-1" });
 
       expect(logs).toHaveLength(2);
-      logs.forEach((log) => expect(log.moderatorId).toBe('mod-1'));
+      logs.forEach((log) => expect(log.moderatorId).toBe("mod-1"));
     });
 
-    test('should filter by action', async () => {
-      const logs = await repo.findAll({ action: 'delete_note' });
+    test("should filter by action", async () => {
+      const logs = await repo.findAll({ action: "delete_note" });
 
       expect(logs).toHaveLength(2);
-      logs.forEach((log) => expect(log.action).toBe('delete_note'));
+      logs.forEach((log) => expect(log.action).toBe("delete_note"));
     });
 
-    test('should filter by targetType', async () => {
-      const logs = await repo.findAll({ targetType: 'note' });
+    test("should filter by targetType", async () => {
+      const logs = await repo.findAll({ targetType: "note" });
 
       expect(logs).toHaveLength(2);
-      logs.forEach((log) => expect(log.targetType).toBe('note'));
+      logs.forEach((log) => expect(log.targetType).toBe("note"));
     });
 
-    test('should filter by targetId', async () => {
-      const logs = await repo.findAll({ targetId: 'note-1' });
+    test("should filter by targetId", async () => {
+      const logs = await repo.findAll({ targetId: "note-1" });
 
       expect(logs).toHaveLength(1);
-      expect(logs[0]?.targetId).toBe('note-1');
+      expect(logs[0]?.targetId).toBe("note-1");
     });
 
-    test('should combine multiple filters', async () => {
+    test("should combine multiple filters", async () => {
       const logs = await repo.findAll({
-        moderatorId: 'mod-2',
-        action: 'delete_note',
+        moderatorId: "mod-2",
+        action: "delete_note",
       });
 
       expect(logs).toHaveLength(1);
-      expect(logs[0]?.moderatorId).toBe('mod-2');
-      expect(logs[0]?.action).toBe('delete_note');
+      expect(logs[0]?.moderatorId).toBe("mod-2");
+      expect(logs[0]?.action).toBe("delete_note");
     });
 
-    test('should respect limit parameter', async () => {
+    test("should respect limit parameter", async () => {
       const logs = await repo.findAll({ limit: 2 });
 
       expect(logs).toHaveLength(2);
     });
 
-    test('should respect offset parameter', async () => {
+    test("should respect offset parameter", async () => {
       const allLogs = await repo.findAll();
       const offsetLogs = await repo.findAll({ offset: 2 });
 
@@ -296,216 +296,216 @@ describe('ModerationAuditLogRepository', () => {
       expect(offsetLogs[0]?.id).toBe(allLogs[2]?.id);
     });
 
-    test('should return empty array when no matches', async () => {
-      const logs = await repo.findAll({ moderatorId: 'non-existent' });
+    test("should return empty array when no matches", async () => {
+      const logs = await repo.findAll({ moderatorId: "non-existent" });
 
       expect(logs).toHaveLength(0);
     });
   });
 
-  describe('count', () => {
+  describe("count", () => {
     beforeEach(async () => {
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
+        moderatorId: "mod-1",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
       });
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-1',
+        moderatorId: "mod-1",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-1",
       });
       await repo.create({
-        moderatorId: 'mod-2',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-2',
+        moderatorId: "mod-2",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-2",
       });
     });
 
-    test('should count all logs without filters', async () => {
+    test("should count all logs without filters", async () => {
       const count = await repo.count();
 
       expect(count).toBe(3);
     });
 
-    test('should count with moderatorId filter', async () => {
-      const count = await repo.count({ moderatorId: 'mod-1' });
+    test("should count with moderatorId filter", async () => {
+      const count = await repo.count({ moderatorId: "mod-1" });
 
       expect(count).toBe(2);
     });
 
-    test('should count with action filter', async () => {
-      const count = await repo.count({ action: 'delete_note' });
+    test("should count with action filter", async () => {
+      const count = await repo.count({ action: "delete_note" });
 
       expect(count).toBe(2);
     });
 
-    test('should return 0 when no matches', async () => {
-      const count = await repo.count({ moderatorId: 'non-existent' });
+    test("should return 0 when no matches", async () => {
+      const count = await repo.count({ moderatorId: "non-existent" });
 
       expect(count).toBe(0);
     });
   });
 
-  describe('findByTarget', () => {
+  describe("findByTarget", () => {
     beforeEach(async () => {
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
-        reason: 'First deletion',
+        moderatorId: "mod-1",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
+        reason: "First deletion",
       });
       await repo.create({
-        moderatorId: 'mod-2',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
-        reason: 'Second deletion (restored then deleted again)',
+        moderatorId: "mod-2",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
+        reason: "Second deletion (restored then deleted again)",
       });
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-1',
+        moderatorId: "mod-1",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-1",
       });
     });
 
-    test('should find all logs for a specific target', async () => {
-      const logs = await repo.findByTarget('note', 'note-1');
+    test("should find all logs for a specific target", async () => {
+      const logs = await repo.findByTarget("note", "note-1");
 
       expect(logs).toHaveLength(2);
       logs.forEach((log) => {
-        expect(log.targetType).toBe('note');
-        expect(log.targetId).toBe('note-1');
+        expect(log.targetType).toBe("note");
+        expect(log.targetId).toBe("note-1");
       });
     });
 
-    test('should return empty array for non-existent target', async () => {
-      const logs = await repo.findByTarget('note', 'non-existent');
+    test("should return empty array for non-existent target", async () => {
+      const logs = await repo.findByTarget("note", "non-existent");
 
       expect(logs).toHaveLength(0);
     });
   });
 
-  describe('findByModerator', () => {
+  describe("findByModerator", () => {
     beforeEach(async () => {
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-1',
+        moderatorId: "mod-1",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-1",
       });
       await repo.create({
-        moderatorId: 'mod-1',
-        action: 'suspend_user',
-        targetType: 'user',
-        targetId: 'user-1',
+        moderatorId: "mod-1",
+        action: "suspend_user",
+        targetType: "user",
+        targetId: "user-1",
       });
       await repo.create({
-        moderatorId: 'mod-2',
-        action: 'delete_note',
-        targetType: 'note',
-        targetId: 'note-2',
+        moderatorId: "mod-2",
+        action: "delete_note",
+        targetType: "note",
+        targetId: "note-2",
       });
     });
 
-    test('should find all logs by a specific moderator', async () => {
-      const logs = await repo.findByModerator('mod-1');
+    test("should find all logs by a specific moderator", async () => {
+      const logs = await repo.findByModerator("mod-1");
 
       expect(logs).toHaveLength(2);
       logs.forEach((log) => {
-        expect(log.moderatorId).toBe('mod-1');
+        expect(log.moderatorId).toBe("mod-1");
       });
     });
 
-    test('should return empty array for non-existent moderator', async () => {
-      const logs = await repo.findByModerator('non-existent');
+    test("should return empty array for non-existent moderator", async () => {
+      const logs = await repo.findByModerator("non-existent");
 
       expect(logs).toHaveLength(0);
     });
 
-    test('should respect limit parameter', async () => {
-      const logs = await repo.findByModerator('mod-1', { limit: 1 });
+    test("should respect limit parameter", async () => {
+      const logs = await repo.findByModerator("mod-1", { limit: 1 });
 
       expect(logs).toHaveLength(1);
     });
   });
 });
 
-describe('ModerationAction types', () => {
+describe("ModerationAction types", () => {
   let repo: MockModerationAuditLogRepository;
 
   beforeEach(() => {
     repo = new MockModerationAuditLogRepository();
   });
 
-  test('should support delete_note action', async () => {
+  test("should support delete_note action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'delete_note',
-      targetType: 'note',
-      targetId: 'note-1',
+      moderatorId: "mod-1",
+      action: "delete_note",
+      targetType: "note",
+      targetId: "note-1",
     });
 
-    expect(log.action).toBe('delete_note');
+    expect(log.action).toBe("delete_note");
   });
 
-  test('should support suspend_user action', async () => {
+  test("should support suspend_user action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'suspend_user',
-      targetType: 'user',
-      targetId: 'user-1',
+      moderatorId: "mod-1",
+      action: "suspend_user",
+      targetType: "user",
+      targetId: "user-1",
     });
 
-    expect(log.action).toBe('suspend_user');
+    expect(log.action).toBe("suspend_user");
   });
 
-  test('should support unsuspend_user action', async () => {
+  test("should support unsuspend_user action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'unsuspend_user',
-      targetType: 'user',
-      targetId: 'user-1',
+      moderatorId: "mod-1",
+      action: "unsuspend_user",
+      targetType: "user",
+      targetId: "user-1",
     });
 
-    expect(log.action).toBe('unsuspend_user');
+    expect(log.action).toBe("unsuspend_user");
   });
 
-  test('should support resolve_report action', async () => {
+  test("should support resolve_report action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'resolve_report',
-      targetType: 'report',
-      targetId: 'report-1',
+      moderatorId: "mod-1",
+      action: "resolve_report",
+      targetType: "report",
+      targetId: "report-1",
     });
 
-    expect(log.action).toBe('resolve_report');
+    expect(log.action).toBe("resolve_report");
   });
 
-  test('should support reject_report action', async () => {
+  test("should support reject_report action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'reject_report',
-      targetType: 'report',
-      targetId: 'report-1',
+      moderatorId: "mod-1",
+      action: "reject_report",
+      targetType: "report",
+      targetId: "report-1",
     });
 
-    expect(log.action).toBe('reject_report');
+    expect(log.action).toBe("reject_report");
   });
 
-  test('should support block_instance action', async () => {
+  test("should support block_instance action", async () => {
     const log = await repo.create({
-      moderatorId: 'mod-1',
-      action: 'block_instance',
-      targetType: 'instance',
-      targetId: 'spam.example.com',
+      moderatorId: "mod-1",
+      action: "block_instance",
+      targetType: "instance",
+      targetId: "spam.example.com",
     });
 
-    expect(log.action).toBe('block_instance');
+    expect(log.action).toBe("block_instance");
   });
 });

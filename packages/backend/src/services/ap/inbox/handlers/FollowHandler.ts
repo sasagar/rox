@@ -7,9 +7,9 @@
  * @module services/ap/inbox/handlers/FollowHandler
  */
 
-import type { Activity, HandlerContext, HandlerResult } from '../types.js';
-import { BaseHandler } from './BaseHandler.js';
-import { ActivityDeliveryService } from '../../ActivityDeliveryService.js';
+import type { Activity, HandlerContext, HandlerResult } from "../types.js";
+import { BaseHandler } from "./BaseHandler.js";
+import { ActivityDeliveryService } from "../../ActivityDeliveryService.js";
 
 /**
  * Handler for Follow activities
@@ -20,7 +20,7 @@ import { ActivityDeliveryService } from '../../ActivityDeliveryService.js';
  * 3. Sends an Accept activity back
  */
 export class FollowHandler extends BaseHandler {
-  readonly activityType = 'Follow';
+  readonly activityType = "Follow";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
     const { c, recipientId, baseUrl } = context;
@@ -30,15 +30,18 @@ export class FollowHandler extends BaseHandler {
       const actorUri = this.getActorUri(activity);
       const remoteActor = await this.resolveActor(actorUri, c);
 
-      this.log('📥', `Follow: ${remoteActor.username}@${remoteActor.host} → recipient ${recipientId}`);
+      this.log(
+        "📥",
+        `Follow: ${remoteActor.username}@${remoteActor.host} → recipient ${recipientId}`,
+      );
 
       // Check if follow already exists
       const followRepository = this.getFollowRepository(c);
       const alreadyFollowing = await followRepository.exists(remoteActor.id, recipientId);
 
       if (alreadyFollowing) {
-        this.log('⚠️', 'Follow already exists, skipping');
-        return this.success('Follow already exists');
+        this.log("⚠️", "Follow already exists, skipping");
+        return this.success("Follow already exists");
       }
 
       // Create follow relationship
@@ -49,7 +52,7 @@ export class FollowHandler extends BaseHandler {
         followeeId: recipientId,
       });
 
-      this.log('✅', `Follow created: ${remoteActor.username}@${remoteActor.host} → recipient`);
+      this.log("✅", `Follow created: ${remoteActor.username}@${remoteActor.host} → recipient`);
 
       // Create notification for the followee (fire-and-forget)
       try {
@@ -66,8 +69,8 @@ export class FollowHandler extends BaseHandler {
       const recipient = await userRepository.findById(recipientId);
 
       if (!recipient || !recipient.privateKey) {
-        this.error('Recipient not found or missing private key');
-        return this.failure('Recipient not found or missing private key');
+        this.error("Recipient not found or missing private key");
+        return this.failure("Recipient not found or missing private key");
       }
 
       const recipientUri = `${baseUrl}/users/${recipient.username}`;
@@ -77,23 +80,18 @@ export class FollowHandler extends BaseHandler {
       const acceptActivity = deliveryService.createAcceptActivity(activity, recipientUri);
 
       if (!remoteActor.inbox) {
-        this.error('Remote actor has no inbox URL');
-        return this.failure('Remote actor has no inbox URL');
+        this.error("Remote actor has no inbox URL");
+        return this.failure("Remote actor has no inbox URL");
       }
 
-      await deliveryService.deliver(
-        acceptActivity,
-        remoteActor.inbox,
-        keyId,
-        recipient.privateKey
-      );
+      await deliveryService.deliver(acceptActivity, remoteActor.inbox, keyId, recipient.privateKey);
 
-      this.log('📤', `Accept activity sent to ${remoteActor.inbox}`);
+      this.log("📤", `Accept activity sent to ${remoteActor.inbox}`);
 
-      return this.success('Follow processed and Accept sent');
+      return this.success("Follow processed and Accept sent");
     } catch (error) {
-      this.error('Failed to handle Follow activity:', error as Error);
-      return this.failure('Failed to handle Follow activity', error as Error);
+      this.error("Failed to handle Follow activity:", error as Error);
+      return this.failure("Failed to handle Follow activity", error as Error);
     }
   }
 }

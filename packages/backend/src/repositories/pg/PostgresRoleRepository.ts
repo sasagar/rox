@@ -6,15 +6,15 @@
  * @module repositories/pg/PostgresRoleRepository
  */
 
-import { eq, asc, sql, desc } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { roles, type Role } from '../../db/schema/pg.js';
+import { eq, asc, sql, desc } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { roles, type Role } from "../../db/schema/pg.js";
 import type {
   IRoleRepository,
   CreateRoleInput,
   UpdateRoleInput,
-} from '../../interfaces/repositories/IRoleRepository.js';
-import { generateId } from 'shared';
+} from "../../interfaces/repositories/IRoleRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of Role Repository
@@ -41,28 +41,20 @@ export class PostgresRoleRepository implements IRoleRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create role');
+      throw new Error("Failed to create role");
     }
 
     return result;
   }
 
   async findById(id: string): Promise<Role | null> {
-    const [result] = await this.db
-      .select()
-      .from(roles)
-      .where(eq(roles.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(roles).where(eq(roles.id, id)).limit(1);
 
     return result ?? null;
   }
 
   async findByName(name: string): Promise<Role | null> {
-    const [result] = await this.db
-      .select()
-      .from(roles)
-      .where(eq(roles.name, name))
-      .limit(1);
+    const [result] = await this.db.select().from(roles).where(eq(roles.name, name)).limit(1);
 
     return result ?? null;
   }
@@ -126,18 +118,13 @@ export class PostgresRoleRepository implements IRoleRepository {
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.db
-      .delete(roles)
-      .where(eq(roles.id, id))
-      .returning({ id: roles.id });
+    const result = await this.db.delete(roles).where(eq(roles.id, id)).returning({ id: roles.id });
 
     return result.length > 0;
   }
 
   async count(): Promise<number> {
-    const [result] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(roles);
+    const [result] = await this.db.select({ count: sql<number>`count(*)::int` }).from(roles);
 
     return result?.count ?? 0;
   }

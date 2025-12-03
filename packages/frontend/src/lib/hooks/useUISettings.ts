@@ -5,15 +5,15 @@
  * to the document. This hook should be used at the root layout level.
  */
 
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { uiCssVariablesAtom, themeAtom, appCustomCssAtom } from '../atoms/uiSettings';
-import type { Theme } from '../types/uiSettings';
+import { useEffect } from "react";
+import { useAtom } from "jotai";
+import { uiCssVariablesAtom, themeAtom, appCustomCssAtom } from "../atoms/uiSettings";
+import type { Theme } from "../types/uiSettings";
 
 /**
  * Custom style element ID for app custom CSS
  */
-const CUSTOM_CSS_STYLE_ID = 'rox-app-custom-css';
+const CUSTOM_CSS_STYLE_ID = "rox-app-custom-css";
 
 /**
  * Apply theme class to document
@@ -21,17 +21,17 @@ const CUSTOM_CSS_STYLE_ID = 'rox-app-custom-css';
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
 
-  if (theme === 'dark') {
-    root.classList.add('dark');
-  } else if (theme === 'light') {
-    root.classList.remove('dark');
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else if (theme === "light") {
+    root.classList.remove("dark");
   } else {
     // System preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     if (prefersDark) {
-      root.classList.add('dark');
+      root.classList.add("dark");
     } else {
-      root.classList.remove('dark');
+      root.classList.remove("dark");
     }
   }
 }
@@ -44,7 +44,7 @@ function applyCustomCss(css: string) {
 
   if (css) {
     if (!styleElement) {
-      styleElement = document.createElement('style');
+      styleElement = document.createElement("style");
       styleElement.id = CUSTOM_CSS_STYLE_ID;
       document.head.appendChild(styleElement);
     }
@@ -90,12 +90,12 @@ export function useUISettings() {
     applyTheme(theme);
 
     // Listen for system preference changes when theme is 'system'
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => applyTheme('system');
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handleChange = () => applyTheme("system");
 
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
     }
     return undefined;
   }, [theme]);

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Moderator Notes Page
@@ -6,27 +6,20 @@
  * Allows moderators to view and manage deleted notes.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import {
-  RefreshCw,
-  FileText,
-  Trash2,
-  RotateCcw,
-  User,
-  AlertTriangle,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { ModeratorNav } from '../../components/moderator/ModeratorNav';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { RefreshCw, FileText, Trash2, RotateCcw, User, AlertTriangle } from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { ModeratorNav } from "../../components/moderator/ModeratorNav";
 
 interface DeletedNote {
   id: string;
@@ -67,11 +60,11 @@ export default function ModeratorNotesPage() {
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<DeletedNotesResponse>('/api/mod/notes/deleted');
+      const response = await apiClient.get<DeletedNotesResponse>("/api/mod/notes/deleted");
       setNotes(response.notes);
     } catch (err) {
-      console.error('Failed to load deleted notes:', err);
-      setError('Failed to load deleted notes');
+      console.error("Failed to load deleted notes:", err);
+      setError("Failed to load deleted notes");
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +73,7 @@ export default function ModeratorNotesPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -88,11 +81,11 @@ export default function ModeratorNotesPage() {
         apiClient.setToken(token);
         await loadDeletedNotes();
       } catch (err: any) {
-        console.error('Access check failed:', err);
+        console.error("Access check failed:", err);
         if (err.status === 403) {
-          setError('Moderator access required');
+          setError("Moderator access required");
         } else {
-          setError('Access denied');
+          setError("Access denied");
         }
         setIsLoading(false);
       }
@@ -110,14 +103,14 @@ export default function ModeratorNotesPage() {
       await apiClient.post(`/api/mod/notes/${noteId}/restore`, {});
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Note restored successfully`,
       });
 
       await loadDeletedNotes();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to restore note`,
       });
     } finally {
@@ -126,7 +119,7 @@ export default function ModeratorNotesPage() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleString();
   };
 
@@ -216,7 +209,7 @@ export default function ModeratorNotesPage() {
                           <User className="w-4 h-4 text-(--text-muted)" />
                           {note.user ? (
                             <a
-                              href={`/@${note.user.username}${note.user.host ? `@${note.user.host}` : ''}`}
+                              href={`/@${note.user.username}${note.user.host ? `@${note.user.host}` : ""}`}
                               className="text-sm text-(--text-primary) hover:underline"
                               target="_blank"
                               rel="noopener noreferrer"

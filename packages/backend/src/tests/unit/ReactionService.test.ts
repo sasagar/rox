@@ -4,44 +4,53 @@
  * Tests business logic for reaction operations
  */
 
-import { describe, test, expect, mock, beforeEach } from 'bun:test';
-import { ReactionService } from '../../services/ReactionService';
-import type { IReactionRepository } from '../../interfaces/repositories/IReactionRepository';
-import type { INoteRepository } from '../../interfaces/repositories/INoteRepository';
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository';
-import type { ActivityPubDeliveryService } from '../../services/ap/ActivityPubDeliveryService';
-import type { Reaction, Note } from 'shared';
-import type { User } from '../../db/schema/pg.js';
+import { describe, test, expect, mock, beforeEach } from "bun:test";
+import { ReactionService } from "../../services/ReactionService";
+import type { IReactionRepository } from "../../interfaces/repositories/IReactionRepository";
+import type { INoteRepository } from "../../interfaces/repositories/INoteRepository";
+import type { IUserRepository } from "../../interfaces/repositories/IUserRepository";
+import type { ActivityPubDeliveryService } from "../../services/ap/ActivityPubDeliveryService";
+import type { Reaction, Note } from "shared";
+import type { User } from "../../db/schema/pg.js";
 
 /**
  * Partial mock types that only include the methods we actually use in tests
  */
 type MockReactionRepo = Pick<
   IReactionRepository,
-  'create' | 'findByUserNoteAndReaction' | 'deleteByUserNoteAndReaction' | 'findByNoteId' | 'countByNoteId' | 'countByNoteIds' | 'findByUserAndNoteAll'
+  | "create"
+  | "findByUserNoteAndReaction"
+  | "deleteByUserNoteAndReaction"
+  | "findByNoteId"
+  | "countByNoteId"
+  | "countByNoteIds"
+  | "findByUserAndNoteAll"
 >;
 
-type MockNoteRepo = Pick<INoteRepository, 'findById'>;
-type MockUserRepo = Pick<IUserRepository, 'findById'>;
-type MockDeliveryService = Pick<ActivityPubDeliveryService, 'deliverLikeActivity' | 'deliverUndoLike'>;
+type MockNoteRepo = Pick<INoteRepository, "findById">;
+type MockUserRepo = Pick<IUserRepository, "findById">;
+type MockDeliveryService = Pick<
+  ActivityPubDeliveryService,
+  "deliverLikeActivity" | "deliverUndoLike"
+>;
 
-describe('ReactionService', () => {
+describe("ReactionService", () => {
   // Mock data
   const mockReaction: Reaction = {
-    id: 'reaction1',
-    userId: 'user1',
-    noteId: 'note1',
-    reaction: '👍',
+    id: "reaction1",
+    userId: "user1",
+    noteId: "note1",
+    reaction: "👍",
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
   const mockNote: Note = {
-    id: 'note1',
-    userId: 'author1',
-    text: 'test',
+    id: "note1",
+    userId: "author1",
+    text: "test",
     cw: null,
-    visibility: 'public',
+    visibility: "public",
     localOnly: false,
     replyId: null,
     renoteId: null,
@@ -59,8 +68,8 @@ describe('ReactionService', () => {
   };
 
   const mockUser: Partial<User> = {
-    id: 'user1',
-    username: 'testuser',
+    id: "user1",
+    username: "testuser",
     host: null,
   };
 
@@ -95,32 +104,32 @@ describe('ReactionService', () => {
     };
   });
 
-  test('should create a new reaction', async () => {
+  test("should create a new reaction", async () => {
     const service = new ReactionService(
       mockReactionRepo as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
     const result = await service.create({
-      userId: 'user1',
-      noteId: 'note1',
-      reaction: '👍',
+      userId: "user1",
+      noteId: "note1",
+      reaction: "👍",
     });
 
-    expect(result.id).toBe('reaction1');
-    expect(result.reaction).toBe('👍');
+    expect(result.id).toBe("reaction1");
+    expect(result.reaction).toBe("👍");
     expect(mockReactionRepo.findByUserNoteAndReaction).toHaveBeenCalled();
     expect(mockReactionRepo.create).toHaveBeenCalled();
   });
 
-  test('should return existing reaction if already exists (idempotent)', async () => {
+  test("should return existing reaction if already exists (idempotent)", async () => {
     const existingReaction: Reaction = {
-      id: 'existing',
-      userId: 'user1',
-      noteId: 'note1',
-      reaction: '👍',
+      id: "existing",
+      userId: "user1",
+      noteId: "note1",
+      reaction: "👍",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -136,56 +145,56 @@ describe('ReactionService', () => {
       freshReactionRepo as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
     const result = await service.create({
-      userId: 'user1',
-      noteId: 'note1',
-      reaction: '👍',
+      userId: "user1",
+      noteId: "note1",
+      reaction: "👍",
     });
 
-    expect(result.id).toBe('existing');
+    expect(result.id).toBe("existing");
     expect(freshReactionRepo.create).not.toHaveBeenCalled();
   });
 
-  test('should reject empty reaction', async () => {
+  test("should reject empty reaction", async () => {
     const service = new ReactionService(
       mockReactionRepo as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
     await expect(
       service.create({
-        userId: 'user1',
-        noteId: 'note1',
-        reaction: '',
-      })
-    ).rejects.toThrow('Reaction cannot be empty');
+        userId: "user1",
+        noteId: "note1",
+        reaction: "",
+      }),
+    ).rejects.toThrow("Reaction cannot be empty");
   });
 
-  test('should reject reaction exceeding max length', async () => {
+  test("should reject reaction exceeding max length", async () => {
     const service = new ReactionService(
       mockReactionRepo as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
-    const longReaction = 'x'.repeat(101);
+    const longReaction = "x".repeat(101);
 
     await expect(
       service.create({
-        userId: 'user1',
-        noteId: 'note1',
+        userId: "user1",
+        noteId: "note1",
         reaction: longReaction,
-      })
-    ).rejects.toThrow('Reaction exceeds maximum length');
+      }),
+    ).rejects.toThrow("Reaction exceeds maximum length");
   });
 
-  test('should reject reaction to non-existent note', async () => {
+  test("should reject reaction to non-existent note", async () => {
     const mockNoteRepoEmpty: MockNoteRepo = {
       findById: mock(() => Promise.resolve(null)),
     };
@@ -194,24 +203,24 @@ describe('ReactionService', () => {
       mockReactionRepo as IReactionRepository,
       mockNoteRepoEmpty as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
     await expect(
       service.create({
-        userId: 'user1',
-        noteId: 'nonexistent',
-        reaction: '👍',
-      })
-    ).rejects.toThrow('Note not found');
+        userId: "user1",
+        noteId: "nonexistent",
+        reaction: "👍",
+      }),
+    ).rejects.toThrow("Note not found");
   });
 
-  test('should delete a reaction', async () => {
+  test("should delete a reaction", async () => {
     const existingReaction: Reaction = {
-      id: 'reaction1',
-      userId: 'user1',
-      noteId: 'note1',
-      reaction: '👍',
+      id: "reaction1",
+      userId: "user1",
+      noteId: "note1",
+      reaction: "👍",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -225,15 +234,19 @@ describe('ReactionService', () => {
       mockReactionRepoWithExisting as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
-    await service.delete('user1', 'note1', '👍');
+    await service.delete("user1", "note1", "👍");
 
-    expect(mockReactionRepoWithExisting.deleteByUserNoteAndReaction).toHaveBeenCalledWith('user1', 'note1', '👍');
+    expect(mockReactionRepoWithExisting.deleteByUserNoteAndReaction).toHaveBeenCalledWith(
+      "user1",
+      "note1",
+      "👍",
+    );
   });
 
-  test('should reject deleting non-existent reaction', async () => {
+  test("should reject deleting non-existent reaction", async () => {
     const mockReactionRepoEmpty: MockReactionRepo = {
       ...mockReactionRepo,
       findByUserNoteAndReaction: mock(() => Promise.resolve(null)),
@@ -243,18 +256,30 @@ describe('ReactionService', () => {
       mockReactionRepoEmpty as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
-    await expect(
-      service.delete('user1', 'note1', '👍')
-    ).rejects.toThrow('Reaction not found');
+    await expect(service.delete("user1", "note1", "👍")).rejects.toThrow("Reaction not found");
   });
 
-  test('should get reactions by note', async () => {
+  test("should get reactions by note", async () => {
     const reactions: Reaction[] = [
-      { id: 'r1', userId: 'u1', noteId: 'note1', reaction: '👍', createdAt: new Date(), updatedAt: new Date() },
-      { id: 'r2', userId: 'u2', noteId: 'note1', reaction: '❤️', createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: "r1",
+        userId: "u1",
+        noteId: "note1",
+        reaction: "👍",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "r2",
+        userId: "u2",
+        noteId: "note1",
+        reaction: "❤️",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ];
 
     const mockReactionRepoWithReactions: MockReactionRepo = {
@@ -266,17 +291,17 @@ describe('ReactionService', () => {
       mockReactionRepoWithReactions as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
-    const result = await service.getReactionsByNote('note1');
+    const result = await service.getReactionsByNote("note1");
 
     expect(result).toEqual(reactions);
-    expect(mockReactionRepoWithReactions.findByNoteId).toHaveBeenCalledWith('note1', undefined);
+    expect(mockReactionRepoWithReactions.findByNoteId).toHaveBeenCalledWith("note1", undefined);
   });
 
-  test('should get reaction counts', async () => {
-    const counts = { '👍': 5, '❤️': 3 };
+  test("should get reaction counts", async () => {
+    const counts = { "👍": 5, "❤️": 3 };
 
     const mockReactionRepoWithCounts: MockReactionRepo = {
       ...mockReactionRepo,
@@ -287,12 +312,12 @@ describe('ReactionService', () => {
       mockReactionRepoWithCounts as IReactionRepository,
       mockNoteRepo as INoteRepository,
       mockUserRepo as IUserRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
 
-    const result = await service.getReactionCounts('note1');
+    const result = await service.getReactionCounts("note1");
 
     expect(result).toEqual(counts);
-    expect(mockReactionRepoWithCounts.countByNoteId).toHaveBeenCalledWith('note1');
+    expect(mockReactionRepoWithCounts.countByNoteId).toHaveBeenCalledWith("note1");
   });
 });

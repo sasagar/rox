@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { Trans } from '@lingui/react/macro';
+import type { ReactNode } from "react";
+import { Trans } from "@lingui/react/macro";
 
 /**
  * Error message component with optional retry functionality
@@ -8,15 +9,15 @@ import { Trans } from '@lingui/react/macro';
 
 export interface ErrorMessageProps {
   /** Error title/message */
-  title: string;
+  title: ReactNode;
   /** Optional detailed error message */
-  message?: string;
+  message?: ReactNode;
   /** Optional retry callback */
   onRetry?: () => void;
   /** Show retry button loading state */
   isRetrying?: boolean;
   /** Error type for styling */
-  variant?: 'error' | 'warning' | 'info';
+  variant?: "error" | "warning" | "info";
   /** Additional CSS classes */
   className?: string;
 }
@@ -29,31 +30,31 @@ export function ErrorMessage({
   message,
   onRetry,
   isRetrying = false,
-  variant = 'error',
-  className = '',
+  variant = "error",
+  className = "",
 }: ErrorMessageProps) {
   const bgColor = {
-    error: 'bg-red-50 border-red-200',
-    warning: 'bg-orange-50 border-orange-200',
-    info: 'bg-blue-50 border-blue-200',
+    error: "bg-red-50 border-red-200",
+    warning: "bg-orange-50 border-orange-200",
+    info: "bg-blue-50 border-blue-200",
   }[variant];
 
   const textColor = {
-    error: 'text-red-800',
-    warning: 'text-orange-800',
-    info: 'text-blue-800',
+    error: "text-red-800",
+    warning: "text-orange-800",
+    info: "text-blue-800",
   }[variant];
 
   const iconColor = {
-    error: 'text-red-600',
-    warning: 'text-orange-600',
-    info: 'text-blue-600',
+    error: "text-red-600",
+    warning: "text-orange-600",
+    info: "text-blue-600",
   }[variant];
 
   const icon = {
-    error: '⚠️',
-    warning: '⚠️',
-    info: 'ℹ️',
+    error: "⚠️",
+    warning: "⚠️",
+    info: "ℹ️",
   }[variant];
 
   return (
@@ -69,7 +70,7 @@ export function ErrorMessage({
 
           {/* Detailed message */}
           {message && (
-            <p className={`text-sm ${textColor} opacity-90 break-words`}>{message}</p>
+            <p className={`text-sm ${textColor} opacity-90 wrap-break-word`}>{message}</p>
           )}
 
           {/* Retry button */}
@@ -78,11 +79,11 @@ export function ErrorMessage({
               onClick={onRetry}
               disabled={isRetrying}
               className={`mt-3 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                variant === 'error'
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : variant === 'warning'
-                  ? 'bg-orange-600 hover:bg-orange-700 text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                variant === "error"
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : variant === "warning"
+                    ? "bg-orange-600 hover:bg-orange-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {isRetrying ? <Trans>Retrying...</Trans> : <Trans>Retry</Trans>}
@@ -97,7 +98,7 @@ export function ErrorMessage({
 /**
  * Compact inline error message for forms
  */
-export function InlineError({ message, className = '' }: { message: string; className?: string }) {
+export function InlineError({ message, className = "" }: { message: string; className?: string }) {
   return (
     <div className={`flex items-center gap-2 text-sm text-red-600 ${className}`}>
       <span className="text-red-600">⚠️</span>

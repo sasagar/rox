@@ -1,4 +1,4 @@
-export type Visibility = 'public' | 'home' | 'followers' | 'specified';
+export type Visibility = "public" | "home" | "followers" | "specified";
 
 export type ID = string;
 

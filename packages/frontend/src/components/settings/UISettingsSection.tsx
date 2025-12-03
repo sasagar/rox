@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * UI Settings Section Component
@@ -11,19 +11,26 @@
  * - Custom CSS
  */
 
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2 } from 'lucide-react';
-import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
-import { uiSettingsAtom } from '../../lib/atoms/uiSettings';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Spinner } from '../ui/Spinner';
-import { addToastAtom } from '../../lib/atoms/toast';
-import type { UISettings, FontSize, LineHeight, ContentWidth, Theme, NotificationSound } from '../../lib/types/uiSettings';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2 } from "lucide-react";
+import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
+import { uiSettingsAtom } from "../../lib/atoms/uiSettings";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Spinner } from "../ui/Spinner";
+import { addToastAtom } from "../../lib/atoms/toast";
+import type {
+  UISettings,
+  FontSize,
+  LineHeight,
+  ContentWidth,
+  Theme,
+  NotificationSound,
+} from "../../lib/types/uiSettings";
 import {
   fontSizeLabels,
   lineHeightLabels,
@@ -31,8 +38,8 @@ import {
   themeLabels,
   notificationSoundLabels,
   defaultUISettings,
-} from '../../lib/types/uiSettings';
-import { testNotificationSound } from '../../lib/utils/notificationSound';
+} from "../../lib/types/uiSettings";
+import { testNotificationSound } from "../../lib/utils/notificationSound";
 
 interface SelectOption<T extends string> {
   value: T;
@@ -71,9 +78,9 @@ function SelectGroup<T extends string>({
             disabled={disabled}
             className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
               value === option.value
-                ? 'bg-primary-500 text-white border-primary-500'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500'
-            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                ? "bg-primary-500 text-white border-primary-500"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500"
+            } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           >
             {option.label}
           </button>
@@ -90,14 +97,14 @@ export function UISettingsSection() {
   const [uiSettings, setUiSettings] = useAtom(uiSettingsAtom);
 
   const [localSettings, setLocalSettings] = useState<UISettings>(uiSettings);
-  const [appCustomCss, setAppCustomCss] = useState(uiSettings.appCustomCss || '');
+  const [appCustomCss, setAppCustomCss] = useState(uiSettings.appCustomCss || "");
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Sync local state with atom on mount
   useEffect(() => {
     setLocalSettings(uiSettings);
-    setAppCustomCss(uiSettings.appCustomCss || '');
+    setAppCustomCss(uiSettings.appCustomCss || "");
   }, [uiSettings]);
 
   // Track changes
@@ -109,7 +116,7 @@ export function UISettingsSection() {
       localSettings.theme !== uiSettings.theme ||
       localSettings.notificationSound !== uiSettings.notificationSound ||
       localSettings.notificationVolume !== uiSettings.notificationVolume ||
-      appCustomCss !== (uiSettings.appCustomCss || '');
+      appCustomCss !== (uiSettings.appCustomCss || "");
     setHasChanges(changed);
   }, [localSettings, appCustomCss, uiSettings]);
 
@@ -130,7 +137,7 @@ export function UISettingsSection() {
       };
 
       // Save to server
-      const updatedUser = await apiClient.patch<any>('/api/users/@me', {
+      const updatedUser = await apiClient.patch<any>("/api/users/@me", {
         uiSettings: newSettings,
       });
 
@@ -141,12 +148,12 @@ export function UISettingsSection() {
       }
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`UI settings saved`,
       });
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to save UI settings`,
       });
     } finally {
@@ -156,40 +163,40 @@ export function UISettingsSection() {
 
   const handleReset = () => {
     setLocalSettings(defaultUISettings);
-    setAppCustomCss('');
+    setAppCustomCss("");
     setHasChanges(true);
   };
 
   const fontSizeOptions: SelectOption<FontSize>[] = [
-    { value: 'small', label: fontSizeLabels.small },
-    { value: 'medium', label: fontSizeLabels.medium },
-    { value: 'large', label: fontSizeLabels.large },
-    { value: 'xlarge', label: fontSizeLabels.xlarge },
+    { value: "small", label: fontSizeLabels.small },
+    { value: "medium", label: fontSizeLabels.medium },
+    { value: "large", label: fontSizeLabels.large },
+    { value: "xlarge", label: fontSizeLabels.xlarge },
   ];
 
   const lineHeightOptions: SelectOption<LineHeight>[] = [
-    { value: 'compact', label: lineHeightLabels.compact },
-    { value: 'normal', label: lineHeightLabels.normal },
-    { value: 'relaxed', label: lineHeightLabels.relaxed },
+    { value: "compact", label: lineHeightLabels.compact },
+    { value: "normal", label: lineHeightLabels.normal },
+    { value: "relaxed", label: lineHeightLabels.relaxed },
   ];
 
   const contentWidthOptions: SelectOption<ContentWidth>[] = [
-    { value: 'narrow', label: contentWidthLabels.narrow },
-    { value: 'normal', label: contentWidthLabels.normal },
-    { value: 'wide', label: contentWidthLabels.wide },
+    { value: "narrow", label: contentWidthLabels.narrow },
+    { value: "normal", label: contentWidthLabels.normal },
+    { value: "wide", label: contentWidthLabels.wide },
   ];
 
   const themeOptions: SelectOption<Theme>[] = [
-    { value: 'light', label: themeLabels.light },
-    { value: 'dark', label: themeLabels.dark },
-    { value: 'system', label: themeLabels.system },
+    { value: "light", label: themeLabels.light },
+    { value: "dark", label: themeLabels.dark },
+    { value: "system", label: themeLabels.system },
   ];
 
   const notificationSoundOptions: SelectOption<NotificationSound>[] = [
-    { value: 'none', label: notificationSoundLabels.none },
-    { value: 'default', label: notificationSoundLabels.default },
-    { value: 'soft', label: notificationSoundLabels.soft },
-    { value: 'bell', label: notificationSoundLabels.bell },
+    { value: "none", label: notificationSoundLabels.none },
+    { value: "default", label: notificationSoundLabels.default },
+    { value: "soft", label: notificationSoundLabels.soft },
+    { value: "bell", label: notificationSoundLabels.bell },
   ];
 
   const handleTestSound = () => {
@@ -213,7 +220,7 @@ export function UISettingsSection() {
           icon={<Type className="w-4 h-4" />}
           value={localSettings.fontSize || defaultUISettings.fontSize}
           options={fontSizeOptions}
-          onChange={(value) => handleSettingChange('fontSize', value)}
+          onChange={(value) => handleSettingChange("fontSize", value)}
           disabled={isSaving}
         />
 
@@ -223,7 +230,7 @@ export function UISettingsSection() {
           icon={<AlignJustify className="w-4 h-4" />}
           value={localSettings.lineHeight || defaultUISettings.lineHeight}
           options={lineHeightOptions}
-          onChange={(value) => handleSettingChange('lineHeight', value)}
+          onChange={(value) => handleSettingChange("lineHeight", value)}
           disabled={isSaving}
         />
 
@@ -233,7 +240,7 @@ export function UISettingsSection() {
           icon={<Maximize2 className="w-4 h-4" />}
           value={localSettings.contentWidth || defaultUISettings.contentWidth}
           options={contentWidthOptions}
-          onChange={(value) => handleSettingChange('contentWidth', value)}
+          onChange={(value) => handleSettingChange("contentWidth", value)}
           disabled={isSaving}
         />
 
@@ -243,7 +250,7 @@ export function UISettingsSection() {
           icon={<Palette className="w-4 h-4" />}
           value={localSettings.theme || defaultUISettings.theme}
           options={themeOptions}
-          onChange={(value) => handleSettingChange('theme', value)}
+          onChange={(value) => handleSettingChange("theme", value)}
           disabled={isSaving}
         />
 
@@ -254,12 +261,12 @@ export function UISettingsSection() {
             icon={<Volume2 className="w-4 h-4" />}
             value={localSettings.notificationSound || defaultUISettings.notificationSound}
             options={notificationSoundOptions}
-            onChange={(value) => handleSettingChange('notificationSound', value)}
+            onChange={(value) => handleSettingChange("notificationSound", value)}
             disabled={isSaving}
           />
 
           {/* Volume Slider */}
-          {localSettings.notificationSound !== 'none' && (
+          {localSettings.notificationSound !== "none" && (
             <div className="flex items-center gap-3">
               <label className="text-sm text-gray-600 dark:text-gray-400 w-16">
                 <Trans>Volume</Trans>
@@ -269,7 +276,9 @@ export function UISettingsSection() {
                 min="0"
                 max="100"
                 value={localSettings.notificationVolume ?? defaultUISettings.notificationVolume}
-                onChange={(e) => handleSettingChange('notificationVolume', parseInt(e.target.value, 10))}
+                onChange={(e) =>
+                  handleSettingChange("notificationVolume", parseInt(e.target.value, 10))
+                }
                 disabled={isSaving}
                 className="grow h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
@@ -307,7 +316,7 @@ export function UISettingsSection() {
             <span>
               <Trans>Custom CSS applied to the entire app (max 10KB)</Trans>
             </span>
-            <span className={appCustomCss.length > 9000 ? 'text-orange-600 font-medium' : ''}>
+            <span className={appCustomCss.length > 9000 ? "text-orange-600 font-medium" : ""}>
               {appCustomCss.length.toLocaleString()}/10,240
             </span>
           </div>
@@ -324,19 +333,19 @@ export function UISettingsSection() {
           <div
             style={{
               fontSize:
-                localSettings.fontSize === 'small'
-                  ? '12px'
-                  : localSettings.fontSize === 'large'
-                    ? '16px'
-                    : localSettings.fontSize === 'xlarge'
-                      ? '18px'
-                      : '14px',
+                localSettings.fontSize === "small"
+                  ? "12px"
+                  : localSettings.fontSize === "large"
+                    ? "16px"
+                    : localSettings.fontSize === "xlarge"
+                      ? "18px"
+                      : "14px",
               lineHeight:
-                localSettings.lineHeight === 'compact'
-                  ? '1.4'
-                  : localSettings.lineHeight === 'relaxed'
-                    ? '1.8'
-                    : '1.6',
+                localSettings.lineHeight === "compact"
+                  ? "1.4"
+                  : localSettings.lineHeight === "relaxed"
+                    ? "1.8"
+                    : "1.6",
             }}
             className="text-gray-600 dark:text-gray-400"
           >

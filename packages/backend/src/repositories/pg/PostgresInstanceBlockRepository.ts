@@ -1,8 +1,8 @@
-import { eq, sql, desc } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { instanceBlocks, type InstanceBlock } from '../../db/schema/pg.js';
-import type { IInstanceBlockRepository } from '../../interfaces/repositories/IInstanceBlockRepository.js';
-import { generateId } from 'shared';
+import { eq, sql, desc } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { instanceBlocks, type InstanceBlock } from "../../db/schema/pg.js";
+import type { IInstanceBlockRepository } from "../../interfaces/repositories/IInstanceBlockRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of Instance Block Repository
@@ -10,9 +10,7 @@ import { generateId } from 'shared';
 export class PostgresInstanceBlockRepository implements IInstanceBlockRepository {
   constructor(private db: Database) {}
 
-  async create(
-    block: Omit<InstanceBlock, 'id' | 'createdAt'>
-  ): Promise<InstanceBlock> {
+  async create(block: Omit<InstanceBlock, "id" | "createdAt">): Promise<InstanceBlock> {
     const id = generateId();
     const now = new Date();
 
@@ -26,7 +24,7 @@ export class PostgresInstanceBlockRepository implements IInstanceBlockRepository
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create instance block');
+      throw new Error("Failed to create instance block");
     }
 
     return result;

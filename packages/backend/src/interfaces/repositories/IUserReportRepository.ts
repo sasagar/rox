@@ -1,9 +1,9 @@
-import type { UserReport } from '../../db/schema/pg.js';
+import type { UserReport } from "../../db/schema/pg.js";
 
 /**
  * Report status types
  */
-export type ReportStatus = 'pending' | 'resolved' | 'rejected';
+export type ReportStatus = "pending" | "resolved" | "rejected";
 
 /**
  * User Report Repository Interface
@@ -54,7 +54,7 @@ export interface IUserReportRepository {
     id: string,
     resolvedById: string,
     resolution: string,
-    status: 'resolved' | 'rejected'
+    status: "resolved" | "rejected",
   ): Promise<UserReport | null>;
 
   /**

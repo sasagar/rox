@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAtom } from 'jotai';
-import { Form } from 'react-aria-components';
-import { t } from '@lingui/core/macro';
-import { Trans } from '@lingui/react/macro';
-import { useLingui } from '@lingui/react';
-import { tokenAtom, currentUserAtom } from '../lib/atoms/auth';
-import { apiClient } from '../lib/api/client';
-import { authManager } from '../lib/auth';
-import { TextField } from '../components/ui/TextField';
-import { Button } from '../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
+import { useState } from "react";
+import { useAtom } from "jotai";
+import { Form } from "react-aria-components";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
+import { useLingui } from "@lingui/react";
+import { tokenAtom, currentUserAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
+import { authManager } from "../lib/auth";
+import { TextField } from "../components/ui/TextField";
+import { Button } from "../components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card";
 
 /**
  * Login page component
@@ -22,14 +22,14 @@ export default function LoginPage() {
   const [, setToken] = useAtom(tokenAtom);
   const [, setCurrentUser] = useAtom(currentUserAtom);
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Check available authentication methods
-  const hasPasskey = authManager.isMethodAvailable('passkey');
-  const hasOAuth = authManager.isMethodAvailable('oauth');
+  const hasPasskey = authManager.isMethodAvailable("passkey");
+  const hasOAuth = authManager.isMethodAvailable("oauth");
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await authManager.authenticate('password', {
+      const result = await authManager.authenticate("password", {
         username,
         password,
       });
@@ -48,12 +48,14 @@ export default function LoginPage() {
       apiClient.setToken(result.token);
 
       // Wait for state to be saved to localStorage before redirecting
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Redirect to timeline
-      window.location.href = '/timeline';
+      window.location.href = "/timeline";
     } catch (err) {
-      setError(err instanceof Error ? err.message : _(t`Login failed. Please check your credentials.`));
+      setError(
+        err instanceof Error ? err.message : _(t`Login failed. Please check your credentials.`),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +66,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await authManager.authenticate('passkey', username || undefined);
+      const result = await authManager.authenticate("passkey", username || undefined);
 
       // Set token and user
       setToken(result.token);
@@ -72,9 +74,9 @@ export default function LoginPage() {
       apiClient.setToken(result.token);
 
       // Wait for state to be saved to localStorage before redirecting
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      window.location.href = '/timeline';
+      window.location.href = "/timeline";
     } catch (err) {
       setError(err instanceof Error ? err.message : _(t`Passkey authentication failed.`));
     } finally {
@@ -113,7 +115,9 @@ export default function LoginPage() {
           {hasOAuth && (
             <div className="mb-4 space-y-2">
               <Button
-                onPress={() => {/* TODO: OAuth flow */}}
+                onPress={() => {
+                  /* TODO: OAuth flow */
+                }}
                 isDisabled={isSubmitting}
                 className="w-full"
                 variant="secondary"
@@ -173,8 +177,11 @@ export default function LoginPage() {
           </Form>
 
           <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-            <Trans>Don't have an account?</Trans>{' '}
-            <a href="/signup" className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+            <Trans>Don't have an account?</Trans>{" "}
+            <a
+              href="/signup"
+              className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+            >
               <Trans>Sign up</Trans>
             </a>
           </div>

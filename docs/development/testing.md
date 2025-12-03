@@ -1,5 +1,7 @@
 # Testing Guide
 
+**Languages**: English | [日本語](./testing.ja.md)
+
 Comprehensive guide for running and writing tests for Rox.
 
 ## Overview

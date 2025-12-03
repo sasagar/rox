@@ -8,14 +8,14 @@
  * Notification types enum
  */
 export type NotificationType =
-  | 'follow'
-  | 'mention'
-  | 'reply'
-  | 'reaction'
-  | 'renote'
-  | 'warning'
-  | 'follow_request_accepted'
-  | 'quote';
+  | "follow"
+  | "mention"
+  | "reply"
+  | "reaction"
+  | "renote"
+  | "warning"
+  | "follow_request_accepted"
+  | "quote";
 
 /**
  * Notification data structure
@@ -44,7 +44,7 @@ export interface Notification {
  * SSE notification event data
  */
 export interface NotificationEvent {
-  type: 'notification' | 'unreadCount' | 'connected' | 'heartbeat';
+  type: "notification" | "unreadCount" | "connected" | "heartbeat";
   data: unknown;
 }
 

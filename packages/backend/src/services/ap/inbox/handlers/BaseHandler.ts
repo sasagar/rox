@@ -7,15 +7,10 @@
  * @module services/ap/inbox/handlers/BaseHandler
  */
 
-import type { Context } from 'hono';
-import { generateId } from 'shared';
-import type {
-  Activity,
-  HandlerContext,
-  HandlerResult,
-  IActivityHandler,
-} from '../types.js';
-import { getActorUri } from '../types.js';
+import type { Context } from "hono";
+import { generateId } from "shared";
+import type { Activity, HandlerContext, HandlerResult, IActivityHandler } from "../types.js";
+import { getActorUri } from "../types.js";
 
 /**
  * Abstract base class for activity handlers
@@ -42,49 +37,49 @@ export abstract class BaseHandler implements IActivityHandler {
    * Get user repository from context
    */
   protected getUserRepository(c: Context) {
-    return c.get('userRepository');
+    return c.get("userRepository");
   }
 
   /**
    * Get follow repository from context
    */
   protected getFollowRepository(c: Context) {
-    return c.get('followRepository');
+    return c.get("followRepository");
   }
 
   /**
    * Get note repository from context
    */
   protected getNoteRepository(c: Context) {
-    return c.get('noteRepository');
+    return c.get("noteRepository");
   }
 
   /**
    * Get reaction repository from context
    */
   protected getReactionRepository(c: Context) {
-    return c.get('reactionRepository');
+    return c.get("reactionRepository");
   }
 
   /**
    * Get remote actor service from context
    */
   protected getRemoteActorService(c: Context) {
-    return c.get('remoteActorService');
+    return c.get("remoteActorService");
   }
 
   /**
    * Get remote note service from context
    */
   protected getRemoteNoteService(c: Context) {
-    return c.get('remoteNoteService');
+    return c.get("remoteNoteService");
   }
 
   /**
    * Get notification service from context
    */
   protected getNotificationService(c: Context) {
-    return c.get('notificationService');
+    return c.get("notificationService");
   }
 
   /**

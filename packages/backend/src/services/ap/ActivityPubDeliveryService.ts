@@ -7,13 +7,13 @@
  * @module services/ap/ActivityPubDeliveryService
  */
 
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
-import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
-import type { IInstanceBlockRepository } from '../../interfaces/repositories/IInstanceBlockRepository.js';
-import type { Note } from 'shared';
-import type { User } from '../../db/schema/pg.js';
-import { ActivityDeliveryQueue, JobPriority } from './ActivityDeliveryQueue.js';
-import { ActivityBuilder, type Activity } from './delivery/ActivityBuilder.js';
+import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
+import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
+import type { IInstanceBlockRepository } from "../../interfaces/repositories/IInstanceBlockRepository.js";
+import type { Note } from "shared";
+import type { User } from "../../db/schema/pg.js";
+import { ActivityDeliveryQueue, JobPriority } from "./ActivityDeliveryQueue.js";
+import { ActivityBuilder, type Activity } from "./delivery/ActivityBuilder.js";
 
 /**
  * Delivery options for enqueuing activities
@@ -86,7 +86,7 @@ export class ActivityPubDeliveryService {
     if (follows.length === 0) return [];
 
     const followers = await Promise.all(
-      follows.map((follow) => this.userRepository.findById(follow.followerId))
+      follows.map((follow) => this.userRepository.findById(follow.followerId)),
     );
 
     return followers.filter((f): f is User => f !== null && f.host !== null);
@@ -125,10 +125,10 @@ export class ActivityPubDeliveryService {
     activity: Activity,
     inboxUrls: Set<string>,
     actor: User,
-    priority: JobPriority = JobPriority.NORMAL
+    priority: JobPriority = JobPriority.NORMAL,
   ): Promise<void> {
     const deliveryPromises = Array.from(inboxUrls).map((inboxUrl) =>
-      this.enqueueDelivery({ activity, inboxUrl, actor, priority })
+      this.enqueueDelivery({ activity, inboxUrl, actor, priority }),
     );
     await Promise.all(deliveryPromises);
   }
@@ -159,7 +159,7 @@ export class ActivityPubDeliveryService {
     noteId: string,
     noteUri: string,
     noteAuthorInbox: string,
-    reactor: User
+    reactor: User,
   ): Promise<void> {
     if (reactor.host) return;
 
@@ -189,14 +189,20 @@ export class ActivityPubDeliveryService {
       priority: JobPriority.URGENT,
     });
 
-    console.log(`📤 Enqueued Follow activity to ${followee.inbox} (${follower.username} → ${followee.username}@${followee.host})`);
+    console.log(
+      `📤 Enqueued Follow activity to ${followee.inbox} (${follower.username} → ${followee.username}@${followee.host})`,
+    );
     return activity.id;
   }
 
   /**
    * Deliver Undo Follow activity to remote user
    */
-  async deliverUndoFollow(follower: User, followee: User, originalFollowId?: string): Promise<void> {
+  async deliverUndoFollow(
+    follower: User,
+    followee: User,
+    originalFollowId?: string,
+  ): Promise<void> {
     if (follower.host || !followee.host || !followee.inbox) return;
 
     const followeeUri = followee.uri || `https://${followee.host}/users/${followee.username}`;
@@ -209,17 +215,15 @@ export class ActivityPubDeliveryService {
       priority: JobPriority.URGENT,
     });
 
-    console.log(`📤 Enqueued Undo Follow activity to ${followee.inbox} (${follower.username} unfollowing ${followee.username}@${followee.host})`);
+    console.log(
+      `📤 Enqueued Undo Follow activity to ${followee.inbox} (${follower.username} unfollowing ${followee.username}@${followee.host})`,
+    );
   }
 
   /**
    * Deliver Undo Like activity to note author
    */
-  async deliverUndoLike(
-    reactor: User,
-    note: Note,
-    noteAuthor: User
-  ): Promise<void> {
+  async deliverUndoLike(reactor: User, note: Note, noteAuthor: User): Promise<void> {
     if (reactor.host) return;
     if (!noteAuthor.host || !noteAuthor.inbox) return;
 
@@ -244,7 +248,7 @@ export class ActivityPubDeliveryService {
     const remoteFollowers = await this.getRemoteFollowers(author.id);
     if (remoteFollowers.length === 0) return;
 
-    const noteUri = note.uri || `${process.env.URL || 'http://localhost:3000'}/notes/${note.id}`;
+    const noteUri = note.uri || `${process.env.URL || "http://localhost:3000"}/notes/${note.id}`;
     const activity = this.builder.delete(noteUri, author);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
@@ -268,7 +272,9 @@ export class ActivityPubDeliveryService {
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, actor, JobPriority.LOW);
-    console.log(`📤 Enqueued Update activity to ${inboxUrls.size} inboxes for user ${actor.username}`);
+    console.log(
+      `📤 Enqueued Update activity to ${inboxUrls.size} inboxes for user ${actor.username}`,
+    );
   }
 
   /**
@@ -278,12 +284,13 @@ export class ActivityPubDeliveryService {
     noteId: string,
     targetNote: Note,
     actor: User,
-    targetNoteAuthor: User
+    targetNoteAuthor: User,
   ): Promise<void> {
     if (actor.host) return;
     if (!targetNoteAuthor.host || !targetNoteAuthor.inbox) return;
 
-    const targetNoteUri = targetNote.uri || `https://${targetNoteAuthor.host}/notes/${targetNote.id}`;
+    const targetNoteUri =
+      targetNote.uri || `https://${targetNoteAuthor.host}/notes/${targetNote.id}`;
     const activity = this.builder.announce(noteId, targetNoteUri, actor);
 
     await this.enqueueDelivery({

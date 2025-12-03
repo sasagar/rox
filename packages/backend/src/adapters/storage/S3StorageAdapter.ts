@@ -12,14 +12,14 @@
  * - Enables delivery via CDN
  */
 
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
-import { extname } from 'node:path';
-import type { IFileStorage, FileMetadata, EmojiFileMetadata } from '../../interfaces/IFileStorage.js';
-import { generateId } from 'shared';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { extname } from "node:path";
+import type {
+  IFileStorage,
+  FileMetadata,
+  EmojiFileMetadata,
+} from "../../interfaces/IFileStorage.js";
+import { generateId } from "shared";
 
 /**
  * S3 Storage Adapter
@@ -54,7 +54,7 @@ export class S3StorageAdapter implements IFileStorage {
   constructor(
     private s3Client: S3Client,
     private bucketName: string,
-    private publicUrl: string
+    private publicUrl: string,
   ) {}
 
   /**
@@ -85,7 +85,7 @@ export class S3StorageAdapter implements IFileStorage {
         Body: file,
         ContentType: metadata.type,
         ContentLength: metadata.size,
-      })
+      }),
     );
 
     return key;
@@ -117,7 +117,7 @@ export class S3StorageAdapter implements IFileStorage {
         Body: file,
         ContentType: metadata.type,
         ContentLength: metadata.size,
-      })
+      }),
     );
 
     return key;
@@ -133,7 +133,7 @@ export class S3StorageAdapter implements IFileStorage {
       new DeleteObjectCommand({
         Bucket: this.bucketName,
         Key: filePath,
-      })
+      }),
     );
   }
 

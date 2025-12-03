@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * MFM (Misskey Flavored Markdown) Renderer Component
@@ -16,10 +16,11 @@
  * - Block quotes
  */
 
-import { useMemo, useState, useEffect, type ReactNode } from 'react';
-import * as mfm from 'mfm-js';
-import type { MfmNode } from 'mfm-js';
-import { lookupEmojis } from '../../lib/atoms/customEmoji';
+import { useMemo, useState, useEffect, type ReactNode } from "react";
+import * as mfm from "mfm-js";
+import type { MfmNode } from "mfm-js";
+import { lookupEmojis } from "../../lib/atoms/customEmoji";
+import { containsHtml, htmlToMfm } from "../../lib/utils/htmlToText";
 
 /**
  * Props for MfmRenderer component
@@ -58,31 +59,41 @@ export function MfmRenderer({
   customEmojis = {},
   plain = false,
   nestLimit = 20,
-  mentionBaseUrl = '',
+  mentionBaseUrl = "",
   onMentionClick,
   onHashtagClick,
-  className = '',
+  className = "",
 }: MfmRendererProps) {
   // State for fetched custom emojis
   const [fetchedEmojis, setFetchedEmojis] = useState<Record<string, string>>({});
 
+  // Convert HTML to MFM if needed (for remote ActivityPub content)
+  const processedText = useMemo(() => {
+    if (!text) return "";
+    // If text contains HTML tags, convert to MFM-compatible format
+    if (containsHtml(text)) {
+      return htmlToMfm(text);
+    }
+    return text;
+  }, [text]);
+
   // Parse MFM text into AST
   const nodes = useMemo(() => {
-    if (!text) return [];
+    if (!processedText) return [];
     try {
-      return plain ? mfm.parseSimple(text) : mfm.parse(text, { nestLimit });
+      return plain ? mfm.parseSimple(processedText) : mfm.parse(processedText, { nestLimit });
     } catch (error) {
-      console.error('MFM parse error:', error);
-      return [{ type: 'text', props: { text } } as MfmNode];
+      console.error("MFM parse error:", error);
+      return [{ type: "text", props: { text: processedText } } as MfmNode];
     }
-  }, [text, plain, nestLimit]);
+  }, [processedText, plain, nestLimit]);
 
   // Extract custom emoji names from AST
   const emojiNames = useMemo(() => {
     const names: string[] = [];
     const collectEmojiNames = (nodeList: MfmNode[]) => {
       for (const node of nodeList) {
-        if (node.type === 'emojiCode') {
+        if (node.type === "emojiCode") {
           names.push(node.props.name);
         }
         if (node.children) {
@@ -98,7 +109,7 @@ export function MfmRenderer({
   useEffect(() => {
     // Skip if no emoji names to look up or if all are already provided via props
     const missingEmojis = emojiNames.filter(
-      (name) => !customEmojis[name] && !customEmojis[`:${name}:`]
+      (name) => !customEmojis[name] && !customEmojis[`:${name}:`],
     );
 
     if (missingEmojis.length === 0) return;
@@ -131,67 +142,59 @@ export function MfmRenderer({
   // Render a single MFM node
   const renderNode = (node: MfmNode, index: number): ReactNode => {
     switch (node.type) {
-      case 'text':
+      case "text":
         return <span key={index}>{node.props.text}</span>;
 
-      case 'bold':
+      case "bold":
         return (
           <strong key={index} className="font-bold">
             {node.children?.map((child, i) => renderNode(child, i))}
           </strong>
         );
 
-      case 'italic':
+      case "italic":
         return (
           <em key={index} className="italic">
             {node.children?.map((child, i) => renderNode(child, i))}
           </em>
         );
 
-      case 'strike':
+      case "strike":
         return (
           <del key={index} className="line-through">
             {node.children?.map((child, i) => renderNode(child, i))}
           </del>
         );
 
-      case 'small':
+      case "small":
         return (
           <small key={index} className="text-sm opacity-70">
             {node.children?.map((child, i) => renderNode(child, i))}
           </small>
         );
 
-      case 'center':
+      case "center":
         return (
           <div key={index} className="text-center">
             {node.children?.map((child, i) => renderNode(child, i))}
           </div>
         );
 
-      case 'inlineCode':
+      case "inlineCode":
         return (
-          <code
-            key={index}
-            className="px-1.5 py-0.5 rounded bg-(--bg-tertiary) font-mono text-sm"
-          >
+          <code key={index} className="px-1.5 py-0.5 rounded bg-(--bg-tertiary) font-mono text-sm">
             {node.props.code}
           </code>
         );
 
-      case 'blockCode':
+      case "blockCode":
         return (
-          <pre
-            key={index}
-            className="p-3 rounded-lg bg-(--bg-tertiary) overflow-x-auto my-2"
-          >
-            <code className="font-mono text-sm whitespace-pre">
-              {node.props.code}
-            </code>
+          <pre key={index} className="p-3 rounded-lg bg-(--bg-tertiary) overflow-x-auto my-2">
+            <code className="font-mono text-sm whitespace-pre">{node.props.code}</code>
           </pre>
         );
 
-      case 'quote':
+      case "quote":
         return (
           <blockquote
             key={index}
@@ -201,7 +204,7 @@ export function MfmRenderer({
           </blockquote>
         );
 
-      case 'url':
+      case "url":
         return (
           <a
             key={index}
@@ -214,20 +217,20 @@ export function MfmRenderer({
           </a>
         );
 
-      case 'link':
+      case "link":
         return (
           <a
             key={index}
             href={node.props.url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`text-primary-500 hover:underline ${node.props.silent ? '' : ''}`}
+            className={`text-primary-500 hover:underline ${node.props.silent ? "" : ""}`}
           >
             {node.children?.map((child, i) => renderNode(child, i))}
           </a>
         );
 
-      case 'mention':
+      case "mention":
         const mentionUsername = node.props.username;
         const mentionHost = node.props.host;
         const mentionHref = mentionHost
@@ -251,7 +254,7 @@ export function MfmRenderer({
           </a>
         );
 
-      case 'hashtag':
+      case "hashtag":
         const tag = node.props.hashtag;
         return (
           <a
@@ -269,7 +272,7 @@ export function MfmRenderer({
           </a>
         );
 
-      case 'emojiCode':
+      case "emojiCode":
         const emojiName = node.props.name;
         const emojiUrl = mergedEmojis[emojiName] || mergedEmojis[`:${emojiName}:`];
 
@@ -288,14 +291,14 @@ export function MfmRenderer({
         // Fallback: show as text if custom emoji not found
         return <span key={index}>:{emojiName}:</span>;
 
-      case 'unicodeEmoji':
+      case "unicodeEmoji":
         return (
           <span key={index} className="text-lg">
             {node.props.emoji}
           </span>
         );
 
-      case 'mathInline':
+      case "mathInline":
         // TODO: Integrate KaTeX for math rendering
         return (
           <code key={index} className="px-1 bg-(--bg-tertiary) rounded">
@@ -303,7 +306,7 @@ export function MfmRenderer({
           </code>
         );
 
-      case 'mathBlock':
+      case "mathBlock":
         // TODO: Integrate KaTeX for math rendering
         return (
           <pre key={index} className="p-3 rounded-lg bg-(--bg-tertiary) my-2 overflow-x-auto">
@@ -311,7 +314,7 @@ export function MfmRenderer({
           </pre>
         );
 
-      case 'search':
+      case "search":
         const query = node.props.query;
         return (
           <a
@@ -326,16 +329,12 @@ export function MfmRenderer({
           </a>
         );
 
-      case 'fn':
+      case "fn":
         // MFM functions like $[spin content], $[tada content], etc.
         return renderMfmFunction(node, index);
 
-      case 'plain':
-        return (
-          <span key={index}>
-            {node.children?.map((child, i) => renderNode(child, i))}
-          </span>
-        );
+      case "plain":
+        return <span key={index}>{node.children?.map((child, i) => renderNode(child, i))}</span>;
 
       default: {
         // For unknown node types, try to render children or return empty
@@ -353,7 +352,7 @@ export function MfmRenderer({
   };
 
   // Render MFM functions (animations and effects)
-  const renderMfmFunction = (node: MfmNode & { type: 'fn' }, index: number): ReactNode => {
+  const renderMfmFunction = (node: MfmNode & { type: "fn" }, index: number): ReactNode => {
     const fnName = node.props.name;
     const args = node.props.args || {};
     const children = node.children?.map((child, i) => renderNode(child, i));
@@ -361,95 +360,95 @@ export function MfmRenderer({
     // CSS class based on function name
     const fnClasses: Record<string, string> = {
       // Animations
-      tada: 'mfm-tada',
-      jelly: 'mfm-jelly',
-      twitch: 'mfm-twitch',
-      shake: 'mfm-shake',
-      spin: 'mfm-spin',
-      jump: 'mfm-jump',
-      bounce: 'mfm-bounce',
-      rainbow: 'mfm-rainbow',
-      sparkle: 'mfm-sparkle',
+      tada: "mfm-tada",
+      jelly: "mfm-jelly",
+      twitch: "mfm-twitch",
+      shake: "mfm-shake",
+      spin: "mfm-spin",
+      jump: "mfm-jump",
+      bounce: "mfm-bounce",
+      rainbow: "mfm-rainbow",
+      sparkle: "mfm-sparkle",
 
       // Transforms
-      flip: 'mfm-flip',
-      x2: 'mfm-x2',
-      x3: 'mfm-x3',
-      x4: 'mfm-x4',
+      flip: "mfm-flip",
+      x2: "mfm-x2",
+      x3: "mfm-x3",
+      x4: "mfm-x4",
 
       // Blur
-      blur: 'mfm-blur',
+      blur: "mfm-blur",
 
       // Font
-      font: 'mfm-font',
+      font: "mfm-font",
 
       // Position
-      position: 'mfm-position',
-      scale: 'mfm-scale',
-      rotate: 'mfm-rotate',
+      position: "mfm-position",
+      scale: "mfm-scale",
+      rotate: "mfm-rotate",
 
       // Colors (handled separately with inline style)
-      fg: '',
-      bg: '',
+      fg: "",
+      bg: "",
     };
 
     let style: React.CSSProperties = {};
-    let className = fnClasses[fnName] || '';
+    let className = fnClasses[fnName] || "";
 
     // Handle specific function arguments
     switch (fnName) {
-      case 'spin':
-        if (args.left) className += ' mfm-spin-left';
-        if (args.alternate) className += ' mfm-spin-alternate';
-        if (args.x) className += ' mfm-spin-x';
-        if (args.y) className += ' mfm-spin-y';
-        if (args.speed && typeof args.speed === 'string') {
+      case "spin":
+        if (args.left) className += " mfm-spin-left";
+        if (args.alternate) className += " mfm-spin-alternate";
+        if (args.x) className += " mfm-spin-x";
+        if (args.y) className += " mfm-spin-y";
+        if (args.speed && typeof args.speed === "string") {
           style.animationDuration = args.speed;
         }
         break;
 
-      case 'flip':
-        if (args.h) className += ' mfm-flip-h';
-        if (args.v) className += ' mfm-flip-v';
+      case "flip":
+        if (args.h) className += " mfm-flip-h";
+        if (args.v) className += " mfm-flip-v";
         break;
 
-      case 'fg':
-        if (args.color && typeof args.color === 'string') {
-          style.color = args.color.startsWith('#') ? args.color : `#${args.color}`;
+      case "fg":
+        if (args.color && typeof args.color === "string") {
+          style.color = args.color.startsWith("#") ? args.color : `#${args.color}`;
         }
         break;
 
-      case 'bg':
-        if (args.color && typeof args.color === 'string') {
-          style.backgroundColor = args.color.startsWith('#') ? args.color : `#${args.color}`;
+      case "bg":
+        if (args.color && typeof args.color === "string") {
+          style.backgroundColor = args.color.startsWith("#") ? args.color : `#${args.color}`;
         }
         break;
 
-      case 'font':
-        if (args.serif) style.fontFamily = 'serif';
-        if (args.monospace) style.fontFamily = 'monospace';
-        if (args.cursive) style.fontFamily = 'cursive';
-        if (args.fantasy) style.fontFamily = 'fantasy';
+      case "font":
+        if (args.serif) style.fontFamily = "serif";
+        if (args.monospace) style.fontFamily = "monospace";
+        if (args.cursive) style.fontFamily = "cursive";
+        if (args.fantasy) style.fontFamily = "fantasy";
         break;
 
-      case 'rotate':
-        if (args.deg && typeof args.deg === 'string') {
+      case "rotate":
+        if (args.deg && typeof args.deg === "string") {
           style.transform = `rotate(${args.deg}deg)`;
-          style.display = 'inline-block';
+          style.display = "inline-block";
         }
         break;
 
-      case 'scale': {
-        const scaleX = typeof args.x === 'string' ? args.x : '1';
-        const scaleY = typeof args.y === 'string' ? args.y : '1';
+      case "scale": {
+        const scaleX = typeof args.x === "string" ? args.x : "1";
+        const scaleY = typeof args.y === "string" ? args.y : "1";
         style.transform = `scale(${scaleX}, ${scaleY})`;
-        style.display = 'inline-block';
+        style.display = "inline-block";
         break;
       }
 
-      case 'position':
-        if (args.x && typeof args.x === 'string') style.marginLeft = `${args.x}em`;
-        if (args.y && typeof args.y === 'string') style.marginTop = `${args.y}em`;
+      case "position":
+        if (args.x && typeof args.x === "string") style.marginLeft = `${args.x}em`;
+        if (args.y && typeof args.y === "string") style.marginTop = `${args.y}em`;
         break;
     }
 

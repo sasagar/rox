@@ -17,11 +17,11 @@
  * - Migration files are placed in `drizzle/{dbType}/`
  * - Database backup recommended before execution
  */
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import postgres from 'postgres';
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
 
-const dbType = process.env.DB_TYPE || 'postgres';
+const dbType = process.env.DB_TYPE || "postgres";
 
 /**
  * Run Migrations
@@ -41,15 +41,15 @@ async function runMigrations() {
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
-    console.error('❌ DATABASE_URL environment variable is required');
+    console.error("❌ DATABASE_URL environment variable is required");
     process.exit(1);
   }
 
   console.log(`🔄 Running migrations for ${dbType}...`);
-  console.log(`📍 Database: ${databaseUrl.split('@')[1] || 'localhost'}`);
+  console.log(`📍 Database: ${databaseUrl.split("@")[1] || "localhost"}`);
 
   try {
-    if (dbType === 'postgres') {
+    if (dbType === "postgres") {
       const connection = postgres(databaseUrl, { max: 1 });
       const db = drizzle(connection);
 
@@ -58,13 +58,13 @@ async function runMigrations() {
       });
 
       await connection.end();
-      console.log('✅ Migrations completed successfully');
+      console.log("✅ Migrations completed successfully");
     } else {
       console.error(`❌ Migration for ${dbType} is not yet implemented`);
       process.exit(1);
     }
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    console.error("❌ Migration failed:", error);
     process.exit(1);
   }
 }

@@ -1,4 +1,4 @@
-import type { InstanceBlock } from '../../db/schema/pg.js';
+import type { InstanceBlock } from "../../db/schema/pg.js";
 
 /**
  * Instance Block Repository Interface
@@ -13,9 +13,7 @@ export interface IInstanceBlockRepository {
    * @param block - Block details including host, reason, and admin ID
    * @returns Created block record
    */
-  create(
-    block: Omit<InstanceBlock, 'id' | 'createdAt'>
-  ): Promise<InstanceBlock>;
+  create(block: Omit<InstanceBlock, "id" | "createdAt">): Promise<InstanceBlock>;
 
   /**
    * Find a block by host

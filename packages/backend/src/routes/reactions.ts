@@ -6,11 +6,11 @@
  * @module routes/reactions
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { requireAuth, optionalAuth } from '../middleware/auth.js';
-import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
-import { ReactionService } from '../services/ReactionService.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
+import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
+import { ReactionService } from "../services/ReactionService.js";
 
 const reactions = new Hono();
 
@@ -24,45 +24,50 @@ const reactions = new Hono();
  * @body {string} reaction - Reaction emoji (Unicode or custom emoji name)
  * @returns {Reaction} Created reaction
  */
-reactions.post('/create', requireAuth(), userRateLimit(RateLimitPresets.reaction), async (c: Context) => {
-  const user = c.get('user')!;
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
-  const notificationService = c.get('notificationService');
+reactions.post(
+  "/create",
+  requireAuth(),
+  userRateLimit(RateLimitPresets.reaction),
+  async (c: Context) => {
+    const user = c.get("user")!;
+    const reactionRepository = c.get("reactionRepository");
+    const noteRepository = c.get("noteRepository");
+    const userRepository = c.get("userRepository");
+    const deliveryService = c.get("activityPubDeliveryService");
+    const notificationService = c.get("notificationService");
 
-  const reactionService = new ReactionService(
-    reactionRepository,
-    noteRepository,
-    userRepository,
-    deliveryService,
-    notificationService,
-  );
+    const reactionService = new ReactionService(
+      reactionRepository,
+      noteRepository,
+      userRepository,
+      deliveryService,
+      notificationService,
+    );
 
-  const body = await c.req.json();
+    const body = await c.req.json();
 
-  if (!body.noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
-  }
+    if (!body.noteId) {
+      return c.json({ error: "noteId is required" }, 400);
+    }
 
-  if (!body.reaction) {
-    return c.json({ error: 'reaction is required' }, 400);
-  }
+    if (!body.reaction) {
+      return c.json({ error: "reaction is required" }, 400);
+    }
 
-  try {
-    const reaction = await reactionService.create({
-      userId: user.id,
-      noteId: body.noteId,
-      reaction: body.reaction,
-    });
+    try {
+      const reaction = await reactionService.create({
+        userId: user.id,
+        noteId: body.noteId,
+        reaction: body.reaction,
+      });
 
-    return c.json(reaction, 201);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create reaction';
-    return c.json({ error: message }, 400);
-  }
-});
+      return c.json(reaction, 201);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create reaction";
+      return c.json({ error: message }, 400);
+    }
+  },
+);
 
 /**
  * POST /api/notes/reactions/delete
@@ -74,38 +79,43 @@ reactions.post('/create', requireAuth(), userRateLimit(RateLimitPresets.reaction
  * @body {string} reaction - Reaction emoji to remove
  * @returns {void}
  */
-reactions.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.reaction), async (c: Context) => {
-  const user = c.get('user')!;
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+reactions.post(
+  "/delete",
+  requireAuth(),
+  userRateLimit(RateLimitPresets.reaction),
+  async (c: Context) => {
+    const user = c.get("user")!;
+    const reactionRepository = c.get("reactionRepository");
+    const noteRepository = c.get("noteRepository");
+    const userRepository = c.get("userRepository");
+    const deliveryService = c.get("activityPubDeliveryService");
 
-  const reactionService = new ReactionService(
-    reactionRepository,
-    noteRepository,
-    userRepository,
-    deliveryService,
-  );
+    const reactionService = new ReactionService(
+      reactionRepository,
+      noteRepository,
+      userRepository,
+      deliveryService,
+    );
 
-  const body = await c.req.json();
+    const body = await c.req.json();
 
-  if (!body.noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
-  }
+    if (!body.noteId) {
+      return c.json({ error: "noteId is required" }, 400);
+    }
 
-  if (!body.reaction) {
-    return c.json({ error: 'reaction is required' }, 400);
-  }
+    if (!body.reaction) {
+      return c.json({ error: "reaction is required" }, 400);
+    }
 
-  try {
-    await reactionService.delete(user.id, body.noteId, body.reaction);
-    return c.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to delete reaction';
-    return c.json({ error: message }, 400);
-  }
-});
+    try {
+      await reactionService.delete(user.id, body.noteId, body.reaction);
+      return c.json({ success: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete reaction";
+      return c.json({ error: message }, 400);
+    }
+  },
+);
 
 /**
  * GET /api/notes/reactions
@@ -117,11 +127,11 @@ reactions.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.reaction
  * @query {number} [limit] - Maximum number of reactions to retrieve
  * @returns {Reaction[]} List of reactions
  */
-reactions.get('/', optionalAuth(), async (c: Context) => {
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+reactions.get("/", optionalAuth(), async (c: Context) => {
+  const reactionRepository = c.get("reactionRepository");
+  const noteRepository = c.get("noteRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
 
   const reactionService = new ReactionService(
     reactionRepository,
@@ -130,20 +140,18 @@ reactions.get('/', optionalAuth(), async (c: Context) => {
     deliveryService,
   );
 
-  const noteId = c.req.query('noteId');
-  const limit = c.req.query('limit')
-    ? Number.parseInt(c.req.query('limit')!, 10)
-    : undefined;
+  const noteId = c.req.query("noteId");
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
     const reactionsList = await reactionService.getReactionsByNote(noteId, limit);
     return c.json(reactionsList);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get reactions';
+    const message = error instanceof Error ? error.message : "Failed to get reactions";
     return c.json({ error: message }, 400);
   }
 });
@@ -157,11 +165,11 @@ reactions.get('/', optionalAuth(), async (c: Context) => {
  * @query {string} noteId - Note ID
  * @returns {Record<string, number>} Reaction counts by emoji
  */
-reactions.get('/counts', optionalAuth(), async (c: Context) => {
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+reactions.get("/counts", optionalAuth(), async (c: Context) => {
+  const reactionRepository = c.get("reactionRepository");
+  const noteRepository = c.get("noteRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
 
   const reactionService = new ReactionService(
     reactionRepository,
@@ -170,17 +178,17 @@ reactions.get('/counts', optionalAuth(), async (c: Context) => {
     deliveryService,
   );
 
-  const noteId = c.req.query('noteId');
+  const noteId = c.req.query("noteId");
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
     const counts = await reactionService.getReactionCounts(noteId);
     return c.json(counts);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get reaction counts';
+    const message = error instanceof Error ? error.message : "Failed to get reaction counts";
     return c.json({ error: message }, 400);
   }
 });
@@ -196,11 +204,11 @@ reactions.get('/counts', optionalAuth(), async (c: Context) => {
  * @returns {Record<string, number>} counts - Reaction counts by emoji
  * @returns {Record<string, string>} emojis - Custom emoji URLs by emoji name
  */
-reactions.get('/counts-with-emojis', optionalAuth(), async (c: Context) => {
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
+  const reactionRepository = c.get("reactionRepository");
+  const noteRepository = c.get("noteRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
 
   const reactionService = new ReactionService(
     reactionRepository,
@@ -209,17 +217,17 @@ reactions.get('/counts-with-emojis', optionalAuth(), async (c: Context) => {
     deliveryService,
   );
 
-  const noteId = c.req.query('noteId');
+  const noteId = c.req.query("noteId");
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
     const result = await reactionService.getReactionCountsWithEmojis(noteId);
     return c.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get reaction counts';
+    const message = error instanceof Error ? error.message : "Failed to get reaction counts";
     return c.json({ error: message }, 400);
   }
 });
@@ -233,12 +241,12 @@ reactions.get('/counts-with-emojis', optionalAuth(), async (c: Context) => {
  * @query {string} noteId - Note ID
  * @returns {Reaction[]} User's reactions
  */
-reactions.get('/my-reactions', requireAuth(), async (c: Context) => {
-  const user = c.get('user')!;
-  const reactionRepository = c.get('reactionRepository');
-  const noteRepository = c.get('noteRepository');
-  const userRepository = c.get('userRepository');
-  const deliveryService = c.get('activityPubDeliveryService');
+reactions.get("/my-reactions", requireAuth(), async (c: Context) => {
+  const user = c.get("user")!;
+  const reactionRepository = c.get("reactionRepository");
+  const noteRepository = c.get("noteRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
 
   const reactionService = new ReactionService(
     reactionRepository,
@@ -247,17 +255,17 @@ reactions.get('/my-reactions', requireAuth(), async (c: Context) => {
     deliveryService,
   );
 
-  const noteId = c.req.query('noteId');
+  const noteId = c.req.query("noteId");
 
   if (!noteId) {
-    return c.json({ error: 'noteId is required' }, 400);
+    return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
     const reactions = await reactionService.getUserReactions(user.id, noteId);
     return c.json(reactions);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to get user reactions';
+    const message = error instanceof Error ? error.message : "Failed to get user reactions";
     return c.json({ error: message }, 400);
   }
 });

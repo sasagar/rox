@@ -1,12 +1,12 @@
-import type { IAuthProvider, AuthResult, PasswordCredentials } from '../types';
-import { apiClient } from '../../api/client';
+import type { IAuthProvider, AuthResult, PasswordCredentials } from "../types";
+import { apiClient } from "../../api/client";
 
 /**
  * Password-based authentication provider
  * Traditional username/password authentication
  */
 export class PasswordAuthProvider implements IAuthProvider {
-  readonly method = 'password' as const;
+  readonly method = "password" as const;
 
   /**
    * Authenticate user with username and password
@@ -24,7 +24,7 @@ export class PasswordAuthProvider implements IAuthProvider {
    * ```
    */
   async authenticate(credentials: PasswordCredentials): Promise<AuthResult> {
-    const response = await apiClient.post<AuthResult>('/api/auth/session', {
+    const response = await apiClient.post<AuthResult>("/api/auth/session", {
       username: credentials.username,
       password: credentials.password,
     });

@@ -1,8 +1,8 @@
-import { eq, sql, desc, and, gt, or, isNull, lt } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { invitationCodes, type InvitationCode } from '../../db/schema/pg.js';
-import type { IInvitationCodeRepository } from '../../interfaces/repositories/IInvitationCodeRepository.js';
-import { generateId } from 'shared';
+import { eq, sql, desc, and, gt, or, isNull, lt } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { invitationCodes, type InvitationCode } from "../../db/schema/pg.js";
+import type { IInvitationCodeRepository } from "../../interfaces/repositories/IInvitationCodeRepository.js";
+import { generateId } from "shared";
 
 /**
  * PostgreSQL implementation of Invitation Code Repository
@@ -29,7 +29,7 @@ export class PostgresInvitationCodeRepository implements IInvitationCodeReposito
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create invitation code');
+      throw new Error("Failed to create invitation code");
     }
 
     return result;
@@ -96,7 +96,7 @@ export class PostgresInvitationCodeRepository implements IInvitationCodeReposito
     if (!invitation) return null;
 
     // Validate
-    if (!await this.isValid(code)) {
+    if (!(await this.isValid(code))) {
       return null;
     }
 
@@ -139,16 +139,13 @@ export class PostgresInvitationCodeRepository implements IInvitationCodeReposito
       .where(
         and(
           // Not expired (expiresAt is null or > now)
-          or(
-            isNull(invitationCodes.expiresAt),
-            gt(invitationCodes.expiresAt, now)
-          ),
+          or(isNull(invitationCodes.expiresAt), gt(invitationCodes.expiresAt, now)),
           // Not fully used (useCount < maxUses or maxUses is null)
           or(
             isNull(invitationCodes.maxUses),
-            lt(invitationCodes.useCount, invitationCodes.maxUses)
-          )
-        )
+            lt(invitationCodes.useCount, invitationCodes.maxUses),
+          ),
+        ),
       );
 
     return result?.count ?? 0;
@@ -159,12 +156,7 @@ export class PostgresInvitationCodeRepository implements IInvitationCodeReposito
     const [result] = await this.db
       .select({ count: sql<number>`count(*)::int` })
       .from(invitationCodes)
-      .where(
-        and(
-          eq(invitationCodes.createdById, userId),
-          gt(invitationCodes.createdAt, cutoff)
-        )
-      );
+      .where(and(eq(invitationCodes.createdById, userId), gt(invitationCodes.createdAt, cutoff)));
 
     return result?.count ?? 0;
   }

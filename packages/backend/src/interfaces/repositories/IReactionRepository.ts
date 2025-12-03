@@ -1,10 +1,10 @@
-import type { Reaction } from 'shared';
+import type { Reaction } from "shared";
 
 export interface IReactionRepository {
   /**
    * リアクションを作成
    */
-  create(reaction: Omit<Reaction, 'createdAt' | 'updatedAt'>): Promise<Reaction>;
+  create(reaction: Omit<Reaction, "createdAt" | "updatedAt">): Promise<Reaction>;
 
   /**
    * IDでリアクションを取得

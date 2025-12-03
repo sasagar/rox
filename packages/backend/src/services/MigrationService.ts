@@ -10,10 +10,10 @@
  * @module services/MigrationService
  */
 
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
-import type { RemoteActorService } from './ap/RemoteActorService.js';
-import { ActivityDeliveryService } from './ap/ActivityDeliveryService.js';
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
+import type { RemoteActorService } from "./ap/RemoteActorService.js";
+import { ActivityDeliveryService } from "./ap/ActivityDeliveryService.js";
 
 /** Migration cooldown period in days */
 const MIGRATION_COOLDOWN_DAYS = 30;
@@ -60,12 +60,12 @@ export class MigrationService {
   constructor(
     userRepository: IUserRepository,
     followRepository: IFollowRepository,
-    remoteActorService: RemoteActorService
+    remoteActorService: RemoteActorService,
   ) {
     this.userRepository = userRepository;
     this.followRepository = followRepository;
     this.remoteActorService = remoteActorService;
-    this.baseUrl = process.env.URL || 'http://localhost:3000';
+    this.baseUrl = process.env.URL || "http://localhost:3000";
   }
 
   /**
@@ -77,7 +77,7 @@ export class MigrationService {
   async getAliases(userId: string): Promise<string[]> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
     return user.alsoKnownAs || [];
   }
@@ -92,25 +92,25 @@ export class MigrationService {
   async addAlias(userId: string, aliasUri: string): Promise<string[]> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     // Validate URI format
     if (!this.isValidActorUri(aliasUri)) {
-      throw new Error('Invalid actor URI format');
+      throw new Error("Invalid actor URI format");
     }
 
     // Check if it's not self-referential
     const localUri = `${this.baseUrl}/users/${user.username}`;
     if (aliasUri === localUri) {
-      throw new Error('Cannot add own account as alias');
+      throw new Error("Cannot add own account as alias");
     }
 
     const currentAliases = user.alsoKnownAs || [];
 
     // Check if alias already exists
     if (currentAliases.includes(aliasUri)) {
-      throw new Error('Alias already exists');
+      throw new Error("Alias already exists");
     }
 
     // Check max aliases
@@ -122,7 +122,7 @@ export class MigrationService {
     try {
       await this.remoteActorService.resolveActor(aliasUri);
     } catch {
-      throw new Error('Could not verify remote account');
+      throw new Error("Could not verify remote account");
     }
 
     // Add alias
@@ -144,13 +144,13 @@ export class MigrationService {
   async removeAlias(userId: string, aliasUri: string): Promise<string[]> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     const currentAliases = user.alsoKnownAs || [];
 
     if (!currentAliases.includes(aliasUri)) {
-      throw new Error('Alias not found');
+      throw new Error("Alias not found");
     }
 
     const newAliases = currentAliases.filter((a) => a !== aliasUri);
@@ -167,21 +167,23 @@ export class MigrationService {
    * @param userId - User ID
    * @returns Whether migration is allowed and reason if not
    */
-  async canMigrate(userId: string): Promise<{ allowed: boolean; reason?: string; daysRemaining?: number }> {
+  async canMigrate(
+    userId: string,
+  ): Promise<{ allowed: boolean; reason?: string; daysRemaining?: number }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { allowed: false, reason: 'User not found' };
+      return { allowed: false, reason: "User not found" };
     }
 
     // Check if already migrated
     if (user.movedTo) {
-      return { allowed: false, reason: 'Account has already migrated' };
+      return { allowed: false, reason: "Account has already migrated" };
     }
 
     // Check cooldown (based on movedAt from any previous migration)
     if (user.movedAt) {
       const daysSinceMigration = Math.floor(
-        (Date.now() - user.movedAt.getTime()) / (1000 * 60 * 60 * 24)
+        (Date.now() - user.movedAt.getTime()) / (1000 * 60 * 60 * 24),
       );
 
       if (daysSinceMigration < MIGRATION_COOLDOWN_DAYS) {
@@ -207,7 +209,7 @@ export class MigrationService {
   async validateMigration(userId: string, targetUri: string): Promise<ValidationResult> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      return { valid: false, error: 'User not found' };
+      return { valid: false, error: "User not found" };
     }
 
     // Check cooldown
@@ -221,7 +223,7 @@ export class MigrationService {
     if (!aliases.includes(targetUri)) {
       return {
         valid: false,
-        error: 'Target account must be added as alias first',
+        error: "Target account must be added as alias first",
       };
     }
 
@@ -230,11 +232,11 @@ export class MigrationService {
     try {
       targetActor = await this.remoteActorService.resolveActor(targetUri, true);
     } catch {
-      return { valid: false, error: 'Could not fetch target account' };
+      return { valid: false, error: "Could not fetch target account" };
     }
 
     if (!targetActor) {
-      return { valid: false, error: 'Target account not found' };
+      return { valid: false, error: "Target account not found" };
     }
 
     // Check reverse alias (target must have our account in their alsoKnownAs)
@@ -243,11 +245,11 @@ export class MigrationService {
 
     return {
       valid: hasReverseAlias,
-      error: hasReverseAlias ? undefined : 'Target account does not have reverse alias configured',
+      error: hasReverseAlias ? undefined : "Target account does not have reverse alias configured",
       targetAccount: {
         uri: targetUri,
         username: targetActor.username,
-        host: targetActor.host || '',
+        host: targetActor.host || "",
         hasReverseAlias,
       },
     };
@@ -271,7 +273,7 @@ export class MigrationService {
 
     const user = await this.userRepository.findById(userId);
     if (!user || !user.privateKey) {
-      return { success: false, error: 'User not found or missing private key' };
+      return { success: false, error: "User not found or missing private key" };
     }
 
     const localUri = `${this.baseUrl}/users/${user.username}`;
@@ -289,8 +291,8 @@ export class MigrationService {
 
     // Create Move activity
     const moveActivity = {
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      type: 'Move',
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Move",
       id: `${localUri}/activities/move-${Date.now()}`,
       actor: localUri,
       object: localUri,
@@ -322,7 +324,9 @@ export class MigrationService {
       }
     }
 
-    console.log(`🚚 Migration initiated: ${localUri} → ${targetUri}, ${notifiedCount} inboxes notified`);
+    console.log(
+      `🚚 Migration initiated: ${localUri} → ${targetUri}, ${notifiedCount} inboxes notified`,
+    );
 
     return {
       success: true,
@@ -346,7 +350,7 @@ export class MigrationService {
   }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     const canMigrateResult = await this.canMigrate(userId);
@@ -366,7 +370,7 @@ export class MigrationService {
   private isValidActorUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'https:' || url.protocol === 'http:';
+      return url.protocol === "https:" || url.protocol === "http:";
     } catch {
       return false;
     }

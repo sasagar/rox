@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Invitations Page
@@ -6,20 +6,20 @@
  * Allows administrators to manage invitation codes for invite-only registration.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Copy, Trash2, Plus, RefreshCw } from 'lucide-react';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { AdminNav } from '../../components/admin/AdminNav';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Copy, Trash2, Plus, RefreshCw } from "lucide-react";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { AdminNav } from "../../components/admin/AdminNav";
 
 interface InvitationCode {
   id: string;
@@ -52,22 +52,22 @@ export default function AdminInvitationsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Create form state
-  const [customCode, setCustomCode] = useState('');
+  const [customCode, setCustomCode] = useState("");
   const [maxUses, setMaxUses] = useState(1);
-  const [expiresIn, setExpiresIn] = useState<'never' | '1d' | '7d' | '30d'>('never');
+  const [expiresIn, setExpiresIn] = useState<"never" | "1d" | "7d" | "30d">("never");
 
   const loadInvitations = useCallback(async () => {
     if (!token) return;
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<InvitationsResponse>('/api/admin/invitations');
+      const response = await apiClient.get<InvitationsResponse>("/api/admin/invitations");
       setInvitations(response.codes);
       setTotal(response.total);
       setUnused(response.unused);
     } catch (err) {
-      console.error('Failed to load invitations:', err);
-      setError('Failed to load invitations');
+      console.error("Failed to load invitations:", err);
+      setError("Failed to load invitations");
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export default function AdminInvitationsPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -85,9 +85,9 @@ export default function AdminInvitationsPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
+        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
-          window.location.href = '/timeline';
+          window.location.href = "/timeline";
           return;
         }
 
@@ -96,8 +96,8 @@ export default function AdminInvitationsPage() {
 
         await loadInvitations();
       } catch (err) {
-        console.error('Access check failed:', err);
-        setError('Access denied');
+        console.error("Access check failed:", err);
+        setError("Access denied");
         setIsLoading(false);
       }
     };
@@ -113,34 +113,34 @@ export default function AdminInvitationsPage() {
       apiClient.setToken(token);
 
       let expiresAt: string | undefined;
-      if (expiresIn !== 'never') {
+      if (expiresIn !== "never") {
         const now = new Date();
-        const days = expiresIn === '1d' ? 1 : expiresIn === '7d' ? 7 : 30;
+        const days = expiresIn === "1d" ? 1 : expiresIn === "7d" ? 7 : 30;
         now.setDate(now.getDate() + days);
         expiresAt = now.toISOString();
       }
 
-      await apiClient.post<InvitationCode>('/api/admin/invitations', {
+      await apiClient.post<InvitationCode>("/api/admin/invitations", {
         code: customCode || undefined,
         maxUses,
         expiresAt,
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Invitation code created`,
       });
 
       // Reset form
-      setCustomCode('');
+      setCustomCode("");
       setMaxUses(1);
-      setExpiresIn('never');
+      setExpiresIn("never");
 
       // Reload list
       await loadInvitations();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to create invitation code`,
       });
     } finally {
@@ -156,7 +156,7 @@ export default function AdminInvitationsPage() {
       await apiClient.delete(`/api/admin/invitations/${id}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Invitation code deleted`,
       });
 
@@ -164,7 +164,7 @@ export default function AdminInvitationsPage() {
       await loadInvitations();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to delete invitation code`,
       });
     }
@@ -173,13 +173,13 @@ export default function AdminInvitationsPage() {
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     addToast({
-      type: 'success',
+      type: "success",
       message: t`Code copied to clipboard`,
     });
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -298,19 +298,23 @@ export default function AdminInvitationsPage() {
                   onChange={(e) => setExpiresIn(e.target.value as any)}
                   className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="never"><Trans>Never</Trans></option>
-                  <option value="1d"><Trans>1 Day</Trans></option>
-                  <option value="7d"><Trans>7 Days</Trans></option>
-                  <option value="30d"><Trans>30 Days</Trans></option>
+                  <option value="never">
+                    <Trans>Never</Trans>
+                  </option>
+                  <option value="1d">
+                    <Trans>1 Day</Trans>
+                  </option>
+                  <option value="7d">
+                    <Trans>7 Days</Trans>
+                  </option>
+                  <option value="30d">
+                    <Trans>30 Days</Trans>
+                  </option>
                 </select>
               </div>
             </div>
 
-            <Button
-              onPress={handleCreateInvitation}
-              isDisabled={isCreating}
-              className="w-full"
-            >
+            <Button onPress={handleCreateInvitation} isDisabled={isCreating} className="w-full">
               {isCreating ? (
                 <Spinner size="sm" />
               ) : (
@@ -329,11 +333,7 @@ export default function AdminInvitationsPage() {
             <CardTitle>
               <Trans>Invitation Codes</Trans>
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={loadInvitations}
-            >
+            <Button variant="ghost" size="sm" onClick={loadInvitations}>
               <RefreshCw className="w-4 h-4" />
             </Button>
           </CardHeader>
@@ -354,8 +354,8 @@ export default function AdminInvitationsPage() {
                       key={invitation.id}
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         available
-                          ? 'border-(--border-color) bg-(--bg-primary)'
-                          : 'border-(--border-color) bg-(--bg-tertiary) opacity-60'
+                          ? "border-(--border-color) bg-(--bg-primary)"
+                          : "border-(--border-color) bg-(--bg-tertiary) opacity-60"
                       }`}
                     >
                       <div className="flex-1">
@@ -380,7 +380,9 @@ export default function AdminInvitationsPage() {
                           )}
                         </div>
                         <div className="text-sm text-(--text-muted) mt-1">
-                          <Trans>Uses: {invitation.useCount}/{invitation.maxUses}</Trans>
+                          <Trans>
+                            Uses: {invitation.useCount}/{invitation.maxUses}
+                          </Trans>
                           {invitation.expiresAt && (
                             <span className="ml-3">
                               <Trans>Expires: {formatDate(invitation.expiresAt)}</Trans>

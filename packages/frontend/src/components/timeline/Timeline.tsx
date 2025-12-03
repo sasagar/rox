@@ -1,42 +1,40 @@
-'use client';
+"use client";
 
-import { useEffect, useCallback, useRef } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
+import { useEffect, useCallback, useRef } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
 import {
   timelineNotesAtom,
   timelineLoadingAtom,
   timelineErrorAtom,
   timelineHasMoreAtom,
   timelineLastNoteIdAtom,
-} from '../../lib/atoms/timeline';
-import { notesApi } from '../../lib/api/notes';
-import { NoteCard } from '../note/NoteCard';
-import { Button } from '../ui/Button';
-import { TimelineSkeleton } from '../ui/Skeleton';
-import { Spinner } from '../ui/Spinner';
-import { ErrorMessage } from '../ui/ErrorMessage';
-import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
-import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+} from "../../lib/atoms/timeline";
+import { notesApi } from "../../lib/api/notes";
+import { NoteCard } from "../note/NoteCard";
+import { Button } from "../ui/Button";
+import { TimelineSkeleton } from "../ui/Skeleton";
+import { Spinner } from "../ui/Spinner";
+import { ErrorMessage } from "../ui/ErrorMessage";
+import { ScrollToTop } from "../ui/ScrollToTop";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 
 /**
  * Props for the Timeline component
  */
 export interface TimelineProps {
-  /** Initial notes data (from Server Component) */
-  initialNotes?: any[];
-  /** Timeline type: 'local' | 'social' | 'home' */
-  type?: 'local' | 'social' | 'home';
+  /** Timeline type: 'local' | 'social' | 'global' | 'home' */
+  type?: "local" | "social" | "global" | "home";
 }
 
 /**
  * Timeline component for displaying a feed of notes
  * Supports infinite scroll pagination and real-time updates
  *
- * @param initialNotes - Initial notes from server-side rendering
- * @param type - Timeline type (local/social/home)
+ * @param type - Timeline type (local/social/global/home)
  */
-export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
+export function Timeline({ type = "local" }: TimelineProps) {
   const [notes, setNotes] = useAtom(timelineNotesAtom);
   const [loading, setLoading] = useAtom(timelineLoadingAtom);
   const [error, setError] = useAtom(timelineErrorAtom);
@@ -44,13 +42,42 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
   const [lastNoteId] = useAtom(timelineLastNoteIdAtom);
 
   const timelineContainerRef = useRef<HTMLDivElement>(null);
+  const hasLoadedRef = useRef(false);
 
-  // Initialize with initial notes
+  // Reset and load data when type changes (component remounts via key)
   useEffect(() => {
-    if (initialNotes.length > 0 && notes.length === 0) {
-      setNotes(initialNotes);
-    }
-  }, [initialNotes, notes.length, setNotes]);
+    // Reset state on mount
+    setNotes([]);
+    setError(null);
+    setHasMore(true);
+    setLoading(true);
+    hasLoadedRef.current = false;
+
+    // Load initial data
+    const loadInitialData = async () => {
+      try {
+        const fetchFunction =
+          type === "home"
+            ? notesApi.getHomeTimeline
+            : type === "social"
+              ? notesApi.getSocialTimeline
+              : type === "global"
+                ? notesApi.getGlobalTimeline
+                : notesApi.getLocalTimeline;
+
+        const newNotes = await fetchFunction({ limit: 20 });
+        setNotes(newNotes);
+        setHasMore(newNotes.length >= 20);
+        hasLoadedRef.current = true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load notes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [type, setNotes, setError, setHasMore, setLoading]);
 
   // Keyboard navigation for timeline
   useKeyboardNavigation(timelineContainerRef, {
@@ -67,11 +94,13 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
 
     try {
       const fetchFunction =
-        type === 'home'
+        type === "home"
           ? notesApi.getHomeTimeline
-          : type === 'social'
-          ? notesApi.getSocialTimeline
-          : notesApi.getLocalTimeline;
+          : type === "social"
+            ? notesApi.getSocialTimeline
+            : type === "global"
+              ? notesApi.getGlobalTimeline
+              : notesApi.getLocalTimeline;
 
       const newNotes = await fetchFunction({
         limit: 20,
@@ -84,7 +113,7 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
         setNotes((prev) => [...prev, ...newNotes]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load notes');
+      setError(err instanceof Error ? err.message : "Failed to load notes");
     } finally {
       setLoading(false);
     }
@@ -96,7 +125,7 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
     isLoading: loading,
     hasMore,
     threshold: 0.1,
-    rootMargin: '100px',
+    rootMargin: "100px",
   });
 
   // Handle note deletion
@@ -104,7 +133,7 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
     (noteId: string) => {
       setNotes((prev) => prev.filter((note) => note.id !== noteId));
     },
-    [setNotes]
+    [setNotes],
   );
 
   // Retry function for error recovery
@@ -124,7 +153,7 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       {/* Enhanced Error Message with Retry */}
       {error && (
         <ErrorMessage
-          title={<Trans>Error loading timeline</Trans> as unknown as string}
+          title={<Trans>Error loading timeline</Trans>}
           message={error}
           onRetry={handleRetry}
           isRetrying={loading}
@@ -136,7 +165,9 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       {!error && loading && notes.length === 0 && (
         <div role="status" aria-label="Loading timeline">
           <TimelineSkeleton count={3} />
-          <span className="sr-only"><Trans>Loading posts...</Trans></span>
+          <span className="sr-only">
+            <Trans>Loading posts...</Trans>
+          </span>
         </div>
       )}
 
@@ -149,7 +180,9 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       {loading && notes.length > 0 && (
         <div className="flex justify-center py-8" role="status" aria-label="Loading more posts">
           <Spinner size="lg" />
-          <span className="sr-only"><Trans>Loading more posts...</Trans></span>
+          <span className="sr-only">
+            <Trans>Loading more posts...</Trans>
+          </span>
         </div>
       )}
 
@@ -158,15 +191,24 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
 
       {/* End of Timeline */}
       {!hasMore && notes.length > 0 && (
-        <div className="py-8 text-center text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+        <div
+          className="py-8 text-center text-gray-500 dark:text-gray-400"
+          role="status"
+          aria-live="polite"
+        >
           <Trans>You've reached the end of the timeline</Trans>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && notes.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center" role="status">
-          <div className="text-4xl mb-4" aria-hidden="true">📭</div>
+        <div
+          className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center"
+          role="status"
+        >
+          <div className="text-4xl mb-4" aria-hidden="true">
+            📭
+          </div>
           <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
             <Trans>No notes yet</Trans>
           </h3>
@@ -179,15 +221,14 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       {/* Manual Load More Button (fallback) */}
       {hasMore && !loading && notes.length > 0 && (
         <div className="flex justify-center py-4">
-          <Button
-            variant="secondary"
-            onPress={loadMore}
-            aria-label="Load more posts manually"
-          >
+          <Button variant="secondary" onPress={loadMore} aria-label="Load more posts manually">
             <Trans>Load more</Trans>
           </Button>
         </div>
       )}
+
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }

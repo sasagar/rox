@@ -7,12 +7,12 @@
  * @module services/FollowService
  */
 
-import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
-import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
-import type { Follow } from '../../../shared/src/types/user.js';
-import { generateId } from '../../../shared/src/utils/id.js';
-import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
-import type { NotificationService } from './NotificationService.js';
+import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { Follow } from "../../../shared/src/types/user.js";
+import { generateId } from "../../../shared/src/utils/id.js";
+import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
+import type { NotificationService } from "./NotificationService.js";
 
 /**
  * Follow Service
@@ -66,25 +66,25 @@ export class FollowService {
   async follow(followerId: string, followeeId: string): Promise<Follow> {
     // 自分自身をフォローできない
     if (followerId === followeeId) {
-      throw new Error('Cannot follow yourself');
+      throw new Error("Cannot follow yourself");
     }
 
     // フォローする人が存在するか確認
     const follower = await this.userRepository.findById(followerId);
     if (!follower) {
-      throw new Error('Follower not found');
+      throw new Error("Follower not found");
     }
 
     // フォローされる人が存在するか確認
     const followee = await this.userRepository.findById(followeeId);
     if (!followee) {
-      throw new Error('Followee not found');
+      throw new Error("Followee not found");
     }
 
     // 既にフォローしているか確認
     const exists = await this.followRepository.exists(followerId, followeeId);
     if (exists) {
-      throw new Error('Already following');
+      throw new Error("Already following");
     }
 
     // フォロー関係を作成

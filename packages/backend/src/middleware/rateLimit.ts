@@ -7,9 +7,9 @@
  * @module middleware/rateLimit
  */
 
-import type { Context, Next } from 'hono';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import type { RoleService } from '../services/RoleService.js';
+import type { Context, Next } from "hono";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import type { RoleService } from "../services/RoleService.js";
 
 /**
  * Rate limit configuration
@@ -133,7 +133,7 @@ export const RateLimitPresets = {
 /**
  * Rate limit prefix for cache keys
  */
-const RATE_LIMIT_PREFIX = 'ratelimit';
+const RATE_LIMIT_PREFIX = "ratelimit";
 
 /**
  * Get client IP address from request
@@ -145,21 +145,21 @@ const RATE_LIMIT_PREFIX = 'ratelimit';
  */
 function getClientIP(c: Context): string {
   // Check common proxy headers
-  const forwarded = c.req.header('x-forwarded-for');
+  const forwarded = c.req.header("x-forwarded-for");
   if (forwarded) {
     // Take the first IP in the chain (original client)
-    const firstIP = forwarded.split(',')[0];
-    return firstIP?.trim() || '127.0.0.1';
+    const firstIP = forwarded.split(",")[0];
+    return firstIP?.trim() || "127.0.0.1";
   }
 
-  const realIP = c.req.header('x-real-ip');
+  const realIP = c.req.header("x-real-ip");
   if (realIP) {
     return realIP;
   }
 
   // Fallback to connection info (may not be available in all environments)
   // Using a default for development
-  return '127.0.0.1';
+  return "127.0.0.1";
 }
 
 /**
@@ -171,7 +171,7 @@ function getClientIP(c: Context): string {
 function getActorServer(c: Context): string | null {
   try {
     // Use the signature's keyId header to identify the sender server
-    const signature = c.req.header('signature');
+    const signature = c.req.header("signature");
     if (signature) {
       const keyIdMatch = signature.match(/keyId="([^"]+)"/);
       if (keyIdMatch?.[1]) {
@@ -208,13 +208,7 @@ function getActorServer(c: Context): string | null {
  * ```
  */
 export function rateLimit(config: RateLimitConfig) {
-  const {
-    limit,
-    windowSeconds,
-    keyGenerator = getClientIP,
-    skip,
-    onRateLimit,
-  } = config;
+  const { limit, windowSeconds, keyGenerator = getClientIP, skip, onRateLimit } = config;
 
   return async (c: Context, next: Next) => {
     // Check if rate limiting should be skipped
@@ -222,7 +216,7 @@ export function rateLimit(config: RateLimitConfig) {
       return next();
     }
 
-    const cacheService = c.get('cacheService') as ICacheService | undefined;
+    const cacheService = c.get("cacheService") as ICacheService | undefined;
 
     // If cache is unavailable, allow the request (fail open)
     if (!cacheService?.isAvailable()) {
@@ -251,10 +245,10 @@ export function rateLimit(config: RateLimitConfig) {
         const retryAfterSeconds = Math.ceil(retryAfterMs / 1000);
 
         // Set rate limit headers
-        c.header('X-RateLimit-Limit', limit.toString());
-        c.header('X-RateLimit-Remaining', '0');
-        c.header('X-RateLimit-Reset', Math.ceil((now + retryAfterMs) / 1000).toString());
-        c.header('Retry-After', retryAfterSeconds.toString());
+        c.header("X-RateLimit-Limit", limit.toString());
+        c.header("X-RateLimit-Remaining", "0");
+        c.header("X-RateLimit-Reset", Math.ceil((now + retryAfterMs) / 1000).toString());
+        c.header("Retry-After", retryAfterSeconds.toString());
 
         // Custom response or default 429
         if (onRateLimit) {
@@ -263,11 +257,11 @@ export function rateLimit(config: RateLimitConfig) {
 
         return c.json(
           {
-            error: 'Too many requests',
+            error: "Too many requests",
             message: `Rate limit exceeded. Please try again in ${retryAfterSeconds} seconds.`,
             retryAfter: retryAfterSeconds,
           },
-          429
+          429,
         );
       }
 
@@ -276,14 +270,14 @@ export function rateLimit(config: RateLimitConfig) {
       await cacheService.set(cacheKey, validTimestamps, { ttl: windowSeconds });
 
       // Set rate limit headers
-      c.header('X-RateLimit-Limit', limit.toString());
-      c.header('X-RateLimit-Remaining', (limit - validTimestamps.length).toString());
-      c.header('X-RateLimit-Reset', Math.ceil((now + windowMs) / 1000).toString());
+      c.header("X-RateLimit-Limit", limit.toString());
+      c.header("X-RateLimit-Remaining", (limit - validTimestamps.length).toString());
+      c.header("X-RateLimit-Reset", Math.ceil((now + windowMs) / 1000).toString());
 
       return next();
     } catch (error) {
       // On error, allow the request (fail open)
-      console.warn('Rate limit check failed:', error);
+      console.warn("Rate limit check failed:", error);
       return next();
     }
   };
@@ -298,7 +292,7 @@ export function rateLimit(config: RateLimitConfig) {
  * @param config - Rate limit configuration (without keyGenerator)
  * @returns Hono middleware function
  */
-export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
+export function userRateLimit(config: Omit<RateLimitConfig, "keyGenerator">) {
   const { limit, windowSeconds, skip, onRateLimit } = config;
 
   return async (c: Context, next: Next) => {
@@ -307,20 +301,20 @@ export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
       return next();
     }
 
-    const cacheService = c.get('cacheService') as ICacheService | undefined;
+    const cacheService = c.get("cacheService") as ICacheService | undefined;
 
     // If cache is unavailable, allow the request (fail open)
     if (!cacheService?.isAvailable()) {
       return next();
     }
 
-    const user = c.get('user') as { id: string } | undefined;
+    const user = c.get("user") as { id: string } | undefined;
     const key = user?.id || getClientIP(c);
 
     // Get rate limit factor from RoleService if user is authenticated
     let effectiveLimit = limit;
     if (user?.id) {
-      const roleService = c.get('roleService') as RoleService | undefined;
+      const roleService = c.get("roleService") as RoleService | undefined;
       if (roleService) {
         try {
           const factor = await roleService.getRateLimitFactor(user.id);
@@ -354,10 +348,10 @@ export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
         const retryAfterSeconds = Math.ceil(retryAfterMs / 1000);
 
         // Set rate limit headers
-        c.header('X-RateLimit-Limit', effectiveLimit.toString());
-        c.header('X-RateLimit-Remaining', '0');
-        c.header('X-RateLimit-Reset', Math.ceil((now + retryAfterMs) / 1000).toString());
-        c.header('Retry-After', retryAfterSeconds.toString());
+        c.header("X-RateLimit-Limit", effectiveLimit.toString());
+        c.header("X-RateLimit-Remaining", "0");
+        c.header("X-RateLimit-Reset", Math.ceil((now + retryAfterMs) / 1000).toString());
+        c.header("Retry-After", retryAfterSeconds.toString());
 
         // Custom response or default 429
         if (onRateLimit) {
@@ -366,11 +360,11 @@ export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
 
         return c.json(
           {
-            error: 'Too many requests',
+            error: "Too many requests",
             message: `Rate limit exceeded. Please try again in ${retryAfterSeconds} seconds.`,
             retryAfter: retryAfterSeconds,
           },
-          429
+          429,
         );
       }
 
@@ -379,14 +373,14 @@ export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
       await cacheService.set(cacheKey, validTimestamps, { ttl: windowSeconds });
 
       // Set rate limit headers
-      c.header('X-RateLimit-Limit', effectiveLimit.toString());
-      c.header('X-RateLimit-Remaining', (effectiveLimit - validTimestamps.length).toString());
-      c.header('X-RateLimit-Reset', Math.ceil((now + windowMs) / 1000).toString());
+      c.header("X-RateLimit-Limit", effectiveLimit.toString());
+      c.header("X-RateLimit-Remaining", (effectiveLimit - validTimestamps.length).toString());
+      c.header("X-RateLimit-Reset", Math.ceil((now + windowMs) / 1000).toString());
 
       return next();
     } catch (error) {
       // On error, allow the request (fail open)
-      console.warn('Rate limit check failed:', error);
+      console.warn("Rate limit check failed:", error);
       return next();
     }
   };
@@ -400,7 +394,7 @@ export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
  * @param config - Rate limit configuration (without keyGenerator)
  * @returns Hono middleware function
  */
-export function inboxRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
+export function inboxRateLimit(config: Omit<RateLimitConfig, "keyGenerator">) {
   return rateLimit({
     ...config,
     keyGenerator: (c) => {

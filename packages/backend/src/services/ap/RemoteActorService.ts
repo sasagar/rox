@@ -8,18 +8,57 @@
  * @module services/ap/RemoteActorService
  */
 
-import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
-import type { User } from '../../db/schema/pg.js';
-import type { ICacheService } from '../../interfaces/ICacheService.js';
-import { generateId } from 'shared';
-import { RemoteFetchService, type SignatureConfig } from './RemoteFetchService.js';
-import { CacheTTL, CachePrefix } from '../../adapters/cache/DragonflyCacheAdapter.js';
+import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
+import type { User } from "../../db/schema/pg.js";
+import type { ICacheService } from "../../interfaces/ICacheService.js";
+import { generateId } from "shared";
+import { RemoteFetchService, type SignatureConfig } from "./RemoteFetchService.js";
+import { CacheTTL, CachePrefix } from "../../adapters/cache/DragonflyCacheAdapter.js";
+
+/**
+ * ActivityPub Emoji tag
+ */
+interface EmojiTag {
+  type: "Emoji";
+  name: string; // e.g., ":custom_emoji:"
+  icon: {
+    type: string;
+    url: string;
+    mediaType?: string;
+  };
+}
+
+/**
+ * Profile emoji (simplified format for storage)
+ */
+interface ProfileEmoji {
+  name: string;
+  url: string;
+}
+
+/**
+ * Extract custom emojis from ActivityPub actor tags
+ *
+ * @param tags - Array of tags from actor document
+ * @returns Array of profile emojis (name without colons, url)
+ */
+function extractEmojisFromTags(tags: ActorDocument["tag"]): ProfileEmoji[] {
+  if (!tags || !Array.isArray(tags)) return [];
+
+  return tags
+    .filter((tag): tag is EmojiTag => tag.type === "Emoji" && "icon" in tag && "name" in tag)
+    .map((tag) => ({
+      // Remove colons from name (":custom:" -> "custom")
+      name: tag.name.replace(/^:|:$/g, ""),
+      url: tag.icon.url,
+    }));
+}
 
 /**
  * ActivityPub Actor document
  */
 interface ActorDocument {
-  '@context'?: string | string[];
+  "@context"?: string | string[];
   id: string;
   type: string;
   preferredUsername: string;
@@ -48,6 +87,8 @@ interface ActorDocument {
   // Account migration fields
   alsoKnownAs?: string[];
   movedTo?: string;
+  // Custom emojis in name/summary
+  tag?: Array<EmojiTag | { type: string; [key: string]: unknown }>;
 }
 
 /**
@@ -125,7 +166,7 @@ export class RemoteActorService {
         // Warm L1 cache for future requests
         if (this.cacheService?.isAvailable()) {
           this.cacheService.set(cacheKey, existing, { ttl: CacheTTL.LONG }).catch((err) => {
-            console.warn('Failed to warm L1 cache:', err);
+            console.warn("Failed to warm L1 cache:", err);
           });
         }
 
@@ -141,6 +182,9 @@ export class RemoteActorService {
     // Extract host from actor URI
     const host = new URL(actorUri).hostname;
 
+    // Extract custom emojis from tags
+    const profileEmojis = extractEmojisFromTags(actor.tag);
+
     // Update existing user or create new one
     if (existing) {
       const updated = await this.userRepository.update(existing.id, {
@@ -154,6 +198,7 @@ export class RemoteActorService {
         followersUrl: actor.followers || null,
         followingUrl: actor.following || null,
         sharedInbox: actor.endpoints?.sharedInbox || null,
+        profileEmojis,
       });
 
       console.log(`✅ Refreshed remote user: ${actor.preferredUsername}@${host}`);
@@ -161,7 +206,7 @@ export class RemoteActorService {
       // Update L1 cache
       if (this.cacheService?.isAvailable()) {
         this.cacheService.set(cacheKey, updated, { ttl: CacheTTL.LONG }).catch((err) => {
-          console.warn('Failed to update L1 cache:', err);
+          console.warn("Failed to update L1 cache:", err);
         });
       }
 
@@ -173,7 +218,7 @@ export class RemoteActorService {
       id: generateId(),
       username: actor.preferredUsername,
       email: `${actor.preferredUsername}@${host}`, // Placeholder (not used for remote users)
-      passwordHash: '', // Not used for remote users
+      passwordHash: "", // Not used for remote users
       displayName: actor.name || actor.preferredUsername,
       host, // Non-null host indicates remote user
       avatarUrl: actor.icon?.url || null,
@@ -191,10 +236,13 @@ export class RemoteActorService {
       sharedInbox: actor.endpoints?.sharedInbox || null,
       customCss: null, // Remote users don't have custom CSS
       uiSettings: null, // Remote users don't have UI settings
+      profileEmojis, // Custom emojis from actor tags
       // Account migration fields
       alsoKnownAs: actor.alsoKnownAs || [],
       movedTo: actor.movedTo || null,
       movedAt: null,
+      // Storage quota (null for remote users - not applicable)
+      storageQuotaMb: null,
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);
@@ -202,7 +250,7 @@ export class RemoteActorService {
     // Update L1 cache
     if (this.cacheService?.isAvailable()) {
       this.cacheService.set(cacheKey, user, { ttl: CacheTTL.LONG }).catch((err) => {
-        console.warn('Failed to update L1 cache:', err);
+        console.warn("Failed to update L1 cache:", err);
       });
     }
 
@@ -251,7 +299,7 @@ export class RemoteActorService {
    * @returns Actor URI
    */
   extractActorUri(actor: string | { id: string }): string {
-    if (typeof actor === 'string') {
+    if (typeof actor === "string") {
       return actor;
     }
     return actor.id;
@@ -274,10 +322,10 @@ export class RemoteActorService {
    */
   async resolveActorByAcct(acct: string): Promise<User> {
     // Normalize acct (remove acct: prefix if present)
-    const normalizedAcct = acct.startsWith('acct:') ? acct.slice(5) : acct;
+    const normalizedAcct = acct.startsWith("acct:") ? acct.slice(5) : acct;
 
     // Parse username and host
-    const atIndex = normalizedAcct.indexOf('@');
+    const atIndex = normalizedAcct.indexOf("@");
     if (atIndex === -1) {
       throw new Error(`Invalid acct format: ${acct} (missing @host)`);
     }
@@ -290,7 +338,7 @@ export class RemoteActorService {
     }
 
     // Check if local user
-    const localHost = new URL(process.env.URL || 'http://localhost:3000').hostname;
+    const localHost = new URL(process.env.URL || "http://localhost:3000").hostname;
     if (host === localHost) {
       const localUser = await this.userRepository.findByUsername(username, null);
       if (!localUser) {
@@ -310,11 +358,14 @@ export class RemoteActorService {
     const webfingerUrl = `https://${host}/.well-known/webfinger?resource=acct:${encodeURIComponent(normalizedAcct)}`;
     console.log(`🔍 WebFinger lookup: ${webfingerUrl}`);
 
-    const webfingerResult = await this.fetchService.fetchActivityPubObject<WebFingerResponse>(webfingerUrl, {
-      headers: {
-        'Accept': 'application/jrd+json, application/json',
+    const webfingerResult = await this.fetchService.fetchActivityPubObject<WebFingerResponse>(
+      webfingerUrl,
+      {
+        headers: {
+          Accept: "application/jrd+json, application/json",
+        },
       },
-    });
+    );
 
     if (!webfingerResult.success) {
       throw new Error(`WebFinger lookup failed for ${acct}: ${webfingerResult.error?.message}`);
@@ -325,8 +376,9 @@ export class RemoteActorService {
     // Find ActivityPub actor link
     const actorLink = webfinger.links?.find(
       (link) =>
-        link.rel === 'self' &&
-        (link.type === 'application/activity+json' || link.type === 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+        link.rel === "self" &&
+        (link.type === "application/activity+json" ||
+          link.type === 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'),
     );
 
     if (!actorLink?.href) {

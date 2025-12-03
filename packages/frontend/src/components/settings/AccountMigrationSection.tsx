@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Account Migration Section Component
@@ -7,10 +7,10 @@
  * Supports both moving to a new account and importing followers from an old account.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   ArrowRightLeft,
   Plus,
@@ -19,14 +19,14 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-} from 'lucide-react';
-import { tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Spinner } from '../ui/Spinner';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { TextField } from '../ui/TextField';
+} from "lucide-react";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Spinner } from "../ui/Spinner";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { TextField } from "../ui/TextField";
 
 interface MigrationStatus {
   aliases: string[];
@@ -53,9 +53,9 @@ export function AccountMigrationSection() {
 
   const [status, setStatus] = useState<MigrationStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [newAliasUri, setNewAliasUri] = useState('');
+  const [newAliasUri, setNewAliasUri] = useState("");
   const [isAddingAlias, setIsAddingAlias] = useState(false);
-  const [targetAccountUri, setTargetAccountUri] = useState('');
+  const [targetAccountUri, setTargetAccountUri] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [isMigrating, setIsMigrating] = useState(false);
@@ -66,10 +66,10 @@ export function AccountMigrationSection() {
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<MigrationStatus>('/api/i/migration');
+      const response = await apiClient.get<MigrationStatus>("/api/i/migration");
       setStatus(response);
     } catch (err) {
-      console.error('Failed to load migration status:', err);
+      console.error("Failed to load migration status:", err);
     } finally {
       setIsLoading(false);
     }
@@ -85,19 +85,19 @@ export function AccountMigrationSection() {
     setIsAddingAlias(true);
     try {
       apiClient.setToken(token);
-      await apiClient.post('/api/i/migration/aliases', {
+      await apiClient.post("/api/i/migration/aliases", {
         uri: newAliasUri.trim(),
       });
 
-      setNewAliasUri('');
+      setNewAliasUri("");
       await loadStatus();
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Alias added successfully`,
       });
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to add alias`,
       });
     } finally {
@@ -110,16 +110,16 @@ export function AccountMigrationSection() {
 
     try {
       apiClient.setToken(token);
-      await apiClient.delete('/api/i/migration/aliases', { uri });
+      await apiClient.delete("/api/i/migration/aliases", { uri });
 
       await loadStatus();
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Alias removed successfully`,
       });
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to remove alias`,
       });
     }
@@ -132,7 +132,7 @@ export function AccountMigrationSection() {
     setValidation(null);
     try {
       apiClient.setToken(token);
-      const result = await apiClient.post<ValidationResult>('/api/i/migration/validate', {
+      const result = await apiClient.post<ValidationResult>("/api/i/migration/validate", {
         targetUri: targetAccountUri.trim(),
       });
 
@@ -151,7 +151,7 @@ export function AccountMigrationSection() {
     if (!token || !targetAccountUri.trim() || !validation?.valid) return;
 
     const confirmed = window.confirm(
-      t`Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account.`
+      t`Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account.`,
     );
 
     if (!confirmed) return;
@@ -159,20 +159,20 @@ export function AccountMigrationSection() {
     setIsMigrating(true);
     try {
       apiClient.setToken(token);
-      await apiClient.post('/api/i/migration/initiate', {
+      await apiClient.post("/api/i/migration/initiate", {
         targetUri: targetAccountUri.trim(),
       });
 
       await loadStatus();
-      setTargetAccountUri('');
+      setTargetAccountUri("");
       setValidation(null);
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Migration initiated successfully. Your followers will be transferred to the new account.`,
       });
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to initiate migration`,
       });
     } finally {
@@ -181,7 +181,7 @@ export function AccountMigrationSection() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -339,15 +339,9 @@ export function AccountMigrationSection() {
                 />
                 <Button
                   onPress={handleValidateTarget}
-                  isDisabled={
-                    isValidating || !targetAccountUri.trim() || !status?.canMigrate
-                  }
+                  isDisabled={isValidating || !targetAccountUri.trim() || !status?.canMigrate}
                 >
-                  {isValidating ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <Trans>Validate</Trans>
-                  )}
+                  {isValidating ? <Spinner size="sm" /> : <Trans>Validate</Trans>}
                 </Button>
               </div>
             </div>
@@ -357,8 +351,8 @@ export function AccountMigrationSection() {
               <div
                 className={`rounded-lg p-3 ${
                   validation.valid
-                    ? 'bg-green-50 border border-green-200'
-                    : 'bg-red-50 border border-red-200'
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
                 }`}
               >
                 <div className="flex items-start gap-2">

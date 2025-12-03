@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Instance Blocks Page
@@ -7,20 +7,20 @@
  * Blocked instances cannot federate with this server.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Trash2, Plus, RefreshCw, Shield, Globe, AlertTriangle } from 'lucide-react';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { AdminNav } from '../../components/admin/AdminNav';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Trash2, Plus, RefreshCw, Shield, Globe, AlertTriangle } from "lucide-react";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { AdminNav } from "../../components/admin/AdminNav";
 
 interface InstanceBlock {
   id: string;
@@ -47,20 +47,20 @@ export default function AdminBlocksPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Form state
-  const [host, setHost] = useState('');
-  const [reason, setReason] = useState('');
+  const [host, setHost] = useState("");
+  const [reason, setReason] = useState("");
 
   const loadBlocks = useCallback(async () => {
     if (!token) return;
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<BlocksResponse>('/api/admin/instance-blocks');
+      const response = await apiClient.get<BlocksResponse>("/api/admin/instance-blocks");
       setBlocks(response.blocks);
       setTotal(response.total);
     } catch (err) {
-      console.error('Failed to load instance blocks:', err);
-      setError('Failed to load instance blocks');
+      console.error("Failed to load instance blocks:", err);
+      setError("Failed to load instance blocks");
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +70,7 @@ export default function AdminBlocksPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -78,9 +78,9 @@ export default function AdminBlocksPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
+        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
-          window.location.href = '/timeline';
+          window.location.href = "/timeline";
           return;
         }
 
@@ -89,8 +89,8 @@ export default function AdminBlocksPage() {
 
         await loadBlocks();
       } catch (err) {
-        console.error('Access check failed:', err);
-        setError('Access denied');
+        console.error("Access check failed:", err);
+        setError("Access denied");
         setIsLoading(false);
       }
     };
@@ -109,28 +109,28 @@ export default function AdminBlocksPage() {
       const normalizedHost = host
         .trim()
         .toLowerCase()
-        .replace(/^https?:\/\//, '')
-        .replace(/\/.*$/, '');
+        .replace(/^https?:\/\//, "")
+        .replace(/\/.*$/, "");
 
-      await apiClient.post<InstanceBlock>('/api/admin/instance-blocks', {
+      await apiClient.post<InstanceBlock>("/api/admin/instance-blocks", {
         host: normalizedHost,
         reason: reason.trim() || undefined,
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Instance blocked`,
       });
 
       // Reset form
-      setHost('');
-      setReason('');
+      setHost("");
+      setReason("");
 
       // Reload list
       await loadBlocks();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to block instance`,
       });
     } finally {
@@ -146,7 +146,7 @@ export default function AdminBlocksPage() {
       await apiClient.delete(`/api/admin/instance-blocks/${encodeURIComponent(hostToUnblock)}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Instance unblocked`,
       });
 
@@ -154,7 +154,7 @@ export default function AdminBlocksPage() {
       await loadBlocks();
     } catch (err: any) {
       addToast({
-        type: 'error',
+        type: "error",
         message: err.message || t`Failed to unblock instance`,
       });
     }
@@ -232,8 +232,8 @@ export default function AdminBlocksPage() {
                 <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   <Trans>
-                    Blocking an instance will prevent all federation with that server.
-                    Users from blocked instances cannot interact with this server.
+                    Blocking an instance will prevent all federation with that server. Users from
+                    blocked instances cannot interact with this server.
                   </Trans>
                 </p>
               </div>
@@ -295,11 +295,7 @@ export default function AdminBlocksPage() {
             <CardTitle>
               <Trans>Blocked Instances</Trans>
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={loadBlocks}
-            >
+            <Button variant="ghost" size="sm" onPress={loadBlocks}>
               <RefreshCw className="w-4 h-4" />
             </Button>
           </CardHeader>
@@ -329,9 +325,7 @@ export default function AdminBlocksPage() {
                         </span>
                       </div>
                       {block.reason && (
-                        <p className="text-sm text-(--text-secondary) mt-1 ml-6">
-                          {block.reason}
-                        </p>
+                        <p className="text-sm text-(--text-secondary) mt-1 ml-6">{block.reason}</p>
                       )}
                       <p className="text-xs text-(--text-muted) mt-1 ml-6">
                         <Trans>Blocked on {formatDate(block.createdAt)}</Trans>

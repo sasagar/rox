@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Push notifications hook
@@ -6,16 +6,16 @@
  * Manages Web Push subscription state and operations
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtomValue } from 'jotai';
-import { isAuthenticatedAtom } from '../lib/atoms/auth';
-import { pushApi, urlBase64ToUint8Array } from '../lib/api/push';
-import type { PushSubscriptionInfo } from '../lib/api/push';
+import { useState, useEffect, useCallback } from "react";
+import { useAtomValue } from "jotai";
+import { isAuthenticatedAtom } from "../lib/atoms/auth";
+import { pushApi, urlBase64ToUint8Array } from "../lib/api/push";
+import type { PushSubscriptionInfo } from "../lib/api/push";
 
 /**
  * Push notification permission state
  */
-export type PushPermissionState = 'prompt' | 'granted' | 'denied' | 'unsupported';
+export type PushPermissionState = "prompt" | "granted" | "denied" | "unsupported";
 
 /**
  * Push notification hook state
@@ -56,10 +56,10 @@ export interface UsePushNotificationsActions {
  */
 function isPushSupported(): boolean {
   return (
-    typeof window !== 'undefined' &&
-    'serviceWorker' in navigator &&
-    'PushManager' in window &&
-    'Notification' in window
+    typeof window !== "undefined" &&
+    "serviceWorker" in navigator &&
+    "PushManager" in window &&
+    "Notification" in window
   );
 }
 
@@ -68,7 +68,7 @@ function isPushSupported(): boolean {
  */
 function getPermission(): PushPermissionState {
   if (!isPushSupported()) {
-    return 'unsupported';
+    return "unsupported";
   }
   return Notification.permission as PushPermissionState;
 }
@@ -97,7 +97,7 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       setIsAvailable(status.available);
       setVapidPublicKey(status.publicKey);
     } catch (err) {
-      console.error('Failed to check push availability:', err);
+      console.error("Failed to check push availability:", err);
       setIsAvailable(false);
     }
   }, []);
@@ -109,10 +109,15 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
     if (!isSupported) return null;
 
     try {
-      const registration = await navigator.serviceWorker.ready;
+      // Check if there's an active service worker registration
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        // No service worker registered yet
+        return null;
+      }
       return registration.pushManager.getSubscription();
     } catch (err) {
-      console.error('Failed to get subscription:', err);
+      console.error("Failed to get subscription:", err);
       return null;
     }
   }, [isSupported]);
@@ -138,8 +143,8 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       const { subscriptions: subs } = await pushApi.getSubscriptions();
       setSubscriptions(subs);
     } catch (err) {
-      console.error('Failed to refresh push state:', err);
-      setError('Failed to load push notification status');
+      console.error("Failed to refresh push state:", err);
+      setError("Failed to load push notification status");
     } finally {
       setLoading(false);
     }
@@ -150,7 +155,7 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
    */
   const subscribe = useCallback(async (): Promise<boolean> => {
     if (!isSupported || !isAvailable || !vapidPublicKey) {
-      setError('Push notifications are not available');
+      setError("Push notifications are not available");
       return false;
     }
 
@@ -162,13 +167,13 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       const permissionResult = await Notification.requestPermission();
       setPermission(permissionResult as PushPermissionState);
 
-      if (permissionResult !== 'granted') {
-        setError('Notification permission denied');
+      if (permissionResult !== "granted") {
+        setError("Notification permission denied");
         return false;
       }
 
       // Register service worker if not already
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.register("/sw.js");
       await navigator.serviceWorker.ready;
 
       // Subscribe to push
@@ -186,12 +191,12 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
         await refresh();
         return true;
       } else {
-        setError('Failed to register subscription');
+        setError("Failed to register subscription");
         return false;
       }
     } catch (err: any) {
-      console.error('Failed to subscribe:', err);
-      setError(err.message || 'Failed to subscribe to notifications');
+      console.error("Failed to subscribe:", err);
+      setError(err.message || "Failed to subscribe to notifications");
       return false;
     } finally {
       setLoading(false);
@@ -222,8 +227,8 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       await refresh();
       return true;
     } catch (err: any) {
-      console.error('Failed to unsubscribe:', err);
-      setError(err.message || 'Failed to unsubscribe');
+      console.error("Failed to unsubscribe:", err);
+      setError(err.message || "Failed to unsubscribe");
       return false;
     } finally {
       setLoading(false);
@@ -235,7 +240,7 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
    */
   const sendTest = useCallback(async (): Promise<boolean> => {
     if (!isSubscribed) {
-      setError('You must be subscribed to send a test notification');
+      setError("You must be subscribed to send a test notification");
       return false;
     }
 
@@ -246,8 +251,8 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       const result = await pushApi.sendTest();
       return result.success;
     } catch (err: any) {
-      console.error('Failed to send test:', err);
-      setError(err.message || 'Failed to send test notification');
+      console.error("Failed to send test:", err);
+      setError(err.message || "Failed to send test notification");
       return false;
     } finally {
       setLoading(false);
@@ -264,13 +269,13 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
   // Update permission on visibility change
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === "visible") {
         setPermission(getPermission());
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   return {

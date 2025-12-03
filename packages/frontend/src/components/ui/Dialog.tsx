@@ -4,10 +4,10 @@ import {
   Modal,
   ModalOverlay,
   Heading,
-} from 'react-aria-components';
-import type { ReactNode } from 'react';
-import { X } from 'lucide-react';
-import { Button } from './Button';
+} from "react-aria-components";
+import type { ReactNode } from "react";
+import { X } from "lucide-react";
+import { Button } from "./Button";
 
 /**
  * Props for the Dialog component
@@ -80,16 +80,10 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
                 </div>
 
                 {/* Content */}
-                <div className="mb-6 text-gray-700 dark:text-gray-300">
-                  {children}
-                </div>
+                <div className="mb-6 text-gray-700 dark:text-gray-300">{children}</div>
 
                 {/* Footer */}
-                {actions && (
-                  <div className="flex justify-end gap-2">
-                    {actions}
-                  </div>
-                )}
+                {actions && <div className="flex justify-end gap-2">{actions}</div>}
               </>
             )}
           </AriaDialog>
@@ -116,7 +110,7 @@ export interface ConfirmDialogProps {
   /** Callback when confirmed */
   onConfirm: () => void;
   /** Variant for confirm button (default: "danger") */
-  confirmVariant?: 'primary' | 'secondary' | 'danger';
+  confirmVariant?: "primary" | "secondary" | "danger";
 }
 
 /**
@@ -137,12 +131,12 @@ export interface ConfirmDialogProps {
  */
 export function ConfirmDialog({
   message,
-  title = 'Confirm',
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  title = "Confirm",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
   trigger,
   onConfirm,
-  confirmVariant = 'danger',
+  confirmVariant = "danger",
 }: ConfirmDialogProps) {
   return (
     <DialogTrigger>

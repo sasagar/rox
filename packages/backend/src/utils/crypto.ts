@@ -6,7 +6,7 @@
  * @module utils/crypto
  */
 
-import { generateKeyPairSync, createSign, createHash } from 'node:crypto';
+import { generateKeyPairSync, createSign, createHash } from "node:crypto";
 
 /**
  * Generate RSA key pair for ActivityPub HTTP Signatures
@@ -17,15 +17,15 @@ export function generateKeyPair(): {
   publicKey: string;
   privateKey: string;
 } {
-  const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+  const { publicKey, privateKey } = generateKeyPairSync("rsa", {
     modulusLength: 2048,
     publicKeyEncoding: {
-      type: 'spki',
-      format: 'pem',
+      type: "spki",
+      format: "pem",
     },
     privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'pem',
+      type: "pkcs8",
+      format: "pem",
     },
   });
 
@@ -62,15 +62,13 @@ export function signRequest(
   keyId: string,
   method: string,
   url: string,
-  body: string | null
+  body: string | null,
 ): string {
   const urlObj = new URL(url);
   const date = new Date().toUTCString();
 
   // Calculate digest for POST/PUT requests with body
-  const digest = body
-    ? `SHA-256=${createHash('sha256').update(body).digest('base64')}`
-    : undefined;
+  const digest = body ? `SHA-256=${createHash("sha256").update(body).digest("base64")}` : undefined;
 
   // Build signature string according to spec
   const signatureParts: string[] = [
@@ -83,25 +81,25 @@ export function signRequest(
     signatureParts.push(`digest: ${digest}`);
   }
 
-  const signatureString = signatureParts.join('\n');
+  const signatureString = signatureParts.join("\n");
 
   // Sign with RSA-SHA256
-  const signer = createSign('sha256');
+  const signer = createSign("sha256");
   signer.update(signatureString);
-  const signature = signer.sign(privateKey, 'base64');
+  const signature = signer.sign(privateKey, "base64");
 
   // Build Signature header
-  const headers = ['(request-target)', 'host', 'date'];
+  const headers = ["(request-target)", "host", "date"];
   if (digest) {
-    headers.push('digest');
+    headers.push("digest");
   }
 
   const signatureHeader = [
     `keyId="${keyId}"`,
     'algorithm="rsa-sha256"',
-    `headers="${headers.join(' ')}"`,
+    `headers="${headers.join(" ")}"`,
     `signature="${signature}"`,
-  ].join(',');
+  ].join(",");
 
   return signatureHeader;
 }
@@ -116,10 +114,7 @@ export function signRequest(
  * @param body - Request body (null for GET requests)
  * @returns Headers object
  */
-export function getSignedHeaders(
-  url: string,
-  body: string | null
-): Record<string, string> {
+export function getSignedHeaders(url: string, body: string | null): Record<string, string> {
   const urlObj = new URL(url);
   const headers: Record<string, string> = {
     host: urlObj.hostname,
@@ -127,7 +122,7 @@ export function getSignedHeaders(
   };
 
   if (body) {
-    headers.digest = `SHA-256=${createHash('sha256').update(body).digest('base64')}`;
+    headers.digest = `SHA-256=${createHash("sha256").update(body).digest("base64")}`;
   }
 
   return headers;

@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { Form } from 'react-aria-components';
-import { t } from '@lingui/core/macro';
-import { Trans } from '@lingui/react/macro';
-import { useLingui } from '@lingui/react';
-import { tokenAtom, currentUserAtom } from '../lib/atoms/auth';
-import { apiClient } from '../lib/api/client';
-import { TextField } from '../components/ui/TextField';
-import { Button } from '../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
-import { Spinner } from '../components/ui/Spinner';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Form } from "react-aria-components";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
+import { useLingui } from "@lingui/react";
+import { tokenAtom, currentUserAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
+import { TextField } from "../components/ui/TextField";
+import { Button } from "../components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card";
+import { Spinner } from "../components/ui/Spinner";
 
 interface RegistrationSettings {
   registrationEnabled: boolean;
@@ -28,11 +28,11 @@ export default function SignupPage() {
   const [, setToken] = useAtom(tokenAtom);
   const [, setCurrentUser] = useAtom(currentUserAtom);
 
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [invitationCode, setInvitationCode] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [invitationCode, setInvitationCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<RegistrationSettings | null>(null);
@@ -41,7 +41,7 @@ export default function SignupPage() {
   // Get invitation code from URL if present
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code') || urlParams.get('invite');
+    const code = urlParams.get("code") || urlParams.get("invite");
     if (code) {
       setInvitationCode(code.toUpperCase());
     }
@@ -51,10 +51,10 @@ export default function SignupPage() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const data = await apiClient.get<RegistrationSettings>('/api/auth/register/settings');
+        const data = await apiClient.get<RegistrationSettings>("/api/auth/register/settings");
         setSettings(data);
       } catch (err) {
-        console.error('Failed to load registration settings:', err);
+        console.error("Failed to load registration settings:", err);
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +68,7 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      const data = await apiClient.post<{ user: any; token: string }>('/api/auth/register', {
+      const data = await apiClient.post<{ user: any; token: string }>("/api/auth/register", {
         username,
         email,
         password,
@@ -81,7 +81,7 @@ export default function SignupPage() {
       apiClient.setToken(data.token);
 
       // Redirect to home page
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (err) {
       setError(err instanceof Error ? err.message : _(t`Registration failed. Please try again.`));
     } finally {
@@ -150,7 +150,11 @@ export default function SignupPage() {
                 value={invitationCode}
                 onChange={(val) => setInvitationCode(val.toUpperCase())}
                 description={_(t`Enter your invitation code to register`)}
-                errorMessage={error && settings.inviteOnly && !invitationCode ? _(t`Invitation code is required`) : undefined}
+                errorMessage={
+                  error && settings.inviteOnly && !invitationCode
+                    ? _(t`Invitation code is required`)
+                    : undefined
+                }
                 isRequired
                 className="font-mono"
               />
@@ -201,7 +205,9 @@ export default function SignupPage() {
 
             {settings?.approvalRequired && (
               <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-3 text-sm text-blue-600 dark:text-blue-400">
-                <Trans>Your account will need to be approved by an administrator before you can use it.</Trans>
+                <Trans>
+                  Your account will need to be approved by an administrator before you can use it.
+                </Trans>
               </div>
             )}
 
@@ -221,7 +227,7 @@ export default function SignupPage() {
           </Form>
 
           <div className="mt-4 text-center text-sm text-(--text-muted)">
-            <Trans>Already have an account?</Trans>{' '}
+            <Trans>Already have an account?</Trans>{" "}
             <a href="/login" className="font-medium text-primary-600 hover:text-primary-500">
               <Trans>Sign in</Trans>
             </a>

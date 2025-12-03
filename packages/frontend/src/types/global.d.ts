@@ -7,7 +7,7 @@
  * CSS module declarations
  * Allows importing .css files without type errors
  */
-declare module '*.css' {
+declare module "*.css" {
   const content: { [className: string]: string };
   export default content;
 }
@@ -15,32 +15,32 @@ declare module '*.css' {
 /**
  * Image file declarations
  */
-declare module '*.svg' {
+declare module "*.svg" {
   const content: string;
   export default content;
 }
 
-declare module '*.png' {
+declare module "*.png" {
   const content: string;
   export default content;
 }
 
-declare module '*.jpg' {
+declare module "*.jpg" {
   const content: string;
   export default content;
 }
 
-declare module '*.jpeg' {
+declare module "*.jpeg" {
   const content: string;
   export default content;
 }
 
-declare module '*.gif' {
+declare module "*.gif" {
   const content: string;
   export default content;
 }
 
-declare module '*.webp' {
+declare module "*.webp" {
   const content: string;
   export default content;
 }
@@ -48,7 +48,7 @@ declare module '*.webp' {
 /**
  * JSON module declarations
  */
-declare module '*.json' {
+declare module "*.json" {
   const content: any;
   export default content;
 }

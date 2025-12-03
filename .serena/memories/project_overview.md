@@ -47,4 +47,5 @@ rox/
 - **Phase 2**: Frontend (Waku Client) ✅
 - **Phase 3**: ActivityPub Federation ✅
 - **Phase 4**: Optimization (Redis caching) ✅
-- **Phase 5**: Administration & Security (In Progress)
+- **Phase 5**: Administration & Security ✅
+- **Phase 6**: Polish & UX (In Progress)

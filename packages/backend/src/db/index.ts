@@ -7,15 +7,15 @@
  * @module db
  */
 
-import { drizzle as drizzlePg, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { drizzle as drizzleMysql } from 'drizzle-orm/mysql2';
-import { drizzle as drizzleSqlite } from 'drizzle-orm/better-sqlite3';
-import postgres from 'postgres';
-import mysql from 'mysql2/promise';
-import Database from 'better-sqlite3';
-import * as pgSchema from './schema/pg.js';
+import { drizzle as drizzlePg, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { drizzle as drizzleMysql } from "drizzle-orm/mysql2";
+import { drizzle as drizzleSqlite } from "drizzle-orm/better-sqlite3";
+import postgres from "postgres";
+import mysql from "mysql2/promise";
+import Database from "better-sqlite3";
+import * as pgSchema from "./schema/pg.js";
 
-const dbType = process.env.DB_TYPE || 'postgres';
+const dbType = process.env.DB_TYPE || "postgres";
 
 /**
  * Create Database Connection
@@ -28,28 +28,32 @@ export function createDatabase(): Database {
   const databaseUrl = process.env.DATABASE_URL;
 
   if (!databaseUrl) {
-    throw new Error('DATABASE_URL environment variable is required');
+    throw new Error("DATABASE_URL environment variable is required");
   }
 
   switch (dbType) {
-    case 'postgres': {
+    case "postgres": {
       // Connection pooling configuration
       // postgres.js has built-in connection pooling
+      // Note: All timeout values are in seconds for postgres.js
       const client = postgres(databaseUrl, {
-        max: parseInt(process.env.DB_POOL_MAX || '10', 10),          // Max connections in pool
-        idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || '20', 10),  // Close idle connections after 20s
-        max_lifetime: parseInt(process.env.DB_MAX_LIFETIME || '1800', 10), // Max connection lifetime 30min
-        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || '30', 10), // Connection timeout 30s
+        max: parseInt(process.env.DB_POOL_MAX || "10", 10), // Max connections in pool
+        idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10), // Close idle connections after 20s
+        max_lifetime: 60 * 5, // 5 minutes - keep short to avoid timeout overflow issues
+        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), // Connection timeout 10s
+        connection: {
+          application_name: "rox",
+        },
       });
       return drizzlePg(client, { schema: pgSchema }) as Database;
     }
-    case 'mysql': {
+    case "mysql": {
       const pool = mysql.createPool(databaseUrl);
       return drizzleMysql(pool) as unknown as Database;
     }
-    case 'sqlite':
-    case 'd1': {
-      const sqlite = new Database(databaseUrl.replace('sqlite://', ''));
+    case "sqlite":
+    case "d1": {
+      const sqlite = new Database(databaseUrl.replace("sqlite://", ""));
       return drizzleSqlite(sqlite) as unknown as Database;
     }
     default:

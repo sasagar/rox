@@ -7,14 +7,14 @@
  * @module services/ap/delivery/ActivityBuilder
  */
 
-import type { Note } from '../../../../../shared/src/types/note.js';
-import type { User } from '../../../../../shared/src/types/user.js';
+import type { Note } from "../../../../../shared/src/types/note.js";
+import type { User } from "../../../../../shared/src/types/user.js";
 
 /**
  * Base ActivityPub activity structure
  */
 export interface Activity {
-  '@context': string | string[];
+  "@context": string | string[];
   type: string;
   id: string;
   actor: string;
@@ -30,7 +30,7 @@ export interface Activity {
  */
 export interface NoteObject {
   id: string;
-  type: 'Note';
+  type: "Note";
   attributedTo: string;
   content: string;
   published: string;
@@ -47,8 +47,8 @@ export interface NoteObject {
  * Actor object for Update activities
  */
 export interface ActorObject {
-  '@context': (string | Record<string, unknown>)[];
-  type: 'Person';
+  "@context": (string | Record<string, unknown>)[];
+  type: "Person";
   id: string;
   preferredUsername: string;
   name?: string;
@@ -62,12 +62,12 @@ export interface ActorObject {
     owner: string;
     publicKeyPem: string;
   };
-  icon?: { type: 'Image'; url: string };
-  image?: { type: 'Image'; url: string };
+  icon?: { type: "Image"; url: string };
+  image?: { type: "Image"; url: string };
 }
 
-const AS_CONTEXT = 'https://www.w3.org/ns/activitystreams';
-const AS_PUBLIC = 'https://www.w3.org/ns/activitystreams#Public';
+const AS_CONTEXT = "https://www.w3.org/ns/activitystreams";
+const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
 
 /**
  * ActivityPub Activity Builder
@@ -78,7 +78,7 @@ export class ActivityBuilder {
   private readonly baseUrl: string;
 
   constructor(baseUrl?: string) {
-    this.baseUrl = baseUrl || process.env.URL || 'http://localhost:3000';
+    this.baseUrl = baseUrl || process.env.URL || "http://localhost:3000";
   }
 
   /**
@@ -106,7 +106,7 @@ export class ActivityBuilder {
    * Generate a unique activity ID
    */
   activityId(type: string, ...parts: (string | number)[]): string {
-    const path = parts.join('/');
+    const path = parts.join("/");
     return `${this.baseUrl}/activities/${type.toLowerCase()}/${path}`;
   }
 
@@ -120,9 +120,9 @@ export class ActivityBuilder {
 
     const noteObject: NoteObject = {
       id: note.uri || `${this.baseUrl}/notes/${note.id}`,
-      type: 'Note',
+      type: "Note",
       attributedTo: actorUri,
-      content: note.text || '',
+      content: note.text || "",
       published,
       to: [AS_PUBLIC],
       cc: [followersUri],
@@ -138,9 +138,9 @@ export class ActivityBuilder {
     }
 
     return {
-      '@context': AS_CONTEXT,
-      type: 'Create',
-      id: this.activityId('create', note.id),
+      "@context": AS_CONTEXT,
+      type: "Create",
+      id: this.activityId("create", note.id),
       actor: actorUri,
       published,
       to: [AS_PUBLIC],
@@ -154,9 +154,9 @@ export class ActivityBuilder {
    */
   like(noteId: string, noteUri: string, reactor: User): Activity {
     return {
-      '@context': AS_CONTEXT,
-      type: 'Like',
-      id: this.activityId('like', noteId, Date.now()),
+      "@context": AS_CONTEXT,
+      type: "Like",
+      id: this.activityId("like", noteId, Date.now()),
       actor: this.actorUri(reactor.username),
       object: noteUri,
     };
@@ -167,9 +167,9 @@ export class ActivityBuilder {
    */
   follow(follower: User, followeeUri: string): Activity {
     return {
-      '@context': AS_CONTEXT,
-      type: 'Follow',
-      id: this.activityId('follow', follower.id, Date.now()),
+      "@context": AS_CONTEXT,
+      type: "Follow",
+      id: this.activityId("follow", follower.id, Date.now()),
       actor: this.actorUri(follower.username),
       object: followeeUri,
     };
@@ -180,9 +180,9 @@ export class ActivityBuilder {
    */
   undo(originalActivity: Activity, actor: User): Activity {
     return {
-      '@context': AS_CONTEXT,
-      type: 'Undo',
-      id: this.activityId('undo', Date.now()),
+      "@context": AS_CONTEXT,
+      type: "Undo",
+      id: this.activityId("undo", Date.now()),
       actor: this.actorUri(actor.username),
       object: originalActivity,
     };
@@ -193,9 +193,9 @@ export class ActivityBuilder {
    */
   undoFollow(follower: User, followeeUri: string, originalFollowId?: string): Activity {
     const followActivity: Activity = {
-      '@context': AS_CONTEXT,
-      type: 'Follow',
-      id: originalFollowId || this.activityId('follow', follower.id, 'original'),
+      "@context": AS_CONTEXT,
+      type: "Follow",
+      id: originalFollowId || this.activityId("follow", follower.id, "original"),
       actor: this.actorUri(follower.username),
       object: followeeUri,
     };
@@ -208,9 +208,9 @@ export class ActivityBuilder {
    */
   undoLike(noteId: string, noteUri: string, reactor: User): Activity {
     const likeActivity: Activity = {
-      '@context': AS_CONTEXT,
-      type: 'Like',
-      id: this.activityId('like', noteId, 'original'),
+      "@context": AS_CONTEXT,
+      type: "Like",
+      id: this.activityId("like", noteId, "original"),
       actor: this.actorUri(reactor.username),
       object: noteUri,
     };
@@ -223,13 +223,13 @@ export class ActivityBuilder {
    */
   delete(objectUri: string, actor: User): Activity {
     return {
-      '@context': AS_CONTEXT,
-      type: 'Delete',
-      id: this.activityId('delete', Date.now()),
+      "@context": AS_CONTEXT,
+      type: "Delete",
+      id: this.activityId("delete", Date.now()),
       actor: this.actorUri(actor.username),
       object: {
         id: objectUri,
-        type: 'Tombstone',
+        type: "Tombstone",
       },
     };
   }
@@ -241,16 +241,16 @@ export class ActivityBuilder {
     const actorUri = this.actorUri(actor.username);
 
     const actorObject: ActorObject = {
-      '@context': [
+      "@context": [
         AS_CONTEXT,
-        'https://w3id.org/security/v1',
-        { manuallyApprovesFollowers: 'as:manuallyApprovesFollowers' },
+        "https://w3id.org/security/v1",
+        { manuallyApprovesFollowers: "as:manuallyApprovesFollowers" },
       ],
-      type: 'Person',
+      type: "Person",
       id: actorUri,
       preferredUsername: actor.username,
       name: actor.displayName || actor.username,
-      summary: actor.bio || '',
+      summary: actor.bio || "",
       inbox: `${actorUri}/inbox`,
       outbox: `${actorUri}/outbox`,
       followers: this.followersUri(actor.username),
@@ -258,24 +258,24 @@ export class ActivityBuilder {
       publicKey: {
         id: this.keyId(actor.username),
         owner: actorUri,
-        publicKeyPem: actor.publicKey || '',
+        publicKeyPem: actor.publicKey || "",
       },
     };
 
     // Add avatar if present
     if (actor.avatarUrl) {
-      actorObject.icon = { type: 'Image', url: actor.avatarUrl };
+      actorObject.icon = { type: "Image", url: actor.avatarUrl };
     }
 
     // Add banner if present
     if (actor.bannerUrl) {
-      actorObject.image = { type: 'Image', url: actor.bannerUrl };
+      actorObject.image = { type: "Image", url: actor.bannerUrl };
     }
 
     return {
-      '@context': AS_CONTEXT,
-      type: 'Update',
-      id: this.activityId('update', actor.id, Date.now()),
+      "@context": AS_CONTEXT,
+      type: "Update",
+      id: this.activityId("update", actor.id, Date.now()),
       actor: actorUri,
       object: actorObject,
       to: [AS_PUBLIC],
@@ -287,9 +287,9 @@ export class ActivityBuilder {
    */
   announce(noteId: string, targetNoteUri: string, actor: User): Activity {
     return {
-      '@context': AS_CONTEXT,
-      type: 'Announce',
-      id: this.activityId('announce', noteId),
+      "@context": AS_CONTEXT,
+      type: "Announce",
+      id: this.activityId("announce", noteId),
       actor: this.actorUri(actor.username),
       object: targetNoteUri,
       published: new Date().toISOString(),

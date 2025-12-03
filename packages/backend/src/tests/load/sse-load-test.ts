@@ -10,15 +10,15 @@
  * @module tests/load/sse-load-test
  */
 
-import { EventSource } from 'eventsource';
+import { EventSource } from "eventsource";
 
 // Configuration
-const BASE_URL = process.env.TEST_URL || 'http://localhost:3000';
+const BASE_URL = process.env.TEST_URL || "http://localhost:3000";
 const SSE_ENDPOINT = `${BASE_URL}/api/notifications/stream`;
 
 // Test tokens - these should be valid session tokens for testing
 // In a real scenario, create test users and get their tokens
-const TEST_TOKENS = process.env.TEST_TOKENS?.split(',') || [];
+const TEST_TOKENS = process.env.TEST_TOKENS?.split(",") || [];
 
 interface ConnectionMetrics {
   connectionId: number;
@@ -60,7 +60,7 @@ class SSELoadTester {
       const url = `${SSE_ENDPOINT}?token=${encodeURIComponent(token)}`;
       const metrics: ConnectionMetrics = {
         connectionId,
-        userId: '',
+        userId: "",
         connectedAt: Date.now(),
         messagesReceived: 0,
         errors: [],
@@ -75,13 +75,13 @@ class SSELoadTester {
 
       const connectionTimeout = setTimeout(() => {
         if (eventSource.readyState !== EventSource.OPEN) {
-          metrics.errors.push('Connection timeout');
+          metrics.errors.push("Connection timeout");
           eventSource.close();
-          reject(new Error('Connection timeout'));
+          reject(new Error("Connection timeout"));
         }
       }, 10000);
 
-      eventSource.addEventListener('connected', (event: MessageEvent) => {
+      eventSource.addEventListener("connected", (event: MessageEvent) => {
         clearTimeout(connectionTimeout);
         try {
           const data = JSON.parse(event.data);
@@ -92,7 +92,7 @@ class SSELoadTester {
         }
       });
 
-      eventSource.addEventListener('notification', (event: MessageEvent) => {
+      eventSource.addEventListener("notification", (event: MessageEvent) => {
         const receiveTime = Date.now();
         metrics.messagesReceived++;
         try {
@@ -110,16 +110,16 @@ class SSELoadTester {
         }
       });
 
-      eventSource.addEventListener('unreadCount', () => {
+      eventSource.addEventListener("unreadCount", () => {
         metrics.messagesReceived++;
       });
 
-      eventSource.addEventListener('heartbeat', () => {
+      eventSource.addEventListener("heartbeat", () => {
         // Heartbeat received - connection is alive
       });
 
       eventSource.onerror = (error: Event) => {
-        const errMsg = `Connection error: ${(error as any).message || 'Unknown error'}`;
+        const errMsg = `Connection error: ${(error as any).message || "Unknown error"}`;
         metrics.errors.push(errMsg);
         console.error(`[${connectionId}] ${errMsg}`);
 
@@ -156,9 +156,9 @@ class SSELoadTester {
    */
   async testConcurrentConnections(
     tokens: string[],
-    connectionsPerToken: number = 1
+    connectionsPerToken: number = 1,
   ): Promise<TestResults> {
-    console.log('\n=== SSE Concurrent Connection Test ===');
+    console.log("\n=== SSE Concurrent Connection Test ===");
     console.log(`Tokens: ${tokens.length}, Connections per token: ${connectionsPerToken}`);
     console.log(`Total expected connections: ${tokens.length * connectionsPerToken}`);
 
@@ -174,14 +174,14 @@ class SSELoadTester {
             console.error(`Connection ${connectionId} failed:`, error.message);
             return {
               connectionId,
-              userId: '',
+              userId: "",
               connectedAt: Date.now(),
               messagesReceived: 0,
               errors: [error.message],
               latencies: [],
               reconnectCount: 0,
             };
-          })
+          }),
         );
       }
     }
@@ -198,10 +198,12 @@ class SSELoadTester {
   async testRampUp(
     tokens: string[],
     targetConnections: number,
-    rampUpDurationMs: number
+    rampUpDurationMs: number,
   ): Promise<TestResults> {
-    console.log('\n=== SSE Ramp-Up Test ===');
-    console.log(`Target connections: ${targetConnections}, Ramp-up duration: ${rampUpDurationMs}ms`);
+    console.log("\n=== SSE Ramp-Up Test ===");
+    console.log(
+      `Target connections: ${targetConnections}, Ramp-up duration: ${rampUpDurationMs}ms`,
+    );
 
     this.testStartTime = Date.now();
     const intervalMs = rampUpDurationMs / targetConnections;
@@ -220,7 +222,7 @@ class SSELoadTester {
                 console.error(`Connection ${connectionId} failed:`, error.message);
                 resolve({
                   connectionId,
-                  userId: '',
+                  userId: "",
                   connectedAt: Date.now(),
                   messagesReceived: 0,
                   errors: [error.message],
@@ -229,7 +231,7 @@ class SSELoadTester {
                 });
               });
           }, i * intervalMs);
-        })
+        }),
       );
     }
 
@@ -243,9 +245,9 @@ class SSELoadTester {
   async testSustainedLoad(
     tokens: string[],
     connections: number,
-    durationMs: number
+    durationMs: number,
   ): Promise<TestResults> {
-    console.log('\n=== SSE Sustained Load Test ===');
+    console.log("\n=== SSE Sustained Load Test ===");
     console.log(`Connections: ${connections}, Duration: ${durationMs}ms`);
 
     this.testStartTime = Date.now();
@@ -258,13 +260,13 @@ class SSELoadTester {
       connectionPromises.push(
         this.createConnection(token, connectionId).catch((error) => ({
           connectionId,
-          userId: '',
+          userId: "",
           connectedAt: Date.now(),
           messagesReceived: 0,
           errors: [error.message],
           latencies: [],
           reconnectCount: 0,
-        }))
+        })),
       );
     }
 
@@ -285,7 +287,7 @@ class SSELoadTester {
    */
   private calculateResults(metrics: ConnectionMetrics[]): TestResults {
     const testDurationMs = Date.now() - this.testStartTime;
-    const successfulConnections = metrics.filter((m) => m.userId !== '').length;
+    const successfulConnections = metrics.filter((m) => m.userId !== "").length;
     const failedConnections = metrics.length - successfulConnections;
     const totalMessages = metrics.reduce((sum, m) => sum + m.messagesReceived, 0);
     const allLatencies = metrics.flatMap((m) => m.latencies);
@@ -319,23 +321,25 @@ class SSELoadTester {
    * Clean up all connections
    */
   cleanup(): void {
-    console.log('\nCleaning up connections...');
+    console.log("\nCleaning up connections...");
     for (const connectionId of this.connections.keys()) {
       this.closeConnection(connectionId);
     }
     this.metrics.clear();
-    console.log('Cleanup complete.');
+    console.log("Cleanup complete.");
   }
 
   /**
    * Print test results
    */
   printResults(results: TestResults): void {
-    console.log('\n=== Test Results ===');
+    console.log("\n=== Test Results ===");
     console.log(`Total Connections: ${results.totalConnections}`);
     console.log(`Successful: ${results.successfulConnections}`);
     console.log(`Failed: ${results.failedConnections}`);
-    console.log(`Success Rate: ${((results.successfulConnections / results.totalConnections) * 100).toFixed(2)}%`);
+    console.log(
+      `Success Rate: ${((results.successfulConnections / results.totalConnections) * 100).toFixed(2)}%`,
+    );
     console.log(`\nMessages:`);
     console.log(`  Total Received: ${results.totalMessages}`);
     console.log(`  Messages/Second: ${results.messagesPerSecond.toFixed(2)}`);
@@ -360,9 +364,7 @@ class SSELoadTester {
 /**
  * Create test tokens by logging in test users
  */
-async function createTestTokens(
-  userCount: number
-): Promise<string[]> {
+async function createTestTokens(userCount: number): Promise<string[]> {
   console.log(`Creating ${userCount} test users and tokens...`);
 
   const tokens: string[] = [];
@@ -372,11 +374,11 @@ async function createTestTokens(
       // Try to register a new user
       const username = `loadtest_${Date.now()}_${i}`;
       const registerResponse = await fetch(`${BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username,
-          password: 'testpassword123!',
+          password: "testpassword123!",
           email: `${username}@test.local`,
         }),
       });
@@ -407,11 +409,11 @@ async function main() {
     let tokens = TEST_TOKENS;
 
     if (tokens.length === 0) {
-      console.log('No TEST_TOKENS provided. Creating test users...');
+      console.log("No TEST_TOKENS provided. Creating test users...");
       tokens = await createTestTokens(5);
 
       if (tokens.length === 0) {
-        console.error('Failed to create any test tokens. Exiting.');
+        console.error("Failed to create any test tokens. Exiting.");
         process.exit(1);
       }
     }
@@ -419,7 +421,7 @@ async function main() {
     console.log(`\nUsing ${tokens.length} test tokens`);
 
     // Test 1: Concurrent connections
-    console.log('\n' + '='.repeat(50));
+    console.log("\n" + "=".repeat(50));
     const concurrentResults = await tester.testConcurrentConnections(tokens, 2);
     tester.printResults(concurrentResults);
     tester.cleanup();
@@ -428,7 +430,7 @@ async function main() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Test 2: Ramp-up test
-    console.log('\n' + '='.repeat(50));
+    console.log("\n" + "=".repeat(50));
     const rampUpResults = await tester.testRampUp(tokens, 10, 5000);
     tester.printResults(rampUpResults);
     tester.cleanup();
@@ -436,14 +438,14 @@ async function main() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Test 3: Sustained load
-    console.log('\n' + '='.repeat(50));
+    console.log("\n" + "=".repeat(50));
     const sustainedResults = await tester.testSustainedLoad(tokens, 5, 10000);
     tester.printResults(sustainedResults);
     tester.cleanup();
 
-    console.log('\n=== All Tests Complete ===');
+    console.log("\n=== All Tests Complete ===");
   } catch (error) {
-    console.error('Test failed:', error);
+    console.error("Test failed:", error);
     tester.cleanup();
     process.exit(1);
   }

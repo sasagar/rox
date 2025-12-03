@@ -1,5 +1,5 @@
-import type { IAuthProvider, AuthMethod, AuthResult } from './types';
-import { PasswordAuthProvider } from './providers/PasswordAuthProvider';
+import type { IAuthProvider, AuthMethod, AuthResult } from "./types";
+import { PasswordAuthProvider } from "./providers/PasswordAuthProvider";
 
 /**
  * Central authentication manager
@@ -61,9 +61,7 @@ export class AuthManager {
    * @returns Array of available providers
    */
   getAvailableProviders(): IAuthProvider[] {
-    return Array.from(this.providers.values()).filter((provider) =>
-      provider.isAvailable()
-    );
+    return Array.from(this.providers.values()).filter((provider) => provider.isAvailable());
   }
 
   /**

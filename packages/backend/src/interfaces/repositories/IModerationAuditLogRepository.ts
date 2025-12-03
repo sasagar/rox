@@ -1,25 +1,25 @@
-import type { ModerationAuditLog } from '../../db/schema/pg.js';
+import type { ModerationAuditLog } from "../../db/schema/pg.js";
 
 /**
  * Moderation action types
  */
 export type ModerationAction =
-  | 'delete_note'
-  | 'restore_note'
-  | 'suspend_user'
-  | 'unsuspend_user'
-  | 'resolve_report'
-  | 'reject_report'
-  | 'warn_user'
-  | 'block_instance'
-  | 'unblock_instance'
-  | 'assign_role'
-  | 'unassign_role';
+  | "delete_note"
+  | "restore_note"
+  | "suspend_user"
+  | "unsuspend_user"
+  | "resolve_report"
+  | "reject_report"
+  | "warn_user"
+  | "block_instance"
+  | "unblock_instance"
+  | "assign_role"
+  | "unassign_role";
 
 /**
  * Target types for moderation actions
  */
-export type ModerationTargetType = 'note' | 'user' | 'report' | 'instance' | 'role';
+export type ModerationTargetType = "note" | "user" | "report" | "instance" | "role";
 
 /**
  * Moderation Audit Log Repository Interface
@@ -72,7 +72,7 @@ export interface IModerationAuditLogRepository {
   findByTarget(
     targetType: ModerationTargetType,
     targetId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]>;
 
   /**
@@ -80,6 +80,6 @@ export interface IModerationAuditLogRepository {
    */
   findByModerator(
     moderatorId: string,
-    options?: { limit?: number; offset?: number }
+    options?: { limit?: number; offset?: number },
   ): Promise<ModerationAuditLog[]>;
 }

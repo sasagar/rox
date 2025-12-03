@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Settings Page
@@ -9,20 +9,21 @@
  * - Theme settings (primary color, dark mode)
  */
 
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { clearInstanceInfoCache } from '../../hooks/useInstanceInfo';
-import { AdminNav } from '../../components/admin/AdminNav';
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
+import { AdminNav } from "../../components/admin/AdminNav";
+import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
 
 interface AdminSettings {
   registration: {
@@ -36,12 +37,13 @@ interface AdminSettings {
     maintainerEmail: string;
     iconUrl: string | null;
     bannerUrl: string | null;
+    faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
   };
   theme: {
     primaryColor: string;
-    darkMode: 'light' | 'dark' | 'system';
+    darkMode: "light" | "dark" | "system";
   };
 }
 
@@ -49,14 +51,14 @@ interface AdminSettings {
  * Color presets for quick selection
  */
 const COLOR_PRESETS = [
-  { name: 'Blue', color: '#3b82f6' },
-  { name: 'Purple', color: '#8b5cf6' },
-  { name: 'Pink', color: '#ec4899' },
-  { name: 'Red', color: '#ef4444' },
-  { name: 'Orange', color: '#f97316' },
-  { name: 'Green', color: '#22c55e' },
-  { name: 'Teal', color: '#14b8a6' },
-  { name: 'Cyan', color: '#06b6d4' },
+  { name: "Blue", color: "#3b82f6" },
+  { name: "Purple", color: "#8b5cf6" },
+  { name: "Pink", color: "#ec4899" },
+  { name: "Red", color: "#ef4444" },
+  { name: "Orange", color: "#f97316" },
+  { name: "Green", color: "#22c55e" },
+  { name: "Teal", color: "#14b8a6" },
+  { name: "Cyan", color: "#06b6d4" },
 ];
 
 export default function AdminSettingsPage() {
@@ -68,13 +70,19 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'instance' | 'registration' | 'theme'>('instance');
+  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets">("instance");
+  const [assets, setAssets] = useState<{ icon: string | null; banner: string | null; favicon: string | null }>({
+    icon: null,
+    banner: null,
+    favicon: null,
+  });
+  const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
 
   // Check admin access and load settings
   useEffect(() => {
     const loadSettings = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -82,21 +90,25 @@ export default function AdminSettingsPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
+        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
-          window.location.href = '/timeline';
+          window.location.href = "/timeline";
           return;
         }
 
         // Update currentUser atom to ensure sidebar shows
         setCurrentUser(sessionResponse.user);
 
-        // Load admin settings
-        const settingsResponse = await apiClient.get<AdminSettings>('/api/admin/settings');
+        // Load admin settings and assets
+        const [settingsResponse, assetsResponse] = await Promise.all([
+          apiClient.get<AdminSettings>("/api/admin/settings"),
+          apiClient.get<{ icon: string | null; banner: string | null; favicon: string | null }>("/api/admin/assets"),
+        ]);
         setSettings(settingsResponse);
+        setAssets(assetsResponse);
       } catch (err) {
-        console.error('Failed to load settings:', err);
-        setError('Failed to load settings');
+        console.error("Failed to load settings:", err);
+        setError("Failed to load settings");
       } finally {
         setIsLoading(false);
       }
@@ -112,13 +124,13 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch('/api/admin/settings/instance', settings.instance);
+      await apiClient.patch("/api/admin/settings/instance", settings.instance);
       clearInstanceInfoCache();
-      addToast({ type: 'success', message: t`Instance settings saved` });
+      addToast({ type: "success", message: t`Instance settings saved` });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save';
+      const message = err instanceof Error ? err.message : "Failed to save";
       setError(message);
-      addToast({ type: 'error', message });
+      addToast({ type: "error", message });
     } finally {
       setIsSaving(false);
     }
@@ -131,13 +143,13 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch('/api/admin/settings/registration', settings.registration);
+      await apiClient.patch("/api/admin/settings/registration", settings.registration);
       clearInstanceInfoCache();
-      addToast({ type: 'success', message: t`Registration settings saved` });
+      addToast({ type: "success", message: t`Registration settings saved` });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save';
+      const message = err instanceof Error ? err.message : "Failed to save";
       setError(message);
-      addToast({ type: 'error', message });
+      addToast({ type: "error", message });
     } finally {
       setIsSaving(false);
     }
@@ -150,30 +162,91 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch('/api/admin/settings/theme', settings.theme);
+      await apiClient.patch("/api/admin/settings/theme", settings.theme);
       clearInstanceInfoCache();
-      addToast({ type: 'success', message: t`Theme settings saved` });
+      addToast({ type: "success", message: t`Theme settings saved` });
       // Reload page to apply new theme
       setTimeout(() => window.location.reload(), 500);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save';
+      const message = err instanceof Error ? err.message : "Failed to save";
       setError(message);
-      addToast({ type: 'error', message });
+      addToast({ type: "error", message });
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleAssetUpload = async (assetType: "icon" | "banner" | "favicon", file: File) => {
+    setIsUploadingAsset(assetType);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", assetType);
+
+      const response = await fetch("/api/admin/assets/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const result = await response.json();
+      setAssets((prev) => ({ ...prev, [assetType]: result.url }));
+      clearInstanceInfoCache();
+      addToast({ type: "success", message: t`${assetType} uploaded successfully` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setError(message);
+      addToast({ type: "error", message });
+    } finally {
+      setIsUploadingAsset(null);
+    }
+  };
+
+  const handleAssetDelete = async (assetType: "icon" | "banner" | "favicon") => {
+    setIsUploadingAsset(assetType);
+    setError(null);
+
+    try {
+      await apiClient.delete(`/api/admin/assets/${assetType}`);
+      setAssets((prev) => ({ ...prev, [assetType]: null }));
+      clearInstanceInfoCache();
+      addToast({ type: "success", message: t`${assetType} removed` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to remove";
+      setError(message);
+      addToast({ type: "error", message });
+    } finally {
+      setIsUploadingAsset(null);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-(--bg-secondary)">
-        <Spinner size="lg" />
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
     );
   }
 
   if (!currentUser?.isAdmin) {
-    return null;
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
+    );
   }
 
   return (
@@ -194,34 +267,44 @@ export default function AdminSettingsPage() {
       <div className="border-b border-(--border-color) mb-6">
         <nav className="flex gap-4">
           <button
-            onClick={() => setActiveTab('instance')}
+            onClick={() => setActiveTab("instance")}
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'instance'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
+              activeTab === "instance"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
             }`}
           >
             <Trans>Instance</Trans>
           </button>
           <button
-            onClick={() => setActiveTab('registration')}
+            onClick={() => setActiveTab("registration")}
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'registration'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
+              activeTab === "registration"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
             }`}
           >
             <Trans>Registration</Trans>
           </button>
           <button
-            onClick={() => setActiveTab('theme')}
+            onClick={() => setActiveTab("theme")}
             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'theme'
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
+              activeTab === "theme"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
             }`}
           >
             <Trans>Theme</Trans>
+          </button>
+          <button
+            onClick={() => setActiveTab("assets")}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "assets"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
+            }`}
+          >
+            <Trans>Assets</Trans>
           </button>
         </nav>
       </div>
@@ -229,10 +312,12 @@ export default function AdminSettingsPage() {
       {error && <InlineError message={error} className="mb-4" />}
 
       {/* Instance Settings */}
-      {activeTab === 'instance' && settings && (
+      {activeTab === "instance" && settings && (
         <Card>
           <CardHeader>
-            <CardTitle><Trans>Instance Information</Trans></CardTitle>
+            <CardTitle>
+              <Trans>Instance Information</Trans>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -242,10 +327,12 @@ export default function AdminSettingsPage() {
               <input
                 type="text"
                 value={settings.instance.name}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  instance: { ...settings.instance, name: e.target.value }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, name: e.target.value },
+                  })
+                }
                 className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSaving}
               />
@@ -257,10 +344,12 @@ export default function AdminSettingsPage() {
               </label>
               <textarea
                 value={settings.instance.description}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  instance: { ...settings.instance, description: e.target.value }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, description: e.target.value },
+                  })
+                }
                 rows={3}
                 className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
                 disabled={isSaving}
@@ -274,10 +363,12 @@ export default function AdminSettingsPage() {
               <input
                 type="email"
                 value={settings.instance.maintainerEmail}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  instance: { ...settings.instance, maintainerEmail: e.target.value }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, maintainerEmail: e.target.value },
+                  })
+                }
                 className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSaving}
               />
@@ -290,11 +381,13 @@ export default function AdminSettingsPage() {
                 </label>
                 <input
                   type="url"
-                  value={settings.instance.iconUrl || ''}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    instance: { ...settings.instance, iconUrl: e.target.value || null }
-                  })}
+                  value={settings.instance.iconUrl || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      instance: { ...settings.instance, iconUrl: e.target.value || null },
+                    })
+                  }
                   placeholder="https://..."
                   className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
@@ -306,16 +399,40 @@ export default function AdminSettingsPage() {
                 </label>
                 <input
                   type="url"
-                  value={settings.instance.bannerUrl || ''}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    instance: { ...settings.instance, bannerUrl: e.target.value || null }
-                  })}
+                  value={settings.instance.bannerUrl || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      instance: { ...settings.instance, bannerUrl: e.target.value || null },
+                    })
+                  }
                   placeholder="https://..."
                   className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Favicon URL</Trans>
+              </label>
+              <input
+                type="url"
+                value={settings.instance.faviconUrl || ""}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, faviconUrl: e.target.value || null },
+                  })
+                }
+                placeholder="https://..."
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <p className="mt-1 text-sm text-(--text-muted)">
+                <Trans>Browser tab icon (recommended: 32x32 PNG or ICO)</Trans>
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -325,11 +442,13 @@ export default function AdminSettingsPage() {
                 </label>
                 <input
                   type="url"
-                  value={settings.instance.tosUrl || ''}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    instance: { ...settings.instance, tosUrl: e.target.value || null }
-                  })}
+                  value={settings.instance.tosUrl || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      instance: { ...settings.instance, tosUrl: e.target.value || null },
+                    })
+                  }
                   placeholder="https://..."
                   className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
@@ -341,11 +460,13 @@ export default function AdminSettingsPage() {
                 </label>
                 <input
                   type="url"
-                  value={settings.instance.privacyPolicyUrl || ''}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null }
-                  })}
+                  value={settings.instance.privacyPolicyUrl || ""}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null },
+                    })
+                  }
                   placeholder="https://..."
                   className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={isSaving}
@@ -355,7 +476,11 @@ export default function AdminSettingsPage() {
 
             <div className="pt-4">
               <Button variant="primary" onPress={handleSaveInstance} isDisabled={isSaving}>
-                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Instance Settings</Trans>}
+                {isSaving ? (
+                  <Spinner size="xs" variant="white" />
+                ) : (
+                  <Trans>Save Instance Settings</Trans>
+                )}
               </Button>
             </div>
           </CardContent>
@@ -363,20 +488,24 @@ export default function AdminSettingsPage() {
       )}
 
       {/* Registration Settings */}
-      {activeTab === 'registration' && settings && (
+      {activeTab === "registration" && settings && (
         <Card>
           <CardHeader>
-            <CardTitle><Trans>Registration Settings</Trans></CardTitle>
+            <CardTitle>
+              <Trans>Registration Settings</Trans>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <label className="flex items-center gap-3">
               <input
                 type="checkbox"
                 checked={settings.registration.enabled}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  registration: { ...settings.registration, enabled: e.target.checked }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    registration: { ...settings.registration, enabled: e.target.checked },
+                  })
+                }
                 className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving}
               />
@@ -394,10 +523,12 @@ export default function AdminSettingsPage() {
               <input
                 type="checkbox"
                 checked={settings.registration.inviteOnly}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  registration: { ...settings.registration, inviteOnly: e.target.checked }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    registration: { ...settings.registration, inviteOnly: e.target.checked },
+                  })
+                }
                 className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving || !settings.registration.enabled}
               />
@@ -415,10 +546,12 @@ export default function AdminSettingsPage() {
               <input
                 type="checkbox"
                 checked={settings.registration.approvalRequired}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  registration: { ...settings.registration, approvalRequired: e.target.checked }
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    registration: { ...settings.registration, approvalRequired: e.target.checked },
+                  })
+                }
                 className="w-5 h-5 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
                 disabled={isSaving || !settings.registration.enabled}
               />
@@ -434,7 +567,11 @@ export default function AdminSettingsPage() {
 
             <div className="pt-4">
               <Button variant="primary" onPress={handleSaveRegistration} isDisabled={isSaving}>
-                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Registration Settings</Trans>}
+                {isSaving ? (
+                  <Spinner size="xs" variant="white" />
+                ) : (
+                  <Trans>Save Registration Settings</Trans>
+                )}
               </Button>
             </div>
           </CardContent>
@@ -442,10 +579,12 @@ export default function AdminSettingsPage() {
       )}
 
       {/* Theme Settings */}
-      {activeTab === 'theme' && settings && (
+      {activeTab === "theme" && settings && (
         <Card>
           <CardHeader>
-            <CardTitle><Trans>Theme Settings</Trans></CardTitle>
+            <CardTitle>
+              <Trans>Theme Settings</Trans>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -458,14 +597,16 @@ export default function AdminSettingsPage() {
                 {COLOR_PRESETS.map((preset) => (
                   <button
                     key={preset.color}
-                    onClick={() => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, primaryColor: preset.color }
-                    })}
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, primaryColor: preset.color },
+                      })
+                    }
                     className={`w-10 h-10 rounded-lg border-2 transition-all ${
                       settings.theme.primaryColor === preset.color
-                        ? 'border-(--text-primary) scale-110'
-                        : 'border-transparent hover:scale-105'
+                        ? "border-(--text-primary) scale-110"
+                        : "border-transparent hover:scale-105"
                     }`}
                     style={{ backgroundColor: preset.color }}
                     title={preset.name}
@@ -479,10 +620,12 @@ export default function AdminSettingsPage() {
                 <input
                   type="color"
                   value={settings.theme.primaryColor}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    theme: { ...settings.theme, primaryColor: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, primaryColor: e.target.value },
+                    })
+                  }
                   className="w-12 h-10 rounded cursor-pointer"
                   disabled={isSaving}
                 />
@@ -494,7 +637,7 @@ export default function AdminSettingsPage() {
                     if (/^#[0-9a-fA-F]{0,6}$/.test(value)) {
                       setSettings({
                         ...settings,
-                        theme: { ...settings.theme, primaryColor: value }
+                        theme: { ...settings.theme, primaryColor: value },
                       });
                     }
                   }}
@@ -515,45 +658,57 @@ export default function AdminSettingsPage() {
                     type="radio"
                     name="darkMode"
                     value="system"
-                    checked={settings.theme.darkMode === 'system'}
-                    onChange={() => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, darkMode: 'system' }
-                    })}
+                    checked={settings.theme.darkMode === "system"}
+                    onChange={() =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, darkMode: "system" },
+                      })
+                    }
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-(--text-primary)"><Trans>System</Trans></span>
+                  <span className="text-(--text-primary)">
+                    <Trans>System</Trans>
+                  </span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="darkMode"
                     value="light"
-                    checked={settings.theme.darkMode === 'light'}
-                    onChange={() => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, darkMode: 'light' }
-                    })}
+                    checked={settings.theme.darkMode === "light"}
+                    onChange={() =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, darkMode: "light" },
+                      })
+                    }
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-(--text-primary)"><Trans>Light</Trans></span>
+                  <span className="text-(--text-primary)">
+                    <Trans>Light</Trans>
+                  </span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="darkMode"
                     value="dark"
-                    checked={settings.theme.darkMode === 'dark'}
-                    onChange={() => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, darkMode: 'dark' }
-                    })}
+                    checked={settings.theme.darkMode === "dark"}
+                    onChange={() =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, darkMode: "dark" },
+                      })
+                    }
                     className="w-4 h-4 text-primary-600"
                     disabled={isSaving}
                   />
-                  <span className="text-(--text-primary)"><Trans>Dark</Trans></span>
+                  <span className="text-(--text-primary)">
+                    <Trans>Dark</Trans>
+                  </span>
                 </label>
               </div>
               <p className="mt-2 text-sm text-(--text-muted)">
@@ -577,7 +732,7 @@ export default function AdminSettingsPage() {
                   className="px-4 py-2 rounded-lg font-medium border-2"
                   style={{
                     borderColor: settings.theme.primaryColor,
-                    color: settings.theme.primaryColor
+                    color: settings.theme.primaryColor,
                   }}
                 >
                   <Trans>Secondary</Trans>
@@ -587,9 +742,62 @@ export default function AdminSettingsPage() {
 
             <div className="pt-4">
               <Button variant="primary" onPress={handleSaveTheme} isDisabled={isSaving}>
-                {isSaving ? <Spinner size="xs" variant="white" /> : <Trans>Save Theme Settings</Trans>}
+                {isSaving ? (
+                  <Spinner size="xs" variant="white" />
+                ) : (
+                  <Trans>Save Theme Settings</Trans>
+                )}
               </Button>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Assets Settings */}
+      {activeTab === "assets" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans>Server Assets</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-(--text-muted)">
+              <Trans>Upload images for your instance branding. Files are automatically converted to WebP format.</Trans>
+            </p>
+
+            <AssetUploadCard
+              type="icon"
+              title={<Trans>Instance Icon</Trans>}
+              description={<Trans>Used for push notifications and instance branding (max 2MB)</Trans>}
+              currentUrl={assets.icon}
+              isUploading={isUploadingAsset === "icon"}
+              onUpload={(file) => handleAssetUpload("icon", file)}
+              onDelete={() => handleAssetDelete("icon")}
+              previewClassName="w-16 h-16 rounded-lg"
+            />
+
+            <AssetUploadCard
+              type="banner"
+              title={<Trans>Instance Banner</Trans>}
+              description={<Trans>Header image for your instance (max 5MB)</Trans>}
+              currentUrl={assets.banner}
+              isUploading={isUploadingAsset === "banner"}
+              onUpload={(file) => handleAssetUpload("banner", file)}
+              onDelete={() => handleAssetDelete("banner")}
+              previewClassName="w-full max-w-md h-32 rounded-lg"
+            />
+
+            <AssetUploadCard
+              type="favicon"
+              title={<Trans>Favicon</Trans>}
+              description={<Trans>Browser tab icon, recommended 32x32 or 64x64 (max 512KB)</Trans>}
+              currentUrl={assets.favicon}
+              isUploading={isUploadingAsset === "favicon"}
+              onUpload={(file) => handleAssetUpload("favicon", file)}
+              onDelete={() => handleAssetDelete("favicon")}
+              previewClassName="w-8 h-8 rounded"
+            />
           </CardContent>
         </Card>
       )}

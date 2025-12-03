@@ -7,7 +7,21 @@
  * @module lib/validation
  */
 
-import { z } from 'zod';
+import { z } from "zod";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+  PASSWORD_MIN_LENGTH,
+  NOTE_TEXT_MAX_LENGTH,
+  NOTE_CW_MAX_LENGTH,
+  NOTE_MAX_FILES,
+  DISPLAY_NAME_MAX_LENGTH,
+  BIO_MAX_LENGTH,
+  REACTION_MAX_LENGTH,
+  FILE_COMMENT_MAX_LENGTH,
+  MAX_PAGE_LIMIT,
+} from "shared";
 
 // ============================================
 // Common Schema Components
@@ -20,39 +34,35 @@ import { z } from 'zod';
  */
 export const usernameSchema = z
   .string()
-  .min(3, 'Username must be at least 3 characters')
-  .max(20, 'Username must be at most 20 characters')
-  .regex(/^[a-zA-Z0-9_]+$/, 'Username must contain only alphanumeric characters and underscores');
+  .min(USERNAME_MIN_LENGTH, `Username must be at least ${USERNAME_MIN_LENGTH} characters`)
+  .max(USERNAME_MAX_LENGTH, `Username must be at most ${USERNAME_MAX_LENGTH} characters`)
+  .regex(USERNAME_PATTERN, "Username must contain only alphanumeric characters and underscores");
 
 /**
  * Email validation with basic format check
  */
-export const emailSchema = z
-  .string()
-  .email('Invalid email address');
+export const emailSchema = z.string().email("Invalid email address");
 
 /**
  * Password validation rules:
  * - Minimum 8 characters
  */
-export const passwordSchema = z
-  .string()
-  .min(8, 'Password must be at least 8 characters');
+export const passwordSchema = z.string().min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
 
 /**
  * Note ID validation (nanoid format)
  */
-export const noteIdSchema = z.string().min(1, 'noteId is required');
+export const noteIdSchema = z.string().min(1, "noteId is required");
 
 /**
  * User ID validation (nanoid format)
  */
-export const userIdSchema = z.string().min(1, 'userId is required');
+export const userIdSchema = z.string().min(1, "userId is required");
 
 /**
  * File ID validation (nanoid format)
  */
-export const fileIdSchema = z.string().min(1, 'fileId is required');
+export const fileIdSchema = z.string().min(1, "fileId is required");
 
 /**
  * Pagination limit (1-100, default 20)
@@ -61,9 +71,7 @@ export const limitSchema = z
   .string()
   .optional()
   .transform((val) => (val ? Number.parseInt(val, 10) : undefined))
-  .pipe(
-    z.number().int().min(1).max(100).optional()
-  );
+  .pipe(z.number().int().min(1).max(MAX_PAGE_LIMIT).optional());
 
 /**
  * Pagination cursor ID
@@ -73,7 +81,9 @@ export const cursorIdSchema = z.string().optional();
 /**
  * Note visibility enum
  */
-export const visibilitySchema = z.enum(['public', 'home', 'followers', 'specified']).default('public');
+export const visibilitySchema = z
+  .enum(["public", "home", "followers", "specified"])
+  .default("public");
 
 // ============================================
 // Auth Schemas
@@ -86,15 +96,15 @@ export const registerSchema = z.object({
   username: usernameSchema,
   email: emailSchema,
   password: passwordSchema,
-  name: z.string().max(100, 'Name must be at most 100 characters').optional(),
+  name: z.string().max(DISPLAY_NAME_MAX_LENGTH, `Name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`).optional(),
 });
 
 /**
  * POST /api/auth/session - Login
  */
 export const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 // ============================================
@@ -104,18 +114,19 @@ export const loginSchema = z.object({
 /**
  * POST /api/notes/create - Create note
  */
-export const createNoteSchema = z.object({
-  text: z.string().max(3000, 'Note text must be at most 3000 characters').nullable().optional(),
-  cw: z.string().max(100, 'Content warning must be at most 100 characters').nullable().optional(),
-  visibility: visibilitySchema,
-  localOnly: z.boolean().default(false),
-  replyId: z.string().nullable().optional(),
-  renoteId: z.string().nullable().optional(),
-  fileIds: z.array(z.string()).max(4, 'Maximum 4 files allowed').default([]),
-}).refine(
-  (data) => data.text || data.renoteId || (data.fileIds && data.fileIds.length > 0),
-  { message: 'Note must have text, a renote, or files' }
-);
+export const createNoteSchema = z
+  .object({
+    text: z.string().max(NOTE_TEXT_MAX_LENGTH, `Note text must be at most ${NOTE_TEXT_MAX_LENGTH} characters`).nullable().optional(),
+    cw: z.string().max(NOTE_CW_MAX_LENGTH, `Content warning must be at most ${NOTE_CW_MAX_LENGTH} characters`).nullable().optional(),
+    visibility: visibilitySchema,
+    localOnly: z.boolean().default(false),
+    replyId: z.string().nullable().optional(),
+    renoteId: z.string().nullable().optional(),
+    fileIds: z.array(z.string()).max(NOTE_MAX_FILES, `Maximum ${NOTE_MAX_FILES} files allowed`).default([]),
+  })
+  .refine((data) => data.text || data.renoteId || (data.fileIds && data.fileIds.length > 0), {
+    message: "Note must have text, a renote, or files",
+  });
 
 /**
  * POST /api/notes/show - Get note by ID
@@ -172,29 +183,28 @@ export const createUserSchema = registerSchema;
 /**
  * GET /api/users/show - Query params
  */
-export const showUserQuerySchema = z.object({
-  userId: z.string().optional(),
-  username: z.string().optional(),
-}).refine(
-  (data) => data.userId || data.username,
-  { message: 'userId or username is required' }
-);
+export const showUserQuerySchema = z
+  .object({
+    userId: z.string().optional(),
+    username: z.string().optional(),
+  })
+  .refine((data) => data.userId || data.username, { message: "userId or username is required" });
 
 /**
  * GET /api/users/resolve - Query params
  */
 export const resolveUserQuerySchema = z.object({
-  acct: z.string().min(1, 'acct parameter is required'),
+  acct: z.string().min(1, "acct parameter is required"),
 });
 
 /**
  * PATCH /api/users/@me - Update profile
  */
 export const updateProfileSchema = z.object({
-  name: z.string().max(100, 'Display name must be at most 100 characters').optional(),
-  description: z.string().max(500, 'Bio must be at most 500 characters').optional(),
-  avatarUrl: z.string().url('Invalid avatar URL').optional(),
-  bannerUrl: z.string().url('Invalid banner URL').optional(),
+  name: z.string().max(DISPLAY_NAME_MAX_LENGTH, `Display name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`).optional(),
+  description: z.string().max(BIO_MAX_LENGTH, `Bio must be at most ${BIO_MAX_LENGTH} characters`).optional(),
+  avatarUrl: z.string().url("Invalid avatar URL").optional(),
+  bannerUrl: z.string().url("Invalid banner URL").optional(),
   isBot: z.boolean().optional(),
 });
 
@@ -207,7 +217,10 @@ export const updateProfileSchema = z.object({
  */
 export const createReactionSchema = z.object({
   noteId: noteIdSchema,
-  reaction: z.string().min(1, 'Reaction is required').max(50, 'Reaction must be at most 50 characters'),
+  reaction: z
+    .string()
+    .min(1, "Reaction is required")
+    .max(REACTION_MAX_LENGTH, `Reaction must be at most ${REACTION_MAX_LENGTH} characters`),
 });
 
 /**
@@ -215,7 +228,7 @@ export const createReactionSchema = z.object({
  */
 export const deleteReactionSchema = z.object({
   noteId: noteIdSchema,
-  reaction: z.string().min(1, 'Reaction is required'),
+  reaction: z.string().min(1, "Reaction is required"),
 });
 
 /**
@@ -293,7 +306,7 @@ export const showFileQuerySchema = z.object({
 export const updateFileSchema = z.object({
   fileId: fileIdSchema,
   isSensitive: z.boolean().optional(),
-  comment: z.string().max(512, 'Comment must be at most 512 characters').nullable().optional(),
+  comment: z.string().max(FILE_COMMENT_MAX_LENGTH, `Comment must be at most ${FILE_COMMENT_MAX_LENGTH} characters`).nullable().optional(),
 });
 
 /**

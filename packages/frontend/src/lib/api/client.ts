@@ -9,7 +9,7 @@ export class ApiError extends Error {
     public isTimeout: boolean = false,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -27,7 +27,7 @@ export class ApiClient {
    *
    * @param baseUrl - Base URL of the API server (default: 'http://localhost:3000')
    */
-  constructor(baseUrl: string = 'http://localhost:3000') {
+  constructor(baseUrl: string = "http://localhost:3000") {
     this.baseUrl = baseUrl;
   }
 
@@ -63,7 +63,7 @@ export class ApiClient {
     timeout: number = this.defaultTimeout,
   ): Promise<T> {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(options?.headers as Record<string, string>),
     };
 
@@ -99,18 +99,13 @@ export class ApiClient {
       clearTimeout(timeoutId);
 
       // Handle abort/timeout
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiError('Request timeout. Please try again.', undefined, false, true);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("Request timeout. Please try again.", undefined, false, true);
       }
 
       // Handle network errors
       if (error instanceof TypeError) {
-        throw new ApiError(
-          'Network error. Please check your connection.',
-          undefined,
-          true,
-          false,
-        );
+        throw new ApiError("Network error. Please check your connection.", undefined, true, false);
       }
 
       // Re-throw ApiError as-is
@@ -120,7 +115,7 @@ export class ApiClient {
 
       // Handle unknown errors
       throw new ApiError(
-        error instanceof Error ? error.message : 'Unknown error occurred',
+        error instanceof Error ? error.message : "Unknown error occurred",
         undefined,
         false,
         false,
@@ -140,7 +135,7 @@ export class ApiClient {
    * ```
    */
   async get<T>(path: string): Promise<T> {
-    return this.request<T>(path, { method: 'GET' });
+    return this.request<T>(path, { method: "GET" });
   }
 
   /**
@@ -159,7 +154,7 @@ export class ApiClient {
    */
   async post<T>(path: string, data?: unknown): Promise<T> {
     return this.request<T>(path, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -180,7 +175,7 @@ export class ApiClient {
    */
   async patch<T>(path: string, data?: unknown): Promise<T> {
     return this.request<T>(path, {
-      method: 'PATCH',
+      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -200,7 +195,7 @@ export class ApiClient {
    */
   async delete<T>(path: string, body?: unknown): Promise<T> {
     return this.request<T>(path, {
-      method: 'DELETE',
+      method: "DELETE",
       body: body ? JSON.stringify(body) : undefined,
     });
   }
@@ -212,7 +207,7 @@ export class ApiClient {
  * In production, uses same origin
  */
 export const apiClient = new ApiClient(
-  typeof window !== 'undefined'
+  typeof window !== "undefined"
     ? window.location.origin // Use same origin (proxy handles routing in dev)
-    : 'http://localhost:3000'
+    : "http://localhost:3000",
 );

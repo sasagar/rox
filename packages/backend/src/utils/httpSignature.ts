@@ -7,7 +7,7 @@
  * @module utils/httpSignature
  */
 
-import { createVerify, createHash } from 'node:crypto';
+import { createVerify, createHash } from "node:crypto";
 
 /**
  * Parsed HTTP Signature parameters
@@ -42,7 +42,7 @@ export function parseSignatureHeader(signatureHeader: string): SignatureParams {
   // Split by comma, but be careful with quoted values
   const parts = signatureHeader.match(/(\w+)="([^"]+)"/g);
   if (!parts) {
-    throw new Error('Invalid signature header format');
+    throw new Error("Invalid signature header format");
   }
 
   for (const part of parts) {
@@ -53,13 +53,13 @@ export function parseSignatureHeader(signatureHeader: string): SignatureParams {
   }
 
   if (!params.keyId || !params.signature) {
-    throw new Error('Missing required signature parameters');
+    throw new Error("Missing required signature parameters");
   }
 
   return {
     keyId: params.keyId,
-    algorithm: params.algorithm || 'rsa-sha256',
-    headers: params.headers ? params.headers.split(' ') : ['date'],
+    algorithm: params.algorithm || "rsa-sha256",
+    headers: params.headers ? params.headers.split(" ") : ["date"],
     signature: params.signature,
   };
 }
@@ -79,13 +79,13 @@ export function reconstructSignatureString(
   method: string,
   url: string,
   headers: Record<string, string | undefined>,
-  signedHeaders: string[]
+  signedHeaders: string[],
 ): string {
   const parts: string[] = [];
 
   for (const headerName of signedHeaders) {
-    if (headerName === '(request-target)') {
-      const urlObj = new URL(url, 'http://dummy');
+    if (headerName === "(request-target)") {
+      const urlObj = new URL(url, "http://dummy");
       parts.push(`(request-target): ${method.toLowerCase()} ${urlObj.pathname}${urlObj.search}`);
     } else {
       const headerValue = headers[headerName.toLowerCase()];
@@ -96,7 +96,7 @@ export function reconstructSignatureString(
     }
   }
 
-  return parts.join('\n');
+  return parts.join("\n");
 }
 
 /**
@@ -114,7 +114,7 @@ export function verifySignature(
   publicKey: string,
   signatureString: string,
   signature: string,
-  algorithm = 'rsa-sha256'
+  algorithm = "rsa-sha256",
 ): boolean {
   try {
     // Map algorithm to hash algorithm
@@ -124,23 +124,23 @@ export function verifySignature(
     let hashAlgorithm: string;
     const lowerAlgorithm = algorithm.toLowerCase();
 
-    if (lowerAlgorithm === 'hs2019') {
+    if (lowerAlgorithm === "hs2019") {
       // hs2019 is the modern HTTP Signature algorithm identifier
       // Most implementations use RSA-SHA256 with this identifier
-      hashAlgorithm = 'sha256';
-    } else if (lowerAlgorithm.startsWith('rsa-')) {
+      hashAlgorithm = "sha256";
+    } else if (lowerAlgorithm.startsWith("rsa-")) {
       // Extract hash algorithm (rsa-sha256 => sha256)
-      hashAlgorithm = lowerAlgorithm.replace('rsa-', '');
+      hashAlgorithm = lowerAlgorithm.replace("rsa-", "");
     } else {
       // Default to sha256 for unknown algorithms
-      hashAlgorithm = 'sha256';
+      hashAlgorithm = "sha256";
     }
 
     const verifier = createVerify(hashAlgorithm);
     verifier.update(signatureString);
-    return verifier.verify(publicKey, signature, 'base64');
+    return verifier.verify(publicKey, signature, "base64");
   } catch (error) {
-    console.error('Signature verification error:', error);
+    console.error("Signature verification error:", error);
     return false;
   }
 }
@@ -164,11 +164,11 @@ export function verifyDigest(body: string, digestHeader: string): boolean {
     }
 
     const providedDigest = match[1];
-    const calculatedDigest = createHash('sha256').update(body).digest('base64');
+    const calculatedDigest = createHash("sha256").update(body).digest("base64");
 
     return providedDigest === calculatedDigest;
   } catch (error) {
-    console.error('Digest verification error:', error);
+    console.error("Digest verification error:", error);
     return false;
   }
 }
@@ -192,7 +192,7 @@ export function verifyDateHeader(dateHeader: string, maxAgeSeconds = 30): boolea
     // Allow some clock skew (check both past and future)
     return Math.abs(ageSeconds) <= maxAgeSeconds;
   } catch (error) {
-    console.error('Date verification error:', error);
+    console.error("Date verification error:", error);
     return false;
   }
 }

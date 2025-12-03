@@ -1,12 +1,16 @@
-import { eq, and, isNull, sql, desc, or, ilike } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { users, type User } from '../../db/schema/pg.js';
-import type { IUserRepository, ListUsersOptions, SearchUsersOptions } from '../../interfaces/repositories/IUserRepository.js';
+import { eq, and, isNull, sql, desc, or, ilike } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { users, type User } from "../../db/schema/pg.js";
+import type {
+  IUserRepository,
+  ListUsersOptions,
+  SearchUsersOptions,
+} from "../../interfaces/repositories/IUserRepository.js";
 
 export class PostgresUserRepository implements IUserRepository {
   constructor(private db: Database) {}
 
-  async create(user: Omit<User, 'createdAt' | 'updatedAt'>): Promise<User> {
+  async create(user: Omit<User, "createdAt" | "updatedAt">): Promise<User> {
     const now = new Date();
     const [result] = await this.db
       .insert(users)
@@ -18,34 +22,27 @@ export class PostgresUserRepository implements IUserRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create user');
+      throw new Error("Failed to create user");
     }
 
     return result as User;
   }
 
   async findById(id: string): Promise<User | null> {
-    const [result] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
 
     return (result as User) ?? null;
   }
 
-  async findByUsername(
-    username: string,
-    host: string | null = null
-  ): Promise<User | null> {
+  async findByUsername(username: string, host: string | null = null): Promise<User | null> {
     const [result] = await this.db
       .select()
       .from(users)
       .where(
         and(
           eq(users.username, username),
-          host === null ? isNull(users.host) : eq(users.host, host)
-        )
+          host === null ? isNull(users.host) : eq(users.host, host),
+        ),
       )
       .limit(1);
 
@@ -53,29 +50,18 @@ export class PostgresUserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const [result] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
+    const [result] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
 
     return (result as User) ?? null;
   }
 
   async findByUri(uri: string): Promise<User | null> {
-    const [result] = await this.db
-      .select()
-      .from(users)
-      .where(eq(users.uri, uri))
-      .limit(1);
+    const [result] = await this.db.select().from(users).where(eq(users.uri, uri)).limit(1);
 
     return (result as User) ?? null;
   }
 
-  async update(
-    id: string,
-    data: Partial<Omit<User, 'id' | 'createdAt'>>
-  ): Promise<User> {
+  async update(id: string, data: Partial<Omit<User, "id" | "createdAt">>): Promise<User> {
     const [result] = await this.db
       .update(users)
       .set({
@@ -86,7 +72,7 @@ export class PostgresUserRepository implements IUserRepository {
       .returning();
 
     if (!result) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     return result as User;
@@ -137,15 +123,12 @@ export class PostgresUserRepository implements IUserRepository {
     const { query, limit = 20, offset = 0, localOnly } = options;
 
     // Escape special characters for LIKE pattern
-    const escapedQuery = query.replace(/[%_\\]/g, '\\$&');
+    const escapedQuery = query.replace(/[%_\\]/g, "\\$&");
     const searchPattern = `%${escapedQuery}%`;
 
     const conditions = [
       // Match username or displayName (case-insensitive)
-      or(
-        ilike(users.username, searchPattern),
-        ilike(users.displayName, searchPattern)
-      ),
+      or(ilike(users.username, searchPattern), ilike(users.displayName, searchPattern)),
     ];
 
     if (localOnly === true) {
@@ -163,10 +146,10 @@ export class PostgresUserRepository implements IUserRepository {
         // Prioritize exact username matches, then prefix matches
         sql`CASE
           WHEN LOWER(${users.username}) = LOWER(${query}) THEN 0
-          WHEN LOWER(${users.username}) LIKE LOWER(${query + '%'}) THEN 1
+          WHEN LOWER(${users.username}) LIKE LOWER(${query + "%"}) THEN 1
           ELSE 2
         END`,
-        desc(users.createdAt)
+        desc(users.createdAt),
       )
       .limit(limit)
       .offset(offset);

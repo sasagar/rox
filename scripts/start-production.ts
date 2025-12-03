@@ -7,10 +7,10 @@
  * Usage: bun run start
  */
 
-import { spawn, type Subprocess } from 'bun';
-import { join } from 'path';
+import { spawn, type Subprocess } from "bun";
+import { join } from "path";
 
-const ROOT_DIR = join(import.meta.dir, '..');
+const ROOT_DIR = join(import.meta.dir, "..");
 
 // Get the full path to the bun executable
 // This is needed because systemd doesn't inherit PATH
@@ -34,12 +34,12 @@ function startProcess(name: string, cwd: string, command: string[]): ProcessInfo
   const proc = spawn({
     cmd: command,
     cwd,
-    stdout: 'inherit',
-    stderr: 'inherit',
+    stdout: "inherit",
+    stderr: "inherit",
     env: {
       ...process.env,
       // Ensure NODE_ENV is set
-      NODE_ENV: process.env.NODE_ENV || 'production',
+      NODE_ENV: process.env.NODE_ENV || "production",
     },
   });
 
@@ -70,12 +70,12 @@ function startProcess(name: string, cwd: string, command: string[]): ProcessInfo
  * Gracefully shutdown all processes
  */
 async function shutdown(exitCode: number = 0): Promise<void> {
-  console.log('\n🛑 Shutting down all services...');
+  console.log("\n🛑 Shutting down all services...");
 
   // Send SIGTERM to all processes
   for (const { name, process: proc } of processes) {
     try {
-      proc.kill('SIGTERM');
+      proc.kill("SIGTERM");
       console.log(`   Sent SIGTERM to ${name}`);
     } catch {
       // Process may already be dead
@@ -84,10 +84,10 @@ async function shutdown(exitCode: number = 0): Promise<void> {
 
   // Wait for processes to exit (with timeout)
   const timeout = setTimeout(() => {
-    console.log('⚠️  Timeout waiting for processes, forcing kill...');
+    console.log("⚠️  Timeout waiting for processes, forcing kill...");
     for (const { process: proc } of processes) {
       try {
-        proc.kill('SIGKILL');
+        proc.kill("SIGKILL");
       } catch {
         // Ignore
       }
@@ -98,40 +98,40 @@ async function shutdown(exitCode: number = 0): Promise<void> {
   await Promise.all(processes.map(({ process: proc }) => proc.exited));
 
   clearTimeout(timeout);
-  console.log('✅ All services stopped');
+  console.log("✅ All services stopped");
   process.exit(exitCode);
 }
 
 // Handle shutdown signals
-process.on('SIGTERM', () => {
-  console.log('\n📥 Received SIGTERM');
+process.on("SIGTERM", () => {
+  console.log("\n📥 Received SIGTERM");
   shutdown(0);
 });
 
-process.on('SIGINT', () => {
-  console.log('\n📥 Received SIGINT');
+process.on("SIGINT", () => {
+  console.log("\n📥 Received SIGINT");
   shutdown(0);
 });
 
 // Check if frontend should be started
-const ENABLE_FRONTEND = process.env.ENABLE_FRONTEND !== 'false';
+const ENABLE_FRONTEND = process.env.ENABLE_FRONTEND !== "false";
 
 // Main startup sequence
 async function main(): Promise<void> {
-  console.log('═'.repeat(50));
-  console.log('🦊 Rox Production Server');
-  console.log('═'.repeat(50));
-  console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+  console.log("═".repeat(50));
+  console.log("🦊 Rox Production Server");
+  console.log("═".repeat(50));
+  console.log(`Environment: ${process.env.NODE_ENV || "production"}`);
   console.log(`Working directory: ${ROOT_DIR}`);
   console.log(`Bun executable: ${BUN_PATH}`);
   console.log(`Frontend enabled: ${ENABLE_FRONTEND}`);
-  console.log('');
+  console.log("");
 
   // Start backend (API server on port 3000)
-  startProcess('Backend (API)', join(ROOT_DIR, 'packages/backend'), [
+  startProcess("Backend (API)", join(ROOT_DIR, "packages/backend"), [
     BUN_PATH,
-    'run',
-    'src/index.ts',
+    "run",
+    "src/index.ts",
   ]);
 
   if (ENABLE_FRONTEND) {
@@ -139,26 +139,26 @@ async function main(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Start frontend (Waku on port 3001)
-    startProcess('Frontend (Waku)', join(ROOT_DIR, 'packages/frontend'), [
+    startProcess("Frontend (Waku)", join(ROOT_DIR, "packages/frontend"), [
       BUN_PATH,
-      'run',
-      'start',
+      "run",
+      "start",
     ]);
   }
 
-  console.log('');
-  console.log('═'.repeat(50));
-  console.log('✅ All services started');
-  console.log('   Backend:  http://localhost:3000');
+  console.log("");
+  console.log("═".repeat(50));
+  console.log("✅ All services started");
+  console.log("   Backend:  http://localhost:3000");
   if (ENABLE_FRONTEND) {
-    console.log('   Frontend: http://localhost:3001');
+    console.log("   Frontend: http://localhost:3001");
   }
-  console.log('═'.repeat(50));
-  console.log('');
-  console.log('Press Ctrl+C to stop all services');
+  console.log("═".repeat(50));
+  console.log("");
+  console.log("Press Ctrl+C to stop all services");
 }
 
 main().catch((error) => {
-  console.error('❌ Failed to start:', error);
+  console.error("❌ Failed to start:", error);
   process.exit(1);
 });

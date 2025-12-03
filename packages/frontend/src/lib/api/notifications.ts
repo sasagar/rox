@@ -4,8 +4,8 @@
  * Provides methods for notification management
  */
 
-import { apiClient } from './client';
-import type { Notification, NotificationFetchOptions } from '../types/notification';
+import { apiClient } from "./client";
+import type { Notification, NotificationFetchOptions } from "../types/notification";
 
 export type { Notification, NotificationFetchOptions };
 
@@ -21,14 +21,14 @@ export const notificationsApi = {
    */
   async getNotifications(options: NotificationFetchOptions = {}): Promise<Notification[]> {
     const params = new URLSearchParams();
-    if (options.limit) params.set('limit', options.limit.toString());
-    if (options.sinceId) params.set('sinceId', options.sinceId);
-    if (options.untilId) params.set('untilId', options.untilId);
-    if (options.types?.length) params.set('types', options.types.join(','));
-    if (options.unreadOnly) params.set('unreadOnly', 'true');
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.sinceId) params.set("sinceId", options.sinceId);
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.types?.length) params.set("types", options.types.join(","));
+    if (options.unreadOnly) params.set("unreadOnly", "true");
 
     const query = params.toString();
-    return apiClient.get<Notification[]>(`/api/notifications${query ? `?${query}` : ''}`);
+    return apiClient.get<Notification[]>(`/api/notifications${query ? `?${query}` : ""}`);
   },
 
   /**
@@ -37,7 +37,7 @@ export const notificationsApi = {
    * @returns Unread count
    */
   async getUnreadCount(): Promise<{ count: number }> {
-    return apiClient.get<{ count: number }>('/api/notifications/unread-count');
+    return apiClient.get<{ count: number }>("/api/notifications/unread-count");
   },
 
   /**
@@ -47,7 +47,7 @@ export const notificationsApi = {
    * @returns Updated notification
    */
   async markAsRead(notificationId: string): Promise<Notification> {
-    return apiClient.post<Notification>('/api/notifications/mark-as-read', { notificationId });
+    return apiClient.post<Notification>("/api/notifications/mark-as-read", { notificationId });
   },
 
   /**
@@ -56,7 +56,7 @@ export const notificationsApi = {
    * @returns Number of marked notifications
    */
   async markAllAsRead(): Promise<{ count: number }> {
-    return apiClient.post<{ count: number }>('/api/notifications/mark-all-as-read');
+    return apiClient.post<{ count: number }>("/api/notifications/mark-all-as-read");
   },
 
   /**
@@ -66,7 +66,7 @@ export const notificationsApi = {
    * @returns Number of marked notifications
    */
   async markAsReadUntil(untilId: string): Promise<{ count: number }> {
-    return apiClient.post<{ count: number }>('/api/notifications/mark-as-read-until', { untilId });
+    return apiClient.post<{ count: number }>("/api/notifications/mark-as-read-until", { untilId });
   },
 
   /**
@@ -75,7 +75,7 @@ export const notificationsApi = {
    * @param notificationId - Notification ID
    */
   async deleteNotification(notificationId: string): Promise<{ success: boolean }> {
-    return apiClient.post<{ success: boolean }>('/api/notifications/delete', { notificationId });
+    return apiClient.post<{ success: boolean }>("/api/notifications/delete", { notificationId });
   },
 
   /**
@@ -84,6 +84,6 @@ export const notificationsApi = {
    * @returns Number of deleted notifications
    */
   async deleteAllNotifications(): Promise<{ count: number }> {
-    return apiClient.post<{ count: number }>('/api/notifications/delete-all');
+    return apiClient.post<{ count: number }>("/api/notifications/delete-all");
   },
 };

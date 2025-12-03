@@ -1,10 +1,10 @@
-import type { Session } from 'shared';
+import type { Session } from "shared";
 
 export interface ISessionRepository {
   /**
    * セッションを作成
    */
-  create(session: Omit<Session, 'createdAt' | 'updatedAt'>): Promise<Session>;
+  create(session: Omit<Session, "createdAt" | "updatedAt">): Promise<Session>;
 
   /**
    * IDでセッションを取得

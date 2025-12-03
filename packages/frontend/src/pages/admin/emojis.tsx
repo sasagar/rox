@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Admin Custom Emojis Page
@@ -7,20 +7,20 @@
  * Features: add, edit, delete, and categorize custom emojis.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload } from 'lucide-react';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { apiClient } from '../../lib/api/client';
-import { Button } from '../../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
-import { InlineError } from '../../components/ui/ErrorMessage';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { Layout } from '../../components/layout/Layout';
-import { AdminNav } from '../../components/admin/AdminNav';
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload } from "lucide-react";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { Spinner } from "../../components/ui/Spinner";
+import { InlineError } from "../../components/ui/ErrorMessage";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { Layout } from "../../components/layout/Layout";
+import { AdminNav } from "../../components/admin/AdminNav";
 
 interface CustomEmoji {
   id: string;
@@ -54,29 +54,29 @@ export default function AdminEmojisPage() {
   // Form state
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingEmoji, setEditingEmoji] = useState<CustomEmoji | null>(null);
-  const [name, setName] = useState('');
-  const [url, setUrl] = useState('');
-  const [category, setCategory] = useState('');
-  const [aliases, setAliases] = useState('');
-  const [license, setLicense] = useState('');
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [category, setCategory] = useState("");
+  const [aliases, setAliases] = useState("");
+  const [license, setLicense] = useState("");
   const [isSensitive, setIsSensitive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Filter state
-  const [filterCategory, setFilterCategory] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadEmojis = useCallback(async () => {
     if (!token) return;
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<EmojisResponse>('/api/emojis');
+      const response = await apiClient.get<EmojisResponse>("/api/emojis");
       setEmojis(response.emojis);
     } catch (err) {
-      console.error('Failed to load emojis:', err);
-      setError('Failed to load custom emojis');
+      console.error("Failed to load emojis:", err);
+      setError("Failed to load custom emojis");
     }
   }, [token]);
 
@@ -85,10 +85,10 @@ export default function AdminEmojisPage() {
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<CategoriesResponse>('/api/emojis/categories');
+      const response = await apiClient.get<CategoriesResponse>("/api/emojis/categories");
       setCategories(response.categories);
     } catch (err) {
-      console.error('Failed to load categories:', err);
+      console.error("Failed to load categories:", err);
     }
   }, [token]);
 
@@ -96,7 +96,7 @@ export default function AdminEmojisPage() {
   useEffect(() => {
     const checkAccess = async () => {
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -104,9 +104,11 @@ export default function AdminEmojisPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: { isAdmin?: boolean } }>('/api/auth/session');
+        const sessionResponse = await apiClient.get<{ user: { isAdmin?: boolean } }>(
+          "/api/auth/session",
+        );
         if (!sessionResponse.user?.isAdmin) {
-          window.location.href = '/timeline';
+          window.location.href = "/timeline";
           return;
         }
 
@@ -115,8 +117,8 @@ export default function AdminEmojisPage() {
 
         await Promise.all([loadEmojis(), loadCategories()]);
       } catch (err) {
-        console.error('Access check failed:', err);
-        setError('Access denied');
+        console.error("Access check failed:", err);
+        setError("Access denied");
       } finally {
         setIsLoading(false);
       }
@@ -126,11 +128,11 @@ export default function AdminEmojisPage() {
   }, [token, loadEmojis, loadCategories, setCurrentUser]);
 
   const resetForm = () => {
-    setName('');
-    setUrl('');
-    setCategory('');
-    setAliases('');
-    setLicense('');
+    setName("");
+    setUrl("");
+    setCategory("");
+    setAliases("");
+    setLicense("");
     setIsSensitive(false);
     setEditingEmoji(null);
     setShowAddForm(false);
@@ -142,10 +144,10 @@ export default function AdminEmojisPage() {
     if (!file || !token) return;
 
     // Validate file type
-    const allowedTypes = ['image/png', 'image/gif', 'image/webp', 'image/apng'];
+    const allowedTypes = ["image/png", "image/gif", "image/webp", "image/apng"];
     if (!allowedTypes.includes(file.type)) {
       addToast({
-        type: 'error',
+        type: "error",
         message: t`Invalid file type. Allowed: PNG, GIF, WebP, APNG`,
       });
       return;
@@ -154,7 +156,7 @@ export default function AdminEmojisPage() {
     // Validate file size (256KB max)
     if (file.size > 256 * 1024) {
       addToast({
-        type: 'error',
+        type: "error",
         message: t`File too large. Maximum size: 256KB`,
       });
       return;
@@ -168,10 +170,10 @@ export default function AdminEmojisPage() {
 
       // Upload file using FormData
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/emojis/upload', {
-        method: 'POST',
+      const response = await fetch("/api/emojis/upload", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -180,20 +182,20 @@ export default function AdminEmojisPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Upload failed');
+        throw new Error(error.error || "Upload failed");
       }
 
       const data = await response.json();
       setUrl(data.url);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`File uploaded successfully`,
       });
     } catch (err) {
-      console.error('Failed to upload file:', err);
+      console.error("Failed to upload file:", err);
       addToast({
-        type: 'error',
+        type: "error",
         message: err instanceof Error ? err.message : t`Failed to upload file`,
       });
       setSelectedFile(null);
@@ -208,26 +210,26 @@ export default function AdminEmojisPage() {
     setIsAdding(true);
     try {
       apiClient.setToken(token);
-      await apiClient.post('/api/emojis/create', {
+      await apiClient.post("/api/emojis/create", {
         name: name.trim().toLowerCase(),
         url: url.trim(),
         category: category.trim() || null,
-        aliases: aliases.trim() ? aliases.split(',').map((a) => a.trim()) : [],
+        aliases: aliases.trim() ? aliases.split(",").map((a) => a.trim()) : [],
         license: license.trim() || null,
         isSensitive,
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Emoji ":${name}:" added successfully`,
       });
 
       resetForm();
       await Promise.all([loadEmojis(), loadCategories()]);
     } catch (err) {
-      console.error('Failed to add emoji:', err);
+      console.error("Failed to add emoji:", err);
       addToast({
-        type: 'error',
+        type: "error",
         message: err instanceof Error ? err.message : t`Failed to add emoji`,
       });
     } finally {
@@ -244,22 +246,22 @@ export default function AdminEmojisPage() {
       await apiClient.patch(`/api/emojis/${editingEmoji.id}`, {
         name: name.trim().toLowerCase(),
         category: category.trim() || null,
-        aliases: aliases.trim() ? aliases.split(',').map((a) => a.trim()) : [],
+        aliases: aliases.trim() ? aliases.split(",").map((a) => a.trim()) : [],
         license: license.trim() || null,
         isSensitive,
       });
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Emoji updated successfully`,
       });
 
       resetForm();
       await Promise.all([loadEmojis(), loadCategories()]);
     } catch (err) {
-      console.error('Failed to update emoji:', err);
+      console.error("Failed to update emoji:", err);
       addToast({
-        type: 'error',
+        type: "error",
         message: err instanceof Error ? err.message : t`Failed to update emoji`,
       });
     } finally {
@@ -276,15 +278,15 @@ export default function AdminEmojisPage() {
       await apiClient.delete(`/api/emojis/${emoji.id}`);
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Emoji ":${emoji.name}:" deleted`,
       });
 
       await Promise.all([loadEmojis(), loadCategories()]);
     } catch (err) {
-      console.error('Failed to delete emoji:', err);
+      console.error("Failed to delete emoji:", err);
       addToast({
-        type: 'error',
+        type: "error",
         message: err instanceof Error ? err.message : t`Failed to delete emoji`,
       });
     }
@@ -294,9 +296,9 @@ export default function AdminEmojisPage() {
     setEditingEmoji(emoji);
     setName(emoji.name);
     setUrl(emoji.url);
-    setCategory(emoji.category || '');
-    setAliases(emoji.aliases.join(', '));
-    setLicense(emoji.license || '');
+    setCategory(emoji.category || "");
+    setAliases(emoji.aliases.join(", "));
+    setLicense(emoji.license || "");
     setIsSensitive(emoji.isSensitive);
     setShowAddForm(true);
   };
@@ -317,12 +319,12 @@ export default function AdminEmojisPage() {
   // Group emojis by category
   const groupedEmojis = filteredEmojis.reduce(
     (acc, emoji) => {
-      const cat = emoji.category || 'Uncategorized';
+      const cat = emoji.category || "Uncategorized";
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(emoji);
       return acc;
     },
-    {} as Record<string, CustomEmoji[]>
+    {} as Record<string, CustomEmoji[]>,
   );
 
   if (isLoading) {
@@ -383,7 +385,10 @@ export default function AdminEmojisPage() {
                   <h3 className="font-semibold">
                     {editingEmoji ? <Trans>Edit Emoji</Trans> : <Trans>Add New Emoji</Trans>}
                   </h3>
-                  <button onClick={resetForm} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                  <button
+                    onClick={resetForm}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -396,7 +401,9 @@ export default function AdminEmojisPage() {
                     <input
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                      onChange={(e) =>
+                        setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+                      }
                       placeholder={t`emoji_name`}
                       className="w-full px-3 py-2 border rounded-md"
                       pattern="[a-z0-9_]+"
@@ -413,7 +420,9 @@ export default function AdminEmojisPage() {
                     {editingEmoji ? (
                       <div className="flex items-center gap-2 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                         <img src={url} alt="" className="w-6 h-6 object-contain" />
-                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate">{url}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                          {url}
+                        </span>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -428,15 +437,13 @@ export default function AdminEmojisPage() {
                           {isUploading ? (
                             <>
                               <Spinner size="xs" />
-                              <span className="text-sm"><Trans>Uploading...</Trans></span>
+                              <span className="text-sm">
+                                <Trans>Uploading...</Trans>
+                              </span>
                             </>
                           ) : selectedFile ? (
                             <>
-                              <img
-                                src={url}
-                                alt=""
-                                className="w-6 h-6 object-contain"
-                              />
+                              <img src={url} alt="" className="w-6 h-6 object-contain" />
                               <span className="text-sm text-green-600">{selectedFile.name}</span>
                             </>
                           ) : (
@@ -532,10 +539,12 @@ export default function AdminEmojisPage() {
                         alt={`:${name}:`}
                         className="w-8 h-8 object-contain"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
-                      <span className="text-gray-600 dark:text-gray-400">:{name || 'emoji_name'}:</span>
+                      <span className="text-gray-600 dark:text-gray-400">
+                        :{name || "emoji_name"}:
+                      </span>
                     </div>
                   </div>
                 )}
@@ -609,7 +618,9 @@ export default function AdminEmojisPage() {
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([categoryName, categoryEmojis]) => (
                     <div key={categoryName}>
-                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{categoryName}</h3>
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                        {categoryName}
+                      </h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                         {categoryEmojis.map((emoji) => (
                           <div
@@ -621,7 +632,10 @@ export default function AdminEmojisPage() {
                               alt={`:${emoji.name}:`}
                               className="w-10 h-10 object-contain mb-2"
                             />
-                            <span className="text-xs text-center truncate w-full" title={`:${emoji.name}:`}>
+                            <span
+                              className="text-xs text-center truncate w-full"
+                              title={`:${emoji.name}:`}
+                            >
                               :{emoji.name}:
                             </span>
                             {emoji.isSensitive && (

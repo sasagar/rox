@@ -6,8 +6,8 @@
  * @module middleware/requestLogger
  */
 
-import type { Context, Next } from 'hono';
-import { createRequestLogger } from '../lib/logger.js';
+import type { Context, Next } from "hono";
+import { createRequestLogger } from "../lib/logger.js";
 
 /**
  * Generate a unique request ID
@@ -17,7 +17,7 @@ import { createRequestLogger } from '../lib/logger.js';
  * @returns Unique request ID
  */
 function generateRequestId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -30,12 +30,12 @@ function generateRequestId(): string {
  * @returns Client IP address
  */
 function getClientIP(c: Context): string {
-  const forwarded = c.req.header('x-forwarded-for');
+  const forwarded = c.req.header("x-forwarded-for");
   if (forwarded) {
-    const firstIP = forwarded.split(',')[0];
-    return firstIP?.trim() || 'unknown';
+    const firstIP = forwarded.split(",")[0];
+    return firstIP?.trim() || "unknown";
   }
-  return c.req.header('x-real-ip') || 'unknown';
+  return c.req.header("x-real-ip") || "unknown";
 }
 
 /**
@@ -65,10 +65,10 @@ export function requestLogger() {
     const ip = getClientIP(c);
 
     // Set request ID in context for use by other middleware
-    c.set('requestId', requestId);
+    c.set("requestId", requestId);
 
     // Add request ID to response headers
-    c.header('X-Request-ID', requestId);
+    c.header("X-Request-ID", requestId);
 
     // Create request-scoped logger
     const reqLogger = createRequestLogger({
@@ -79,30 +79,36 @@ export function requestLogger() {
     });
 
     // Log incoming request
-    reqLogger.info('Incoming request');
+    reqLogger.info("Incoming request");
 
     try {
       await next();
 
       // Get user ID if authenticated
-      const user = c.get('user') as { id: string } | undefined;
+      const user = c.get("user") as { id: string } | undefined;
       const duration = Date.now() - startTime;
       const status = c.res.status;
 
       // Log completed request
-      reqLogger.info({
-        status,
-        duration,
-        ...(user && { userId: user.id }),
-      }, 'Request completed');
+      reqLogger.info(
+        {
+          status,
+          duration,
+          ...(user && { userId: user.id }),
+        },
+        "Request completed",
+      );
     } catch (error) {
       const duration = Date.now() - startTime;
 
       // Log error
-      reqLogger.error({
-        err: error,
-        duration,
-      }, 'Request failed');
+      reqLogger.error(
+        {
+          err: error,
+          duration,
+        },
+        "Request failed",
+      );
 
       throw error;
     }
@@ -110,7 +116,7 @@ export function requestLogger() {
 }
 
 // Extend Hono Context type
-declare module 'hono' {
+declare module "hono" {
   interface ContextVariableMap {
     requestId: string;
   }

@@ -1,24 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect, memo } from 'react';
-import { useAtom } from 'jotai';
-import type { Note, NoteFile } from '../../lib/types/note';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { MessageCircle, Repeat2, MoreHorizontal, Flag } from 'lucide-react';
-import { Card, CardContent } from '../ui/Card';
-import { Avatar } from '../ui/Avatar';
-import { Button } from '../ui/Button';
-import { ImageModal } from '../ui/ImageModal';
-import { notesApi } from '../../lib/api/notes';
-import { NoteComposer } from './NoteComposer';
-import { ReactionButton } from './ReactionPicker';
-import { ReportDialog } from '../report/ReportDialog';
-import { createReaction, deleteReaction, getMyReactions, getReactionCountsWithEmojis } from '../../lib/api/reactions';
-import { followUser, unfollowUser } from '../../lib/api/following';
-import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
-import { MfmRenderer } from '../mfm/MfmRenderer';
-import { addToastAtom } from '../../lib/atoms/toast';
+import { useState, useEffect, memo } from "react";
+import { useAtom } from "jotai";
+import type { Note, NoteFile } from "../../lib/types/note";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
+import { Card, CardContent } from "../ui/Card";
+import { Avatar } from "../ui/Avatar";
+import { Button } from "../ui/Button";
+import { ImageModal } from "../ui/ImageModal";
+import { notesApi } from "../../lib/api/notes";
+import { NoteComposer } from "./NoteComposer";
+import { ReactionButton } from "./ReactionPicker";
+import { ReportDialog } from "../report/ReportDialog";
+import {
+  createReaction,
+  deleteReaction,
+  getMyReactions,
+  getReactionCountsWithEmojis,
+} from "../../lib/api/reactions";
+import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
+import { MfmRenderer } from "../mfm/MfmRenderer";
+import { addToastAtom } from "../../lib/atoms/toast";
 
 /**
  * Props for the NoteCard component
@@ -52,7 +57,6 @@ function NoteCardComponent({
 }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [showReplyComposer, setShowReplyComposer] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -62,8 +66,24 @@ function NoteCardComponent({
   const [currentUser] = useAtom(currentUserAtom);
   const [, addToast] = useAtom(addToastAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
-  const [localReactions, setLocalReactions] = useState<Record<string, number>>(note.reactions || {});
-  const [reactionEmojis, setReactionEmojis] = useState<Record<string, string>>(note.reactionEmojis || {});
+  const [localReactions, setLocalReactions] = useState<Record<string, number>>(
+    note.reactions || {},
+  );
+  const [reactionEmojis, setReactionEmojis] = useState<Record<string, string>>(
+    note.reactionEmojis || {},
+  );
+  const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+
+  // Load remote instance info for remote users
+  useEffect(() => {
+    if (note.user.host) {
+      getRemoteInstanceInfo(note.user.host).then((info) => {
+        if (info) {
+          setRemoteInstance(info);
+        }
+      });
+    }
+  }, [note.user.host]);
 
   // Load user's existing reactions and custom emoji URLs on mount
   useEffect(() => {
@@ -84,7 +104,7 @@ function NoteCardComponent({
           setMyReactions(reactions.map((r) => r.reaction));
         }
       } catch (error) {
-        console.error('Failed to load reaction data:', error);
+        console.error("Failed to load reaction data:", error);
       }
     };
 
@@ -127,14 +147,14 @@ function NoteCardComponent({
         }));
 
         addToast({
-          type: 'success',
+          type: "success",
           message: t`Reaction added`,
         });
       }
     } catch (error) {
-      console.error('Failed to react:', error);
+      console.error("Failed to react:", error);
       addToast({
-        type: 'error',
+        type: "error",
         message: t`Failed to add reaction`,
       });
     } finally {
@@ -146,42 +166,14 @@ function NoteCardComponent({
     try {
       await notesApi.renote(note.id);
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Note renoted`,
       });
     } catch (error) {
-      console.error('Failed to renote:', error);
+      console.error("Failed to renote:", error);
       addToast({
-        type: 'error',
+        type: "error",
         message: t`Failed to renote`,
-      });
-    }
-  };
-
-  const handleFollow = async () => {
-    if (!token || !currentUser) return;
-
-    try {
-      if (isFollowing) {
-        await unfollowUser(note.user.id, token);
-        setIsFollowing(false);
-        addToast({
-          type: 'success',
-          message: t`Unfollowed successfully`,
-        });
-      } else {
-        await followUser(note.user.id, token);
-        setIsFollowing(true);
-        addToast({
-          type: 'success',
-          message: t`Following successfully`,
-        });
-      }
-    } catch (error) {
-      console.error('Failed to update follow status:', error);
-      addToast({
-        type: 'error',
-        message: t`Failed to update follow status`,
       });
     }
   };
@@ -189,9 +181,9 @@ function NoteCardComponent({
   // Get user initials for avatar fallback
   const userInitials = note.user.name
     ? note.user.name
-        .split(' ')
+        .split(" ")
         .map((n: string) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
     : note.user.username.slice(0, 2).toUpperCase();
@@ -222,29 +214,68 @@ function NoteCardComponent({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <a
-                href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
+                href={
+                  note.user.host
+                    ? `/@${note.user.username}@${note.user.host}`
+                    : `/${note.user.username}`
+                }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name ? (
-                  <MfmRenderer text={note.user.name} plain />
-                ) : (
-                  note.user.username
-                )}
+                {note.user.name ? <MfmRenderer text={note.user.name} plain /> : note.user.username}
               </a>
               <a
-                href={note.user.host ? `/@${note.user.username}@${note.user.host}` : `/${note.user.username}`}
+                href={
+                  note.user.host
+                    ? `/@${note.user.username}@${note.user.host}`
+                    : `/${note.user.username}`
+                }
                 className="text-sm text-(--text-muted) truncate hover:underline"
               >
-                @{note.user.username}{note.user.host && `@${note.user.host}`}
+                @{note.user.username}
+                {note.user.host && `@${note.user.host}`}
               </a>
-              {/* Remote instance badge */}
+              {/* Remote instance badge with server info */}
               {note.user.host && (
-                <span
-                  className="inline-flex items-center px-1.5 py-0.5 text-xs rounded bg-(--bg-tertiary) text-(--text-muted) truncate max-w-[120px]"
-                  title={`From ${note.user.host}`}
+                <a
+                  href={`https://${note.user.host}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40"
+                  style={{
+                    backgroundColor: remoteInstance?.themeColor
+                      ? `${remoteInstance.themeColor}20`
+                      : "var(--bg-tertiary)",
+                    color: remoteInstance?.themeColor || "var(--text-muted)",
+                    borderLeft: remoteInstance?.themeColor
+                      ? `2px solid ${remoteInstance.themeColor}`
+                      : undefined,
+                  }}
+                  title={
+                    remoteInstance
+                      ? `${remoteInstance.name || note.user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                      : `From ${note.user.host}`
+                  }
                 >
-                  🌐 {note.user.host}
-                </span>
+                  {remoteInstance?.iconUrl ? (
+                    <img
+                      src={`/api/proxy?url=${encodeURIComponent(remoteInstance.iconUrl)}`}
+                      alt=""
+                      className="w-3.5 h-3.5 rounded-sm object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        // Hide broken image and show fallback
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.nextElementSibling?.classList.remove("hidden");
+                      }}
+                    />
+                  ) : null}
+                  <Globe
+                    className={`w-3 h-3 ${remoteInstance?.iconUrl ? "hidden" : ""}`}
+                  />
+                  <span className="truncate">
+                    {remoteInstance?.name || note.user.host}
+                  </span>
+                </a>
               )}
             </div>
             <a
@@ -255,21 +286,6 @@ function NoteCardComponent({
               {new Date(note.createdAt).toLocaleString()}
             </a>
           </div>
-          {/* Follow button (only show if not own post and logged in) */}
-          {currentUser && currentUser.id !== note.user.id && (
-            <Button
-              variant={isFollowing ? 'secondary' : 'primary'}
-              size="sm"
-              onPress={handleFollow}
-              className={`${
-                isFollowing
-                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                  : 'bg-primary-500 text-white hover:bg-primary-600'
-              }`}
-            >
-              {isFollowing ? <Trans>Following</Trans> : <Trans>Follow</Trans>}
-            </Button>
-          )}
         </div>
 
         {/* Renote Indicator */}
@@ -315,15 +331,15 @@ function NoteCardComponent({
               <div
                 className={`mb-3 grid gap-2 ${
                   note.files.length === 1
-                    ? 'grid-cols-1'
+                    ? "grid-cols-1"
                     : note.files.length === 2
-                    ? 'grid-cols-2'
-                    : note.files.length === 3
-                    ? 'grid-cols-3'
-                    : 'grid-cols-2'
+                      ? "grid-cols-2"
+                      : note.files.length === 3
+                        ? "grid-cols-3"
+                        : "grid-cols-2"
                 }`}
                 role="group"
-                aria-label={`${note.files.length} attached image${note.files.length > 1 ? 's' : ''}`}
+                aria-label={`${note.files.length} attached image${note.files.length > 1 ? "s" : ""}`}
               >
                 {note.files.map((file: NoteFile, index: number) => (
                   <button
@@ -333,11 +349,14 @@ function NoteCardComponent({
                       setShowImageModal(true);
                     }}
                     className="relative overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                    aria-label={`View image ${index + 1} of ${note.files?.length ?? 0}${file.comment ? `: ${file.comment}` : ''}`}
+                    aria-label={`View image ${index + 1} of ${note.files?.length ?? 0}${file.comment ? `: ${file.comment}` : ""}`}
                   >
                     <img
                       src={file.thumbnailUrl || file.url}
-                      alt={file.comment || `Image ${index + 1} from ${note.user.name || note.user.username}'s post`}
+                      alt={
+                        file.comment ||
+                        `Image ${index + 1} from ${note.user.name || note.user.username}'s post`
+                      }
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />
@@ -395,13 +414,17 @@ function NoteCardComponent({
         )}
 
         {/* Interaction Buttons */}
-        <div className="flex items-center gap-2 border-t border-gray-100 dark:border-gray-700 pt-3" role="group" aria-label="Post actions">
+        <div
+          className="flex items-center gap-1 sm:gap-2 flex-wrap border-t border-gray-100 dark:border-gray-700 pt-3"
+          role="group"
+          aria-label="Post actions"
+        >
           <Button
             variant="ghost"
             size="sm"
             onPress={() => setShowReplyComposer(!showReplyComposer)}
             className="text-gray-600 dark:text-gray-400 hover:text-primary-600 min-w-[60px] flex items-center gap-1"
-            aria-label={`Reply to post. ${note.repliesCount || 0} ${note.repliesCount === 1 ? 'reply' : 'replies'}`}
+            aria-label={`Reply to post. ${note.repliesCount || 0} ${note.repliesCount === 1 ? "reply" : "replies"}`}
             aria-expanded={showReplyComposer}
           >
             <MessageCircle className="w-4 h-4" />
@@ -412,7 +435,7 @@ function NoteCardComponent({
             size="sm"
             onPress={handleRenote}
             className="text-gray-600 dark:text-gray-400 hover:text-green-600 min-w-[60px] flex items-center gap-1"
-            aria-label={`Renote post. ${note.renoteCount || 0} ${note.renoteCount === 1 ? 'renote' : 'renotes'}`}
+            aria-label={`Renote post. ${note.renoteCount || 0} ${note.renoteCount === 1 ? "renote" : "renotes"}`}
           >
             <Repeat2 className="w-4 h-4" />
             <span>{note.renoteCount || 0}</span>
@@ -423,10 +446,14 @@ function NoteCardComponent({
             isDisabled={isReacting}
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
-            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400" role="group" aria-label="Reactions">
+            <div
+              className="flex items-center gap-1 flex-wrap text-sm text-gray-600 dark:text-gray-400"
+              role="group"
+              aria-label="Reactions"
+            >
               {Object.entries(localReactions).map(([emoji, count]) => {
                 // Check if this is a custom emoji (format: :emoji_name:)
-                const isCustomEmoji = emoji.startsWith(':') && emoji.endsWith(':');
+                const isCustomEmoji = emoji.startsWith(":") && emoji.endsWith(":");
                 const customEmojiUrl = reactionEmojis[emoji];
 
                 return (
@@ -437,9 +464,9 @@ function NoteCardComponent({
                     className={`
                       flex items-center gap-1 px-2 py-1 rounded-full
                       transition-all hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${myReactions.includes(emoji) ? 'bg-primary-100 dark:bg-primary-900/30 ring-1 ring-primary-500' : 'bg-gray-50 dark:bg-gray-800'}
+                      ${myReactions.includes(emoji) ? "bg-primary-100 dark:bg-primary-900/30 ring-1 ring-primary-500" : "bg-gray-50 dark:bg-gray-800"}
                     `}
-                    aria-label={`${myReactions.includes(emoji) ? 'Remove' : 'Add'} ${emoji} reaction. ${count} ${count === 1 ? 'reaction' : 'reactions'}`}
+                    aria-label={`${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
                     aria-pressed={myReactions.includes(emoji)}
                   >
                     {isCustomEmoji && customEmojiUrl ? (

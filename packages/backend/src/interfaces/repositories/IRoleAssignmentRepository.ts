@@ -6,7 +6,7 @@
  * @module interfaces/repositories/IRoleAssignmentRepository
  */
 
-import type { Role, RoleAssignment } from '../../db/schema/pg.js';
+import type { Role, RoleAssignment } from "../../db/schema/pg.js";
 
 /**
  * Role assignment with role details
@@ -31,7 +31,7 @@ export interface IRoleAssignmentRepository {
     userId: string,
     roleId: string,
     assignedById?: string,
-    expiresAt?: Date
+    expiresAt?: Date,
   ): Promise<RoleAssignment>;
 
   /**

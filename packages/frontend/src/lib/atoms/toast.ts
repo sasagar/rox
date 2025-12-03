@@ -1,9 +1,9 @@
-import { atom } from 'jotai';
+import { atom } from "jotai";
 
 /**
  * Toast notification types
  */
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = "success" | "error" | "info";
 
 /**
  * Toast notification interface
@@ -24,25 +24,22 @@ export const toastsAtom = atom<Toast[]>([]);
 /**
  * Helper atom to add a toast notification
  */
-export const addToastAtom = atom(
-  null,
-  (get, set, toast: Omit<Toast, 'id'>) => {
-    const newToast: Toast = {
-      ...toast,
-      id: `toast-${Date.now()}-${Math.random()}`,
-      duration: toast.duration ?? 5000,
-    };
-    set(toastsAtom, [...get(toastsAtom), newToast]);
-    return newToast.id;
-  }
-);
+export const addToastAtom = atom(null, (get, set, toast: Omit<Toast, "id">) => {
+  const newToast: Toast = {
+    ...toast,
+    id: `toast-${Date.now()}-${Math.random()}`,
+    duration: toast.duration ?? 5000,
+  };
+  set(toastsAtom, [...get(toastsAtom), newToast]);
+  return newToast.id;
+});
 
 /**
  * Helper atom to remove a toast notification
  */
-export const removeToastAtom = atom(
-  null,
-  (get, set, id: string) => {
-    set(toastsAtom, get(toastsAtom).filter((toast) => toast.id !== id));
-  }
-);
+export const removeToastAtom = atom(null, (get, set, id: string) => {
+  set(
+    toastsAtom,
+    get(toastsAtom).filter((toast) => toast.id !== id),
+  );
+});
