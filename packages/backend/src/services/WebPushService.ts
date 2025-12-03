@@ -199,19 +199,28 @@ export class WebPushService {
       },
     };
 
+    const TIMEOUT_MS = 15000; // 15 seconds
+
     try {
-      // Set a 10 second timeout for the push notification
-      const options = {
-        timeout: 10000, // 10 seconds
-      };
       console.log("[WebPush] Sending to endpoint:", subscription.endpoint.substring(0, 60) + "...");
       const startTime = Date.now();
-      await webpush.sendNotification(pushSubscription, JSON.stringify(payload), options);
+
+      // Use Promise.race to enforce timeout since web-push timeout option may not work in Bun
+      const sendPromise = webpush.sendNotification(pushSubscription, JSON.stringify(payload));
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Push notification timed out after ${TIMEOUT_MS}ms`));
+        }, TIMEOUT_MS);
+      });
+
+      await Promise.race([sendPromise, timeoutPromise]);
+
       console.log("[WebPush] Success, took", Date.now() - startTime, "ms");
       logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
       return true;
     } catch (error: any) {
       console.log("[WebPush] Error:", error.message, "code:", error.code, "status:", error.statusCode);
+
       // Handle expired or invalid subscriptions
       if (error.statusCode === 404 || error.statusCode === 410) {
         logger.info(
@@ -222,8 +231,8 @@ export class WebPushService {
         return false;
       }
 
-      // Handle timeout errors
-      if (error.code === "ETIMEDOUT" || error.message?.includes("timeout")) {
+      // Handle timeout errors (both manual and library)
+      if (error.code === "ETIMEDOUT" || error.message?.includes("timeout") || error.message?.includes("timed out")) {
         logger.warn(
           {
             subscriptionId: subscription.id,
