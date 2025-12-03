@@ -159,12 +159,13 @@ push.post("/test", requireAuth(), async (c: Context) => {
 
   // Send notification asynchronously (fire-and-forget) to avoid blocking the response
   console.log("[Push Test] Queuing test notification...");
+  const timestamp = Date.now();
   webPushService
     .sendToUser(user.id, {
       title: "Test Notification",
-      body: "This is a test push notification from Rox!",
+      body: `This is a test push notification from Rox! (${new Date(timestamp).toLocaleTimeString()})`,
       icon: `${process.env.URL || "http://localhost:3000"}/icon-192.png`,
-      tag: "test-notification",
+      tag: `test-notification-${timestamp}`,
       data: {
         url: `${process.env.URL || "http://localhost:3000"}/notifications`,
         type: "follow" as const,
