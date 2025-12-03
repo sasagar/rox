@@ -1,24 +1,156 @@
 /**
- * Service Worker for Push Notifications
+ * Service Worker for PWA Support and Push Notifications
  *
- * Handles background push notifications for Rox
+ * Handles:
+ * - Offline support with caching
+ * - Background push notifications
  */
 
-// Service Worker version
-const SW_VERSION = "1.0.1";
+// Service Worker version - bump this to force cache refresh
+const SW_VERSION = "2.0.0";
 
-// Install event
-self.addEventListener("install", (_event) => {
+// Cache names
+const CACHE_NAME = `rox-cache-v${SW_VERSION}`;
+const STATIC_CACHE_NAME = `rox-static-v${SW_VERSION}`;
+
+// Assets to cache on install (app shell)
+const STATIC_ASSETS = [
+  "/",
+  "/timeline",
+  "/notifications",
+  "/login",
+  "/favicon.png",
+  "/manifest.json",
+];
+
+// Install event - cache static assets
+self.addEventListener("install", (event) => {
   console.log("[SW] Installing Service Worker version:", SW_VERSION);
+
+  event.waitUntil(
+    caches.open(STATIC_CACHE_NAME).then((cache) => {
+      console.log("[SW] Caching static assets");
+      // Use addAll for static assets, but don't fail if some aren't available
+      return Promise.allSettled(
+        STATIC_ASSETS.map((url) =>
+          cache.add(url).catch((err) => {
+            console.warn(`[SW] Failed to cache ${url}:`, err);
+          })
+        )
+      );
+    })
+  );
+
   // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
-// Activate event
+// Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
   console.log("[SW] Service Worker activated");
-  // Take control of all clients immediately
-  event.waitUntil(self.clients.claim());
+
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          // Delete old version caches
+          if (
+            cacheName !== CACHE_NAME &&
+            cacheName !== STATIC_CACHE_NAME &&
+            (cacheName.startsWith("rox-cache-") || cacheName.startsWith("rox-static-"))
+          ) {
+            console.log("[SW] Deleting old cache:", cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim();
+    })
+  );
+});
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests
+  if (request.method !== "GET") {
+    return;
+  }
+
+  // Skip API requests - always fetch from network
+  if (url.pathname.startsWith("/api/")) {
+    return;
+  }
+
+  // Skip WebSocket and SSE connections
+  if (
+    request.headers.get("upgrade") === "websocket" ||
+    request.headers.get("accept")?.includes("text/event-stream")
+  ) {
+    return;
+  }
+
+  // Network-first strategy for HTML pages (for SPA navigation)
+  if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Cache successful responses
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if offline
+          return caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Fallback to cached home page for SPA navigation
+            return caches.match("/timeline") || caches.match("/");
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets (JS, CSS, images)
+  if (
+    url.pathname.startsWith("/assets/") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css") ||
+    url.pathname.endsWith(".png") ||
+    url.pathname.endsWith(".jpg") ||
+    url.pathname.endsWith(".svg") ||
+    url.pathname.endsWith(".woff2")
+  ) {
+    event.respondWith(
+      caches.match(request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(STATIC_CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
 });
 
 // Push event - handle incoming push notifications
