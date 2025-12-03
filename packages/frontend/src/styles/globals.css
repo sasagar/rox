@@ -137,3 +137,27 @@ body {
     font-size: max(16px, 1rem) !important;
   }
 }
+
+/* PWA Safe Area Support
+ * Handles notched devices (iPhone X+) and standalone PWA mode.
+ * Uses env() for safe-area-inset values with fallbacks.
+ */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* PWA standalone mode specific adjustments */
+@media all and (display-mode: standalone) {
+  /* Ensure proper spacing for notched devices */
+  .safe-area-inset-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+  }
+
+  .safe-area-inset-top {
+    padding-top: max(env(safe-area-inset-top, 0px), 8px);
+  }
+}

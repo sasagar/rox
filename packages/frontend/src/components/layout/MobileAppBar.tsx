@@ -70,10 +70,11 @@ export function MobileAppBar() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-(--card-bg) border-t border-(--border-color) safe-area-inset-bottom"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-(--card-bg) border-t border-(--border-color)"
       role="navigation"
       aria-label="Main navigation"
     >
+      {/* Main navigation content - icons should be centered in this area */}
       <div className="flex items-center justify-around h-14 px-2">
         {navItems.map((item) => (
           <SpaLink
@@ -92,6 +93,8 @@ export function MobileAppBar() {
           </SpaLink>
         ))}
       </div>
+      {/* Safe area spacer - adds padding below content for notched devices */}
+      <div className="safe-area-inset-bottom" />
     </nav>
   );
 }
