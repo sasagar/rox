@@ -65,6 +65,14 @@ msgstr "{0} uploaded by you"
 msgid "{0} used (Unlimited)"
 msgstr "{0} used (Unlimited)"
 
+#: src/pages/admin/settings.tsx:224
+msgid "{assetType} removed"
+msgstr "{assetType} removed"
+
+#: src/pages/admin/settings.tsx:206
+msgid "{assetType} uploaded successfully"
+msgstr "{assetType} uploaded successfully"
+
 #: src/pages/admin/invitations.tsx:305
 msgid "1 Day"
 msgstr "1 Day"
@@ -154,7 +162,7 @@ msgstr "Admin"
 msgid "Admin Role"
 msgstr "Admin Role"
 
-#: src/pages/admin/settings.tsx:192
+#: src/pages/admin/settings.tsx:263
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
@@ -197,7 +205,7 @@ msgstr "All instances can federate with this server"
 msgid "All Types"
 msgstr "All Types"
 
-#: src/pages/admin/settings.tsx:443
+#: src/pages/admin/settings.tsx:524
 msgid "Allow new users to register accounts"
 msgstr "Allow new users to register accounts"
 
@@ -222,6 +230,10 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
+#: src/pages/admin/settings.tsx:314
+msgid "Assets"
+msgstr "Assets"
+
 #: src/pages/mod/audit-logs.tsx:202
 msgid "Audit Logs"
 msgstr "Audit Logs"
@@ -243,7 +255,7 @@ msgstr "Available Codes"
 msgid "Back to timeline"
 msgstr "Back to timeline"
 
-#: src/pages/admin/settings.tsx:324
+#: src/pages/admin/settings.tsx:405
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -306,9 +318,13 @@ msgstr "Blocking an instance will prevent all federation with that server. Users
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/settings.tsx:360
+#: src/pages/admin/settings.tsx:441
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
+
+#: src/pages/admin/settings.tsx:913
+msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
+msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 
 #: src/components/settings/StorageSection.tsx:222
 #: src/pages/admin/storage.tsx:339
@@ -399,7 +415,7 @@ msgstr "Color"
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
-#: src/pages/admin/settings.tsx:195
+#: src/pages/admin/settings.tsx:266
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
 
@@ -494,7 +510,7 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
 
-#: src/pages/admin/settings.tsx:636
+#: src/pages/admin/settings.tsx:717
 msgid "Dark"
 msgstr "Dark"
 
@@ -506,7 +522,7 @@ msgstr "Default"
 msgid "Default (auto-assign to new users)"
 msgstr "Default (auto-assign to new users)"
 
-#: src/pages/admin/settings.tsx:579
+#: src/pages/admin/settings.tsx:660
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
 
@@ -558,7 +574,7 @@ msgid "Describe the reason for this warning..."
 msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:269
+#: src/pages/admin/settings.tsx:350
 msgid "Description"
 msgstr "Description"
 
@@ -686,7 +702,7 @@ msgstr "Empty folder"
 msgid "Enable"
 msgstr "Enable"
 
-#: src/pages/admin/settings.tsx:440
+#: src/pages/admin/settings.tsx:521
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
@@ -917,7 +933,11 @@ msgstr "Failed to upload file"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "Fast and efficient with minimal resource usage"
 
-#: src/pages/admin/settings.tsx:344
+#: src/pages/admin/settings.tsx:910
+msgid "Favicon"
+msgstr "Favicon"
+
+#: src/pages/admin/settings.tsx:425
 msgid "Favicon URL"
 msgstr "Favicon URL"
 
@@ -1015,6 +1035,10 @@ msgstr "Global"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
+#: src/pages/admin/settings.tsx:866
+msgid "Header image for your instance (max 5MB)"
+msgstr "Header image for your instance (max 5MB)"
+
 #: src/pages/admin/federation.tsx:273
 #: src/pages/admin/federation.tsx:315
 msgid "Healthy"
@@ -1034,7 +1058,7 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:306
+#: src/pages/admin/settings.tsx:387
 msgid "Icon URL"
 msgstr "Icon URL"
 
@@ -1046,9 +1070,13 @@ msgstr "Image"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/pages/admin/settings.tsx:213
+#: src/pages/admin/settings.tsx:284
 msgid "Instance"
 msgstr "Instance"
+
+#: src/pages/admin/settings.tsx:863
+msgid "Instance Banner"
+msgstr "Instance Banner"
 
 #: src/pages/admin/blocks.tsx:122
 msgid "Instance blocked"
@@ -1075,11 +1103,15 @@ msgstr "Instance Domain"
 msgid "Instance Hostname"
 msgstr "Instance Hostname"
 
-#: src/pages/admin/settings.tsx:245
+#: src/pages/admin/settings.tsx:816
+msgid "Instance Icon"
+msgstr "Instance Icon"
+
+#: src/pages/admin/settings.tsx:326
 msgid "Instance Information"
 msgstr "Instance Information"
 
-#: src/pages/admin/settings.tsx:251
+#: src/pages/admin/settings.tsx:332
 msgid "Instance Name"
 msgstr "Instance Name"
 
@@ -1091,7 +1123,7 @@ msgstr "Instance Overview"
 msgid "Instance removed from cache"
 msgstr "Instance removed from cache"
 
-#: src/pages/admin/settings.tsx:118
+#: src/pages/admin/settings.tsx:131
 msgid "Instance settings saved"
 msgstr "Instance settings saved"
 
@@ -1140,7 +1172,7 @@ msgid "Invite limit:"
 msgstr "Invite limit:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:463
+#: src/pages/admin/settings.tsx:544
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "Invite Only"
@@ -1179,7 +1211,7 @@ msgstr "Leave empty for auto-generated code"
 msgid "License"
 msgstr "License"
 
-#: src/pages/admin/settings.tsx:617
+#: src/pages/admin/settings.tsx:698
 msgid "Light"
 msgstr "Light"
 
@@ -1234,7 +1266,7 @@ msgstr "Looking up remote user..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "Lowercase letters, numbers, and underscores only"
 
-#: src/pages/admin/settings.tsx:287
+#: src/pages/admin/settings.tsx:368
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
@@ -1334,7 +1366,7 @@ msgstr "Never"
 msgid "New"
 msgstr "New"
 
-#: src/pages/admin/settings.tsx:489
+#: src/pages/admin/settings.tsx:570
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
 
@@ -1592,7 +1624,7 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:492
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
-#: src/pages/admin/settings.tsx:648
+#: src/pages/admin/settings.tsx:729
 msgid "Preview"
 msgstr "Preview"
 
@@ -1600,11 +1632,11 @@ msgstr "Preview"
 msgid "Previous"
 msgstr "Previous"
 
-#: src/pages/admin/settings.tsx:655
+#: src/pages/admin/settings.tsx:736
 msgid "Primary Button"
 msgstr "Primary Button"
 
-#: src/pages/admin/settings.tsx:518
+#: src/pages/admin/settings.tsx:599
 msgid "Primary Color"
 msgstr "Primary Color"
 
@@ -1620,7 +1652,7 @@ msgstr "Privacy First"
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: src/pages/admin/settings.tsx:385
+#: src/pages/admin/settings.tsx:466
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
@@ -1743,7 +1775,7 @@ msgstr "Refresh List"
 msgid "Registered devices"
 msgstr "Registered devices"
 
-#: src/pages/admin/settings.tsx:223
+#: src/pages/admin/settings.tsx:294
 msgid "Registration"
 msgstr "Registration"
 
@@ -1756,11 +1788,11 @@ msgstr "Registration Closed"
 msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
-#: src/pages/admin/settings.tsx:421
+#: src/pages/admin/settings.tsx:502
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
-#: src/pages/admin/settings.tsx:137
+#: src/pages/admin/settings.tsx:150
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
@@ -1783,6 +1815,9 @@ msgid "Remote Instances"
 msgstr "Remote Instances"
 
 #: src/pages/admin/federation.tsx:450
+#: src/pages/admin/settings.tsx:842
+#: src/pages/admin/settings.tsx:889
+#: src/pages/admin/settings.tsx:936
 msgid "Remove"
 msgstr "Remove"
 
@@ -1890,11 +1925,11 @@ msgstr "Reports"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
-#: src/pages/admin/settings.tsx:466
+#: src/pages/admin/settings.tsx:547
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
 
-#: src/pages/admin/settings.tsx:486
+#: src/pages/admin/settings.tsx:567
 msgid "Require Approval"
 msgstr "Require Approval"
 
@@ -2003,11 +2038,11 @@ msgstr "Save Changes"
 msgid "Save draft"
 msgstr "Save draft"
 
-#: src/pages/admin/settings.tsx:408
+#: src/pages/admin/settings.tsx:489
 msgid "Save Instance Settings"
 msgstr "Save Instance Settings"
 
-#: src/pages/admin/settings.tsx:499
+#: src/pages/admin/settings.tsx:580
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
@@ -2015,7 +2050,7 @@ msgstr "Save Registration Settings"
 msgid "Save Settings"
 msgstr "Save Settings"
 
-#: src/pages/admin/settings.tsx:674
+#: src/pages/admin/settings.tsx:755
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
@@ -2063,7 +2098,7 @@ msgstr "Search users..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "Search users... (e.g., alice or alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:664
+#: src/pages/admin/settings.tsx:745
 msgid "Secondary"
 msgstr "Secondary"
 
@@ -2091,6 +2126,10 @@ msgstr "Send test"
 #: src/pages/admin/emojis.tsx:525
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
+
+#: src/pages/admin/settings.tsx:768
+msgid "Server Assets"
+msgstr "Server Assets"
 
 #: src/components/layout/Sidebar.tsx:95
 #: src/pages/settings.tsx:134
@@ -2197,7 +2236,7 @@ msgstr "Suspend Users"
 msgid "Suspended"
 msgstr "Suspended"
 
-#: src/pages/admin/settings.tsx:598
+#: src/pages/admin/settings.tsx:679
 msgid "System"
 msgstr "System"
 
@@ -2230,7 +2269,7 @@ msgstr "Terms"
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
-#: src/pages/admin/settings.tsx:367
+#: src/pages/admin/settings.tsx:448
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
@@ -2247,15 +2286,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:233
+#: src/pages/admin/settings.tsx:304
 msgid "Theme"
 msgstr "Theme"
 
-#: src/pages/admin/settings.tsx:512
+#: src/pages/admin/settings.tsx:593
 msgid "Theme Settings"
 msgstr "Theme Settings"
 
-#: src/pages/admin/settings.tsx:156
+#: src/pages/admin/settings.tsx:169
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
@@ -2380,9 +2419,19 @@ msgstr "Update Emoji"
 msgid "Update Role"
 msgstr "Update Role"
 
+#: src/pages/admin/settings.tsx:832
+#: src/pages/admin/settings.tsx:879
+#: src/pages/admin/settings.tsx:926
+msgid "Upload"
+msgstr "Upload"
+
 #: src/components/drive/DrivePickerDialog.tsx:383
 msgid "Upload files to see them here"
 msgstr "Upload files to see them here"
+
+#: src/pages/admin/settings.tsx:773
+msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
+msgstr "Upload images for your instance branding. Files are automatically converted to WebP format."
 
 #: src/components/note/NoteComposer.tsx:551
 msgid "Uploading files..."
@@ -2397,6 +2446,10 @@ msgstr "Uploading..."
 #: src/pages/admin/invitations.tsx:373
 msgid "Used"
 msgstr "Used"
+
+#: src/pages/admin/settings.tsx:819
+msgid "Used for push notifications and instance branding (max 2MB)"
+msgstr "Used for push notifications and instance branding (max 2MB)"
 
 #: src/pages/mod/users.tsx:317
 msgid "User Details"
@@ -2448,7 +2501,7 @@ msgstr "Username is required"
 msgid "Users"
 msgstr "Users"
 
-#: src/pages/admin/settings.tsx:641
+#: src/pages/admin/settings.tsx:722
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 

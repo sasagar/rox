@@ -1336,4 +1336,176 @@ function getFileCategoryAdmin(mimeType: string): string {
   return "other";
 }
 
+// ============================================================================
+// Server Asset Management Endpoints
+// ============================================================================
+
+/**
+ * Upload Server Asset
+ *
+ * POST /api/admin/assets/upload
+ *
+ * Uploads a file as a server asset (icon, banner, favicon).
+ * The file is stored as a system file (not counted against user storage).
+ *
+ * Form Data:
+ * - file: The file to upload
+ * - type: Asset type ("icon" | "banner" | "favicon")
+ *
+ * Response:
+ * ```json
+ * {
+ *   "url": "https://example.com/files/abc123.webp",
+ *   "type": "icon"
+ * }
+ * ```
+ */
+app.post("/assets/upload", async (c) => {
+  const admin = c.get("user");
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  // Import FileService dynamically to avoid circular dependencies
+  const { FileService } = await import("../services/FileService.js");
+  const fileService = new FileService(driveFileRepository, fileStorage);
+
+  const body = await c.req.parseBody();
+  const file = body.file as File;
+  const assetType = body.type as string;
+
+  if (!file) {
+    return errorResponse(c, "No file provided");
+  }
+
+  // Validate asset type
+  const validAssetTypes = ["icon", "banner", "favicon"];
+  if (!assetType || !validAssetTypes.includes(assetType)) {
+    return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
+  }
+
+  // Validate file type (must be an image)
+  if (!file.type.startsWith("image/")) {
+    return errorResponse(c, "File must be an image");
+  }
+
+  // Size limits based on asset type
+  const sizeLimits: Record<string, number> = {
+    icon: 2 * 1024 * 1024, // 2MB
+    banner: 5 * 1024 * 1024, // 5MB
+    favicon: 512 * 1024, // 512KB
+  };
+
+  if (file.size > sizeLimits[assetType]!) {
+    const limitMB = sizeLimits[assetType]! / 1024 / 1024;
+    return errorResponse(c, `File size exceeds ${limitMB}MB limit for ${assetType}`);
+  }
+
+  try {
+    // Convert file to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload as system file
+    const driveFile = await fileService.upload({
+      file: buffer,
+      name: `${assetType}-${Date.now()}-${file.name}`,
+      type: file.type,
+      userId: admin!.id,
+      source: "system",
+      comment: `Server ${assetType} asset`,
+    });
+
+    // Update instance settings with the new URL
+    const updateData: Record<string, string | null> = {};
+    switch (assetType) {
+      case "icon":
+        updateData.iconUrl = driveFile.url;
+        break;
+      case "banner":
+        updateData.bannerUrl = driveFile.url;
+        break;
+      case "favicon":
+        updateData.faviconUrl = driveFile.url;
+        break;
+    }
+
+    await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
+
+    return c.json({
+      url: driveFile.url,
+      type: assetType,
+      fileId: driveFile.id,
+    }, 201);
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Server Asset
+ *
+ * DELETE /api/admin/assets/:type
+ *
+ * Removes a server asset and clears the corresponding instance setting.
+ *
+ * URL Parameters:
+ * - type: Asset type ("icon" | "banner" | "favicon")
+ */
+app.delete("/assets/:type", async (c) => {
+  const admin = c.get("user");
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  const assetType = c.req.param("type");
+
+  // Validate asset type
+  const validAssetTypes = ["icon", "banner", "favicon"];
+  if (!validAssetTypes.includes(assetType)) {
+    return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
+  }
+
+  // Clear the instance setting
+  const updateData: Record<string, string | null> = {};
+  switch (assetType) {
+    case "icon":
+      updateData.iconUrl = null;
+      break;
+    case "banner":
+      updateData.bannerUrl = null;
+      break;
+    case "favicon":
+      updateData.faviconUrl = null;
+      break;
+  }
+
+  await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
+
+  return c.json({
+    success: true,
+    message: `${assetType} asset removed`,
+  });
+});
+
+/**
+ * Get Server Assets
+ *
+ * GET /api/admin/assets
+ *
+ * Returns current server asset URLs.
+ */
+app.get("/assets", async (c) => {
+  const instanceSettingsService = c.get("instanceSettingsService");
+
+  const metadata = await instanceSettingsService.getInstanceMetadata();
+
+  return c.json({
+    icon: metadata.iconUrl,
+    banner: metadata.bannerUrl,
+    favicon: metadata.faviconUrl,
+  });
+});
+
 export default app;

@@ -9,7 +9,7 @@
  * - Theme settings (primary color, dark mode)
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -69,7 +69,16 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme">("instance");
+  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets">("instance");
+  const [assets, setAssets] = useState<{ icon: string | null; banner: string | null; favicon: string | null }>({
+    icon: null,
+    banner: null,
+    favicon: null,
+  });
+  const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
+  const iconInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
 
   // Check admin access and load settings
   useEffect(() => {
@@ -92,9 +101,13 @@ export default function AdminSettingsPage() {
         // Update currentUser atom to ensure sidebar shows
         setCurrentUser(sessionResponse.user);
 
-        // Load admin settings
-        const settingsResponse = await apiClient.get<AdminSettings>("/api/admin/settings");
+        // Load admin settings and assets
+        const [settingsResponse, assetsResponse] = await Promise.all([
+          apiClient.get<AdminSettings>("/api/admin/settings"),
+          apiClient.get<{ icon: string | null; banner: string | null; favicon: string | null }>("/api/admin/assets"),
+        ]);
         setSettings(settingsResponse);
+        setAssets(assetsResponse);
       } catch (err) {
         console.error("Failed to load settings:", err);
         setError("Failed to load settings");
@@ -165,6 +178,64 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const handleAssetUpload = async (assetType: "icon" | "banner" | "favicon", file: File) => {
+    setIsUploadingAsset(assetType);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", assetType);
+
+      const response = await fetch("/api/admin/assets/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const result = await response.json();
+      setAssets((prev) => ({ ...prev, [assetType]: result.url }));
+      clearInstanceInfoCache();
+      addToast({ type: "success", message: t`${assetType} uploaded successfully` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setError(message);
+      addToast({ type: "error", message });
+    } finally {
+      setIsUploadingAsset(null);
+    }
+  };
+
+  const handleAssetDelete = async (assetType: "icon" | "banner" | "favicon") => {
+    setIsUploadingAsset(assetType);
+    setError(null);
+
+    try {
+      await apiClient.delete(`/api/admin/assets/${assetType}`);
+      setAssets((prev) => ({ ...prev, [assetType]: null }));
+      clearInstanceInfoCache();
+      addToast({ type: "success", message: t`${assetType} removed` });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to remove";
+      setError(message);
+      addToast({ type: "error", message });
+    } finally {
+      setIsUploadingAsset(null);
+    }
+  };
+
+  const handleFileSelect = (assetType: "icon" | "banner" | "favicon") => {
+    const inputRef = assetType === "icon" ? iconInputRef : assetType === "banner" ? bannerInputRef : faviconInputRef;
+    inputRef.current?.click();
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -231,6 +302,16 @@ export default function AdminSettingsPage() {
             }`}
           >
             <Trans>Theme</Trans>
+          </button>
+          <button
+            onClick={() => setActiveTab("assets")}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "assets"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
+            }`}
+          >
+            <Trans>Assets</Trans>
           </button>
         </nav>
       </div>
@@ -674,6 +755,198 @@ export default function AdminSettingsPage() {
                   <Trans>Save Theme Settings</Trans>
                 )}
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Assets Settings */}
+      {activeTab === "assets" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans>Server Assets</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-(--text-muted)">
+              <Trans>Upload images for your instance branding. Files are automatically converted to WebP format.</Trans>
+            </p>
+
+            {/* Hidden file inputs */}
+            <input
+              ref={iconInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleAssetUpload("icon", file);
+                e.target.value = "";
+              }}
+            />
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleAssetUpload("banner", file);
+                e.target.value = "";
+              }}
+            />
+            <input
+              ref={faviconInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleAssetUpload("favicon", file);
+                e.target.value = "";
+              }}
+            />
+
+            {/* Icon */}
+            <div className="border border-(--border-color) rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-medium text-(--text-primary)">
+                    <Trans>Instance Icon</Trans>
+                  </h4>
+                  <p className="text-sm text-(--text-muted) mt-1">
+                    <Trans>Used for push notifications and instance branding (max 2MB)</Trans>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => handleFileSelect("icon")}
+                    isDisabled={isUploadingAsset === "icon"}
+                  >
+                    {isUploadingAsset === "icon" ? (
+                      <Spinner size="xs" />
+                    ) : (
+                      <Trans>Upload</Trans>
+                    )}
+                  </Button>
+                  {assets.icon && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onPress={() => handleAssetDelete("icon")}
+                      isDisabled={isUploadingAsset === "icon"}
+                    >
+                      <Trans>Remove</Trans>
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {assets.icon && (
+                <div className="mt-4">
+                  <img
+                    src={assets.icon}
+                    alt="Instance icon"
+                    className="w-16 h-16 rounded-lg object-cover border border-(--border-color)"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Banner */}
+            <div className="border border-(--border-color) rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-medium text-(--text-primary)">
+                    <Trans>Instance Banner</Trans>
+                  </h4>
+                  <p className="text-sm text-(--text-muted) mt-1">
+                    <Trans>Header image for your instance (max 5MB)</Trans>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => handleFileSelect("banner")}
+                    isDisabled={isUploadingAsset === "banner"}
+                  >
+                    {isUploadingAsset === "banner" ? (
+                      <Spinner size="xs" />
+                    ) : (
+                      <Trans>Upload</Trans>
+                    )}
+                  </Button>
+                  {assets.banner && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onPress={() => handleAssetDelete("banner")}
+                      isDisabled={isUploadingAsset === "banner"}
+                    >
+                      <Trans>Remove</Trans>
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {assets.banner && (
+                <div className="mt-4">
+                  <img
+                    src={assets.banner}
+                    alt="Instance banner"
+                    className="w-full max-w-md h-32 rounded-lg object-cover border border-(--border-color)"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Favicon */}
+            <div className="border border-(--border-color) rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-medium text-(--text-primary)">
+                    <Trans>Favicon</Trans>
+                  </h4>
+                  <p className="text-sm text-(--text-muted) mt-1">
+                    <Trans>Browser tab icon, recommended 32x32 or 64x64 (max 512KB)</Trans>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => handleFileSelect("favicon")}
+                    isDisabled={isUploadingAsset === "favicon"}
+                  >
+                    {isUploadingAsset === "favicon" ? (
+                      <Spinner size="xs" />
+                    ) : (
+                      <Trans>Upload</Trans>
+                    )}
+                  </Button>
+                  {assets.favicon && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onPress={() => handleAssetDelete("favicon")}
+                      isDisabled={isUploadingAsset === "favicon"}
+                    >
+                      <Trans>Remove</Trans>
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {assets.favicon && (
+                <div className="mt-4">
+                  <img
+                    src={assets.favicon}
+                    alt="Favicon"
+                    className="w-8 h-8 rounded object-cover border border-(--border-color)"
+                  />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

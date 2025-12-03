@@ -65,6 +65,14 @@ msgstr "{0} ファイルをアップロード済み"
 msgid "{0} used (Unlimited)"
 msgstr "{0} 使用中（無制限）"
 
+#: src/pages/admin/settings.tsx:224
+msgid "{assetType} removed"
+msgstr "{assetType}を削除しました"
+
+#: src/pages/admin/settings.tsx:206
+msgid "{assetType} uploaded successfully"
+msgstr "{assetType}をアップロードしました"
+
 #: src/pages/admin/invitations.tsx:305
 msgid "1 Day"
 msgstr "1日"
@@ -154,7 +162,7 @@ msgstr "管理"
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:192
+#: src/pages/admin/settings.tsx:263
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -197,7 +205,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 msgid "All Types"
 msgstr "すべてのタイプ"
 
-#: src/pages/admin/settings.tsx:443
+#: src/pages/admin/settings.tsx:524
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -222,6 +230,10 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
+#: src/pages/admin/settings.tsx:314
+msgid "Assets"
+msgstr "素材"
+
 #: src/pages/mod/audit-logs.tsx:202
 msgid "Audit Logs"
 msgstr "監査ログ"
@@ -243,7 +255,7 @@ msgstr "利用可能なコード"
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
-#: src/pages/admin/settings.tsx:324
+#: src/pages/admin/settings.tsx:405
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -306,9 +318,13 @@ msgstr "インスタンスをブロックすると、そのサーバーとの連
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/settings.tsx:360
+#: src/pages/admin/settings.tsx:441
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
+
+#: src/pages/admin/settings.tsx:913
+msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
+msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大512KB）"
 
 #: src/components/settings/StorageSection.tsx:222
 #: src/pages/admin/storage.tsx:339
@@ -399,7 +415,7 @@ msgstr "カラー"
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
-#: src/pages/admin/settings.tsx:195
+#: src/pages/admin/settings.tsx:266
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -494,7 +510,7 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
-#: src/pages/admin/settings.tsx:636
+#: src/pages/admin/settings.tsx:717
 msgid "Dark"
 msgstr "ダーク"
 
@@ -506,7 +522,7 @@ msgstr "デフォルト"
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:579
+#: src/pages/admin/settings.tsx:660
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
@@ -558,7 +574,7 @@ msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:269
+#: src/pages/admin/settings.tsx:350
 msgid "Description"
 msgstr "説明"
 
@@ -686,7 +702,7 @@ msgstr "空のフォルダ"
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:440
+#: src/pages/admin/settings.tsx:521
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
@@ -917,7 +933,11 @@ msgstr "ファイルのアップロードに失敗しました"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
-#: src/pages/admin/settings.tsx:344
+#: src/pages/admin/settings.tsx:910
+msgid "Favicon"
+msgstr "ファビコン"
+
+#: src/pages/admin/settings.tsx:425
 msgid "Favicon URL"
 msgstr "ファビコンURL"
 
@@ -1015,6 +1035,10 @@ msgstr "グローバル"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
+#: src/pages/admin/settings.tsx:866
+msgid "Header image for your instance (max 5MB)"
+msgstr "インスタンスのヘッダー画像（最大5MB）"
+
 #: src/pages/admin/federation.tsx:273
 #: src/pages/admin/federation.tsx:315
 msgid "Healthy"
@@ -1034,7 +1058,7 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:306
+#: src/pages/admin/settings.tsx:387
 msgid "Icon URL"
 msgstr "アイコンURL"
 
@@ -1046,9 +1070,13 @@ msgstr "画像"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:213
+#: src/pages/admin/settings.tsx:284
 msgid "Instance"
 msgstr "インスタンス"
+
+#: src/pages/admin/settings.tsx:863
+msgid "Instance Banner"
+msgstr "インスタンスバナー"
 
 #: src/pages/admin/blocks.tsx:122
 msgid "Instance blocked"
@@ -1075,11 +1103,15 @@ msgstr "インスタンスドメイン"
 msgid "Instance Hostname"
 msgstr "インスタンスのホスト名"
 
-#: src/pages/admin/settings.tsx:245
+#: src/pages/admin/settings.tsx:816
+msgid "Instance Icon"
+msgstr "インスタンスアイコン"
+
+#: src/pages/admin/settings.tsx:326
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:251
+#: src/pages/admin/settings.tsx:332
 msgid "Instance Name"
 msgstr "インスタンス名"
 
@@ -1091,7 +1123,7 @@ msgstr "インスタンス概要"
 msgid "Instance removed from cache"
 msgstr "インスタンスをキャッシュから削除しました"
 
-#: src/pages/admin/settings.tsx:118
+#: src/pages/admin/settings.tsx:131
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
 
@@ -1140,7 +1172,7 @@ msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:463
+#: src/pages/admin/settings.tsx:544
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1179,7 +1211,7 @@ msgstr "空欄にすると自動生成されます"
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:617
+#: src/pages/admin/settings.tsx:698
 msgid "Light"
 msgstr "ライト"
 
@@ -1234,7 +1266,7 @@ msgstr "リモートユーザーを検索中..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:287
+#: src/pages/admin/settings.tsx:368
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1334,7 +1366,7 @@ msgstr "無期限"
 msgid "New"
 msgstr "新規"
 
-#: src/pages/admin/settings.tsx:489
+#: src/pages/admin/settings.tsx:570
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
@@ -1592,7 +1624,7 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:492
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
-#: src/pages/admin/settings.tsx:648
+#: src/pages/admin/settings.tsx:729
 msgid "Preview"
 msgstr "プレビュー"
 
@@ -1600,11 +1632,11 @@ msgstr "プレビュー"
 msgid "Previous"
 msgstr "前へ"
 
-#: src/pages/admin/settings.tsx:655
+#: src/pages/admin/settings.tsx:736
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:518
+#: src/pages/admin/settings.tsx:599
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -1620,7 +1652,7 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:385
+#: src/pages/admin/settings.tsx:466
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
@@ -1743,7 +1775,7 @@ msgstr "リストを更新"
 msgid "Registered devices"
 msgstr "登録済みデバイス"
 
-#: src/pages/admin/settings.tsx:223
+#: src/pages/admin/settings.tsx:294
 msgid "Registration"
 msgstr "登録"
 
@@ -1756,11 +1788,11 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:421
+#: src/pages/admin/settings.tsx:502
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:137
+#: src/pages/admin/settings.tsx:150
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
@@ -1783,6 +1815,9 @@ msgid "Remote Instances"
 msgstr "リモートインスタンス"
 
 #: src/pages/admin/federation.tsx:450
+#: src/pages/admin/settings.tsx:842
+#: src/pages/admin/settings.tsx:889
+#: src/pages/admin/settings.tsx:936
 msgid "Remove"
 msgstr "削除"
 
@@ -1890,11 +1925,11 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
-#: src/pages/admin/settings.tsx:466
+#: src/pages/admin/settings.tsx:547
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:486
+#: src/pages/admin/settings.tsx:567
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -2003,11 +2038,11 @@ msgstr "変更を保存"
 msgid "Save draft"
 msgstr "下書きを保存"
 
-#: src/pages/admin/settings.tsx:408
+#: src/pages/admin/settings.tsx:489
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:499
+#: src/pages/admin/settings.tsx:580
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -2015,7 +2050,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:674
+#: src/pages/admin/settings.tsx:755
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -2063,7 +2098,7 @@ msgstr "ユーザーを検索..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:664
+#: src/pages/admin/settings.tsx:745
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -2091,6 +2126,10 @@ msgstr "テスト送信"
 #: src/pages/admin/emojis.tsx:525
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
+
+#: src/pages/admin/settings.tsx:768
+msgid "Server Assets"
+msgstr "サーバー素材"
 
 #: src/components/layout/Sidebar.tsx:95
 #: src/pages/settings.tsx:134
@@ -2197,7 +2236,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/pages/admin/settings.tsx:598
+#: src/pages/admin/settings.tsx:679
 msgid "System"
 msgstr "システム"
 
@@ -2230,7 +2269,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:367
+#: src/pages/admin/settings.tsx:448
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -2247,15 +2286,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:233
+#: src/pages/admin/settings.tsx:304
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:512
+#: src/pages/admin/settings.tsx:593
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:156
+#: src/pages/admin/settings.tsx:169
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
@@ -2380,9 +2419,19 @@ msgstr "絵文字を更新"
 msgid "Update Role"
 msgstr "ロールを更新"
 
+#: src/pages/admin/settings.tsx:832
+#: src/pages/admin/settings.tsx:879
+#: src/pages/admin/settings.tsx:926
+msgid "Upload"
+msgstr "アップロード"
+
 #: src/components/drive/DrivePickerDialog.tsx:383
 msgid "Upload files to see them here"
 msgstr "ファイルをアップロードするとここに表示されます"
+
+#: src/pages/admin/settings.tsx:773
+msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
+msgstr "インスタンスのブランディング用画像をアップロードしてください。ファイルは自動的にWebP形式に変換されます。"
 
 #: src/components/note/NoteComposer.tsx:551
 msgid "Uploading files..."
@@ -2397,6 +2446,10 @@ msgstr "アップロード中..."
 #: src/pages/admin/invitations.tsx:373
 msgid "Used"
 msgstr "使用済み"
+
+#: src/pages/admin/settings.tsx:819
+msgid "Used for push notifications and instance branding (max 2MB)"
+msgstr "プッシュ通知やインスタンスのブランディングに使用（最大2MB）"
 
 #: src/pages/mod/users.tsx:317
 msgid "User Details"
@@ -2448,7 +2501,7 @@ msgstr "ユーザー名を入力してください"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:641
+#: src/pages/admin/settings.tsx:722
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
