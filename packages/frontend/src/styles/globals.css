@@ -38,6 +38,9 @@
   --rox-font-size: 14px;
   --rox-line-height: 1.6;
   --rox-content-width: 800px;
+
+  /* Base font size for scaling (percentage of --rox-font-size relative to 14px) */
+  --rox-font-scale: 1;
 }
 
 /* Dark mode */
@@ -53,10 +56,16 @@
   --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
 }
 
-/* Apply theme colors to common elements */
+/* Apply theme colors and UI settings to root elements */
+html {
+  /* Apply font size to root for global scaling */
+  font-size: var(--rox-font-size);
+}
+
 body {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
+  line-height: var(--rox-line-height);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 

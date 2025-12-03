@@ -29,6 +29,21 @@ const note = new Hono();
 note.get("/notes/:id", async (c: Context) => {
   const { id } = c.req.param();
 
+  // Check Accept header - only respond to ActivityPub requests
+  // Regular browser requests (text/html) should be handled by the frontend
+  const accept = c.req.header("Accept") || "";
+  const isActivityPubRequest =
+    accept.includes("application/activity+json") || accept.includes("application/ld+json");
+
+  // If not an ActivityPub request, skip this handler
+  // In development, frontend runs on separate port
+  // In production, reverse proxy should route HTML requests to frontend
+  if (!isActivityPubRequest) {
+    // Return 404 to let nginx/reverse proxy fall through to frontend
+    // Or in dev, the user accesses frontend directly on port 3001
+    return c.notFound();
+  }
+
   // Get note from repository
   const noteRepository = c.get("noteRepository");
   const noteData = await noteRepository.findById(id as string);
