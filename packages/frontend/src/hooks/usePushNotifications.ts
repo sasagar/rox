@@ -109,7 +109,12 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
     if (!isSupported) return null;
 
     try {
-      const registration = await navigator.serviceWorker.ready;
+      // Check if there's an active service worker registration
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        // No service worker registered yet
+        return null;
+      }
       return registration.pushManager.getSubscription();
     } catch (err) {
       console.error("Failed to get subscription:", err);
