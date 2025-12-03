@@ -150,11 +150,15 @@ push.post("/test", requireAuth(), async (c: Context) => {
   const container = c.get("container") as AppContainer;
   const { webPushService } = container;
 
+  console.log("[Push Test] Request received for user:", user.id);
+
   if (!webPushService.isAvailable()) {
+    console.log("[Push Test] Web Push not available");
     return c.json({ error: "Web Push is not configured" }, 503);
   }
 
   try {
+    console.log("[Push Test] Sending test notification...");
     const count = await webPushService.sendToUser(user.id, {
       title: "Test Notification",
       body: "This is a test push notification from Rox!",
@@ -166,12 +170,13 @@ push.post("/test", requireAuth(), async (c: Context) => {
       },
     });
 
+    console.log("[Push Test] Sent to", count, "subscriptions");
     return c.json({
       success: true,
       sentTo: count,
     });
   } catch (error) {
-    console.error("Failed to send test notification:", error);
+    console.error("[Push Test] Failed to send test notification:", error);
     return c.json({ error: "Failed to send test notification" }, 500);
   }
 });
