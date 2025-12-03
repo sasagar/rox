@@ -13,6 +13,7 @@ type Page =
 | ({ path: '/[username]' } & GetConfigResponse<typeof File_UsernameIndex_getConfig>)
 | { path: '/admin/blocks'; render: 'dynamic' }
 | { path: '/admin/emojis'; render: 'dynamic' }
+| { path: '/admin/federation'; render: 'dynamic' }
 | { path: '/admin/invitations'; render: 'dynamic' }
 | { path: '/admin/reports'; render: 'dynamic' }
 | { path: '/admin/roles'; render: 'dynamic' }

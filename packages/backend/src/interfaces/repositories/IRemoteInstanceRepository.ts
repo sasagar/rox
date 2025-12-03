@@ -32,12 +32,22 @@ export interface IRemoteInstanceRepository {
   /**
    * Increment fetch error count
    */
-  incrementErrorCount(host: string): Promise<void>;
+  incrementErrorCount(host: string, errorMessage?: string): Promise<void>;
 
   /**
    * Reset fetch error count
    */
   resetErrorCount(host: string): Promise<void>;
+
+  /**
+   * Mark instance for refresh by clearing lastFetchedAt
+   */
+  markForRefresh(host: string): Promise<void>;
+
+  /**
+   * Count total instances
+   */
+  count(): Promise<number>;
 
   /**
    * Delete instance

@@ -164,6 +164,7 @@ msgstr "エイリアスを削除しました"
 msgid "Aliases"
 msgstr "エイリアス"
 
+#: src/pages/admin/federation.tsx:305
 #: src/pages/admin/reports.tsx:304
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:379
@@ -206,6 +207,10 @@ msgstr "\":{0}:\" を削除してもよろしいですか？"
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
 msgstr "アカウントを引っ越ししてもよろしいですか？この操作は元に戻せません。フォロワーに通知され、新しいアカウントに移行されます。"
+
+#: src/pages/admin/federation.tsx:154
+msgid "Are you sure you want to remove this instance from the cache?"
+msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
 #: src/pages/mod/audit-logs.tsx:202
 msgid "Audit Logs"
@@ -258,6 +263,10 @@ msgstr "インスタンスの連携をブロックします"
 #: src/pages/mod/instances.tsx:353
 msgid "Block New Instance"
 msgstr "新しいインスタンスをブロック"
+
+#: src/pages/admin/federation.tsx:373
+msgid "Blocked"
+msgstr "ブロック済み"
 
 #: src/pages/mod/instances.tsx:322
 msgid "Blocked at:"
@@ -809,9 +818,17 @@ msgstr "ユーザーストレージ詳細の読み込みに失敗しました"
 msgid "Failed to process report"
 msgstr "報告の処理に失敗しました"
 
+#: src/pages/admin/federation.tsx:144
+msgid "Failed to refresh instance"
+msgstr "インスタンス情報の更新に失敗しました"
+
 #: src/components/settings/AccountMigrationSection.tsx:123
 msgid "Failed to remove alias"
 msgstr "エイリアスの削除に失敗しました"
+
+#: src/pages/admin/federation.tsx:173
+msgid "Failed to remove instance"
+msgstr "インスタンスの削除に失敗しました"
 
 #: src/components/note/NoteCard.tsx:176
 msgid "Failed to renote"
@@ -878,6 +895,14 @@ msgstr "ファビコンURL"
 #: src/components/LandingPage.tsx:176
 msgid "Federated"
 msgstr "分散型"
+
+#: src/pages/admin/federation.tsx:236
+msgid "Federation"
+msgstr "連合"
+
+#: src/pages/admin/federation.tsx:414
+msgid "Fetch errors"
+msgstr "取得エラー"
 
 #: src/components/settings/StorageSection.tsx:127
 #: src/pages/admin/storage.tsx:210
@@ -957,6 +982,11 @@ msgstr "グローバル"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
+#: src/pages/admin/federation.tsx:273
+#: src/pages/admin/federation.tsx:315
+msgid "Healthy"
+msgstr "正常"
+
 #: src/components/layout/Sidebar.tsx:64
 #: src/components/note/NoteComposer.tsx:355
 #: src/pages/timeline.tsx:169
@@ -1023,6 +1053,10 @@ msgstr "インスタンス名"
 #: src/pages/admin/storage.tsx:288
 msgid "Instance Overview"
 msgstr "インスタンス概要"
+
+#: src/pages/admin/federation.tsx:164
+msgid "Instance removed from cache"
+msgstr "インスタンスをキャッシュから削除しました"
 
 #: src/pages/admin/settings.tsx:118
 msgid "Instance settings saved"
@@ -1091,6 +1125,14 @@ msgstr "Roxに参加して共有を始めましょう"
 #: src/pages/mod/users.tsx:358
 msgid "Joined: {0}"
 msgstr "登録日: {0}"
+
+#: src/pages/admin/federation.tsx:257
+msgid "Known Instances"
+msgstr "認識済みインスタンス"
+
+#: src/pages/admin/federation.tsx:406
+msgid "Last fetched"
+msgstr "最終取得"
 
 #: src/pages/mod/users.tsx:541
 msgid "Leave empty for a permanent warning"
@@ -1172,6 +1214,10 @@ msgstr "インスタンスのストレージとユーザークォータを管理
 #: src/pages/admin/invitations.tsx:224
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
+
+#: src/pages/admin/federation.tsx:239
+msgid "Manage remote instances and federation status"
+msgstr "リモートインスタンスと連合ステータスを管理"
 
 #: src/pages/settings.tsx:137
 msgid "Manage your profile information"
@@ -1261,6 +1307,10 @@ msgstr "新規アカウントは管理者の承認が必要"
 msgid "New notification"
 msgstr "新しい通知"
 
+#: src/pages/admin/federation.tsx:480
+msgid "Next"
+msgstr "次へ"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "エイリアスが設定されていません"
@@ -1300,6 +1350,10 @@ msgstr "まだファイルがアップロードされていません"
 #: src/pages/mod/instances.tsx:414
 msgid "No instances blocked"
 msgstr "ブロック済みのインスタンスはありません"
+
+#: src/pages/admin/federation.tsx:339
+msgid "No instances found"
+msgstr "インスタンスが見つかりません"
 
 #: src/components/settings/InvitationCodeSection.tsx:206
 #: src/pages/admin/invitations.tsx:343
@@ -1484,6 +1538,7 @@ msgstr "投稿中..."
 
 #: src/components/user/UserProfile.tsx:451
 #: src/components/user/UserProfile.tsx:477
+#: src/pages/admin/federation.tsx:402
 msgid "Posts"
 msgstr "投稿"
 
@@ -1497,6 +1552,10 @@ msgstr "Powered by"
 #: src/pages/admin/settings.tsx:640
 msgid "Preview"
 msgstr "プレビュー"
+
+#: src/pages/admin/federation.tsx:469
+msgid "Previous"
+msgstr "前へ"
 
 #: src/pages/admin/settings.tsx:647
 msgid "Primary Button"
@@ -1629,8 +1688,13 @@ msgstr "コミュニティの最新投稿"
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
 #: src/pages/admin/emojis.tsx:363
+#: src/pages/admin/federation.tsx:439
 msgid "Refresh"
 msgstr "更新"
+
+#: src/pages/admin/federation.tsx:244
+msgid "Refresh List"
+msgstr "リストを更新"
 
 #: src/components/settings/PushNotificationSection.tsx:216
 msgid "Registered devices"
@@ -1670,6 +1734,14 @@ msgstr "通報を却下"
 #: src/pages/mod/reports.tsx:291
 msgid "Rejected"
 msgstr "却下済み"
+
+#: src/pages/admin/federation.tsx:333
+msgid "Remote Instances"
+msgstr "リモートインスタンス"
+
+#: src/pages/admin/federation.tsx:450
+msgid "Remove"
+msgstr "削除"
 
 #: src/components/settings/AccountMigrationSection.tsx:286
 msgid "Remove alias"
@@ -2307,6 +2379,7 @@ msgstr "ユーザー名は変更できません"
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
 
+#: src/pages/admin/federation.tsx:397
 #: src/pages/mod/audit-logs.tsx:261
 msgid "Users"
 msgstr "ユーザー"
@@ -2388,6 +2461,11 @@ msgstr "このインスタンスをブロックする理由は？"
 #: src/components/LandingPage.tsx:156
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
+
+#: src/pages/admin/federation.tsx:287
+#: src/pages/admin/federation.tsx:325
+msgid "With Errors"
+msgstr "エラーあり"
 
 #. placeholder {0}: usage.usagePercent
 #: src/components/settings/StorageSection.tsx:356

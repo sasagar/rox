@@ -29,6 +29,8 @@ export interface RemoteInstance {
   lastFetchedAt: Date | null;
   /** Number of consecutive fetch errors */
   fetchErrorCount: number;
+  /** Last fetch error message */
+  lastFetchError: string | null;
   /** Created timestamp */
   createdAt: Date;
   /** Updated timestamp */

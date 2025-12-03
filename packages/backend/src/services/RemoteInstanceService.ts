@@ -74,16 +74,54 @@ export class RemoteInstanceService {
       const instance = await this.fetchAndCacheInstanceInfo(host);
       return instance ? this.toPublicInstance(instance) : null;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       logger.warn({ err: error, host }, "Failed to fetch instance info");
 
-      // Increment error count
+      // Increment error count with error message
       if (cached) {
-        await this.remoteInstanceRepository.incrementErrorCount(host);
+        await this.remoteInstanceRepository.incrementErrorCount(host, errorMessage);
         return this.toPublicInstance(cached);
       }
 
       return null;
     }
+  }
+
+  /**
+   * Force refresh instance info (for admin use)
+   */
+  async refreshInstanceInfo(host: string): Promise<RemoteInstance | null> {
+    try {
+      // Mark for refresh first
+      await this.remoteInstanceRepository.markForRefresh(host);
+
+      // Fetch fresh data
+      const instance = await this.fetchAndCacheInstanceInfo(host);
+      return instance;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.warn({ err: error, host }, "Failed to refresh instance info");
+
+      // Store error message
+      await this.remoteInstanceRepository.incrementErrorCount(host, errorMessage);
+
+      // Return cached data with error
+      return this.remoteInstanceRepository.findByHost(host);
+    }
+  }
+
+  /**
+   * Get all instances for admin (includes error info)
+   */
+  async getAllInstances(options?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<{ instances: RemoteInstance[]; total: number }> {
+    const [instances, total] = await Promise.all([
+      this.remoteInstanceRepository.findAll(options),
+      this.remoteInstanceRepository.count(),
+    ]);
+    return { instances, total };
   }
 
   /**
@@ -144,8 +182,8 @@ export class RemoteInstanceService {
       });
     }
 
-    // Try to fetch favicon/icon
-    const iconUrl = await this.fetchFavicon(host);
+    // Try to fetch instance icon (using software-specific API, then favicon fallback)
+    const iconUrl = await this.fetchInstanceIcon(host, nodeInfo.software.name);
 
     const instance = await this.remoteInstanceRepository.upsert({
       host,
@@ -218,7 +256,189 @@ export class RemoteInstanceService {
   }
 
   /**
-   * Try to fetch favicon from the remote server
+   * Try to fetch instance icon from software-specific APIs, then fall back to favicon
+   */
+  private async fetchInstanceIcon(
+    host: string,
+    softwareName: string | null,
+  ): Promise<string | null> {
+    // Try software-specific APIs first
+    const iconUrl = await this.fetchInstanceIconFromApi(host, softwareName);
+    if (iconUrl) {
+      return iconUrl;
+    }
+
+    // Fall back to favicon
+    return this.fetchFavicon(host);
+  }
+
+  /**
+   * Fetch instance icon from software-specific API
+   */
+  private async fetchInstanceIconFromApi(
+    host: string,
+    softwareName: string | null,
+  ): Promise<string | null> {
+    const normalizedName = softwareName?.toLowerCase();
+
+    try {
+      // Misskey and forks (Misskey, Firefish, Sharkey, Foundkey, etc.)
+      if (
+        normalizedName === "misskey" ||
+        normalizedName === "firefish" ||
+        normalizedName === "sharkey" ||
+        normalizedName === "foundkey" ||
+        normalizedName === "calckey" ||
+        normalizedName === "cherrypick"
+      ) {
+        const response = await fetch(`https://${host}/api/meta`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({}),
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (response.ok) {
+          const meta = (await response.json()) as { iconUrl?: string; uri?: string };
+          if (meta.iconUrl) {
+            // iconUrl may be relative or absolute
+            if (meta.iconUrl.startsWith("http")) {
+              return meta.iconUrl;
+            }
+            return `https://${host}${meta.iconUrl}`;
+          }
+        }
+      }
+
+      // Mastodon and forks (Mastodon, Hometown, Glitch-soc, etc.)
+      if (
+        normalizedName === "mastodon" ||
+        normalizedName === "hometown" ||
+        normalizedName === "glitch" ||
+        normalizedName === "kmyblue"
+      ) {
+        const response = await fetch(`https://${host}/api/v2/instance`, {
+          headers: {
+            Accept: "application/json",
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (response.ok) {
+          const instance = (await response.json()) as {
+            thumbnail?: { url?: string };
+          };
+          if (instance.thumbnail?.url) {
+            return instance.thumbnail.url;
+          }
+        }
+
+        // Fall back to v1 API for older Mastodon versions
+        const v1Response = await fetch(`https://${host}/api/v1/instance`, {
+          headers: {
+            Accept: "application/json",
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (v1Response.ok) {
+          const instance = (await v1Response.json()) as { thumbnail?: string };
+          if (instance.thumbnail) {
+            return instance.thumbnail;
+          }
+        }
+      }
+
+      // Pleroma / Akkoma
+      if (normalizedName === "pleroma" || normalizedName === "akkoma") {
+        const response = await fetch(`https://${host}/api/v1/instance`, {
+          headers: {
+            Accept: "application/json",
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (response.ok) {
+          const instance = (await response.json()) as { thumbnail?: string };
+          if (instance.thumbnail) {
+            return instance.thumbnail;
+          }
+        }
+      }
+
+      // GoToSocial
+      if (normalizedName === "gotosocial") {
+        const response = await fetch(`https://${host}/api/v1/instance`, {
+          headers: {
+            Accept: "application/json",
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (response.ok) {
+          const instance = (await response.json()) as { thumbnail?: string };
+          if (instance.thumbnail) {
+            return instance.thumbnail;
+          }
+        }
+      }
+
+      // If software is unknown, try common APIs
+      if (!normalizedName) {
+        // Try Mastodon API first (most common)
+        try {
+          const response = await fetch(`https://${host}/api/v1/instance`, {
+            headers: { Accept: "application/json" },
+            signal: AbortSignal.timeout(5000),
+          });
+
+          if (response.ok) {
+            const instance = (await response.json()) as { thumbnail?: string };
+            if (instance.thumbnail) {
+              return instance.thumbnail;
+            }
+          }
+        } catch {
+          // Ignore and try next
+        }
+
+        // Try Misskey API
+        try {
+          const response = await fetch(`https://${host}/api/meta`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({}),
+            signal: AbortSignal.timeout(5000),
+          });
+
+          if (response.ok) {
+            const meta = (await response.json()) as { iconUrl?: string };
+            if (meta.iconUrl) {
+              if (meta.iconUrl.startsWith("http")) {
+                return meta.iconUrl;
+              }
+              return `https://${host}${meta.iconUrl}`;
+            }
+          }
+        } catch {
+          // Ignore
+        }
+      }
+    } catch (error) {
+      logger.debug({ err: error, host, softwareName }, "Failed to fetch instance icon from API");
+    }
+
+    return null;
+  }
+
+  /**
+   * Try to fetch favicon from the remote server (fallback)
    */
   private async fetchFavicon(host: string): Promise<string | null> {
     // Try common favicon paths

@@ -566,6 +566,7 @@ export const remoteInstances = pgTable(
     isBlocked: boolean("is_blocked").notNull().default(false), // Whether this instance is blocked
     lastFetchedAt: timestamp("last_fetched_at"), // When info was last fetched
     fetchErrorCount: integer("fetch_error_count").notNull().default(0), // Number of consecutive fetch errors
+    lastFetchError: text("last_fetch_error"), // Last fetch error message
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

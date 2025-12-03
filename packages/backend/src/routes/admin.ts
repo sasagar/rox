@@ -327,6 +327,93 @@ app.delete("/instance-blocks/:host", async (c) => {
 });
 
 // ============================================================================
+// Remote Instance Management Endpoints
+// ============================================================================
+
+/**
+ * List Remote Instances
+ *
+ * GET /api/admin/remote-instances
+ *
+ * Returns a paginated list of remote instances with their metadata and error info.
+ */
+app.get("/remote-instances", async (c) => {
+  const remoteInstanceService = c.get("remoteInstanceService");
+
+  const { limit, offset } = parsePagination(c);
+
+  const { instances, total } = await remoteInstanceService.getAllInstances({
+    limit,
+    offset,
+  });
+
+  return c.json({ instances, total });
+});
+
+/**
+ * Get Remote Instance Details
+ *
+ * GET /api/admin/remote-instances/:host
+ *
+ * Returns detailed information about a specific remote instance.
+ */
+app.get("/remote-instances/:host", async (c) => {
+  const remoteInstanceRepository = c.get("remoteInstanceRepository");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceRepository.findByHost(host);
+  if (!instance) {
+    return errorResponse(c, `Instance ${host} not found`, 404);
+  }
+
+  return c.json(instance);
+});
+
+/**
+ * Refresh Remote Instance Info
+ *
+ * POST /api/admin/remote-instances/:host/refresh
+ *
+ * Forces a refresh of the remote instance information.
+ */
+app.post("/remote-instances/:host/refresh", async (c) => {
+  const remoteInstanceService = c.get("remoteInstanceService");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceService.refreshInstanceInfo(host);
+  if (!instance) {
+    return errorResponse(c, `Failed to refresh instance ${host}`, 500);
+  }
+
+  return c.json({
+    success: true,
+    message: instance.fetchErrorCount > 0 ? "Refresh attempted but encountered errors" : "Instance info refreshed successfully",
+    instance,
+  });
+});
+
+/**
+ * Delete Remote Instance
+ *
+ * DELETE /api/admin/remote-instances/:host
+ *
+ * Removes a remote instance from the cache (will be re-fetched when needed).
+ */
+app.delete("/remote-instances/:host", async (c) => {
+  const remoteInstanceRepository = c.get("remoteInstanceRepository");
+  const host = c.req.param("host");
+
+  const instance = await remoteInstanceRepository.findByHost(host);
+  if (!instance) {
+    return errorResponse(c, `Instance ${host} not found`, 404);
+  }
+
+  await remoteInstanceRepository.delete(host);
+
+  return c.json({ success: true, message: `Instance ${host} has been removed` });
+});
+
+// ============================================================================
 // Invitation Code Management Endpoints
 // ============================================================================
 

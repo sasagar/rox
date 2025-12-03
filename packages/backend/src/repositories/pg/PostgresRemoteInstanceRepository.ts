@@ -74,11 +74,12 @@ export class PostgresRemoteInstanceRepository implements IRemoteInstanceReposito
     return results as RemoteInstance[];
   }
 
-  async incrementErrorCount(host: string): Promise<void> {
+  async incrementErrorCount(host: string, errorMessage?: string): Promise<void> {
     await this.db
       .update(remoteInstances)
       .set({
         fetchErrorCount: sql`${remoteInstances.fetchErrorCount} + 1`,
+        lastFetchError: errorMessage ?? null,
         updatedAt: new Date(),
       })
       .where(eq(remoteInstances.host, host));
@@ -89,9 +90,27 @@ export class PostgresRemoteInstanceRepository implements IRemoteInstanceReposito
       .update(remoteInstances)
       .set({
         fetchErrorCount: 0,
+        lastFetchError: null,
         updatedAt: new Date(),
       })
       .where(eq(remoteInstances.host, host));
+  }
+
+  async markForRefresh(host: string): Promise<void> {
+    await this.db
+      .update(remoteInstances)
+      .set({
+        lastFetchedAt: null,
+        fetchErrorCount: 0,
+        lastFetchError: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(remoteInstances.host, host));
+  }
+
+  async count(): Promise<number> {
+    const result = await this.db.select({ count: sql<number>`count(*)` }).from(remoteInstances);
+    return Number(result[0]?.count ?? 0);
   }
 
   async delete(host: string): Promise<void> {

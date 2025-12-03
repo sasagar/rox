@@ -162,6 +162,13 @@
       "when": 1764666632247,
       "tag": "0022_illegal_madame_web",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1764720965232,
+      "tag": "0023_burly_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

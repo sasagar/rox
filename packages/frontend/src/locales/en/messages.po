@@ -164,6 +164,7 @@ msgstr "Alias removed successfully"
 msgid "Aliases"
 msgstr "Aliases"
 
+#: src/pages/admin/federation.tsx:305
 #: src/pages/admin/reports.tsx:304
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:379
@@ -206,6 +207,10 @@ msgstr "Are you sure you want to delete \":{0}:\"?"
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
 msgstr "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
+
+#: src/pages/admin/federation.tsx:154
+msgid "Are you sure you want to remove this instance from the cache?"
+msgstr "Are you sure you want to remove this instance from the cache?"
 
 #: src/pages/mod/audit-logs.tsx:202
 msgid "Audit Logs"
@@ -258,6 +263,10 @@ msgstr "Block instances from federating with this server"
 #: src/pages/mod/instances.tsx:353
 msgid "Block New Instance"
 msgstr "Block New Instance"
+
+#: src/pages/admin/federation.tsx:373
+msgid "Blocked"
+msgstr "Blocked"
 
 #: src/pages/mod/instances.tsx:322
 msgid "Blocked at:"
@@ -809,9 +818,17 @@ msgstr "Failed to load user storage details"
 msgid "Failed to process report"
 msgstr "Failed to process report"
 
+#: src/pages/admin/federation.tsx:144
+msgid "Failed to refresh instance"
+msgstr "Failed to refresh instance"
+
 #: src/components/settings/AccountMigrationSection.tsx:123
 msgid "Failed to remove alias"
 msgstr "Failed to remove alias"
+
+#: src/pages/admin/federation.tsx:173
+msgid "Failed to remove instance"
+msgstr "Failed to remove instance"
 
 #: src/components/note/NoteCard.tsx:176
 msgid "Failed to renote"
@@ -878,6 +895,14 @@ msgstr "Favicon URL"
 #: src/components/LandingPage.tsx:176
 msgid "Federated"
 msgstr "Federated"
+
+#: src/pages/admin/federation.tsx:236
+msgid "Federation"
+msgstr "Federation"
+
+#: src/pages/admin/federation.tsx:414
+msgid "Fetch errors"
+msgstr "Fetch errors"
 
 #: src/components/settings/StorageSection.tsx:127
 #: src/pages/admin/storage.tsx:210
@@ -957,6 +982,11 @@ msgstr "Global"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
+#: src/pages/admin/federation.tsx:273
+#: src/pages/admin/federation.tsx:315
+msgid "Healthy"
+msgstr "Healthy"
+
 #: src/components/layout/Sidebar.tsx:64
 #: src/components/note/NoteComposer.tsx:355
 #: src/pages/timeline.tsx:169
@@ -1023,6 +1053,10 @@ msgstr "Instance Name"
 #: src/pages/admin/storage.tsx:288
 msgid "Instance Overview"
 msgstr "Instance Overview"
+
+#: src/pages/admin/federation.tsx:164
+msgid "Instance removed from cache"
+msgstr "Instance removed from cache"
 
 #: src/pages/admin/settings.tsx:118
 msgid "Instance settings saved"
@@ -1091,6 +1125,14 @@ msgstr "Join Rox and start sharing"
 #: src/pages/mod/users.tsx:358
 msgid "Joined: {0}"
 msgstr "Joined: {0}"
+
+#: src/pages/admin/federation.tsx:257
+msgid "Known Instances"
+msgstr "Known Instances"
+
+#: src/pages/admin/federation.tsx:406
+msgid "Last fetched"
+msgstr "Last fetched"
 
 #: src/pages/mod/users.tsx:541
 msgid "Leave empty for a permanent warning"
@@ -1172,6 +1214,10 @@ msgstr "Manage instance storage and user quotas"
 #: src/pages/admin/invitations.tsx:224
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
+
+#: src/pages/admin/federation.tsx:239
+msgid "Manage remote instances and federation status"
+msgstr "Manage remote instances and federation status"
 
 #: src/pages/settings.tsx:137
 msgid "Manage your profile information"
@@ -1261,6 +1307,10 @@ msgstr "New accounts require admin approval"
 msgid "New notification"
 msgstr "New notification"
 
+#: src/pages/admin/federation.tsx:480
+msgid "Next"
+msgstr "Next"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "No aliases configured"
@@ -1300,6 +1350,10 @@ msgstr "No files uploaded yet"
 #: src/pages/mod/instances.tsx:414
 msgid "No instances blocked"
 msgstr "No instances blocked"
+
+#: src/pages/admin/federation.tsx:339
+msgid "No instances found"
+msgstr "No instances found"
 
 #: src/components/settings/InvitationCodeSection.tsx:206
 #: src/pages/admin/invitations.tsx:343
@@ -1484,6 +1538,7 @@ msgstr "Posting..."
 
 #: src/components/user/UserProfile.tsx:451
 #: src/components/user/UserProfile.tsx:477
+#: src/pages/admin/federation.tsx:402
 msgid "Posts"
 msgstr "Posts"
 
@@ -1497,6 +1552,10 @@ msgstr "Powered by"
 #: src/pages/admin/settings.tsx:640
 msgid "Preview"
 msgstr "Preview"
+
+#: src/pages/admin/federation.tsx:469
+msgid "Previous"
+msgstr "Previous"
 
 #: src/pages/admin/settings.tsx:647
 msgid "Primary Button"
@@ -1629,8 +1688,13 @@ msgstr "Recent posts from your community"
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
 #: src/pages/admin/emojis.tsx:363
+#: src/pages/admin/federation.tsx:439
 msgid "Refresh"
 msgstr "Refresh"
+
+#: src/pages/admin/federation.tsx:244
+msgid "Refresh List"
+msgstr "Refresh List"
 
 #: src/components/settings/PushNotificationSection.tsx:216
 msgid "Registered devices"
@@ -1670,6 +1734,14 @@ msgstr "Reject Report"
 #: src/pages/mod/reports.tsx:291
 msgid "Rejected"
 msgstr "Rejected"
+
+#: src/pages/admin/federation.tsx:333
+msgid "Remote Instances"
+msgstr "Remote Instances"
+
+#: src/pages/admin/federation.tsx:450
+msgid "Remove"
+msgstr "Remove"
 
 #: src/components/settings/AccountMigrationSection.tsx:286
 msgid "Remove alias"
@@ -2307,6 +2379,7 @@ msgstr "Username cannot be changed"
 msgid "Username is required"
 msgstr "Username is required"
 
+#: src/pages/admin/federation.tsx:397
 #: src/pages/mod/audit-logs.tsx:261
 msgid "Users"
 msgstr "Users"
@@ -2388,6 +2461,11 @@ msgstr "Why is this instance being blocked?"
 #: src/components/LandingPage.tsx:156
 msgid "Why Join?"
 msgstr "Why Join?"
+
+#: src/pages/admin/federation.tsx:287
+#: src/pages/admin/federation.tsx:325
+msgid "With Errors"
+msgstr "With Errors"
 
 #. placeholder {0}: usage.usagePercent
 #: src/components/settings/StorageSection.tsx:356
