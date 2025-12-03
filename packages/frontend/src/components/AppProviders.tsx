@@ -8,8 +8,11 @@
  */
 
 import { type ReactNode, useEffect, useState } from "react";
+import { useAtomValue } from "jotai";
 import { I18nProvider } from "./I18nProvider.js";
 import { ThemeProvider } from "./ThemeProvider.js";
+import { tokenAtom } from "../lib/atoms/auth";
+import { apiClient } from "../lib/api/client";
 import type { ThemeSettings } from "../lib/types/instance";
 
 interface AppProvidersProps {
@@ -28,6 +31,12 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   const [theme, setTheme] = useState<ThemeSettings | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
+  const token = useAtomValue(tokenAtom);
+
+  // Sync token to apiClient whenever it changes
+  useEffect(() => {
+    apiClient.setToken(token);
+  }, [token]);
 
   useEffect(() => {
     // Fetch instance theme settings
