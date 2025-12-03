@@ -23,7 +23,7 @@ self.addEventListener("activate", (event) => {
 
 // Push event - handle incoming push notifications
 self.addEventListener("push", (event) => {
-  console.log("[SW] Push notification received");
+  console.log("[SW] Push notification received, event.data:", event.data ? "present" : "null");
 
   let data = {
     title: "New Notification",
@@ -39,7 +39,10 @@ self.addEventListener("push", (event) => {
   // Parse push data if available
   if (event.data) {
     try {
-      const payload = event.data.json();
+      const rawText = event.data.text();
+      console.log("[SW] Raw push data:", rawText);
+      const payload = JSON.parse(rawText);
+      console.log("[SW] Parsed payload:", JSON.stringify(payload));
       data = {
         title: payload.title || data.title,
         body: payload.body || data.body,
@@ -73,7 +76,17 @@ self.addEventListener("push", (event) => {
     ],
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  console.log("[SW] Showing notification with title:", data.title, "options:", JSON.stringify(options));
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+      .then(() => {
+        console.log("[SW] showNotification succeeded");
+      })
+      .catch((error) => {
+        console.error("[SW] showNotification failed:", error);
+      })
+  );
 });
 
 // Notification click event
