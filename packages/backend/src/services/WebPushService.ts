@@ -11,6 +11,7 @@ import { generateId } from "../../../shared/src/utils/id.js";
 import { logger } from "../lib/logger.js";
 import type { Database } from "../db/index.js";
 import type { PushSubscription, NewPushSubscription, NotificationType } from "../db/schema/pg.js";
+import type { InstanceSettingsService } from "./InstanceSettingsService.js";
 
 /**
  * Push subscription keys from client
@@ -49,10 +50,12 @@ export interface PushNotificationPayload {
  */
 export class WebPushService {
   private db: Database;
+  private instanceSettingsService: InstanceSettingsService;
   private vapidConfigured: boolean = false;
 
-  constructor(db: Database) {
+  constructor(db: Database, instanceSettingsService: InstanceSettingsService) {
     this.db = db;
+    this.instanceSettingsService = instanceSettingsService;
     this.initializeVapid();
   }
 
@@ -334,68 +337,68 @@ export class WebPushService {
   /**
    * Create notification payload from notification data
    */
-  createPayload(
+  async createPayload(
     type: NotificationType,
     notifierName: string | null,
     notificationId: string,
     noteId?: string | null,
-  ): PushNotificationPayload {
+  ): Promise<PushNotificationPayload> {
     const baseUrl = process.env.URL || "http://localhost:3000";
-    let title: string;
+
+    // Get instance settings for notification title and icon
+    const [instanceName, instanceIconUrl] = await Promise.all([
+      this.instanceSettingsService.getInstanceName(),
+      this.instanceSettingsService.getIconUrl(),
+    ]);
+
+    // Use instance icon if available, otherwise fall back to default
+    const icon = instanceIconUrl || `${baseUrl}/icon-192.png`;
+
     let body: string;
     let url: string;
 
     switch (type) {
       case "follow":
-        title = "New Follower";
         body = `${notifierName || "Someone"} followed you`;
         url = notifierName ? `${baseUrl}/@${notifierName}` : `${baseUrl}/notifications`;
         break;
       case "mention":
-        title = "New Mention";
         body = `${notifierName || "Someone"} mentioned you`;
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "reply":
-        title = "New Reply";
         body = `${notifierName || "Someone"} replied to your note`;
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "reaction":
-        title = "New Reaction";
         body = `${notifierName || "Someone"} reacted to your note`;
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "renote":
-        title = "New Renote";
         body = `${notifierName || "Someone"} renoted your note`;
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "quote":
-        title = "New Quote";
         body = `${notifierName || "Someone"} quoted your note`;
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "warning":
-        title = "Moderator Warning";
         body = "You have received a warning from the moderators";
         url = `${baseUrl}/notifications`;
         break;
       case "follow_request_accepted":
-        title = "Follow Request Accepted";
         body = `${notifierName || "Someone"} accepted your follow request`;
         url = notifierName ? `${baseUrl}/@${notifierName}` : `${baseUrl}/notifications`;
         break;
       default:
-        title = "New Notification";
         body = "You have a new notification";
         url = `${baseUrl}/notifications`;
     }
 
     return {
-      title,
+      title: instanceName,
       body,
-      icon: `${baseUrl}/icon-192.png`,
+      icon,
       badge: `${baseUrl}/badge-72.png`,
       tag: `notification-${notificationId}`,
       data: {

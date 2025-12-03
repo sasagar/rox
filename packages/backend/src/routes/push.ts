@@ -148,7 +148,7 @@ push.get("/subscriptions", requireAuth(), async (c: Context) => {
 push.post("/test", requireAuth(), async (c: Context) => {
   const user = c.get("user") as User;
   const container = c.get("container") as AppContainer;
-  const { webPushService } = container;
+  const { webPushService, instanceSettingsService } = container;
 
   console.log("[Push Test] Request received for user:", user.id);
 
@@ -157,17 +157,27 @@ push.post("/test", requireAuth(), async (c: Context) => {
     return c.json({ error: "Web Push is not configured" }, 503);
   }
 
+  // Get instance settings for notification
+  const [instanceName, iconUrl] = await Promise.all([
+    instanceSettingsService.getInstanceName(),
+    instanceSettingsService.getIconUrl(),
+  ]);
+
+  const baseUrl = process.env.URL || "http://localhost:3000";
+  // Use instance icon if available, otherwise fall back to default icon
+  const notificationIcon = iconUrl || `${baseUrl}/icon-192.png`;
+
   // Send notification asynchronously (fire-and-forget) to avoid blocking the response
   console.log("[Push Test] Queuing test notification...");
   const timestamp = Date.now();
   webPushService
     .sendToUser(user.id, {
-      title: "Test Notification",
-      body: `This is a test push notification from Rox! (${new Date(timestamp).toLocaleTimeString()})`,
-      icon: `${process.env.URL || "http://localhost:3000"}/icon-192.png`,
+      title: instanceName,
+      body: `This is a test push notification! (${new Date(timestamp).toLocaleTimeString()})`,
+      icon: notificationIcon,
       tag: `test-notification-${timestamp}`,
       data: {
-        url: `${process.env.URL || "http://localhost:3000"}/notifications`,
+        url: `${baseUrl}/notifications`,
         type: "follow" as const,
       },
     })

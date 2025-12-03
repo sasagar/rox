@@ -437,7 +437,7 @@ export class NotificationService {
       // Send Web Push notification if available
       if (this.webPushService?.isAvailable()) {
         try {
-          const payload = this.webPushService.createPayload(
+          const payload = await this.webPushService.createPayload(
             notification.type,
             notifierName,
             notification.id,

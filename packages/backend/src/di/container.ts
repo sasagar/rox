@@ -159,7 +159,7 @@ export function createContainer(): AppContainer {
   );
 
   // Web Push Service
-  const webPushService = new WebPushService(db);
+  const webPushService = new WebPushService(db, instanceSettingsService);
 
   // Notification Service
   const notificationService = new NotificationService(
