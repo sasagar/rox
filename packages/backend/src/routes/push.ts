@@ -157,9 +157,10 @@ push.post("/test", requireAuth(), async (c: Context) => {
     return c.json({ error: "Web Push is not configured" }, 503);
   }
 
-  try {
-    console.log("[Push Test] Sending test notification...");
-    const count = await webPushService.sendToUser(user.id, {
+  // Send notification asynchronously (fire-and-forget) to avoid blocking the response
+  console.log("[Push Test] Queuing test notification...");
+  webPushService
+    .sendToUser(user.id, {
       title: "Test Notification",
       body: "This is a test push notification from Rox!",
       icon: `${process.env.URL || "http://localhost:3000"}/icon-192.png`,
@@ -168,17 +169,19 @@ push.post("/test", requireAuth(), async (c: Context) => {
         url: `${process.env.URL || "http://localhost:3000"}/notifications`,
         type: "follow" as const,
       },
+    })
+    .then((count) => {
+      console.log("[Push Test] Sent to", count, "subscriptions");
+    })
+    .catch((error) => {
+      console.error("[Push Test] Failed to send test notification:", error);
     });
 
-    console.log("[Push Test] Sent to", count, "subscriptions");
-    return c.json({
-      success: true,
-      sentTo: count,
-    });
-  } catch (error) {
-    console.error("[Push Test] Failed to send test notification:", error);
-    return c.json({ error: "Failed to send test notification" }, 500);
-  }
+  // Return immediately
+  return c.json({
+    success: true,
+    sentTo: -1, // -1 indicates async sending
+  });
 });
 
 export default push;
