@@ -221,10 +221,14 @@ export class WebPushService {
       const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
       try {
+        // Convert Buffer to Uint8Array for fetch compatibility
+        const body = requestDetails.body ? new Uint8Array(requestDetails.body) : undefined;
+
+        // Web Push always uses POST method
         const response = await fetch(requestDetails.endpoint, {
-          method: requestDetails.method,
+          method: "POST",
           headers: requestDetails.headers as Record<string, string>,
-          body: requestDetails.body,
+          body,
           signal: controller.signal,
         });
 
