@@ -1,5 +1,6 @@
 import type { IAuthProvider, AuthMethod, AuthResult } from "./types";
 import { PasswordAuthProvider } from "./providers/PasswordAuthProvider";
+import { PasskeyProvider } from "./providers/PasskeyProvider";
 
 /**
  * Central authentication manager
@@ -11,6 +12,19 @@ export class AuthManager {
   constructor() {
     // Register default password provider
     this.registerProvider(new PasswordAuthProvider());
+
+    // Register passkey provider with dynamic rpId from current hostname
+    // Only register if we're in a browser environment
+    if (typeof window !== "undefined") {
+      this.registerProvider(
+        new PasskeyProvider({
+          rpId: window.location.hostname,
+          rpName: "Rox",
+          userVerification: "preferred",
+          attestation: "none",
+        }),
+      );
+    }
   }
 
   /**
