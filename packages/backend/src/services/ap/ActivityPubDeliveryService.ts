@@ -154,23 +154,30 @@ export class ActivityPubDeliveryService {
 
   /**
    * Deliver Like activity to note author
+   *
+   * @param noteId - ID of the note being reacted to
+   * @param noteUri - ActivityPub URI of the note
+   * @param noteAuthorInbox - Inbox URL of the note author
+   * @param reactor - User creating the reaction
+   * @param reaction - Reaction emoji (e.g., "👍", ":custom_emoji:")
    */
   async deliverLikeActivity(
     noteId: string,
     noteUri: string,
     noteAuthorInbox: string,
     reactor: User,
+    reaction?: string,
   ): Promise<void> {
     if (reactor.host) return;
 
-    const activity = this.builder.like(noteId, noteUri, reactor);
+    const activity = this.builder.like(noteId, noteUri, reactor, reaction);
     await this.enqueueDelivery({
       activity,
       inboxUrl: noteAuthorInbox,
       actor: reactor,
     });
 
-    console.log(`📤 Enqueued Like activity to ${noteAuthorInbox} for note ${noteId}`);
+    console.log(`📤 Enqueued Like activity (${reaction || "❤️"}) to ${noteAuthorInbox} for note ${noteId}`);
   }
 
   /**

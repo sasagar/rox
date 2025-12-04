@@ -141,6 +141,7 @@ export class ReactionService {
           note.uri || `${process.env.URL || "http://localhost:3000"}/notes/${note.id}`,
           noteAuthor.inbox,
           reactor,
+          reaction, // Include the reaction emoji for Misskey compatibility
         )
         .catch((error) => {
           console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);

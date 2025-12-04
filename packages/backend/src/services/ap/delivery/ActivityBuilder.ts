@@ -150,16 +150,32 @@ export class ActivityBuilder {
   }
 
   /**
-   * Build a Like activity
+   * Build a Like activity with optional reaction content
+   *
+   * Supports Misskey-compatible _misskey_reaction extension for custom emoji.
+   * When a reaction is provided, it's included in both content and _misskey_reaction fields.
+   *
+   * @param noteId - ID of the note being reacted to
+   * @param noteUri - ActivityPub URI of the note
+   * @param reactor - User creating the reaction
+   * @param reaction - Optional reaction emoji (e.g., "👍", ":custom_emoji:")
    */
-  like(noteId: string, noteUri: string, reactor: User): Activity {
-    return {
+  like(noteId: string, noteUri: string, reactor: User, reaction?: string): Activity {
+    const activity: Activity & { content?: string; _misskey_reaction?: string } = {
       "@context": AS_CONTEXT,
       type: "Like",
       id: this.activityId("like", noteId, Date.now()),
       actor: this.actorUri(reactor.username),
       object: noteUri,
     };
+
+    // Include reaction content for Misskey compatibility
+    if (reaction) {
+      activity.content = reaction;
+      activity._misskey_reaction = reaction;
+    }
+
+    return activity;
   }
 
   /**
