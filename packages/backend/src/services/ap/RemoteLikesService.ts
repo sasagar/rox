@@ -43,6 +43,16 @@ interface MisskeyReaction {
 }
 
 /**
+ * Misskey emoji object from /api/emojis
+ */
+interface MisskeyEmoji {
+  name: string;
+  url: string;
+  aliases?: string[];
+  category?: string;
+}
+
+/**
  * ActivityPub Collection Page
  */
 interface APCollectionPage {
@@ -205,9 +215,9 @@ export class RemoteLikesService {
 
       console.log(`📥 Fetched ${reactions.length} reactions from Misskey API for ${noteUri}`);
 
-      // Aggregate reaction counts
+      // Aggregate reaction counts and collect custom emoji names
       const counts: Record<string, number> = {};
-      const emojis: Record<string, string> = {};
+      const customEmojiNames: Set<string> = new Set();
 
       for (const reaction of reactions) {
         // Normalize reaction type (remove @.: suffix for local emojis)
@@ -217,12 +227,73 @@ export class RemoteLikesService {
         }
 
         counts[reactionType] = (counts[reactionType] || 0) + 1;
+
+        // Collect custom emoji names (format: :emoji_name:)
+        if (reactionType.startsWith(":") && reactionType.endsWith(":")) {
+          const emojiName = reactionType.slice(1, -1);
+          customEmojiNames.add(emojiName);
+        }
+      }
+
+      // Fetch emoji URLs if there are custom emojis
+      let emojis: Record<string, string> = {};
+      if (customEmojiNames.size > 0) {
+        emojis = await this.fetchMisskeyEmojiUrls(url.origin, customEmojiNames);
       }
 
       return { counts, emojis };
     } catch (error) {
       console.warn(`Failed to fetch Misskey reactions:`, error);
       return null;
+    }
+  }
+
+  /**
+   * Fetch emoji URLs from Misskey's /api/emojis endpoint
+   *
+   * @param baseUrl - The base URL of the Misskey instance
+   * @param emojiNames - Set of emoji names to fetch URLs for
+   * @returns Map of emoji name (with colons) to URL
+   */
+  private async fetchMisskeyEmojiUrls(
+    baseUrl: string,
+    emojiNames: Set<string>,
+  ): Promise<Record<string, string>> {
+    try {
+      const apiUrl = `${baseUrl}/api/emojis`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "Rox/1.0 (ActivityPub)",
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (!response.ok) {
+        console.warn(`Failed to fetch emojis from ${baseUrl}: ${response.status}`);
+        return {};
+      }
+
+      const data = (await response.json()) as { emojis: MisskeyEmoji[] };
+      if (!data.emojis || !Array.isArray(data.emojis)) {
+        return {};
+      }
+
+      // Build map of emoji names to URLs
+      const emojis: Record<string, string> = {};
+      for (const emoji of data.emojis) {
+        if (emojiNames.has(emoji.name) && emoji.url) {
+          // Store with colon format for consistency
+          emojis[`:${emoji.name}:`] = emoji.url;
+        }
+      }
+
+      console.log(`📥 Fetched ${Object.keys(emojis).length} emoji URLs from ${baseUrl}`);
+      return emojis;
+    } catch (error) {
+      console.warn(`Failed to fetch emoji URLs from ${baseUrl}:`, error);
+      return {};
     }
   }
 
