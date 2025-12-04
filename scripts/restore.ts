@@ -207,6 +207,29 @@ async function restorePostgres(config: DatabaseConfig, inputFile: string): Promi
 }
 
 /**
+ * Restore SQLite database
+ */
+async function restoreSqlite(databaseUrl: string, inputFile: string): Promise<void> {
+  // Remove sqlite:// prefix if present
+  const dbPath = databaseUrl.replace(/^sqlite:\/\//, "");
+
+  console.log(`📦 Restoring SQLite database`);
+  console.log(`   Target: ${dbPath}`);
+  console.log(`   From: ${inputFile}`);
+
+  try {
+    // Copy the backup file to the database location
+    const backupFile = Bun.file(inputFile);
+    await Bun.write(dbPath, backupFile);
+
+    console.log(`✅ Restore completed successfully!`);
+  } catch (error) {
+    console.error(`❌ Restore failed:`, error);
+    process.exit(1);
+  }
+}
+
+/**
  * Main function
  */
 async function main(): Promise<void> {
@@ -249,9 +272,6 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Parse database URL
-  const config = parseDatabaseUrl(databaseUrl);
-
   console.log("");
 
   // Show file info
@@ -267,7 +287,13 @@ async function main(): Promise<void> {
 
   // Confirm before proceeding
   console.log("⚠️  WARNING: This will overwrite existing data in the target database!");
-  console.log(`   Target: ${config.database} @ ${config.host}:${config.port}`);
+  if (dbType === "postgres") {
+    const config = parseDatabaseUrl(databaseUrl);
+    console.log(`   Target: ${config.database} @ ${config.host}:${config.port}`);
+  } else {
+    const dbPath = databaseUrl.replace(/^sqlite:\/\//, "");
+    console.log(`   Target: ${dbPath}`);
+  }
   console.log("");
 
   const confirmed = await confirm("Are you sure you want to proceed?");
@@ -280,12 +306,18 @@ async function main(): Promise<void> {
 
   // Run restore based on database type
   switch (dbType) {
-    case "postgres":
+    case "postgres": {
+      const config = parseDatabaseUrl(databaseUrl);
       await restorePostgres(config, inputFile);
+      break;
+    }
+    case "sqlite":
+    case "d1":
+      await restoreSqlite(databaseUrl, inputFile);
       break;
     default:
       console.error(`❌ Unsupported database type: ${dbType}`);
-      console.error("   Supported types: postgres");
+      console.error("   Supported types: postgres, sqlite");
       process.exit(1);
   }
 

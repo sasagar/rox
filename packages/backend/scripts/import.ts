@@ -26,10 +26,12 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { sql } from "drizzle-orm";
 import * as readline from "readline";
-import { createDatabase, type Database } from "../src/db/index.js";
+import { createDatabase, getDbType, type Database } from "../src/db/index.js";
 import * as pgSchema from "../src/db/schema/pg.js";
+import * as mysqlSchema from "../src/db/schema/mysql.js";
+import * as sqliteSchema from "../src/db/schema/sqlite.js";
 
-const dbType = process.env.DB_TYPE || "postgres";
+const dbType = getDbType();
 
 /**
  * Supported export version
@@ -37,39 +39,52 @@ const dbType = process.env.DB_TYPE || "postgres";
 const SUPPORTED_VERSION = 1;
 
 /**
- * Tables to import in dependency order
- * Maps table name to schema object
+ * Get schema module based on database type
  */
-const IMPORT_TABLES: Array<{ name: string; schema: any; snakeCaseName: string }> = [
-  { name: "users", schema: pgSchema.users, snakeCaseName: "users" },
-  { name: "sessions", schema: pgSchema.sessions, snakeCaseName: "sessions" },
-  { name: "passkeyCredentials", schema: pgSchema.passkeyCredentials, snakeCaseName: "passkey_credentials" },
-  { name: "passkeyChallenges", schema: pgSchema.passkeyChallenges, snakeCaseName: "passkey_challenges" },
-  { name: "roles", schema: pgSchema.roles, snakeCaseName: "roles" },
-  { name: "roleAssignments", schema: pgSchema.roleAssignments, snakeCaseName: "role_assignments" },
-  { name: "driveFolders", schema: pgSchema.driveFolders, snakeCaseName: "drive_folders" },
-  { name: "driveFiles", schema: pgSchema.driveFiles, snakeCaseName: "drive_files" },
-  { name: "notes", schema: pgSchema.notes, snakeCaseName: "notes" },
-  { name: "reactions", schema: pgSchema.reactions, snakeCaseName: "reactions" },
-  { name: "follows", schema: pgSchema.follows, snakeCaseName: "follows" },
-  { name: "receivedActivities", schema: pgSchema.receivedActivities, snakeCaseName: "received_activities" },
-  { name: "instanceBlocks", schema: pgSchema.instanceBlocks, snakeCaseName: "instance_blocks" },
-  { name: "invitationCodes", schema: pgSchema.invitationCodes, snakeCaseName: "invitation_codes" },
-  { name: "instanceSettings", schema: pgSchema.instanceSettings, snakeCaseName: "instance_settings" },
-  { name: "userReports", schema: pgSchema.userReports, snakeCaseName: "user_reports" },
-  { name: "moderationAuditLogs", schema: pgSchema.moderationAuditLogs, snakeCaseName: "moderation_audit_logs" },
-  { name: "userWarnings", schema: pgSchema.userWarnings, snakeCaseName: "user_warnings" },
-  { name: "customEmojis", schema: pgSchema.customEmojis, snakeCaseName: "custom_emojis" },
-  { name: "notifications", schema: pgSchema.notifications, snakeCaseName: "notifications" },
-  { name: "pushSubscriptions", schema: pgSchema.pushSubscriptions, snakeCaseName: "push_subscriptions" },
-  { name: "remoteInstances", schema: pgSchema.remoteInstances, snakeCaseName: "remote_instances" },
-  { name: "scheduledNotes", schema: pgSchema.scheduledNotes, snakeCaseName: "scheduled_notes" },
-];
+function getSchema() {
+  switch (dbType) {
+    case "mysql":
+      return mysqlSchema;
+    case "sqlite":
+    case "d1":
+      return sqliteSchema;
+    default:
+      return pgSchema;
+  }
+}
 
 /**
- * Tables to clear in reverse dependency order
+ * Tables to import in dependency order
+ * Returns table list with schema objects for current DB type
  */
-const CLEAR_ORDER = [...IMPORT_TABLES].reverse();
+function getImportTables(): Array<{ name: string; schema: any; snakeCaseName: string }> {
+  const schema = getSchema();
+  return [
+    { name: "users", schema: schema.users, snakeCaseName: "users" },
+    { name: "sessions", schema: schema.sessions, snakeCaseName: "sessions" },
+    { name: "passkeyCredentials", schema: schema.passkeyCredentials, snakeCaseName: "passkey_credentials" },
+    { name: "passkeyChallenges", schema: schema.passkeyChallenges, snakeCaseName: "passkey_challenges" },
+    { name: "roles", schema: schema.roles, snakeCaseName: "roles" },
+    { name: "roleAssignments", schema: schema.roleAssignments, snakeCaseName: "role_assignments" },
+    { name: "driveFolders", schema: schema.driveFolders, snakeCaseName: "drive_folders" },
+    { name: "driveFiles", schema: schema.driveFiles, snakeCaseName: "drive_files" },
+    { name: "notes", schema: schema.notes, snakeCaseName: "notes" },
+    { name: "reactions", schema: schema.reactions, snakeCaseName: "reactions" },
+    { name: "follows", schema: schema.follows, snakeCaseName: "follows" },
+    { name: "receivedActivities", schema: schema.receivedActivities, snakeCaseName: "received_activities" },
+    { name: "instanceBlocks", schema: schema.instanceBlocks, snakeCaseName: "instance_blocks" },
+    { name: "invitationCodes", schema: schema.invitationCodes, snakeCaseName: "invitation_codes" },
+    { name: "instanceSettings", schema: schema.instanceSettings, snakeCaseName: "instance_settings" },
+    { name: "userReports", schema: schema.userReports, snakeCaseName: "user_reports" },
+    { name: "moderationAuditLogs", schema: schema.moderationAuditLogs, snakeCaseName: "moderation_audit_logs" },
+    { name: "userWarnings", schema: schema.userWarnings, snakeCaseName: "user_warnings" },
+    { name: "customEmojis", schema: schema.customEmojis, snakeCaseName: "custom_emojis" },
+    { name: "notifications", schema: schema.notifications, snakeCaseName: "notifications" },
+    { name: "pushSubscriptions", schema: schema.pushSubscriptions, snakeCaseName: "push_subscriptions" },
+    { name: "remoteInstances", schema: schema.remoteInstances, snakeCaseName: "remote_instances" },
+    { name: "scheduledNotes", schema: schema.scheduledNotes, snakeCaseName: "scheduled_notes" },
+  ];
+}
 
 /**
  * Export data structure
@@ -120,6 +135,21 @@ function convertDates(record: Record<string, unknown>): Record<string, unknown> 
 }
 
 /**
+ * Quote table name based on database type
+ */
+function quoteTableName(tableName: string): string {
+  switch (dbType) {
+    case "mysql":
+      return `\`${tableName}\``;
+    case "sqlite":
+    case "d1":
+      return `"${tableName}"`;
+    default:
+      return `"${tableName}"`;
+  }
+}
+
+/**
  * Import data into database using Drizzle
  */
 async function importToDatabase(
@@ -127,18 +157,27 @@ async function importToDatabase(
   data: ExportData,
   clearExisting: boolean,
 ): Promise<void> {
+  const importTables = getImportTables();
+  const clearOrder = [...importTables].reverse();
+
   // Clear existing data if requested
   if (clearExisting) {
     console.log("");
     console.log("🗑️  Clearing existing data...");
-    for (const { name, snakeCaseName } of CLEAR_ORDER) {
+    for (const { name, snakeCaseName } of clearOrder) {
       try {
+        const quotedTable = quoteTableName(snakeCaseName);
         // Use raw SQL to truncate with CASCADE (PostgreSQL)
         if (dbType === "postgres") {
-          await db.execute(sql.raw(`TRUNCATE TABLE "${snakeCaseName}" CASCADE`));
+          await db.execute(sql.raw(`TRUNCATE TABLE ${quotedTable} CASCADE`));
+        } else if (dbType === "mysql") {
+          // MySQL requires disabling foreign key checks
+          await db.execute(sql.raw(`SET FOREIGN_KEY_CHECKS = 0`));
+          await db.execute(sql.raw(`TRUNCATE TABLE ${quotedTable}`));
+          await db.execute(sql.raw(`SET FOREIGN_KEY_CHECKS = 1`));
         } else {
-          // For SQLite/MySQL, delete all rows
-          await db.execute(sql.raw(`DELETE FROM "${snakeCaseName}"`));
+          // For SQLite, delete all rows
+          await db.execute(sql.raw(`DELETE FROM ${quotedTable}`));
         }
         console.log(`   Cleared ${name}`);
       } catch {
@@ -150,7 +189,7 @@ async function importToDatabase(
   console.log("");
   console.log("📥 Importing data...");
 
-  for (const { name, schema, snakeCaseName } of IMPORT_TABLES) {
+  for (const { name, schema, snakeCaseName } of importTables) {
     // Try both camelCase (new format) and snake_case (old format) keys
     const records = data.tables[name] || data.tables[snakeCaseName];
     if (!records || records.length === 0) {

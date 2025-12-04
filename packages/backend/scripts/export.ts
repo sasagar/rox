@@ -22,10 +22,12 @@
 
 import { existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
-import { createDatabase, type Database } from "../src/db/index.js";
+import { createDatabase, getDbType, type Database } from "../src/db/index.js";
 import * as pgSchema from "../src/db/schema/pg.js";
+import * as mysqlSchema from "../src/db/schema/mysql.js";
+import * as sqliteSchema from "../src/db/schema/sqlite.js";
 
-const dbType = process.env.DB_TYPE || "postgres";
+const dbType = getDbType();
 const ROOT_DIR = join(import.meta.dir, "../../..");
 
 /**
@@ -35,34 +37,52 @@ const ROOT_DIR = join(import.meta.dir, "../../..");
 const EXPORT_VERSION = 1;
 
 /**
- * Tables to export in dependency order
- * Maps table name to schema object
+ * Get schema module based on database type
  */
-const EXPORT_TABLES: Array<{ name: string; schema: any }> = [
-  { name: "users", schema: pgSchema.users },
-  { name: "sessions", schema: pgSchema.sessions },
-  { name: "passkeyCredentials", schema: pgSchema.passkeyCredentials },
-  { name: "passkeyChallenges", schema: pgSchema.passkeyChallenges },
-  { name: "roles", schema: pgSchema.roles },
-  { name: "roleAssignments", schema: pgSchema.roleAssignments },
-  { name: "driveFolders", schema: pgSchema.driveFolders },
-  { name: "driveFiles", schema: pgSchema.driveFiles },
-  { name: "notes", schema: pgSchema.notes },
-  { name: "reactions", schema: pgSchema.reactions },
-  { name: "follows", schema: pgSchema.follows },
-  { name: "receivedActivities", schema: pgSchema.receivedActivities },
-  { name: "instanceBlocks", schema: pgSchema.instanceBlocks },
-  { name: "invitationCodes", schema: pgSchema.invitationCodes },
-  { name: "instanceSettings", schema: pgSchema.instanceSettings },
-  { name: "userReports", schema: pgSchema.userReports },
-  { name: "moderationAuditLogs", schema: pgSchema.moderationAuditLogs },
-  { name: "userWarnings", schema: pgSchema.userWarnings },
-  { name: "customEmojis", schema: pgSchema.customEmojis },
-  { name: "notifications", schema: pgSchema.notifications },
-  { name: "pushSubscriptions", schema: pgSchema.pushSubscriptions },
-  { name: "remoteInstances", schema: pgSchema.remoteInstances },
-  { name: "scheduledNotes", schema: pgSchema.scheduledNotes },
-];
+function getSchema() {
+  switch (dbType) {
+    case "mysql":
+      return mysqlSchema;
+    case "sqlite":
+    case "d1":
+      return sqliteSchema;
+    default:
+      return pgSchema;
+  }
+}
+
+/**
+ * Tables to export in dependency order
+ * Returns table list with schema objects for current DB type
+ */
+function getExportTables(): Array<{ name: string; schema: any }> {
+  const schema = getSchema();
+  return [
+    { name: "users", schema: schema.users },
+    { name: "sessions", schema: schema.sessions },
+    { name: "passkeyCredentials", schema: schema.passkeyCredentials },
+    { name: "passkeyChallenges", schema: schema.passkeyChallenges },
+    { name: "roles", schema: schema.roles },
+    { name: "roleAssignments", schema: schema.roleAssignments },
+    { name: "driveFolders", schema: schema.driveFolders },
+    { name: "driveFiles", schema: schema.driveFiles },
+    { name: "notes", schema: schema.notes },
+    { name: "reactions", schema: schema.reactions },
+    { name: "follows", schema: schema.follows },
+    { name: "receivedActivities", schema: schema.receivedActivities },
+    { name: "instanceBlocks", schema: schema.instanceBlocks },
+    { name: "invitationCodes", schema: schema.invitationCodes },
+    { name: "instanceSettings", schema: schema.instanceSettings },
+    { name: "userReports", schema: schema.userReports },
+    { name: "moderationAuditLogs", schema: schema.moderationAuditLogs },
+    { name: "userWarnings", schema: schema.userWarnings },
+    { name: "customEmojis", schema: schema.customEmojis },
+    { name: "notifications", schema: schema.notifications },
+    { name: "pushSubscriptions", schema: schema.pushSubscriptions },
+    { name: "remoteInstances", schema: schema.remoteInstances },
+    { name: "scheduledNotes", schema: schema.scheduledNotes },
+  ];
+}
 
 /**
  * Export data structure
@@ -93,8 +113,9 @@ async function exportFromDatabase(db: Database): Promise<ExportData> {
   const tables: Record<string, unknown[]> = {};
   const tableRecordCounts: Record<string, number> = {};
   let totalRecords = 0;
+  const exportTables = getExportTables();
 
-  for (const { name, schema } of EXPORT_TABLES) {
+  for (const { name, schema } of exportTables) {
     try {
       // Use Drizzle to select all records from each table
       const records = await db.select().from(schema);

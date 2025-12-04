@@ -21,9 +21,37 @@
 
 ### Supported Databases
 
-- **PostgreSQL** (recommended for production)
-- **MySQL/MariaDB** (planned)
-- **SQLite/Cloudflare D1** (planned for edge)
+All databases are fully supported with dedicated schema files:
+
+- **PostgreSQL** (recommended for production) - `src/db/schema/pg.ts`
+- **MySQL/MariaDB** - `src/db/schema/mysql.ts`
+- **SQLite/Cloudflare D1** - `src/db/schema/sqlite.ts`
+
+#### Database Configuration
+
+```bash
+# PostgreSQL
+DB_TYPE=postgres DATABASE_URL=postgresql://user:pass@localhost:5432/rox
+
+# MySQL
+DB_TYPE=mysql DATABASE_URL=mysql://user:pass@localhost:3306/rox
+
+# SQLite
+DB_TYPE=sqlite DATABASE_URL=./rox.db
+
+# Cloudflare D1 (in Workers environment)
+DB_TYPE=d1
+```
+
+#### Migrations
+
+Each database has its own migration folder:
+- `drizzle/postgres/` - PostgreSQL migrations
+- `drizzle/mysql/` - MySQL migrations
+- `drizzle/sqlite/` - SQLite/D1 migrations
+
+Generate migrations: `DB_TYPE=<type> bun run db:generate`
+Apply migrations: `DB_TYPE=<type> bun run db:migrate`
 
 ### Supported Storage
 

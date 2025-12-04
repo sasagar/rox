@@ -222,6 +222,50 @@ async function backupPostgres(config: DatabaseConfig, outputFile: string): Promi
 }
 
 /**
+ * Backup SQLite database
+ */
+async function backupSqlite(databaseUrl: string, outputFile: string): Promise<void> {
+  // Remove sqlite:// prefix if present
+  const dbPath = databaseUrl.replace(/^sqlite:\/\//, "");
+
+  console.log(`📦 Backing up SQLite database`);
+  console.log(`   Source: ${dbPath}`);
+  console.log(`   Output: ${outputFile}`);
+
+  if (!existsSync(dbPath)) {
+    console.error(`❌ Database file not found: ${dbPath}`);
+    process.exit(1);
+  }
+
+  // Ensure output directory exists
+  const outputDir = dirname(outputFile);
+  if (!existsSync(outputDir)) {
+    mkdirSync(outputDir, { recursive: true });
+  }
+
+  try {
+    // Copy the database file directly
+    // For a more consistent backup, we could use VACUUM INTO or .backup command
+    const sourceFile = Bun.file(dbPath);
+    await Bun.write(outputFile, sourceFile);
+
+    console.log(`✅ Backup completed successfully!`);
+
+    // Show file size
+    const file = Bun.file(outputFile);
+    const size = file.size;
+    const sizeStr =
+      size > 1024 * 1024
+        ? `${(size / 1024 / 1024).toFixed(2)} MB`
+        : `${(size / 1024).toFixed(2)} KB`;
+    console.log(`   File size: ${sizeStr}`);
+  } catch (error) {
+    console.error(`❌ Backup failed:`, error);
+    process.exit(1);
+  }
+}
+
+/**
  * Main function
  */
 async function main(): Promise<void> {
@@ -243,9 +287,6 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Parse database URL
-  const config = parseDatabaseUrl(databaseUrl);
-
   // Determine output file
   const outputArg = process.argv[2];
   const backupsDir = join(ROOT_DIR, "backups");
@@ -259,12 +300,19 @@ async function main(): Promise<void> {
 
   // Run backup based on database type
   switch (dbType) {
-    case "postgres":
+    case "postgres": {
+      // Parse database URL for PostgreSQL
+      const config = parseDatabaseUrl(databaseUrl);
       await backupPostgres(config, outputFile);
+      break;
+    }
+    case "sqlite":
+    case "d1":
+      await backupSqlite(databaseUrl, outputFile);
       break;
     default:
       console.error(`❌ Unsupported database type: ${dbType}`);
-      console.error("   Supported types: postgres");
+      console.error("   Supported types: postgres, sqlite");
       process.exit(1);
   }
 
