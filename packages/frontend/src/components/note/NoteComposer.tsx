@@ -502,17 +502,46 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
               </div>
             )}
 
-            {/* Main textarea */}
-            <textarea
-              ref={textareaRef}
-              value={text}
-              onChange={handleTextChange}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-              className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              disabled={isSubmitting}
-            />
+            {/* Main textarea with character counter bar */}
+            <div className="relative">
+              <textarea
+                ref={textareaRef}
+                value={text}
+                onChange={handleTextChange}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
+                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pb-6 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSubmitting}
+              />
+              {/* Character counter progress bar - attached to bottom of textarea */}
+              <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-b-md overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-150 ${
+                    remainingChars < 0
+                      ? "bg-red-500"
+                      : remainingChars < 100
+                        ? "bg-orange-500"
+                        : "bg-primary-500"
+                  }`}
+                  style={{ width: `${Math.min((text.length / maxLength) * 100, 100)}%` }}
+                />
+              </div>
+              {/* Character count text - shown when approaching limit */}
+              {(text.length > maxLength - 200 || remainingChars < 0) && (
+                <div
+                  className={`absolute bottom-2 right-2 text-xs font-medium px-1.5 py-0.5 rounded ${
+                    remainingChars < 0
+                      ? "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
+                      : remainingChars < 100
+                        ? "bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                  }`}
+                >
+                  {remainingChars}
+                </div>
+              )}
+            </div>
 
             {/* MFM Preview */}
             {showPreview && text.trim() && (
@@ -586,8 +615,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {error && <InlineError message={error} />}
 
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
-              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-wrap flex-1 min-w-0">
                 {/* File upload button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
@@ -856,77 +885,32 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 )}
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-3">
-                {/* Character counter with circular progress */}
-                <div className="relative flex items-center justify-center w-8 h-8">
-                  {/* Circular progress background */}
-                  <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="14"
-                      fill="none"
-                      className="stroke-gray-200 dark:stroke-gray-600"
-                      stroke={remainingChars < 0 ? "#ef4444" : undefined}
-                      strokeWidth="2"
-                    />
-                    <circle
-                      cx="16"
-                      cy="16"
-                      r="14"
-                      fill="none"
-                      stroke={
-                        remainingChars < 0
-                          ? "#ef4444"
-                          : remainingChars < 100
-                            ? "#f97316"
-                            : "#3b82f6"
-                      }
-                      strokeWidth="2"
-                      strokeDasharray={`${(text.length / maxLength) * 87.96} 87.96`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  {/* Character count text */}
-                  <span
-                    className={`absolute text-xs font-medium ${
-                      remainingChars < 0
-                        ? "text-red-600"
-                        : remainingChars < 100
-                          ? "text-orange-600"
-                          : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  >
-                    {text.length > maxLength - 100 ? remainingChars : ""}
-                  </span>
-                </div>
-
-                {/* Submit button */}
-                <Button
-                  onPress={() => handleSubmit()}
-                  isDisabled={
-                    isSubmitting ||
-                    isUploading ||
-                    (!text.trim() && totalFileCount === 0) ||
-                    text.length > maxLength
-                  }
-                  variant="primary"
-                  size="sm"
-                >
-                  <div className="flex items-center gap-2">
-                    {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
-                    {isUploading ? (
-                      <Trans>Uploading...</Trans>
-                    ) : isSubmitting ? (
-                      <Trans>Posting...</Trans>
-                    ) : replyId ? (
-                      <Trans>Reply</Trans>
-                    ) : (
-                      <Trans>Post</Trans>
-                    )}
-                  </div>
-                </Button>
-              </div>
+              {/* Submit button */}
+              <Button
+                onPress={() => handleSubmit()}
+                isDisabled={
+                  isSubmitting ||
+                  isUploading ||
+                  (!text.trim() && totalFileCount === 0) ||
+                  text.length > maxLength
+                }
+                variant="primary"
+                size="sm"
+                className="min-w-[72px] shrink-0"
+              >
+                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                  {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
+                  {isUploading ? (
+                    <Trans>Uploading...</Trans>
+                  ) : isSubmitting ? (
+                    <Trans>Posting...</Trans>
+                  ) : replyId ? (
+                    <Trans>Reply</Trans>
+                  ) : (
+                    <Trans>Post</Trans>
+                  )}
+                </span>
+              </Button>
             </div>
           </div>
         </div>
