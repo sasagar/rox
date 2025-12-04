@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "react-aria-components";
 import { SmilePlus } from "lucide-react";
+import { Button } from "react-aria-components";
+import { EmojiPicker } from "../ui/EmojiPicker";
 
 /**
  * Default reaction emojis
@@ -109,45 +109,26 @@ export interface ReactionButtonProps {
 
 export function ReactionButton({
   onReactionSelect,
-  selectedReactions = [],
+  selectedReactions: _selectedReactions = [],
   isDisabled = false,
 }: ReactionButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleReactionSelect = (reaction: string) => {
-    onReactionSelect(reaction);
-    setIsOpen(false);
-  };
-
   return (
-    <div className="relative">
-      <Button
-        onPress={() => setIsOpen(!isOpen)}
-        isDisabled={isDisabled}
-        className="
-          flex items-center gap-1 px-3 py-1.5 rounded-full text-sm
-          text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30
-          transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-        "
-        aria-label="Add reaction"
-      >
-        <SmilePlus className="w-4 h-4" />
-      </Button>
-
-      {isOpen && (
-        <>
-          {/* Backdrop to close picker */}
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-
-          {/* Picker popover */}
-          <div className="absolute bottom-full left-0 mb-2 z-20">
-            <ReactionPicker
-              onReactionSelect={handleReactionSelect}
-              selectedReactions={selectedReactions}
-            />
-          </div>
-        </>
-      )}
-    </div>
+    <EmojiPicker
+      onEmojiSelect={onReactionSelect}
+      isDisabled={isDisabled}
+      trigger={
+        <Button
+          isDisabled={isDisabled}
+          className="
+            flex items-center gap-1 px-3 py-1.5 rounded-full text-sm
+            text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30
+            transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+          "
+          aria-label="Add reaction"
+        >
+          <SmilePlus className="w-4 h-4" />
+        </Button>
+      }
+    />
   );
 }

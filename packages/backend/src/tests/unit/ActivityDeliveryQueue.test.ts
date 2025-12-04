@@ -329,9 +329,11 @@ describe("ActivityDeliveryQueue job ID generation", () => {
       privateKey: "secret",
     };
 
-    // Should not throw
+    // Should not throw and return a valid base36 string
     const id = generateJobId(jobData);
     expect(typeof id).toBe("string");
-    expect(id.startsWith("deliver-")).toBe(true);
+    expect(id.length).toBeGreaterThan(0);
+    // Verify it's a valid base36 string (alphanumeric, no special characters)
+    expect(/^[0-9a-z]+$/.test(id)).toBe(true);
   });
 });
