@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Layout } from "../../components/layout/Layout";
 import { AdminNav } from "../../components/admin/AdminNav";
 
@@ -352,7 +353,7 @@ export default function AdminFederationPage() {
                           {getStatusIcon(instance)}
                           {instance.iconUrl && (
                             <img
-                              src={`/api/proxy?url=${encodeURIComponent(instance.iconUrl)}`}
+                              src={getProxiedImageUrl(instance.iconUrl) || ""}
                               alt=""
                               className="w-5 h-5 rounded"
                               onError={(e) => {

@@ -22,6 +22,7 @@ import {
   getMyReactions,
   getReactionCountsWithEmojis,
 } from "../../lib/api/reactions";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
 import { MfmRenderer } from "../mfm/MfmRenderer";
 import { addToastAtom } from "../../lib/atoms/toast";
@@ -261,7 +262,7 @@ function NoteCardComponent({
                 >
                   {remoteInstance?.iconUrl ? (
                     <img
-                      src={`/api/proxy?url=${encodeURIComponent(remoteInstance.iconUrl)}`}
+                      src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
                       alt=""
                       className="w-3.5 h-3.5 rounded-sm object-contain"
                       loading="lazy"
@@ -474,7 +475,7 @@ function NoteCardComponent({
                   >
                     {isCustomEmoji && customEmojiUrl ? (
                       <img
-                        src={customEmojiUrl}
+                        src={getProxiedImageUrl(customEmojiUrl) || ""}
                         alt={emoji}
                         className="w-5 h-5 object-contain"
                         loading="lazy"
