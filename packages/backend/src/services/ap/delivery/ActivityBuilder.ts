@@ -14,7 +14,7 @@ import type { User } from "../../../../../shared/src/types/user.js";
  * Base ActivityPub activity structure
  */
 export interface Activity {
-  "@context": string | string[];
+  "@context": string | string[] | (string | Record<string, string>)[];
   type: string;
   id: string;
   actor: string;
@@ -67,7 +67,19 @@ export interface ActorObject {
 }
 
 const AS_CONTEXT = "https://www.w3.org/ns/activitystreams";
+const SECURITY_CONTEXT = "https://w3id.org/security/v1";
 const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+
+/**
+ * Misskey-compatible extension context for Like activities
+ * Defines _misskey_reaction and Emoji types for custom emoji reactions
+ */
+const MISSKEY_LIKE_CONTEXT = {
+  misskey: "https://misskey-hub.net/ns#",
+  _misskey_reaction: "misskey:_misskey_reaction",
+  toot: "http://joinmastodon.org/ns#",
+  Emoji: "toot:Emoji",
+};
 
 /**
  * Custom emoji info for Like activity
@@ -179,12 +191,16 @@ export class ActivityBuilder {
     reaction?: string,
     customEmoji?: CustomEmojiInfo,
   ): Activity {
+    // Use extended context with Misskey-compatible _misskey_reaction definition
+    // This ensures remote Misskey instances properly recognize the reaction emoji
+    const context: (string | Record<string, string>)[] = [AS_CONTEXT, SECURITY_CONTEXT, MISSKEY_LIKE_CONTEXT];
+
     const activity: Activity & {
       content?: string;
       _misskey_reaction?: string;
       tag?: unknown[];
     } = {
-      "@context": AS_CONTEXT,
+      "@context": context,
       type: "Like",
       id: this.activityId("like", noteId, Date.now()),
       actor: this.actorUri(reactor.username),
@@ -192,6 +208,7 @@ export class ActivityBuilder {
     };
 
     // Include reaction content for Misskey compatibility
+    // Misskey extracts reaction from: activity._misskey_reaction ?? activity.content ?? activity.name
     if (reaction) {
       activity.content = reaction;
       activity._misskey_reaction = reaction;
