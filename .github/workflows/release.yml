@@ -9,15 +9,15 @@ permissions:
   contents: write
 
 jobs:
-  # 1. 既存のCIワークフローを再利用して実行
+  # 1. Run CI workflow first
   call-ci:
     uses: ./.github/workflows/ci.yml
-    # もしCIでsecretsを使っている場合は以下を追加
+    # If CI uses secrets, uncomment below
     # secrets: inherit
 
-  # 2. テストが成功したらリリースを実行
+  # 2. Create release after CI passes
   create-release:
-    needs: call-ci # ★ここが重要：CIが終わるのを待つ
+    needs: call-ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,12 +25,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
       - name: Determine Release Type
         id: check
         run: |
-          git fetch origin main dev
-          # mainブランチに含まれるコミットなら正式版
-          if git merge-base --is-ancestor HEAD origin/main; then
+          git fetch origin main dev 2>/dev/null || true
+
+          # Check if this is a prerelease based on tag name
+          if [[ "${{ github.ref_name }}" == *"-alpha"* ]] || \
+             [[ "${{ github.ref_name }}" == *"-beta"* ]] || \
+             [[ "${{ github.ref_name }}" == *"-rc"* ]]; then
+            echo "Pre-release tag detected."
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          # Check if commit is on main branch
+          elif git merge-base --is-ancestor HEAD origin/main 2>/dev/null; then
             echo "Main branch detected. Official Release."
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           else
@@ -39,9 +50,106 @@ jobs:
           fi
         shell: bash
 
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          # Get the previous tag for comparison
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREV_TAG"
+
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+
+          echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
+
+          # Generate changelog from conventional commits
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..${CURRENT_TAG}"
+          else
+            RANGE="${CURRENT_TAG}"
+          fi
+
+          # Create changelog sections based on conventional commits
+          {
+            echo "## What's Changed"
+            echo ""
+
+            # Features
+            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true)
+            if [ -n "$FEATURES" ]; then
+              echo "### 🚀 New Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+
+            # Bug fixes
+            FIXES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+
+            # Performance
+            PERF=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^perf" 2>/dev/null || true)
+            if [ -n "$PERF" ]; then
+              echo "### ⚡ Performance"
+              echo "$PERF"
+              echo ""
+            fi
+
+            # Documentation
+            DOCS=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true)
+            if [ -n "$DOCS" ]; then
+              echo "### 📚 Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+
+            # Chore/Maintenance
+            CHORE=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^chore" 2>/dev/null || true)
+            if [ -n "$CHORE" ]; then
+              echo "### 🧰 Maintenance"
+              echo "$CHORE"
+              echo ""
+            fi
+
+            # Refactor
+            REFACTOR=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^refactor" 2>/dev/null || true)
+            if [ -n "$REFACTOR" ]; then
+              echo "### ♻️ Refactoring"
+              echo "$REFACTOR"
+              echo ""
+            fi
+
+            # Other commits (not matching conventional patterns)
+            OTHER=$(git log $RANGE --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
+            if [ -n "$OTHER" ]; then
+              echo "### 📝 Other Changes"
+              echo "$OTHER"
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            if [ -n "$PREV_TAG" ]; then
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURRENT_TAG}"
+            fi
+          } > CHANGELOG.md
+
+          cat CHANGELOG.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          name: "Rox ${{ steps.version.outputs.version }}"
+          body_path: CHANGELOG.md
           prerelease: ${{ steps.check.outputs.is_prerelease }}
           draft: false
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

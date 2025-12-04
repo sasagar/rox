@@ -71,5 +71,8 @@ packages/backend/check-*.ts
 # Migration backups (consolidated migrations)
 packages/backend/drizzle/postgres-backup/
 
-# Bakcend upoloads
+# Backend uploads
 packages/backend/uploads/
+
+# Database backups
+/backups/

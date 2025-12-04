@@ -96,6 +96,10 @@ bun run frontend:dev
 - `bun run db:generate` - データベースマイグレーションを生成
 - `bun run db:migrate` - データベースマイグレーションを実行
 - `bun run db:studio` - Drizzle Studioを開く
+- `bun run db:backup` - データベースをバックアップ（PostgreSQLネイティブ形式）
+- `bun run db:restore` - バックアップからデータベースを復元
+- `bun run db:export` - データベースをJSONにエクスポート（異種DB間移行用）
+- `bun run db:import` - JSONからデータベースにインポート
 
 ### データベース管理
 

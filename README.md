@@ -96,6 +96,10 @@ The backend API will be available at `http://localhost:3000` and the frontend at
 - `bun run db:generate` - Generate database migrations
 - `bun run db:migrate` - Run database migrations
 - `bun run db:studio` - Open Drizzle Studio
+- `bun run db:backup` - Backup database (PostgreSQL native format)
+- `bun run db:restore` - Restore database from backup
+- `bun run db:export` - Export database to JSON (cross-database migration)
+- `bun run db:import` - Import database from JSON
 
 ### Database Management
 

@@ -13,6 +13,8 @@ This guide provides instructions for setting up the development environment, run
 5. [Running the Application](#running-the-application)
 6. [Testing](#testing)
 7. [Common Tasks](#common-tasks)
+   - [Database Backup & Restore](#database-backup--restore)
+   - [Database Export & Import](#database-export--import-cross-database-migration)
 8. [Project Structure](#project-structure)
 9. [Code Quality](#code-quality)
 10. [Troubleshooting](#troubleshooting)
@@ -385,6 +387,94 @@ DB_TYPE=postgres DATABASE_URL="postgresql://rox:rox_dev_password@localhost:5432/
 ```bash
 rm -rf packages/backend/uploads/*
 ```
+
+### Database Backup & Restore
+
+Rox provides scripts for database backup and restore operations. These use PostgreSQL native tools (`pg_dump`, `psql`) and support both local installations and Docker containers.
+
+#### Create Backup
+
+```bash
+# Backup to timestamped file (saves to backups/ directory)
+bun run db:backup
+
+# Backup to specific file
+DB_TYPE=postgres DATABASE_URL="postgresql://..." bun scripts/backup.ts my-backup.sql
+```
+
+#### Restore from Backup
+
+```bash
+# Interactive restore with confirmation prompts
+bun run db:restore backups/backup-xxxx.sql
+
+# Skip confirmation prompts
+bun run db:restore --yes backups/backup-xxxx.sql
+```
+
+### Database Export & Import (Cross-Database Migration)
+
+For migrating data between different database types (PostgreSQL ↔ MySQL ↔ SQLite/D1), use the JSON export/import scripts. These use Drizzle ORM for database-agnostic operations.
+
+#### Export to JSON
+
+```bash
+# Export to timestamped file (saves to backups/ directory)
+bun run db:export
+
+# Export to specific file
+DB_TYPE=postgres DATABASE_URL="postgresql://..." bun packages/backend/scripts/export.ts my-export.json
+```
+
+**Export format:**
+```json
+{
+  "version": 1,
+  "exportedAt": "2025-12-04T12:00:00.000Z",
+  "dbType": "postgres",
+  "tables": {
+    "users": [...],
+    "notes": [...],
+    ...
+  },
+  "metadata": {
+    "totalRecords": 442,
+    "tableRecordCounts": { "users": 100, "notes": 150, ... }
+  }
+}
+```
+
+#### Import from JSON
+
+```bash
+# Interactive import with confirmation prompts
+bun run db:import backups/export-xxxx.json
+
+# Skip confirmation prompts (for automation)
+bun run db:import --yes backups/export-xxxx.json
+```
+
+**Import options:**
+- **Clear existing data**: Option to truncate all tables before import
+- **On conflict do nothing**: Duplicate records are skipped
+
+#### Cross-Database Migration Example
+
+```bash
+# 1. Export from PostgreSQL
+DB_TYPE=postgres DATABASE_URL="postgresql://..." bun run db:export
+
+# 2. Create SQLite database and run migrations
+DB_TYPE=sqlite DATABASE_URL="sqlite://./rox.db" bun run db:migrate
+
+# 3. Import to SQLite
+DB_TYPE=sqlite DATABASE_URL="sqlite://./rox.db" bun run db:import backups/export-xxxx.json
+```
+
+**Supported databases:**
+- PostgreSQL (fully tested)
+- MySQL/MariaDB (schema defined, import/export pending)
+- SQLite/D1 (schema defined, import/export pending)
 
 ### View Database Logs
 
@@ -768,6 +858,6 @@ cd packages/backend && bun run dev
 
 ---
 
-**Last Updated**: 2025-11-25
+**Last Updated**: 2025-12-04
 **Maintainer**: Development Team
 **Status**: Living Document

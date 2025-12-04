@@ -300,7 +300,7 @@ msgstr "Be the first to post something!"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "Before migrating, make sure to add this account as an alias on your target account."
 
-#: src/pages/settings.tsx:178
+#: src/pages/settings.tsx:186
 msgid "Bio"
 msgstr "Bio"
 
@@ -398,7 +398,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/storage.tsx:543
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
-#: src/pages/settings.tsx:280
+#: src/pages/settings.tsx:288
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -524,7 +524,7 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:227
+#: src/pages/settings.tsx:235
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
@@ -536,7 +536,7 @@ msgstr "Custom CSS (App-wide)"
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "Custom CSS applied to the entire app (max 10KB)"
 
-#: src/pages/settings.tsx:241
+#: src/pages/settings.tsx:249
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -626,7 +626,7 @@ msgstr "Disable"
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:155
+#: src/pages/settings.tsx:163
 #: src/pages/signup.tsx:193
 msgid "Display Name"
 msgstr "Display Name"
@@ -1337,6 +1337,7 @@ msgstr "Log In"
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
+#: src/pages/settings.tsx:343
 msgid "Logging out..."
 msgstr "Logging out..."
 
@@ -1346,6 +1347,7 @@ msgstr "Login failed. Please check your credentials."
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
+#: src/pages/settings.tsx:347
 msgid "Logout"
 msgstr "Logout"
 
@@ -1377,7 +1379,7 @@ msgstr "Manage invitation codes for new user registration"
 msgid "Manage remote instances and federation status"
 msgstr "Manage remote instances and federation status"
 
-#: src/pages/settings.tsx:139
+#: src/pages/settings.tsx:147
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
@@ -1617,7 +1619,7 @@ msgstr "Note restored successfully"
 msgid "Note scheduled successfully"
 msgstr "Note scheduled successfully"
 
-#: src/pages/settings.tsx:248
+#: src/pages/settings.tsx:256
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
 
@@ -1729,7 +1731,7 @@ msgstr "Please enable notifications in your browser settings to receive push not
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:83
+#: src/pages/settings.tsx:85
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -1799,7 +1801,7 @@ msgstr "Profile"
 msgid "Profile Images"
 msgstr "Profile Images"
 
-#: src/pages/settings.tsx:103
+#: src/pages/settings.tsx:105
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -2191,7 +2193,7 @@ msgstr "Root"
 msgid "Save"
 msgstr "Save"
 
-#: src/pages/settings.tsx:268
+#: src/pages/settings.tsx:276
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -2217,7 +2219,7 @@ msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
 #: src/components/settings/UISettingsSection.tsx:366
-#: src/pages/settings.tsx:264
+#: src/pages/settings.tsx:272
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -2307,8 +2309,12 @@ msgstr "Sensitive content (NSFW)"
 msgid "Server Assets"
 msgstr "Server Assets"
 
+#: src/pages/settings.tsx:329
+msgid "Session"
+msgstr "Session"
+
 #: src/components/layout/Sidebar.tsx:110
-#: src/pages/settings.tsx:136
+#: src/pages/settings.tsx:144
 msgid "Settings"
 msgstr "Settings"
 
@@ -2356,6 +2362,10 @@ msgstr "Sign in with GitHub"
 #: src/pages/login.tsx:109
 msgid "Sign in with Passkey"
 msgstr "Sign in with Passkey"
+
+#: src/pages/settings.tsx:332
+msgid "Sign out of your account on this device."
+msgstr "Sign out of your account on this device."
 
 #: src/pages/login.tsx:185
 #: src/pages/signup.tsx:225
@@ -2437,7 +2447,7 @@ msgstr "Target Account URI"
 msgid "Target ID:"
 msgstr "Target ID:"
 
-#: src/pages/settings.tsx:184
+#: src/pages/settings.tsx:192
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -2674,12 +2684,12 @@ msgid "User unsuspended successfully"
 msgstr "User unsuspended successfully"
 
 #: src/pages/login.tsx:147
-#: src/pages/settings.tsx:206
+#: src/pages/settings.tsx:214
 #: src/pages/signup.tsx:164
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:217
+#: src/pages/settings.tsx:225
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -2837,7 +2847,7 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:192
+#: src/pages/settings.tsx:200
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
@@ -2853,7 +2863,7 @@ msgstr "Your browser does not support push notifications."
 msgid "Your Files"
 msgstr "Your Files"
 
-#: src/pages/settings.tsx:168
+#: src/pages/settings.tsx:176
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"
 

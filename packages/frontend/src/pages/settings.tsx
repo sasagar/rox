@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { currentUserAtom, tokenAtom, logoutAtom } from "../lib/atoms/auth";
 import { usersApi } from "../lib/api/users";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
@@ -28,6 +28,8 @@ export default function SettingsPage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
+  const [, logout] = useAtom(logoutAtom);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -119,6 +121,12 @@ export default function SettingsPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    await logout();
   };
 
   if (isLoading || !currentUser) {
@@ -313,6 +321,34 @@ export default function SettingsPage() {
       <div className="mt-6">
         <AccountMigrationSection />
       </div>
+
+      {/* Logout Section */}
+      <Card className="mt-6">
+        <CardContent className="p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <Trans>Session</Trans>
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <Trans>Sign out of your account on this device.</Trans>
+          </p>
+          <Button
+            variant="danger"
+            onPress={handleLogout}
+            isDisabled={isLoggingOut}
+          >
+            {isLoggingOut ? (
+              <div className="flex items-center gap-2">
+                <Spinner size="xs" variant="white" />
+                <span>
+                  <Trans>Logging out...</Trans>
+                </span>
+              </div>
+            ) : (
+              <Trans>Logout</Trans>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
     </Layout>
   );
 }
