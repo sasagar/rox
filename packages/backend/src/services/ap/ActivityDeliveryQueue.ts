@@ -163,11 +163,12 @@ export class ActivityDeliveryQueue {
 
       console.log("✅ Redis connected, using BullMQ for delivery queue");
 
-      // Initialize queue with hash tag prefix for Dragonfly/Redis cluster compatibility
-      // The {ap} hash tag ensures all keys are in the same slot
+      // Initialize queue
+      // Note: Using simple prefix without hash tags for Dragonfly compatibility
+      // Hash tags like {ap} cause "undeclared key" errors in Dragonfly's Lua scripts
       this.queue = new Queue<DeliveryJobData>("activitypub-delivery", {
         connection: this.redis,
-        prefix: "{ap}",
+        prefix: "bull",
       });
 
       // Initialize worker
@@ -178,7 +179,7 @@ export class ActivityDeliveryQueue {
         },
         {
           connection: this.redis,
-          prefix: "{ap}",
+          prefix: "bull",
           concurrency: 10, // Process up to 10 jobs concurrently
         },
       );
@@ -382,7 +383,8 @@ export class ActivityDeliveryQueue {
    *
    * Creates a job ID based on activity ID and inbox URL to prevent
    * duplicate deliveries within a short time window.
-   * Uses {ap} hash tag prefix for Dragonfly/Redis cluster compatibility.
+   * Uses a simple numeric hash to avoid special characters that may
+   * cause issues with Dragonfly's Lua scripts.
    *
    * @param data - Delivery job data
    * @returns Job ID for deduplication
