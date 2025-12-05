@@ -487,14 +487,12 @@ function NoteCardComponent({
             <Repeat2 className="w-4 h-4" />
             <span>{note.renoteCount || 0}</span>
           </Button>
-          {/* Hide reaction button for remote notes - reactions are display-only */}
-          {!note.user.host && (
-            <ReactionButton
-              onReactionSelect={handleReaction}
-              selectedReactions={myReactions}
-              isDisabled={isReacting}
-            />
-          )}
+          {/* Reaction button - always shown, allows adding new reactions */}
+          <ReactionButton
+            onReactionSelect={handleReaction}
+            selectedReactions={myReactions}
+            isDisabled={isReacting}
+          />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
               className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400"
