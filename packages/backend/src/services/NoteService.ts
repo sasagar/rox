@@ -715,8 +715,22 @@ export class NoteService {
     // Only push public notes from local users
     if (visibility !== "public" || author.host) return;
 
+    // Create note with user data for WebSocket push (frontend expects note.user)
+    // Include both 'name' and 'displayName' for frontend compatibility
+    const noteWithUser = {
+      ...note,
+      user: {
+        id: author.id,
+        username: author.username,
+        name: author.displayName || author.username,
+        displayName: author.displayName,
+        avatarUrl: author.avatarUrl,
+        host: author.host,
+      },
+    };
+
     // Push to local timeline (all local public notes)
-    streamService.pushToLocalTimeline(note);
+    streamService.pushToLocalTimeline(noteWithUser);
 
     // Get followers to push to home/social timelines
     // findByFolloweeId returns follows where authorId is the followee (i.e., their followers)
@@ -725,7 +739,7 @@ export class NoteService {
 
     if (followerIds.length > 0) {
       // Push to home timelines of followers
-      streamService.pushToHomeTimelines(followerIds, note);
+      streamService.pushToHomeTimelines(followerIds, noteWithUser);
 
       // Push to social timelines of followers (for followed remote user notes)
       // For local users, social timeline = local + followed remote users

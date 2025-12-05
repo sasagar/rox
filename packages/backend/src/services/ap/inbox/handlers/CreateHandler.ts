@@ -54,14 +54,35 @@ export class CreateHandler extends BaseHandler {
       if (note.visibility === "public") {
         try {
           const followRepository = this.getFollowRepository(c);
+          const userRepository = this.getUserRepository(c);
+
           // Find local users who follow this remote user
           const followers = await followRepository.findByFolloweeId(note.userId, 10000);
           const localFollowerIds = followers.map((f) => f.followerId);
 
           if (localFollowerIds.length > 0) {
+            // Fetch user data to include in the note for frontend rendering
+            const author = await userRepository.findById(note.userId);
+
+            // Create note with user data for WebSocket push
+            // Include both 'name' and 'displayName' for frontend compatibility
+            const noteWithUser = {
+              ...note,
+              user: author
+                ? {
+                    id: author.id,
+                    username: author.username,
+                    name: author.displayName || author.username,
+                    displayName: author.displayName,
+                    avatarUrl: author.avatarUrl,
+                    host: author.host,
+                  }
+                : null,
+            };
+
             const streamService = getTimelineStreamService();
-            streamService.pushToSocialTimelines(localFollowerIds, note);
-            streamService.pushToHomeTimelines(localFollowerIds, note);
+            streamService.pushToSocialTimelines(localFollowerIds, noteWithUser);
+            streamService.pushToHomeTimelines(localFollowerIds, noteWithUser);
             this.log("📡", `Pushed to ${localFollowerIds.length} followers' timelines`);
           }
         } catch (err) {
