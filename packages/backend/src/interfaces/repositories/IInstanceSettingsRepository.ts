@@ -19,6 +19,7 @@ export type InstanceSettingKey =
   | "instance.description"
   | "instance.maintainerEmail"
   | "instance.iconUrl"
+  | "instance.darkIconUrl"
   | "instance.bannerUrl"
   | "instance.faviconUrl"
   | "instance.tosUrl"

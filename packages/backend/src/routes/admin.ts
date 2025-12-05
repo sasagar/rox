@@ -1379,7 +1379,7 @@ app.post("/assets/upload", async (c) => {
   }
 
   // Validate asset type
-  const validAssetTypes = ["icon", "banner", "favicon"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon"];
   if (!assetType || !validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1392,6 +1392,7 @@ app.post("/assets/upload", async (c) => {
   // Size limits based on asset type
   const sizeLimits: Record<string, number> = {
     icon: 2 * 1024 * 1024, // 2MB
+    darkIcon: 2 * 1024 * 1024, // 2MB
     banner: 5 * 1024 * 1024, // 5MB
     favicon: 512 * 1024, // 512KB
   };
@@ -1421,6 +1422,9 @@ app.post("/assets/upload", async (c) => {
     switch (assetType) {
       case "icon":
         updateData.iconUrl = driveFile.url;
+        break;
+      case "darkIcon":
+        updateData.darkIconUrl = driveFile.url;
         break;
       case "banner":
         updateData.bannerUrl = driveFile.url;
@@ -1462,7 +1466,7 @@ app.delete("/assets/:type", async (c) => {
   const assetType = c.req.param("type");
 
   // Validate asset type
-  const validAssetTypes = ["icon", "banner", "favicon"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon"];
   if (!validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1472,6 +1476,9 @@ app.delete("/assets/:type", async (c) => {
   switch (assetType) {
     case "icon":
       updateData.iconUrl = null;
+      break;
+    case "darkIcon":
+      updateData.darkIconUrl = null;
       break;
     case "banner":
       updateData.bannerUrl = null;
@@ -1503,6 +1510,7 @@ app.get("/assets", async (c) => {
 
   return c.json({
     icon: metadata.iconUrl,
+    darkIcon: metadata.darkIconUrl,
     banner: metadata.bannerUrl,
     favicon: metadata.faviconUrl,
   });
