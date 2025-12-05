@@ -14,7 +14,7 @@ import type { User } from "../../../../../shared/src/types/user.js";
  * Base ActivityPub activity structure
  */
 export interface Activity {
-  "@context": string | string[];
+  "@context": string | string[] | (string | Record<string, string>)[];
   type: string;
   id: string;
   actor: string;
@@ -67,7 +67,55 @@ export interface ActorObject {
 }
 
 const AS_CONTEXT = "https://www.w3.org/ns/activitystreams";
+const SECURITY_CONTEXT = "https://w3id.org/security/v1";
 const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+
+/**
+ * Misskey-compatible extension context for Like activities
+ * Defines _misskey_reaction and Emoji types for custom emoji reactions
+ */
+const MISSKEY_LIKE_CONTEXT = {
+  misskey: "https://misskey-hub.net/ns#",
+  _misskey_reaction: "misskey:_misskey_reaction",
+  toot: "http://joinmastodon.org/ns#",
+  Emoji: "toot:Emoji",
+};
+
+/**
+ * Custom emoji info for Like activity
+ */
+export interface CustomEmojiInfo {
+  /** Emoji name (without colons) */
+  name: string;
+  /** URL to the emoji image */
+  url: string;
+  /** Host of the remote server (for remote custom emojis, null/undefined for local) */
+  host?: string | null;
+}
+
+/**
+ * Detect media type from URL extension
+ */
+function getMediaTypeFromUrl(url: string): string {
+  const extension = url.split(".").pop()?.toLowerCase().split("?")[0];
+  switch (extension) {
+    case "png":
+      return "image/png";
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    case "webp":
+      return "image/webp";
+    case "svg":
+      return "image/svg+xml";
+    case "avif":
+      return "image/avif";
+    default:
+      return "image/png"; // Default fallback
+  }
+}
 
 /**
  * ActivityPub Activity Builder
@@ -154,15 +202,31 @@ export class ActivityBuilder {
    *
    * Supports Misskey-compatible _misskey_reaction extension for custom emoji.
    * When a reaction is provided, it's included in both content and _misskey_reaction fields.
+   * For custom emojis, an Emoji tag is included with the image URL.
    *
    * @param noteId - ID of the note being reacted to
    * @param noteUri - ActivityPub URI of the note
    * @param reactor - User creating the reaction
    * @param reaction - Optional reaction emoji (e.g., "👍", ":custom_emoji:")
+   * @param customEmoji - Optional custom emoji info (name and URL)
    */
-  like(noteId: string, noteUri: string, reactor: User, reaction?: string): Activity {
-    const activity: Activity & { content?: string; _misskey_reaction?: string } = {
-      "@context": AS_CONTEXT,
+  like(
+    noteId: string,
+    noteUri: string,
+    reactor: User,
+    reaction?: string,
+    customEmoji?: CustomEmojiInfo,
+  ): Activity {
+    // Use extended context with Misskey-compatible _misskey_reaction definition
+    // This ensures remote Misskey instances properly recognize the reaction emoji
+    const context: (string | Record<string, string>)[] = [AS_CONTEXT, SECURITY_CONTEXT, MISSKEY_LIKE_CONTEXT];
+
+    const activity: Activity & {
+      content?: string;
+      _misskey_reaction?: string;
+      tag?: unknown[];
+    } = {
+      "@context": context,
       type: "Like",
       id: this.activityId("like", noteId, Date.now()),
       actor: this.actorUri(reactor.username),
@@ -170,11 +234,43 @@ export class ActivityBuilder {
     };
 
     // Include reaction content for Misskey compatibility
+    // Misskey extracts reaction from: activity._misskey_reaction ?? activity.content ?? activity.name
+    // For remote emojis, Misskey expects format :name@host: to match the original reaction
     if (reaction) {
-      activity.content = reaction;
-      activity._misskey_reaction = reaction;
+      // Check if this is a custom emoji with a remote host
+      // If so, format as :name@host: for Misskey compatibility
+      let formattedReaction = reaction;
+      if (customEmoji?.host) {
+        // Remote emoji: format as :name@host:
+        formattedReaction = `:${customEmoji.name}@${customEmoji.host}:`;
+      }
+      activity.content = formattedReaction;
+      activity._misskey_reaction = formattedReaction;
     }
 
+    // Add Emoji tag for custom emojis (Misskey compatible format)
+    if (customEmoji) {
+      // For remote emojis, include host in the name field
+      const tagName = customEmoji.host
+        ? `:${customEmoji.name}@${customEmoji.host}:`
+        : `:${customEmoji.name}:`;
+
+      activity.tag = [
+        {
+          type: "Emoji",
+          id: `${this.baseUrl}/emojis/${customEmoji.name}`,
+          name: tagName,
+          updated: new Date().toISOString(),
+          icon: {
+            type: "Image",
+            mediaType: getMediaTypeFromUrl(customEmoji.url),
+            url: customEmoji.url,
+          },
+        },
+      ];
+    }
+
+    console.log(`📤 Built Like activity:`, JSON.stringify(activity, null, 2));
     return activity;
   }
 

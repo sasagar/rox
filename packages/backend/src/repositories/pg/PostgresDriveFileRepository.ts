@@ -149,7 +149,12 @@ export class PostgresDriveFileRepository implements IDriveFileRepository {
     const [result] = await this.db
       .select({ total: sql<number>`sum(${driveFiles.size})::bigint` })
       .from(driveFiles)
-      .where(eq(driveFiles.userId, userId));
+      .where(
+        and(
+          eq(driveFiles.userId, userId),
+          eq(driveFiles.source, "user"), // Only count user uploads, not system files
+        ),
+      );
 
     return Number(result?.total ?? 0);
   }

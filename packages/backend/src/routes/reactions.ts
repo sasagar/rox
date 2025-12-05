@@ -35,6 +35,7 @@ reactions.post(
     const userRepository = c.get("userRepository");
     const deliveryService = c.get("activityPubDeliveryService");
     const notificationService = c.get("notificationService");
+    const customEmojiRepository = c.get("customEmojiRepository");
 
     const reactionService = new ReactionService(
       reactionRepository,
@@ -42,6 +43,7 @@ reactions.post(
       userRepository,
       deliveryService,
       notificationService,
+      customEmojiRepository,
     );
 
     const body = await c.req.json();
@@ -237,15 +239,34 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
         const { RemoteLikesService } = await import(
           "../services/ap/RemoteLikesService.js"
         );
+        const customEmojiRepository = c.get("customEmojiRepository");
         const remoteLikesService = new RemoteLikesService(
           reactionRepository,
           noteRepository,
           userRepository,
+          customEmojiRepository,
         );
 
-        const result = await remoteLikesService.fetchRemoteLikes(noteId);
-        if (result) {
-          return c.json(result);
+        const remoteResult = await remoteLikesService.fetchRemoteLikes(noteId);
+
+        // Always get local reactions and merge with remote
+        const localResult = await reactionService.getReactionCountsWithEmojis(noteId);
+
+        if (remoteResult) {
+          // Merge remote and local counts (take max of each to avoid double-counting)
+          const mergedCounts: Record<string, number> = { ...remoteResult.counts };
+          for (const [emoji, count] of Object.entries(localResult.counts)) {
+            // Use local count if higher (includes user's own reactions)
+            mergedCounts[emoji] = Math.max(mergedCounts[emoji] || 0, count);
+          }
+
+          // Merge emojis (prefer local URLs if available, fallback to remote)
+          const mergedEmojis: Record<string, string> = {
+            ...remoteResult.emojis,
+            ...localResult.emojis,
+          };
+
+          return c.json({ counts: mergedCounts, emojis: mergedEmojis });
         }
         // Fall through to local fetch if remote fetch failed
       }

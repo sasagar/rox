@@ -55,6 +55,37 @@ function extractEmojisFromTags(tags: ActorDocument["tag"]): ProfileEmoji[] {
 }
 
 /**
+ * Image object in ActivityPub (icon or image)
+ */
+interface ImageObject {
+  type: string;
+  url: string;
+  mediaType?: string;
+}
+
+/**
+ * Extract URL from icon/image which can be a single object or an array
+ *
+ * ActivityPub allows icon/image to be either a single ImageObject or an array of ImageObjects.
+ * This function handles both cases and returns the first valid URL.
+ *
+ * @param iconOrImage - Single ImageObject, array of ImageObjects, or undefined
+ * @returns The URL string or null if not found
+ */
+function extractImageUrl(iconOrImage: ImageObject | ImageObject[] | undefined): string | null {
+  if (!iconOrImage) return null;
+
+  // Handle array case - take the first item
+  if (Array.isArray(iconOrImage)) {
+    const firstImage = iconOrImage[0];
+    return firstImage?.url || null;
+  }
+
+  // Handle single object case
+  return iconOrImage.url || null;
+}
+
+/**
  * ActivityPub Actor document
  */
 interface ActorDocument {
@@ -68,14 +99,10 @@ interface ActorDocument {
   outbox?: string;
   followers?: string;
   following?: string;
-  icon?: {
-    type: string;
-    url: string;
-  };
-  image?: {
-    type: string;
-    url: string;
-  };
+  // icon can be a single ImageObject or an array of ImageObjects
+  icon?: ImageObject | ImageObject[];
+  // image can be a single ImageObject or an array of ImageObjects
+  image?: ImageObject | ImageObject[];
   publicKey?: {
     id: string;
     owner: string;
@@ -189,8 +216,8 @@ export class RemoteActorService {
     if (existing) {
       const updated = await this.userRepository.update(existing.id, {
         displayName: actor.name || actor.preferredUsername,
-        avatarUrl: actor.icon?.url || null,
-        bannerUrl: actor.image?.url || null,
+        avatarUrl: extractImageUrl(actor.icon),
+        bannerUrl: extractImageUrl(actor.image),
         bio: actor.summary || null,
         publicKey: actor.publicKey?.publicKeyPem || null,
         inbox: actor.inbox,
@@ -221,8 +248,8 @@ export class RemoteActorService {
       passwordHash: "", // Not used for remote users
       displayName: actor.name || actor.preferredUsername,
       host, // Non-null host indicates remote user
-      avatarUrl: actor.icon?.url || null,
-      bannerUrl: actor.image?.url || null,
+      avatarUrl: extractImageUrl(actor.icon),
+      bannerUrl: extractImageUrl(actor.image),
       bio: actor.summary || null,
       isAdmin: false,
       isSuspended: false,

@@ -83,6 +83,13 @@ export abstract class BaseHandler implements IActivityHandler {
   }
 
   /**
+   * Get custom emoji repository from context
+   */
+  protected getCustomEmojiRepository(c: Context) {
+    return c.get("customEmojiRepository");
+  }
+
+  /**
    * Resolve remote actor from URI
    *
    * @param actorUri - Actor URI to resolve

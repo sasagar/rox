@@ -17,7 +17,7 @@ import { EventEmitter } from "events";
 /**
  * Timeline event types
  */
-export type TimelineEventType = "note" | "noteDeleted" | "noteUpdated";
+export type TimelineEventType = "note" | "noteDeleted" | "noteUpdated" | "noteReacted";
 
 /**
  * Timeline channel types
@@ -246,6 +246,55 @@ export class TimelineStreamService {
     for (const userId of affectedUserIds) {
       this.emitter.emit(`home:${userId}`, event);
       this.emitter.emit(`social:${userId}`, event);
+    }
+  }
+
+  /**
+   * Push note reaction event
+   *
+   * Notifies connected clients that a note's reactions have changed.
+   * This allows real-time updates of reaction counts without polling.
+   *
+   * @param noteId - ID of the note that was reacted to
+   * @param noteAuthorId - User ID of the note author (for home/social timelines)
+   * @param reaction - The reaction emoji that was added/removed
+   * @param action - Whether the reaction was added or removed
+   * @param counts - Updated reaction counts for the note
+   * @param emojis - Custom emoji URLs (if any)
+   */
+  pushNoteReacted(
+    noteId: string,
+    noteAuthorId: string | null,
+    reaction: string,
+    action: "add" | "remove",
+    counts: Record<string, number>,
+    emojis: Record<string, string>,
+  ): void {
+    const event: TimelineEvent = {
+      type: "noteReacted",
+      data: { noteId, reaction, action, counts, emojis },
+    };
+
+    // Push to local timeline (all local notes)
+    this.emitter.emit("local", event);
+
+    // Push to home/social timelines of note author's followers
+    if (noteAuthorId) {
+      // Note author sees their own note's reactions in their timeline
+      this.emitter.emit(`home:${noteAuthorId}`, event);
+      this.emitter.emit(`social:${noteAuthorId}`, event);
+    }
+
+    // Also broadcast to all connected users (they may have the note in their timeline)
+    for (const userId of this.homeUsers.keys()) {
+      if (userId !== noteAuthorId) {
+        this.emitter.emit(`home:${userId}`, event);
+      }
+    }
+    for (const userId of this.socialUsers.keys()) {
+      if (userId !== noteAuthorId) {
+        this.emitter.emit(`social:${userId}`, event);
+      }
     }
   }
 

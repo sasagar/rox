@@ -39,64 +39,76 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 
 /**
- * Convert RGB to OKLCH (approximation)
- * This is a simplified conversion for CSS custom properties
+ * Convert sRGB to linear RGB
+ */
+function srgbToLinear(c: number): number {
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+
+/**
+ * Convert RGB to OKLCH using proper color space transformation
+ * Based on the OKLCH specification: https://www.w3.org/TR/css-color-4/#ok-lab
  */
 function rgbToOklch(r: number, g: number, b: number): { l: number; c: number; h: number } {
-  // Normalize RGB to 0-1
-  const rn = r / 255;
-  const gn = g / 255;
-  const bn = b / 255;
+  // Normalize RGB to 0-1 and convert to linear RGB
+  const rLin = srgbToLinear(r / 255);
+  const gLin = srgbToLinear(g / 255);
+  const bLin = srgbToLinear(b / 255);
 
-  // Calculate luminance (simplified)
-  const l = 0.2126 * rn + 0.7152 * gn + 0.0722 * bn;
+  // Convert linear RGB to OKLab using the matrix transformation
+  // First: linear RGB to LMS (cone response)
+  const l_ = 0.4122214708 * rLin + 0.5363325363 * gLin + 0.0514459929 * bLin;
+  const m_ = 0.2119034982 * rLin + 0.6806995451 * gLin + 0.1073969566 * bLin;
+  const s_ = 0.0883024619 * rLin + 0.2817188376 * gLin + 0.6299787005 * bLin;
 
-  // Calculate chroma (simplified approximation)
-  const max = Math.max(rn, gn, bn);
-  const min = Math.min(rn, gn, bn);
-  const c = max - min;
+  // Apply cube root (perceptual response)
+  const lCbrt = Math.cbrt(l_);
+  const mCbrt = Math.cbrt(m_);
+  const sCbrt = Math.cbrt(s_);
 
-  // Calculate hue
-  let h = 0;
-  if (c !== 0) {
-    if (max === rn) {
-      h = ((gn - bn) / c) % 6;
-    } else if (max === gn) {
-      h = (bn - rn) / c + 2;
-    } else {
-      h = (rn - gn) / c + 4;
-    }
-    h = Math.round(h * 60);
-    if (h < 0) h += 360;
-  }
+  // LMS to OKLab
+  const L = 0.2104542553 * lCbrt + 0.7936177850 * mCbrt - 0.0040720468 * sCbrt;
+  const a = 1.9779984951 * lCbrt - 2.4285922050 * mCbrt + 0.4505937099 * sCbrt;
+  const okb = 0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.8086757660 * sCbrt;
+
+  // OKLab to OKLCH
+  const c = Math.sqrt(a * a + okb * okb);
+  let h = Math.atan2(okb, a) * (180 / Math.PI);
+  if (h < 0) h += 360;
 
   return {
-    l: Math.round(l * 100) / 100,
-    c: Math.round(c * 0.4 * 100) / 100, // Scale chroma for OKLCH
-    h,
+    l: Math.round(L * 100) / 100,
+    c: Math.round(c * 100) / 100,
+    h: Math.round(h),
   };
 }
 
 /**
  * Generate CSS custom properties for primary color palette
+ * Uses the actual OKLCH values from the color and creates a palette with varying lightness
  */
 function generateColorPalette(hex: string): string {
   const rgb = hexToRgb(hex);
-  const { h } = rgbToOklch(rgb.r, rgb.g, rgb.b);
+  const { l, c, h } = rgbToOklch(rgb.r, rgb.g, rgb.b);
 
-  // Generate palette using OKLCH with varying lightness and chroma
+  // Calculate base chroma - scale relative to the original color's chroma
+  // The 500 level should match the original color's chroma
+  const baseChroma = Math.min(c, 0.25); // Cap chroma to avoid out-of-gamut colors
+
+  // Generate palette using OKLCH with varying lightness and proportional chroma
+  // Lighter shades have less chroma, darker shades transition down
   return `
-    --color-primary-50: oklch(98% 0.01 ${h});
-    --color-primary-100: oklch(95% 0.04 ${h});
-    --color-primary-200: oklch(90% 0.08 ${h});
-    --color-primary-300: oklch(83% 0.12 ${h});
-    --color-primary-400: oklch(75% 0.16 ${h});
-    --color-primary-500: oklch(68% 0.20 ${h});
-    --color-primary-600: oklch(58% 0.19 ${h});
-    --color-primary-700: oklch(48% 0.15 ${h});
-    --color-primary-800: oklch(38% 0.11 ${h});
-    --color-primary-900: oklch(30% 0.08 ${h});
-    --color-primary-950: oklch(20% 0.04 ${h});
+    --color-primary-50: oklch(98% ${(baseChroma * 0.05).toFixed(3)} ${h});
+    --color-primary-100: oklch(95% ${(baseChroma * 0.2).toFixed(3)} ${h});
+    --color-primary-200: oklch(90% ${(baseChroma * 0.4).toFixed(3)} ${h});
+    --color-primary-300: oklch(83% ${(baseChroma * 0.6).toFixed(3)} ${h});
+    --color-primary-400: oklch(75% ${(baseChroma * 0.8).toFixed(3)} ${h});
+    --color-primary-500: oklch(${Math.round(l * 100)}% ${baseChroma.toFixed(3)} ${h});
+    --color-primary-600: oklch(58% ${(baseChroma * 0.95).toFixed(3)} ${h});
+    --color-primary-700: oklch(48% ${(baseChroma * 0.75).toFixed(3)} ${h});
+    --color-primary-800: oklch(38% ${(baseChroma * 0.55).toFixed(3)} ${h});
+    --color-primary-900: oklch(30% ${(baseChroma * 0.4).toFixed(3)} ${h});
+    --color-primary-950: oklch(20% ${(baseChroma * 0.2).toFixed(3)} ${h});
   `;
 }
 

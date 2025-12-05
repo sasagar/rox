@@ -14,6 +14,25 @@ export interface ExtractedReaction {
   reaction: string;
   /** URL for custom emoji image (if available) */
   customEmojiUrl?: string;
+  /** Custom emoji name without colons (if custom emoji) */
+  emojiName?: string;
+  /** Host of the remote server (for remote custom emojis) */
+  emojiHost?: string;
+}
+
+/**
+ * Extract host from an actor URI
+ *
+ * @param actorUri Actor URI (e.g., "https://example.com/users/alice")
+ * @returns Hostname or undefined if invalid
+ */
+function extractHostFromUri(actorUri: string | undefined): string | undefined {
+  if (!actorUri) return undefined;
+  try {
+    return new URL(actorUri).hostname;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -24,9 +43,10 @@ export interface ExtractedReaction {
  * - Misskey extension with _misskey_reaction field and custom emoji in tag
  *
  * @param activity The Like activity object
- * @returns Object containing reaction string and optional custom emoji URL
+ * @param actorUri Optional actor URI to extract host for remote emojis
+ * @returns Object containing reaction string, optional custom emoji URL, name, and host
  */
-export function extractReactionFromLike(activity: any): ExtractedReaction {
+export function extractReactionFromLike(activity: any, actorUri?: string): ExtractedReaction {
   // Check for Misskey extension: _misskey_reaction or content field
   const misskeyReaction = activity._misskey_reaction || activity.content;
 
@@ -36,6 +56,7 @@ export function extractReactionFromLike(activity: any): ExtractedReaction {
 
     if (customEmojiMatch) {
       const emojiName = customEmojiMatch[1];
+      const emojiHost = extractHostFromUri(actorUri);
 
       // Look for the emoji in the tag array
       if (Array.isArray(activity.tag)) {
@@ -48,12 +69,14 @@ export function extractReactionFromLike(activity: any): ExtractedReaction {
           return {
             reaction: misskeyReaction,
             customEmojiUrl: emojiTag.icon.url,
+            emojiName,
+            emojiHost,
           };
         }
       }
 
       // Custom emoji without URL (fallback)
-      return { reaction: misskeyReaction };
+      return { reaction: misskeyReaction, emojiName, emojiHost };
     }
 
     // Unicode emoji from Misskey

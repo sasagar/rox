@@ -13,7 +13,7 @@ import type { IInstanceBlockRepository } from "../../interfaces/repositories/IIn
 import type { Note } from "shared";
 import type { User } from "../../db/schema/pg.js";
 import { ActivityDeliveryQueue, JobPriority } from "./ActivityDeliveryQueue.js";
-import { ActivityBuilder, type Activity } from "./delivery/ActivityBuilder.js";
+import { ActivityBuilder, type Activity, type CustomEmojiInfo } from "./delivery/ActivityBuilder.js";
 
 /**
  * Delivery options for enqueuing activities
@@ -160,6 +160,7 @@ export class ActivityPubDeliveryService {
    * @param noteAuthorInbox - Inbox URL of the note author
    * @param reactor - User creating the reaction
    * @param reaction - Reaction emoji (e.g., "👍", ":custom_emoji:")
+   * @param customEmoji - Optional custom emoji info (name and URL) for the tag
    */
   async deliverLikeActivity(
     noteId: string,
@@ -167,10 +168,11 @@ export class ActivityPubDeliveryService {
     noteAuthorInbox: string,
     reactor: User,
     reaction?: string,
+    customEmoji?: CustomEmojiInfo,
   ): Promise<void> {
     if (reactor.host) return;
 
-    const activity = this.builder.like(noteId, noteUri, reactor, reaction);
+    const activity = this.builder.like(noteId, noteUri, reactor, reaction, customEmoji);
     await this.enqueueDelivery({
       activity,
       inboxUrl: noteAuthorInbox,

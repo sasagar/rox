@@ -409,6 +409,58 @@ describe("InstanceSettingsService", () => {
       });
     });
 
+    describe("getDarkIconUrl", () => {
+      test("should return null by default", async () => {
+        const service = new InstanceSettingsService(
+          mockSettingsRepo as unknown as IInstanceSettingsRepository,
+        );
+
+        const darkIconUrl = await service.getDarkIconUrl();
+
+        expect(darkIconUrl).toBeNull();
+      });
+
+      test("should return custom dark icon URL when set", async () => {
+        settingsStore.set("instance.darkIconUrl", "https://example.com/dark-icon.png");
+
+        const service = new InstanceSettingsService(
+          mockSettingsRepo as unknown as IInstanceSettingsRepository,
+        );
+
+        const darkIconUrl = await service.getDarkIconUrl();
+
+        expect(darkIconUrl).toBe("https://example.com/dark-icon.png");
+      });
+    });
+
+    describe("setDarkIconUrl", () => {
+      test("should update dark icon URL", async () => {
+        const service = new InstanceSettingsService(
+          mockSettingsRepo as unknown as IInstanceSettingsRepository,
+        );
+
+        await service.setDarkIconUrl("https://example.com/dark-icon.png", "admin1");
+
+        expect(mockSettingsRepo.set).toHaveBeenCalledWith(
+          "instance.darkIconUrl",
+          "https://example.com/dark-icon.png",
+          "admin1",
+        );
+      });
+
+      test("should delete dark icon URL when set to null", async () => {
+        settingsStore.set("instance.darkIconUrl", "https://example.com/dark-icon.png");
+
+        const service = new InstanceSettingsService(
+          mockSettingsRepo as unknown as IInstanceSettingsRepository,
+        );
+
+        await service.setDarkIconUrl(null, "admin1");
+
+        expect(mockSettingsRepo.delete).toHaveBeenCalledWith("instance.darkIconUrl");
+      });
+    });
+
     describe("getInstanceMetadata", () => {
       test("should return all metadata with defaults", async () => {
         const service = new InstanceSettingsService(
@@ -421,6 +473,7 @@ describe("InstanceSettingsService", () => {
         expect(metadata.description).toBe("A lightweight ActivityPub server");
         expect(metadata.maintainerEmail).toBe("");
         expect(metadata.iconUrl).toBeNull();
+        expect(metadata.darkIconUrl).toBeNull();
         expect(metadata.bannerUrl).toBeNull();
         expect(metadata.tosUrl).toBeNull();
         expect(metadata.privacyPolicyUrl).toBeNull();
@@ -431,6 +484,7 @@ describe("InstanceSettingsService", () => {
         settingsStore.set("instance.description", "Custom description");
         settingsStore.set("instance.maintainerEmail", "admin@example.com");
         settingsStore.set("instance.iconUrl", "https://example.com/icon.png");
+        settingsStore.set("instance.darkIconUrl", "https://example.com/dark-icon.png");
         settingsStore.set("instance.tosUrl", "https://example.com/tos");
 
         const service = new InstanceSettingsService(
@@ -443,6 +497,7 @@ describe("InstanceSettingsService", () => {
         expect(metadata.description).toBe("Custom description");
         expect(metadata.maintainerEmail).toBe("admin@example.com");
         expect(metadata.iconUrl).toBe("https://example.com/icon.png");
+        expect(metadata.darkIconUrl).toBe("https://example.com/dark-icon.png");
         expect(metadata.tosUrl).toBe("https://example.com/tos");
       });
     });

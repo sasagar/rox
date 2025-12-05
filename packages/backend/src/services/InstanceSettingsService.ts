@@ -29,6 +29,7 @@ export interface InstanceMetadata {
   description: string;
   maintainerEmail: string;
   iconUrl: string | null;
+  darkIconUrl: string | null;
   bannerUrl: string | null;
   faviconUrl: string | null;
   tosUrl: string | null;
@@ -60,6 +61,7 @@ const DEFAULT_METADATA: InstanceMetadata = {
   description: "A lightweight ActivityPub server",
   maintainerEmail: "",
   iconUrl: null,
+  darkIconUrl: null,
   bannerUrl: null,
   faviconUrl: null,
   tosUrl: null,
@@ -315,6 +317,25 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get instance dark mode icon URL
+   */
+  async getDarkIconUrl(): Promise<string | null> {
+    return this.getCachedValue<string | null>("instance.darkIconUrl", DEFAULT_METADATA.darkIconUrl);
+  }
+
+  /**
+   * Set instance dark mode icon URL
+   */
+  async setDarkIconUrl(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.darkIconUrl");
+    } else {
+      await this.settingsRepository.set("instance.darkIconUrl", url, updatedById);
+    }
+    await this.invalidateCache("instance.darkIconUrl");
+  }
+
+  /**
    * Get instance banner URL
    */
   async getBannerUrl(): Promise<string | null> {
@@ -412,6 +433,7 @@ export class InstanceSettingsService {
       "instance.description",
       "instance.maintainerEmail",
       "instance.iconUrl",
+      "instance.darkIconUrl",
       "instance.bannerUrl",
       "instance.faviconUrl",
       "instance.tosUrl",
@@ -425,6 +447,8 @@ export class InstanceSettingsService {
       maintainerEmail:
         (values.get("instance.maintainerEmail") as string) ?? DEFAULT_METADATA.maintainerEmail,
       iconUrl: (values.get("instance.iconUrl") as string | null) ?? DEFAULT_METADATA.iconUrl,
+      darkIconUrl:
+        (values.get("instance.darkIconUrl") as string | null) ?? DEFAULT_METADATA.darkIconUrl,
       bannerUrl: (values.get("instance.bannerUrl") as string | null) ?? DEFAULT_METADATA.bannerUrl,
       faviconUrl:
         (values.get("instance.faviconUrl") as string | null) ?? DEFAULT_METADATA.faviconUrl,
@@ -467,6 +491,9 @@ export class InstanceSettingsService {
     }
     if (metadata.iconUrl !== undefined) {
       await this.setIconUrl(metadata.iconUrl, updatedById);
+    }
+    if (metadata.darkIconUrl !== undefined) {
+      await this.setDarkIconUrl(metadata.darkIconUrl, updatedById);
     }
     if (metadata.bannerUrl !== undefined) {
       await this.setBannerUrl(metadata.bannerUrl, updatedById);
@@ -574,6 +601,7 @@ export class InstanceSettingsService {
     description: string;
     maintainerEmail: string;
     iconUrl: string | null;
+    darkIconUrl: string | null;
     bannerUrl: string | null;
     faviconUrl: string | null;
     tosUrl: string | null;

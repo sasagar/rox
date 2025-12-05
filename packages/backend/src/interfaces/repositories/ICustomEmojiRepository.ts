@@ -53,6 +53,18 @@ export interface ICustomEmojiRepository {
   findByName(name: string, host?: string | null): Promise<CustomEmoji | null>;
 
   /**
+   * Gets an emoji by name from any host (remote emojis)
+   *
+   * Useful for finding remote custom emojis that were saved when receiving
+   * Like activities from remote servers. Returns the first matching emoji
+   * if multiple hosts have the same emoji name.
+   *
+   * @param name - Emoji shortcode (without colons)
+   * @returns Emoji or null if not found
+   */
+  findByNameAnyHost(name: string): Promise<CustomEmoji | null>;
+
+  /**
    * Gets multiple emojis by names
    * @param names - Array of emoji shortcodes
    * @param host - Optional host filter (null for local)

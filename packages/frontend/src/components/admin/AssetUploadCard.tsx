@@ -9,7 +9,7 @@ import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { Spinner } from "../ui/Spinner";
 
-type AssetType = "icon" | "banner" | "favicon";
+type AssetType = "icon" | "darkIcon" | "banner" | "favicon";
 
 interface AssetUploadCardProps {
   type: AssetType;

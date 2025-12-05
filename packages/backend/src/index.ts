@@ -35,6 +35,7 @@ import moderatorRoute from "./routes/moderator.js";
 import notificationsRoute from "./routes/notifications.js";
 import pushRoute from "./routes/push.js";
 import scheduledNotesRoute from "./routes/scheduled-notes.js";
+import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
 import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshService.js";
@@ -83,6 +84,9 @@ app.route("/api/i/migration", migrationRoute);
 app.route("/api/notifications", notificationsRoute);
 app.route("/api/push", pushRoute);
 app.route("/api/scheduled-notes", scheduledNotesRoute);
+
+// WebSocket routes for real-time updates
+app.route("/ws", wsRoute);
 
 // Media Proxy (both paths for backward compatibility)
 app.route("/api/proxy", proxyRoute);
@@ -199,4 +203,5 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 export default {
   port,
   fetch: app.fetch,
+  websocket,
 };

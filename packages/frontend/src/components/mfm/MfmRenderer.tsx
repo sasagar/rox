@@ -21,6 +21,7 @@ import * as mfm from "mfm-js";
 import type { MfmNode } from "mfm-js";
 import { lookupEmojis } from "../../lib/atoms/customEmoji";
 import { containsHtml, htmlToMfm } from "../../lib/utils/htmlToText";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 /**
  * Props for MfmRenderer component
@@ -280,7 +281,7 @@ export function MfmRenderer({
           return (
             <img
               key={index}
-              src={emojiUrl}
+              src={getProxiedImageUrl(emojiUrl) || ""}
               alt={`:${emojiName}:`}
               title={`:${emojiName}:`}
               className="inline-block h-6 w-6 align-middle mx-0.5"

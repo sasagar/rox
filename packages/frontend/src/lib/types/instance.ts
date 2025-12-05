@@ -39,6 +39,7 @@ export interface InstanceInfo {
   url: string;
   maintainerEmail: string | null;
   iconUrl: string | null;
+  darkIconUrl: string | null;
   bannerUrl: string | null;
   faviconUrl: string | null;
   tosUrl: string | null;

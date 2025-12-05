@@ -32,12 +32,26 @@ export class LikeHandler extends BaseHandler {
         return this.failure("Invalid Like activity: missing object");
       }
 
+      // Debug: Log received activity for custom emoji troubleshooting
+      if (activity._misskey_reaction || activity.content) {
+        console.log(`📥 Like activity received:`, JSON.stringify({
+          actor: activity.actor,
+          object: objectUri,
+          content: activity.content,
+          _misskey_reaction: activity._misskey_reaction,
+          tag: activity.tag,
+        }, null, 2));
+      }
+
       // Extract reaction (supports Misskey custom emoji)
-      const { reaction, customEmojiUrl } = extractReactionFromLike(activity);
+      const { reaction, customEmojiUrl, emojiName, emojiHost } = extractReactionFromLike(
+        activity,
+        this.getActorUri(activity),
+      );
 
       this.log(
         "📥",
-        `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ", custom emoji" : ""})`,
+        `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ", custom emoji URL: " + customEmojiUrl : ""}${emojiName ? ", name: " + emojiName : ""}${emojiHost ? ", host: " + emojiHost : ""})`,
       );
 
       // Resolve remote actor
@@ -51,6 +65,14 @@ export class LikeHandler extends BaseHandler {
       if (!note) {
         this.warn(`Note not found: ${objectUri}`);
         return this.failure(`Note not found: ${objectUri}`);
+      }
+
+      // Save remote custom emoji to database if present
+      if (customEmojiUrl && emojiName && emojiHost) {
+        console.log(`💾 Saving remote emoji: :${emojiName}:@${emojiHost} -> ${customEmojiUrl}`);
+        await this.saveRemoteEmoji(c, emojiName, emojiHost, customEmojiUrl);
+      } else if (emojiName) {
+        console.log(`⚠️ Cannot save remote emoji :${emojiName}: - missing: ${!customEmojiUrl ? 'URL' : ''} ${!emojiHost ? 'host' : ''}`);
       }
 
       // Check if reaction already exists
@@ -100,6 +122,52 @@ export class LikeHandler extends BaseHandler {
     } catch (error) {
       this.error("Failed to handle Like activity:", error as Error);
       return this.failure("Failed to handle Like activity", error as Error);
+    }
+  }
+
+  /**
+   * Save remote custom emoji to database for future use
+   *
+   * This allows users to use remote emojis when reacting to notes
+   * from that remote server.
+   */
+  private async saveRemoteEmoji(
+    c: any,
+    name: string,
+    host: string,
+    url: string,
+  ): Promise<void> {
+    try {
+      const customEmojiRepository = this.getCustomEmojiRepository(c);
+
+      // Check if emoji already exists
+      const existing = await customEmojiRepository.findByName(name, host);
+
+      if (existing) {
+        // Update URL if it changed
+        if (existing.url !== url) {
+          await customEmojiRepository.update(existing.id, { url, updatedAt: new Date() });
+          this.log("🔄", `Updated remote emoji: :${name}:@${host}`);
+        }
+        return;
+      }
+
+      // Create new remote emoji entry
+      await customEmojiRepository.create({
+        id: this.generateId(),
+        name,
+        host,
+        url,
+        publicUrl: url,
+        aliases: [],
+        isSensitive: false,
+        localOnly: false,
+      });
+
+      this.log("✨", `Saved remote emoji: :${name}:@${host}`);
+    } catch (error) {
+      // Don't fail the reaction if emoji saving fails
+      this.warn(`Failed to save remote emoji :${name}:@${host}: ${error}`);
     }
   }
 }

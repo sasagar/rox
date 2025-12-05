@@ -22,6 +22,7 @@ import {
   getMyReactions,
   getReactionCountsWithEmojis,
 } from "../../lib/api/reactions";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
 import { MfmRenderer } from "../mfm/MfmRenderer";
 import { addToastAtom } from "../../lib/atoms/toast";
@@ -75,6 +76,19 @@ function NoteCardComponent({
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
 
+  // Sync reactions from props when they change (e.g., from SSE updates)
+  useEffect(() => {
+    if (note.reactions) {
+      setLocalReactions(note.reactions);
+    }
+  }, [note.reactions]);
+
+  useEffect(() => {
+    if (note.reactionEmojis) {
+      setReactionEmojis(note.reactionEmojis);
+    }
+  }, [note.reactionEmojis]);
+
   // Load remote instance info for remote users
   useEffect(() => {
     if (note.user.host) {
@@ -88,23 +102,41 @@ function NoteCardComponent({
 
   // Load user's existing reactions and custom emoji URLs on mount
   useEffect(() => {
+    let isMounted = true;
+
     const loadReactionData = async () => {
       try {
+        // Load user's own reactions first if logged in
+        let userReactions: string[] = [];
+        if (token) {
+          const reactions = await getMyReactions(note.id, token);
+          userReactions = reactions.map((r) => r.reaction);
+          if (isMounted) {
+            setMyReactions(userReactions);
+          }
+        }
+
         // Load custom emoji URLs
         // For remote user notes, fetch reactions from remote server
         const isRemoteNote = Boolean(note.user.host);
         const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
+
+        if (!isMounted) return;
+
         if (Object.keys(reactionData.counts).length > 0) {
-          setLocalReactions(reactionData.counts);
+          // Merge with user's own reactions to prevent count from jumping back
+          // This ensures optimistic updates aren't overwritten by stale remote data
+          const merged = { ...reactionData.counts };
+          // For each of user's reactions, ensure count is at least 1
+          for (const reaction of userReactions) {
+            if (merged[reaction] === undefined || merged[reaction] < 1) {
+              merged[reaction] = Math.max(merged[reaction] || 0, 1);
+            }
+          }
+          setLocalReactions(merged);
         }
         if (Object.keys(reactionData.emojis).length > 0) {
           setReactionEmojis(reactionData.emojis);
-        }
-
-        // Load user's own reactions if logged in
-        if (token) {
-          const reactions = await getMyReactions(note.id, token);
-          setMyReactions(reactions.map((r) => r.reaction));
         }
       } catch (error) {
         console.error("Failed to load reaction data:", error);
@@ -112,6 +144,10 @@ function NoteCardComponent({
     };
 
     loadReactionData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [note.id, note.user.host, token]);
 
   const handleReaction = async (reaction: string) => {
@@ -140,7 +176,7 @@ function NoteCardComponent({
         });
       } else {
         // Add reaction
-        await createReaction(note.id, reaction, token);
+        const newReaction = await createReaction(note.id, reaction, token);
         setMyReactions([...myReactions, reaction]);
 
         // Update local reaction count
@@ -148,6 +184,14 @@ function NoteCardComponent({
           ...prev,
           [reaction]: (prev[reaction] || 0) + 1,
         }));
+
+        // Update emoji URL if this is a custom emoji with URL
+        if (newReaction.customEmojiUrl) {
+          setReactionEmojis((prev) => ({
+            ...prev,
+            [reaction]: newReaction.customEmojiUrl!,
+          }));
+        }
 
         addToast({
           type: "success",
@@ -261,7 +305,7 @@ function NoteCardComponent({
                 >
                   {remoteInstance?.iconUrl ? (
                     <img
-                      src={`/api/proxy?url=${encodeURIComponent(remoteInstance.iconUrl)}`}
+                      src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
                       alt=""
                       className="w-3.5 h-3.5 rounded-sm object-contain"
                       loading="lazy"
@@ -450,7 +494,7 @@ function NoteCardComponent({
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
-              className="flex items-center gap-1 flex-wrap text-sm text-gray-600 dark:text-gray-400"
+              className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400"
               role="group"
               aria-label="Reactions"
             >
@@ -465,24 +509,26 @@ function NoteCardComponent({
                     onClick={() => handleReaction(emoji)}
                     disabled={isReacting}
                     className={`
-                      flex items-center gap-1 px-2 py-1 rounded-full
-                      transition-all hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${myReactions.includes(emoji) ? "bg-primary-100 dark:bg-primary-900/30 ring-1 ring-primary-500" : "bg-gray-50 dark:bg-gray-800"}
+                      flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                      border transition-all
+                      ${myReactions.includes(emoji)
+                        ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600"
+                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"}
                     `}
                     aria-label={`${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
                     aria-pressed={myReactions.includes(emoji)}
                   >
                     {isCustomEmoji && customEmojiUrl ? (
                       <img
-                        src={customEmojiUrl}
+                        src={getProxiedImageUrl(customEmojiUrl) || ""}
                         alt={emoji}
-                        className="w-5 h-5 object-contain"
+                        className="w-6 h-6 object-contain"
                         loading="lazy"
                       />
                     ) : (
-                      <span aria-hidden="true">{emoji}</span>
+                      <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
                     )}
-                    <span className="text-xs font-medium">{count}</span>
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
                   </button>
                 );
               })}

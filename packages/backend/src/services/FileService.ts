@@ -367,7 +367,7 @@ export class FileService {
    * ```
    */
   async getStorageUsage(userId: string): Promise<number> {
-    const files = await this.driveFileRepository.findByUserId(userId);
-    return files.reduce((total, file) => total + file.size, 0);
+    // Use getTotalSize which excludes system files from the count
+    return await this.driveFileRepository.getTotalSize(userId);
   }
 }

@@ -463,6 +463,14 @@ notes.get("/timeline/stream", async (c: Context) => {
   const user = result.user;
   const streamService = getTimelineStreamService();
 
+  // Set headers to disable buffering for SSE compatibility with proxies (Nginx, Cloudflare)
+  // X-Accel-Buffering: Nginx proxy buffering control
+  // Cache-Control: Prevent caching of SSE stream
+  // Connection: Keep connection alive for streaming
+  c.header("X-Accel-Buffering", "no");
+  c.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  c.header("Connection", "keep-alive");
+
   return streamSSE(c, async (stream) => {
     let eventId = 0;
     let running = true;
@@ -471,7 +479,7 @@ notes.get("/timeline/stream", async (c: Context) => {
       running = false;
     });
 
-    // Send initial connection event
+    // Send initial connection event immediately to establish the stream
     await stream.writeSSE({
       event: "connected",
       data: JSON.stringify({ userId: user.id, channel: "home" }),
@@ -559,6 +567,14 @@ notes.get("/social-timeline/stream", async (c: Context) => {
 
   const streamService = getTimelineStreamService();
 
+  // Set headers to disable buffering for SSE compatibility with proxies (Nginx, Cloudflare)
+  // X-Accel-Buffering: Nginx proxy buffering control
+  // Cache-Control: Prevent caching of SSE stream
+  // Connection: Keep connection alive for streaming
+  c.header("X-Accel-Buffering", "no");
+  c.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  c.header("Connection", "keep-alive");
+
   return streamSSE(c, async (stream) => {
     let eventId = 0;
     let running = true;
@@ -567,7 +583,7 @@ notes.get("/social-timeline/stream", async (c: Context) => {
       running = false;
     });
 
-    // Send initial connection event
+    // Send initial connection event immediately to establish the stream
     await stream.writeSSE({
       event: "connected",
       data: JSON.stringify({ userId, channel: "social" }),
@@ -645,6 +661,14 @@ notes.get("/social-timeline/stream", async (c: Context) => {
 notes.get("/local-timeline/stream", async (c: Context) => {
   const streamService = getTimelineStreamService();
 
+  // Set headers to disable buffering for SSE compatibility with proxies (Nginx, Cloudflare)
+  // X-Accel-Buffering: Nginx proxy buffering control
+  // Cache-Control: Prevent caching of SSE stream
+  // Connection: Keep connection alive for streaming
+  c.header("X-Accel-Buffering", "no");
+  c.header("Cache-Control", "no-cache, no-store, must-revalidate");
+  c.header("Connection", "keep-alive");
+
   return streamSSE(c, async (stream) => {
     let eventId = 0;
     let running = true;
@@ -653,7 +677,7 @@ notes.get("/local-timeline/stream", async (c: Context) => {
       running = false;
     });
 
-    // Send initial connection event
+    // Send initial connection event immediately to establish the stream
     await stream.writeSSE({
       event: "connected",
       data: JSON.stringify({ channel: "local" }),

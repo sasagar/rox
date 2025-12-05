@@ -71,8 +71,9 @@ export default function AdminSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets">("instance");
-  const [assets, setAssets] = useState<{ icon: string | null; banner: string | null; favicon: string | null }>({
+  const [assets, setAssets] = useState<{ icon: string | null; darkIcon: string | null; banner: string | null; favicon: string | null }>({
     icon: null,
+    darkIcon: null,
     banner: null,
     favicon: null,
   });
@@ -102,7 +103,7 @@ export default function AdminSettingsPage() {
         // Load admin settings and assets
         const [settingsResponse, assetsResponse] = await Promise.all([
           apiClient.get<AdminSettings>("/api/admin/settings"),
-          apiClient.get<{ icon: string | null; banner: string | null; favicon: string | null }>("/api/admin/assets"),
+          apiClient.get<{ icon: string | null; darkIcon: string | null; banner: string | null; favicon: string | null }>("/api/admin/assets"),
         ]);
         setSettings(settingsResponse);
         setAssets(assetsResponse);
@@ -176,7 +177,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetUpload = async (assetType: "icon" | "banner" | "favicon", file: File) => {
+  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon", file: File) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -211,7 +212,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetDelete = async (assetType: "icon" | "banner" | "favicon") => {
+  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon") => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -775,6 +776,17 @@ export default function AdminSettingsPage() {
               onUpload={(file) => handleAssetUpload("icon", file)}
               onDelete={() => handleAssetDelete("icon")}
               previewClassName="w-16 h-16 rounded-lg"
+            />
+
+            <AssetUploadCard
+              type="darkIcon"
+              title={<Trans>Dark Mode Icon</Trans>}
+              description={<Trans>Icon for dark mode. Falls back to standard icon if not set (max 2MB)</Trans>}
+              currentUrl={assets.darkIcon}
+              isUploading={isUploadingAsset === "darkIcon"}
+              onUpload={(file) => handleAssetUpload("darkIcon", file)}
+              onDelete={() => handleAssetDelete("darkIcon")}
+              previewClassName="w-16 h-16 rounded-lg bg-gray-800"
             />
 
             <AssetUploadCard

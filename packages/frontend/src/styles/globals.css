@@ -3,18 +3,18 @@
 
 @theme {
   /* Primary color palette - dynamically set by ThemeProvider */
-  /* Default: Blue (#3b82f6) in OKLCH color space */
-  --color-primary-50: oklch(98% 0.01 230);
-  --color-primary-100: oklch(95% 0.04 230);
-  --color-primary-200: oklch(90% 0.08 230);
-  --color-primary-300: oklch(83% 0.12 230);
-  --color-primary-400: oklch(75% 0.16 230);
-  --color-primary-500: oklch(68% 0.20 230);
-  --color-primary-600: oklch(58% 0.19 230);
-  --color-primary-700: oklch(48% 0.15 230);
-  --color-primary-800: oklch(38% 0.11 230);
-  --color-primary-900: oklch(30% 0.08 230);
-  --color-primary-950: oklch(20% 0.04 230);
+  /* Default: Blue (#3b82f6) in OKLCH color space (hue ~264°) */
+  --color-primary-50: oklch(98% 0.01 264);
+  --color-primary-100: oklch(95% 0.04 264);
+  --color-primary-200: oklch(90% 0.08 264);
+  --color-primary-300: oklch(83% 0.12 264);
+  --color-primary-400: oklch(75% 0.16 264);
+  --color-primary-500: oklch(62% 0.18 264);
+  --color-primary-600: oklch(58% 0.17 264);
+  --color-primary-700: oklch(48% 0.14 264);
+  --color-primary-800: oklch(38% 0.10 264);
+  --color-primary-900: oklch(30% 0.07 264);
+  --color-primary-950: oklch(20% 0.04 264);
 
   /* Animations */
   --animate-slide-in: slide-in 0.3s ease-out;

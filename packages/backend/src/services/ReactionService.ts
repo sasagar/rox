@@ -10,10 +10,12 @@
 import type { IReactionRepository } from "../interfaces/repositories/IReactionRepository.js";
 import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
 import type { Reaction } from "../../../shared/src/types/reaction.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
+import { getTimelineStreamService } from "./TimelineStreamService.js";
 
 /**
  * Reaction creation input data
@@ -53,6 +55,7 @@ export class ReactionService {
    * @param userRepository - User repository
    * @param deliveryService - ActivityPub delivery service (injected via DI)
    * @param notificationService - Notification service (optional, for notifications)
+   * @param customEmojiRepository - Custom emoji repository (optional, for emoji URL lookup)
    */
   constructor(
     private readonly reactionRepository: IReactionRepository,
@@ -60,6 +63,7 @@ export class ReactionService {
     private readonly userRepository: IUserRepository,
     private readonly deliveryService: ActivityPubDeliveryService,
     private readonly notificationService?: NotificationService,
+    private readonly customEmojiRepository?: ICustomEmojiRepository,
   ) {}
 
   /**
@@ -118,12 +122,37 @@ export class ReactionService {
       return existingReaction;
     }
 
+    // Check if this is a custom emoji and get its URL and host
+    // Look for local emojis first, then remote emojis (saved from incoming Like activities)
+    let customEmojiUrl: string | undefined;
+    let customEmojiHost: string | null | undefined;
+    const customEmojiMatch = reaction.match(/^:([^:]+):$/);
+    if (customEmojiMatch?.[1] && this.customEmojiRepository) {
+      const emojiName = customEmojiMatch[1];
+      // Try local emoji first (host = null)
+      let emoji = await this.customEmojiRepository.findByName(emojiName, null);
+      // If not found locally, try to find as remote emoji (any host)
+      if (!emoji) {
+        emoji = await this.customEmojiRepository.findByNameAnyHost(emojiName);
+      }
+      if (emoji?.url) {
+        customEmojiUrl = emoji.url;
+        customEmojiHost = emoji.host; // Store the host for remote emojis
+        console.log(
+          `🎨 Found custom emoji "${emojiName}" from ${emoji.host || "local"}: ${emoji.url}`,
+        );
+      } else {
+        console.log(`⚠️ Custom emoji "${emojiName}" not found in database`);
+      }
+    }
+
     // 新しいリアクションを作成
     const newReaction = await this.reactionRepository.create({
       id: generateId(),
       userId,
       noteId,
       reaction,
+      ...(customEmojiUrl && { customEmojiUrl }),
     });
 
     // Deliver Like activity to remote note author (async, non-blocking)
@@ -135,6 +164,7 @@ export class ReactionService {
       // 1. Reactor is a local user (reactor.host is null)
       // 2. Note author is a remote user (noteAuthor.host is not null)
       // 3. Note author has an inbox URL
+
       this.deliveryService
         .deliverLikeActivity(
           note.id,
@@ -142,6 +172,9 @@ export class ReactionService {
           noteAuthor.inbox,
           reactor,
           reaction, // Include the reaction emoji for Misskey compatibility
+          customEmojiUrl
+            ? { name: customEmojiMatch![1]!, url: customEmojiUrl, host: customEmojiHost }
+            : undefined,
         )
         .catch((error) => {
           console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
@@ -157,7 +190,33 @@ export class ReactionService {
         });
     }
 
+    // Push reaction event to timeline streams for real-time updates
+    this.pushReactionEvent(noteId, note.userId, reaction, "add");
+
     return newReaction;
+  }
+
+  /**
+   * Push reaction event to timeline streams
+   *
+   * @param noteId - Note ID
+   * @param noteAuthorId - Note author's user ID
+   * @param reaction - Reaction emoji
+   * @param action - "add" or "remove"
+   */
+  private async pushReactionEvent(
+    noteId: string,
+    noteAuthorId: string,
+    reaction: string,
+    action: "add" | "remove",
+  ): Promise<void> {
+    try {
+      const { counts, emojis } = await this.getReactionCountsWithEmojis(noteId);
+      const streamService = getTimelineStreamService();
+      streamService.pushNoteReacted(noteId, noteAuthorId, reaction, action, counts, emojis);
+    } catch (error) {
+      console.error(`Failed to push reaction event:`, error);
+    }
   }
 
   /**
@@ -203,6 +262,11 @@ export class ReactionService {
       this.deliveryService.deliverUndoLike(reactor, note, noteAuthor).catch((error) => {
         console.error(`Failed to deliver Undo Like activity:`, error);
       });
+    }
+
+    // Push reaction event to timeline streams for real-time updates
+    if (note) {
+      this.pushReactionEvent(noteId, note.userId, reaction, "remove");
     }
   }
 

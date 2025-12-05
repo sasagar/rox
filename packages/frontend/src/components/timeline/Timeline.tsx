@@ -19,6 +19,7 @@ import { ErrorMessage } from "../ui/ErrorMessage";
 import { ScrollToTop } from "../ui/ScrollToTop";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
+import { useTimelineStream, type TimelineType as StreamTimelineType } from "../../hooks/useTimelineStream";
 
 /**
  * Props for the Timeline component
@@ -43,6 +44,12 @@ export function Timeline({ type = "local" }: TimelineProps) {
 
   const timelineContainerRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
+
+  // Enable real-time updates via SSE for supported timeline types
+  // "global" type maps to "local" stream since global includes all public notes
+  const streamType: StreamTimelineType | null =
+    type === "home" ? "home" : type === "social" ? "social" : type === "local" ? "local" : "local";
+  useTimelineStream(streamType, true);
 
   // Reset and load data when type changes (component remounts via key)
   useEffect(() => {

@@ -4,6 +4,54 @@ import { AppProviders } from "../components/AppProviders.js";
 import { ToastContainer } from "../components/ui/Toast";
 
 /**
+ * Blocking script to apply UI settings from localStorage before React hydration.
+ * This prevents flash of unstyled content (FOUC) for theme, font size, etc.
+ */
+const uiSettingsScript = `
+(function() {
+  try {
+    var settings = JSON.parse(localStorage.getItem('rox-ui-settings') || '{}');
+    var html = document.documentElement;
+
+    // Font size mapping
+    var fontSizes = { small: '12px', medium: '14px', large: '16px', xlarge: '18px' };
+    // Line height mapping
+    var lineHeights = { compact: '1.4', normal: '1.6', relaxed: '1.8' };
+    // Content width mapping
+    var contentWidths = { narrow: '600px', normal: '800px', wide: '1000px' };
+
+    // Apply CSS custom properties
+    html.style.setProperty('--rox-font-size', fontSizes[settings.fontSize] || '14px');
+    html.style.setProperty('--rox-line-height', lineHeights[settings.lineHeight] || '1.6');
+    html.style.setProperty('--rox-content-width', contentWidths[settings.contentWidth] || '800px');
+
+    // Apply theme (light/dark/system)
+    var theme = settings.theme || 'system';
+    if (theme === 'dark') {
+      html.classList.add('dark');
+    } else if (theme === 'light') {
+      html.classList.remove('dark');
+    } else {
+      // System preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        html.classList.add('dark');
+      }
+    }
+
+    // Apply custom CSS if present
+    if (settings.appCustomCss) {
+      var style = document.createElement('style');
+      style.id = 'rox-app-custom-css';
+      style.textContent = settings.appCustomCss;
+      document.head.appendChild(style);
+    }
+  } catch (e) {
+    // Silently fail - settings will be applied after hydration
+  }
+})();
+`;
+
+/**
  * Root layout component for the application.
  * Wraps all pages with providers for i18n and theming.
  *
@@ -14,6 +62,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <>
       <meta charSet="utf-8" />
+      {/* Blocking script to prevent UI flash - must run before any rendering */}
+      <script dangerouslySetInnerHTML={{ __html: uiSettingsScript }} />
       {/* Viewport with maximum-scale=1 prevents iOS zoom on input focus */}
       <meta
         name="viewport"

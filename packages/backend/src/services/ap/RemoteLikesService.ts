@@ -12,6 +12,7 @@ import { RemoteFetchService } from "./RemoteFetchService.js";
 import type { IReactionRepository } from "../../interfaces/repositories/IReactionRepository.js";
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
+import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
 import { generateId } from "shared";
 
 /**
@@ -96,6 +97,7 @@ export class RemoteLikesService {
     private reactionRepository: IReactionRepository,
     private noteRepository: INoteRepository,
     private userRepository: IUserRepository,
+    private customEmojiRepository?: ICustomEmojiRepository,
   ) {
     this.fetchService = new RemoteFetchService();
   }
@@ -251,6 +253,9 @@ export class RemoteLikesService {
   /**
    * Fetch emoji URLs from Misskey's /api/emojis endpoint
    *
+   * Also saves fetched emojis to the local database for future use
+   * when users react with the same emoji.
+   *
    * @param baseUrl - The base URL of the Misskey instance
    * @param emojiNames - Set of emoji names to fetch URLs for
    * @returns Map of emoji name (with colons) to URL
@@ -280,12 +285,20 @@ export class RemoteLikesService {
         return {};
       }
 
-      // Build map of emoji names to URLs
+      // Extract host from base URL
+      const host = new URL(baseUrl).hostname;
+
+      // Build map of emoji names to URLs and save to database
       const emojis: Record<string, string> = {};
       for (const emoji of data.emojis) {
         if (emojiNames.has(emoji.name) && emoji.url) {
           // Store with colon format for consistency
           emojis[`:${emoji.name}:`] = emoji.url;
+
+          // Save to database for future use (when user reacts with this emoji)
+          if (this.customEmojiRepository) {
+            await this.saveRemoteEmoji(emoji.name, host, emoji.url);
+          }
         }
       }
 
@@ -294,6 +307,50 @@ export class RemoteLikesService {
     } catch (error) {
       console.warn(`Failed to fetch emoji URLs from ${baseUrl}:`, error);
       return {};
+    }
+  }
+
+  /**
+   * Save a remote emoji to the local database
+   *
+   * This allows users to use remote emojis when reacting to notes.
+   *
+   * @param name - Emoji name (without colons)
+   * @param host - Remote server hostname
+   * @param url - Emoji image URL
+   */
+  private async saveRemoteEmoji(name: string, host: string, url: string): Promise<void> {
+    if (!this.customEmojiRepository) return;
+
+    try {
+      // Check if emoji already exists
+      const existing = await this.customEmojiRepository.findByName(name, host);
+
+      if (existing) {
+        // Update URL if it changed
+        if (existing.url !== url) {
+          await this.customEmojiRepository.update(existing.id, { url, updatedAt: new Date() });
+          console.log(`🔄 Updated remote emoji: :${name}:@${host}`);
+        }
+        return;
+      }
+
+      // Create new remote emoji entry
+      await this.customEmojiRepository.create({
+        id: generateId(),
+        name,
+        host,
+        url,
+        publicUrl: url,
+        aliases: [],
+        isSensitive: false,
+        localOnly: false,
+      });
+
+      console.log(`✨ Saved remote emoji: :${name}:@${host}`);
+    } catch (error) {
+      // Don't fail if emoji saving fails
+      console.warn(`Failed to save remote emoji :${name}:@${host}: ${error}`);
     }
   }
 
