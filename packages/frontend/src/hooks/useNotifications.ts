@@ -3,8 +3,8 @@
 /**
  * Notification hooks for real-time notifications
  *
- * Provides hooks for managing notifications with SSE support.
- * Uses a singleton pattern for SSE connection to prevent multiple
+ * Provides hooks for managing notifications with WebSocket support.
+ * Uses a singleton pattern for WebSocket connection to prevent multiple
  * connections when the hook is used in multiple components.
  */
 
@@ -33,128 +33,158 @@ export const unreadCountAtom = atom<number>(0);
 export const notificationsLoadingAtom = atom<boolean>(false);
 
 /**
- * SSE connection state atom
+ * WebSocket connection state atom
  */
-export const sseConnectedAtom = atom<boolean>(false);
+export const wsConnectedAtom = atom<boolean>(false);
 
-// --- Singleton SSE Connection Manager ---
-// Module-level variables to ensure only one SSE connection exists
+// --- Singleton WebSocket Connection Manager ---
+// Module-level variables to ensure only one WebSocket connection exists
 
-let sseEventSource: EventSource | null = null;
-let sseReconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-let sseConnectionCount = 0; // Track how many components are using the connection
+let wsSocket: WebSocket | null = null;
+let wsReconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+let wsPingInterval: ReturnType<typeof setInterval> | null = null;
+let wsConnectionCount = 0; // Track how many components are using the connection
 
 /**
- * Connect to SSE stream (singleton)
+ * Get WebSocket endpoint URL for notifications
+ */
+function getNotificationsWSUrl(token: string): string {
+  const protocol = typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  return `${protocol}//${host}/ws/notifications?token=${encodeURIComponent(token)}`;
+}
+
+/**
+ * Connect to WebSocket stream (singleton)
  * Only creates a new connection if one doesn't exist
  */
-function connectSSESingleton(
+function connectWSSingleton(
   token: string,
   setNotifications: (fn: (prev: Notification[]) => Notification[]) => void,
   setUnreadCount: (fn: (prev: number) => number | number) => void,
-  setSseConnected: (connected: boolean) => void,
+  setWsConnected: (connected: boolean) => void,
   getUiSettings: () => { notificationSound?: NotificationSound; notificationVolume?: number },
 ) {
   // Already connected or connecting
-  if (sseEventSource) return;
+  if (wsSocket && wsSocket.readyState === WebSocket.OPEN) return;
 
   // Clear any pending reconnect
-  if (sseReconnectTimeout) {
-    clearTimeout(sseReconnectTimeout);
-    sseReconnectTimeout = null;
+  if (wsReconnectTimeout) {
+    clearTimeout(wsReconnectTimeout);
+    wsReconnectTimeout = null;
   }
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const url = `${baseUrl}/api/notifications/stream`;
+  const url = getNotificationsWSUrl(token);
+  const socket = new WebSocket(url);
+  wsSocket = socket;
 
-  // EventSource doesn't support custom headers, so we use a workaround
-  // Backend should accept token from query param for SSE
-  const eventSource = new EventSource(`${url}?token=${encodeURIComponent(token)}`);
-  sseEventSource = eventSource;
+  socket.onopen = () => {
+    console.log("Notifications WebSocket connected (singleton)");
+    // Start ping interval to keep connection alive
+    wsPingInterval = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 25000);
+  };
 
-  eventSource.addEventListener("connected", () => {
-    console.log("SSE connected for notifications (singleton)");
-    setSseConnected(true);
-  });
-
-  eventSource.addEventListener("notification", (event) => {
+  socket.onmessage = (event) => {
     try {
-      const notification = JSON.parse(event.data) as Notification;
-      // Add new notification at the beginning
-      setNotifications((prev) => [notification, ...prev]);
+      const message = JSON.parse(event.data);
+      switch (message.event) {
+        case "connected":
+          setWsConnected(true);
+          break;
+        case "notification": {
+          const notification = message.data as Notification;
+          // Add new notification at the beginning
+          setNotifications((prev) => [notification, ...prev]);
 
-      // Play notification sound
-      const uiSettings = getUiSettings();
-      if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
-        playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
+          // Play notification sound
+          const uiSettings = getUiSettings();
+          if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
+            playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
+          }
+          break;
+        }
+        case "unreadCount":
+          setUnreadCount(message.data.count);
+          break;
+        case "heartbeat":
+        case "pong":
+          // Connection is alive
+          break;
+        case "error":
+          console.error("Notifications WebSocket error:", message.data);
+          break;
       }
     } catch (error) {
-      console.error("Failed to parse notification event:", error);
+      console.error("Failed to parse WebSocket message:", error);
     }
-  });
+  };
 
-  eventSource.addEventListener("unreadCount", (event) => {
-    try {
-      const { count } = JSON.parse(event.data);
-      setUnreadCount(count);
-    } catch (error) {
-      console.error("Failed to parse unreadCount event:", error);
+  socket.onclose = (event) => {
+    console.log(`Notifications WebSocket closed (code: ${event.code})`);
+    setWsConnected(false);
+    wsSocket = null;
+
+    if (wsPingInterval) {
+      clearInterval(wsPingInterval);
+      wsPingInterval = null;
     }
-  });
 
-  eventSource.addEventListener("heartbeat", () => {
-    // Heartbeat received, connection is alive
-  });
-
-  eventSource.onerror = () => {
-    console.warn("SSE connection error, reconnecting...");
-    setSseConnected(false);
-    eventSource.close();
-    sseEventSource = null;
-
-    // Reconnect after delay (only if there are still subscribers)
-    if (sseConnectionCount > 0) {
-      sseReconnectTimeout = setTimeout(() => {
+    // Reconnect after delay (only if there are still subscribers and not auth error)
+    if (wsConnectionCount > 0 && event.code !== 4001) {
+      wsReconnectTimeout = setTimeout(() => {
         const store = getDefaultStore();
         const currentToken = store.get(tokenAtom);
         if (currentToken) {
-          connectSSESingleton(
+          connectWSSingleton(
             currentToken,
             setNotifications,
             setUnreadCount,
-            setSseConnected,
+            setWsConnected,
             getUiSettings,
           );
         }
       }, 5000);
     }
   };
+
+  socket.onerror = (error) => {
+    console.warn("Notifications WebSocket error:", error);
+  };
 }
 
 /**
- * Disconnect SSE stream (singleton)
+ * Disconnect WebSocket stream (singleton)
  * Only actually disconnects when connection count reaches 0
  */
-function disconnectSSESingleton(setSseConnected: (connected: boolean) => void, force = false) {
-  if (force || sseConnectionCount <= 0) {
-    if (sseReconnectTimeout) {
-      clearTimeout(sseReconnectTimeout);
-      sseReconnectTimeout = null;
+function disconnectWSSingleton(setWsConnected: (connected: boolean) => void, force = false) {
+  if (force || wsConnectionCount <= 0) {
+    if (wsReconnectTimeout) {
+      clearTimeout(wsReconnectTimeout);
+      wsReconnectTimeout = null;
     }
 
-    if (sseEventSource) {
-      sseEventSource.close();
-      sseEventSource = null;
-      setSseConnected(false);
+    if (wsPingInterval) {
+      clearInterval(wsPingInterval);
+      wsPingInterval = null;
+    }
+
+    if (wsSocket) {
+      wsSocket.close();
+      wsSocket = null;
+      setWsConnected(false);
     }
   }
 }
 
 /**
- * Hook to manage notification state and SSE connection
+ * Hook to manage notification state and WebSocket connection
  *
- * This hook uses a singleton pattern for SSE connections.
- * Multiple components can call this hook, but only one SSE connection
+ * This hook uses a singleton pattern for WebSocket connections.
+ * Multiple components can call this hook, but only one WebSocket connection
  * will be maintained. The connection is closed when the last component
  * using it unmounts.
  */
@@ -162,7 +192,7 @@ export function useNotifications() {
   const [notifications, setNotifications] = useAtom(notificationsAtom);
   const [unreadCount, setUnreadCount] = useAtom(unreadCountAtom);
   const [loading, setLoading] = useAtom(notificationsLoadingAtom);
-  const [sseConnected, setSseConnected] = useAtom(sseConnectedAtom);
+  const [wsConnected, setWsConnected] = useAtom(wsConnectedAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
   const uiSettings = useAtomValue(uiSettingsAtom);
@@ -271,73 +301,73 @@ export function useNotifications() {
   }, [notifications, loading, fetchNotifications]);
 
   /**
-   * Connect to SSE stream for real-time updates
+   * Connect to WebSocket stream for real-time updates
    */
-  const connectSSE = useCallback(() => {
+  const connectWS = useCallback(() => {
     if (!token) return;
     // Use the captured uiSettings in a getter function for the singleton
     const getUiSettings = () => uiSettings;
-    connectSSESingleton(token, setNotifications, setUnreadCount, setSseConnected, getUiSettings);
-  }, [token, setNotifications, setUnreadCount, setSseConnected, uiSettings]);
+    connectWSSingleton(token, setNotifications, setUnreadCount, setWsConnected, getUiSettings);
+  }, [token, setNotifications, setUnreadCount, setWsConnected, uiSettings]);
 
   /**
-   * Disconnect SSE stream
+   * Disconnect WebSocket stream
    */
-  const disconnectSSE = useCallback(() => {
-    disconnectSSESingleton(setSseConnected);
-  }, [setSseConnected]);
+  const disconnectWS = useCallback(() => {
+    disconnectWSSingleton(setWsConnected);
+  }, [setWsConnected]);
 
-  // Effect to manage SSE connection based on auth state
+  // Effect to manage WebSocket connection based on auth state
   // Uses reference counting to ensure connection persists across multiple hook instances
   useEffect(() => {
     if (isAuthenticated && token) {
-      sseConnectionCount++;
+      wsConnectionCount++;
 
       // Only fetch and connect on first subscriber
-      if (sseConnectionCount === 1) {
+      if (wsConnectionCount === 1) {
         fetchNotifications();
         fetchUnreadCount();
-        connectSSE();
+        connectWS();
       }
     }
 
     return () => {
       if (isAuthenticated && token) {
-        sseConnectionCount--;
+        wsConnectionCount--;
 
         // Only disconnect when last subscriber unmounts
-        if (sseConnectionCount <= 0) {
-          sseConnectionCount = 0;
-          disconnectSSESingleton(setSseConnected, true);
+        if (wsConnectionCount <= 0) {
+          wsConnectionCount = 0;
+          disconnectWSSingleton(setWsConnected, true);
         }
       }
     };
-  }, [isAuthenticated, token, fetchNotifications, fetchUnreadCount, connectSSE, setSseConnected]);
+  }, [isAuthenticated, token, fetchNotifications, fetchUnreadCount, connectWS, setWsConnected]);
 
   // Handle auth state changes (logout)
   useEffect(() => {
     if (!isAuthenticated) {
       // Force disconnect and clear state on logout
-      sseConnectionCount = 0;
-      disconnectSSESingleton(setSseConnected, true);
+      wsConnectionCount = 0;
+      disconnectWSSingleton(setWsConnected, true);
       setNotifications([]);
       setUnreadCount(0);
     }
-  }, [isAuthenticated, setSseConnected, setNotifications, setUnreadCount]);
+  }, [isAuthenticated, setWsConnected, setNotifications, setUnreadCount]);
 
   return {
     notifications,
     unreadCount,
     loading,
-    sseConnected,
+    sseConnected: wsConnected, // Keep API compatible
     fetchNotifications,
     fetchUnreadCount,
     markAsRead,
     markAllAsRead,
     deleteNotification,
     loadMore,
-    connectSSE,
-    disconnectSSE,
+    connectSSE: connectWS, // Keep API compatible
+    disconnectSSE: disconnectWS, // Keep API compatible
   };
 }
 

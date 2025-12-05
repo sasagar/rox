@@ -3,8 +3,8 @@
 /**
  * Timeline Stream Hook for real-time timeline updates
  *
- * Provides SSE-based real-time updates for timelines.
- * Uses a singleton pattern for SSE connection per timeline type.
+ * Provides WebSocket-based real-time updates for timelines.
+ * Uses a singleton pattern for WebSocket connection per timeline type.
  */
 
 import { useEffect, useCallback, useRef } from "react";
@@ -19,7 +19,7 @@ import type { Note } from "../lib/types/note";
 export type TimelineType = "home" | "local" | "social";
 
 /**
- * SSE connection state atom per timeline type
+ * WebSocket connection state atom per timeline type
  */
 import { atom } from "jotai";
 export const timelineStreamConnectedAtom = atom<Record<TimelineType, boolean>>({
@@ -28,42 +28,44 @@ export const timelineStreamConnectedAtom = atom<Record<TimelineType, boolean>>({
   social: false,
 });
 
-// --- Singleton SSE Connection Manager per Timeline ---
+// --- Singleton WebSocket Connection Manager per Timeline ---
 
-interface TimelineSSEConnection {
-  eventSource: EventSource | null;
+interface TimelineWSConnection {
+  socket: WebSocket | null;
   reconnectTimeout: ReturnType<typeof setTimeout> | null;
   connectionCount: number;
+  pingInterval: ReturnType<typeof setInterval> | null;
 }
 
-const timelineConnections: Record<TimelineType, TimelineSSEConnection> = {
-  home: { eventSource: null, reconnectTimeout: null, connectionCount: 0 },
-  local: { eventSource: null, reconnectTimeout: null, connectionCount: 0 },
-  social: { eventSource: null, reconnectTimeout: null, connectionCount: 0 },
+const timelineConnections: Record<TimelineType, TimelineWSConnection> = {
+  home: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
+  local: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
+  social: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
 };
 
 /**
- * Get SSE endpoint URL for timeline type
+ * Get WebSocket endpoint URL for timeline type
  */
-function getTimelineStreamUrl(timelineType: TimelineType, token: string | null): string {
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+function getTimelineWSUrl(timelineType: TimelineType, token: string | null): string {
+  const protocol = typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
+  const host = typeof window !== "undefined" ? window.location.host : "";
 
   switch (timelineType) {
     case "home":
-      return `${baseUrl}/api/notes/timeline/stream?token=${encodeURIComponent(token || "")}`;
+      return `${protocol}//${host}/ws/timeline?token=${encodeURIComponent(token || "")}`;
     case "local":
-      return `${baseUrl}/api/notes/local-timeline/stream`;
+      return `${protocol}//${host}/ws/local-timeline`;
     case "social":
       return token
-        ? `${baseUrl}/api/notes/social-timeline/stream?token=${encodeURIComponent(token)}`
-        : `${baseUrl}/api/notes/social-timeline/stream`;
+        ? `${protocol}//${host}/ws/social-timeline?token=${encodeURIComponent(token)}`
+        : `${protocol}//${host}/ws/social-timeline`;
     default:
-      return `${baseUrl}/api/notes/local-timeline/stream`;
+      return `${protocol}//${host}/ws/local-timeline`;
   }
 }
 
 /**
- * Reaction event data from SSE
+ * Reaction event data from WebSocket
  */
 export interface NoteReactedEvent {
   noteId: string;
@@ -74,9 +76,9 @@ export interface NoteReactedEvent {
 }
 
 /**
- * Connect to timeline SSE stream (singleton per timeline type)
+ * Connect to timeline WebSocket stream (singleton per timeline type)
  */
-function connectTimelineSSE(
+function connectTimelineWS(
   timelineType: TimelineType,
   token: string | null,
   onNote: (note: Note) => void,
@@ -87,7 +89,7 @@ function connectTimelineSSE(
   const connection = timelineConnections[timelineType];
 
   // Already connected
-  if (connection.eventSource) return;
+  if (connection.socket && connection.socket.readyState === WebSocket.OPEN) return;
 
   // Clear any pending reconnect
   if (connection.reconnectTimeout) {
@@ -95,65 +97,76 @@ function connectTimelineSSE(
     connection.reconnectTimeout = null;
   }
 
-  const url = getTimelineStreamUrl(timelineType, token);
-  const eventSource = new EventSource(url);
-  connection.eventSource = eventSource;
+  const url = getTimelineWSUrl(timelineType, token);
+  const socket = new WebSocket(url);
+  connection.socket = socket;
 
-  eventSource.addEventListener("connected", () => {
-    console.log(`Timeline SSE connected: ${timelineType}`);
-    setConnected(true);
-  });
+  socket.onopen = () => {
+    console.log(`Timeline WebSocket connected: ${timelineType}`);
+    // Start ping interval to keep connection alive
+    connection.pingInterval = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 25000);
+  };
 
-  eventSource.addEventListener("note", (event) => {
+  socket.onmessage = (event) => {
     try {
-      const note = JSON.parse(event.data) as Note;
-      onNote(note);
+      const message = JSON.parse(event.data);
+      switch (message.event) {
+        case "connected":
+          setConnected(true);
+          break;
+        case "note":
+          onNote(message.data as Note);
+          break;
+        case "noteDeleted":
+          onNoteDeleted(message.data.noteId);
+          break;
+        case "noteReacted":
+          onNoteReacted(message.data as NoteReactedEvent);
+          break;
+        case "heartbeat":
+        case "pong":
+          // Connection is alive
+          break;
+        case "error":
+          console.error("Timeline WebSocket error:", message.data);
+          break;
+      }
     } catch (error) {
-      console.error("Failed to parse note event:", error);
+      console.error("Failed to parse WebSocket message:", error);
     }
-  });
+  };
 
-  eventSource.addEventListener("noteDeleted", (event) => {
-    try {
-      const { noteId } = JSON.parse(event.data);
-      onNoteDeleted(noteId);
-    } catch (error) {
-      console.error("Failed to parse noteDeleted event:", error);
-    }
-  });
-
-  eventSource.addEventListener("noteReacted", (event) => {
-    try {
-      const data = JSON.parse(event.data) as NoteReactedEvent;
-      onNoteReacted(data);
-    } catch (error) {
-      console.error("Failed to parse noteReacted event:", error);
-    }
-  });
-
-  eventSource.addEventListener("heartbeat", () => {
-    // Heartbeat received, connection is alive
-  });
-
-  eventSource.onerror = () => {
-    console.warn(`Timeline SSE connection error (${timelineType}), reconnecting...`);
+  socket.onclose = (event) => {
+    console.log(`Timeline WebSocket closed: ${timelineType} (code: ${event.code})`);
     setConnected(false);
-    eventSource.close();
-    connection.eventSource = null;
+    connection.socket = null;
 
-    // Reconnect after delay (only if there are still subscribers)
-    if (connection.connectionCount > 0) {
+    if (connection.pingInterval) {
+      clearInterval(connection.pingInterval);
+      connection.pingInterval = null;
+    }
+
+    // Reconnect after delay (only if there are still subscribers and not auth error)
+    if (connection.connectionCount > 0 && event.code !== 4001) {
       connection.reconnectTimeout = setTimeout(() => {
-        connectTimelineSSE(timelineType, token, onNote, onNoteDeleted, onNoteReacted, setConnected);
+        connectTimelineWS(timelineType, token, onNote, onNoteDeleted, onNoteReacted, setConnected);
       }, 5000);
     }
+  };
+
+  socket.onerror = (error) => {
+    console.warn(`Timeline WebSocket error (${timelineType}):`, error);
   };
 }
 
 /**
- * Disconnect timeline SSE stream (singleton)
+ * Disconnect timeline WebSocket stream (singleton)
  */
-function disconnectTimelineSSE(
+function disconnectTimelineWS(
   timelineType: TimelineType,
   setConnected: (connected: boolean) => void,
   force = false,
@@ -166,9 +179,14 @@ function disconnectTimelineSSE(
       connection.reconnectTimeout = null;
     }
 
-    if (connection.eventSource) {
-      connection.eventSource.close();
-      connection.eventSource = null;
+    if (connection.pingInterval) {
+      clearInterval(connection.pingInterval);
+      connection.pingInterval = null;
+    }
+
+    if (connection.socket) {
+      connection.socket.close();
+      connection.socket = null;
       setConnected(false);
     }
   }
@@ -273,17 +291,17 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     // Home timeline requires authentication
     if (timelineType === "home" && !isAuthenticated) return;
 
-    connectTimelineSSE(timelineType, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
+    connectTimelineWS(timelineType, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
   }, [timelineType, isAuthenticated, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected]);
 
   /**
    * Disconnect from stream
    */
   const disconnect = useCallback(() => {
-    disconnectTimelineSSE(timelineType, setConnected);
+    disconnectTimelineWS(timelineType, setConnected);
   }, [timelineType, setConnected]);
 
-  // Manage SSE connection lifecycle
+  // Manage WebSocket connection lifecycle
   useEffect(() => {
     if (!enabled) return;
 
@@ -306,7 +324,7 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
       // Disconnect when last subscriber unmounts
       if (connection.connectionCount <= 0) {
         connection.connectionCount = 0;
-        disconnectTimelineSSE(timelineType, setConnected, true);
+        disconnectTimelineWS(timelineType, setConnected, true);
       }
     };
   }, [enabled, timelineType, isAuthenticated, connect, setConnected]);
@@ -316,7 +334,7 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     if (timelineType === "home" && !isAuthenticated) {
       const connection = timelineConnections[timelineType];
       connection.connectionCount = 0;
-      disconnectTimelineSSE(timelineType, setConnected, true);
+      disconnectTimelineWS(timelineType, setConnected, true);
     }
   }, [timelineType, isAuthenticated, setConnected]);
 
