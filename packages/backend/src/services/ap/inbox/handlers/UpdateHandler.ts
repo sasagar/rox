@@ -85,15 +85,33 @@ export class UpdateHandler extends BaseHandler {
     if (object.summary !== undefined) {
       updateData.description = object.summary || null;
     }
-    if (object.icon && typeof object.icon === "object" && object.icon.url) {
-      updateData.avatarUrl = object.icon.url;
-    } else if (object.icon && typeof object.icon === "string") {
-      updateData.avatarUrl = object.icon;
+    // Handle icon - can be object, array of objects, or string
+    if (object.icon) {
+      if (Array.isArray(object.icon) && object.icon.length > 0) {
+        // Take first item from array
+        const firstIcon = object.icon[0];
+        if (firstIcon && typeof firstIcon === "object" && firstIcon.url) {
+          updateData.avatarUrl = firstIcon.url;
+        }
+      } else if (typeof object.icon === "object" && object.icon.url) {
+        updateData.avatarUrl = object.icon.url;
+      } else if (typeof object.icon === "string") {
+        updateData.avatarUrl = object.icon;
+      }
     }
-    if (object.image && typeof object.image === "object" && object.image.url) {
-      updateData.bannerUrl = object.image.url;
-    } else if (object.image && typeof object.image === "string") {
-      updateData.bannerUrl = object.image;
+    // Handle image - can be object, array of objects, or string
+    if (object.image) {
+      if (Array.isArray(object.image) && object.image.length > 0) {
+        // Take first item from array
+        const firstImage = object.image[0];
+        if (firstImage && typeof firstImage === "object" && firstImage.url) {
+          updateData.bannerUrl = firstImage.url;
+        }
+      } else if (typeof object.image === "object" && object.image.url) {
+        updateData.bannerUrl = object.image.url;
+      } else if (typeof object.image === "string") {
+        updateData.bannerUrl = object.image;
+      }
     }
     if (object.publicKey && object.publicKey.publicKeyPem) {
       updateData.publicKey = object.publicKey.publicKeyPem;
