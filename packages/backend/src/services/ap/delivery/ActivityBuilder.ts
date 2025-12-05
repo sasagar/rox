@@ -89,6 +89,8 @@ export interface CustomEmojiInfo {
   name: string;
   /** URL to the emoji image */
   url: string;
+  /** Host of the remote server (for remote custom emojis, null/undefined for local) */
+  host?: string | null;
 }
 
 /**
@@ -233,18 +235,31 @@ export class ActivityBuilder {
 
     // Include reaction content for Misskey compatibility
     // Misskey extracts reaction from: activity._misskey_reaction ?? activity.content ?? activity.name
+    // For remote emojis, Misskey expects format :name@host: to match the original reaction
     if (reaction) {
-      activity.content = reaction;
-      activity._misskey_reaction = reaction;
+      // Check if this is a custom emoji with a remote host
+      // If so, format as :name@host: for Misskey compatibility
+      let formattedReaction = reaction;
+      if (customEmoji?.host) {
+        // Remote emoji: format as :name@host:
+        formattedReaction = `:${customEmoji.name}@${customEmoji.host}:`;
+      }
+      activity.content = formattedReaction;
+      activity._misskey_reaction = formattedReaction;
     }
 
     // Add Emoji tag for custom emojis (Misskey compatible format)
     if (customEmoji) {
+      // For remote emojis, include host in the name field
+      const tagName = customEmoji.host
+        ? `:${customEmoji.name}@${customEmoji.host}:`
+        : `:${customEmoji.name}:`;
+
       activity.tag = [
         {
           type: "Emoji",
           id: `${this.baseUrl}/emojis/${customEmoji.name}`,
-          name: `:${customEmoji.name}:`,
+          name: tagName,
           updated: new Date().toISOString(),
           icon: {
             type: "Image",

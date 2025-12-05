@@ -122,9 +122,10 @@ export class ReactionService {
       return existingReaction;
     }
 
-    // Check if this is a custom emoji and get its URL
+    // Check if this is a custom emoji and get its URL and host
     // Look for local emojis first, then remote emojis (saved from incoming Like activities)
     let customEmojiUrl: string | undefined;
+    let customEmojiHost: string | null | undefined;
     const customEmojiMatch = reaction.match(/^:([^:]+):$/);
     if (customEmojiMatch?.[1] && this.customEmojiRepository) {
       const emojiName = customEmojiMatch[1];
@@ -136,6 +137,7 @@ export class ReactionService {
       }
       if (emoji?.url) {
         customEmojiUrl = emoji.url;
+        customEmojiHost = emoji.host; // Store the host for remote emojis
         console.log(
           `🎨 Found custom emoji "${emojiName}" from ${emoji.host || "local"}: ${emoji.url}`,
         );
@@ -170,7 +172,9 @@ export class ReactionService {
           noteAuthor.inbox,
           reactor,
           reaction, // Include the reaction emoji for Misskey compatibility
-          customEmojiUrl ? { name: customEmojiMatch![1]!, url: customEmojiUrl } : undefined,
+          customEmojiUrl
+            ? { name: customEmojiMatch![1]!, url: customEmojiUrl, host: customEmojiHost }
+            : undefined,
         )
         .catch((error) => {
           console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
