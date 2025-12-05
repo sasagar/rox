@@ -32,6 +32,17 @@ export class LikeHandler extends BaseHandler {
         return this.failure("Invalid Like activity: missing object");
       }
 
+      // Debug: Log received activity for custom emoji troubleshooting
+      if (activity._misskey_reaction || activity.content) {
+        console.log(`📥 Like activity received:`, JSON.stringify({
+          actor: activity.actor,
+          object: objectUri,
+          content: activity.content,
+          _misskey_reaction: activity._misskey_reaction,
+          tag: activity.tag,
+        }, null, 2));
+      }
+
       // Extract reaction (supports Misskey custom emoji)
       const { reaction, customEmojiUrl, emojiName, emojiHost } = extractReactionFromLike(
         activity,
@@ -40,7 +51,7 @@ export class LikeHandler extends BaseHandler {
 
       this.log(
         "📥",
-        `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ", custom emoji" : ""})`,
+        `Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ", custom emoji URL: " + customEmojiUrl : ""}${emojiName ? ", name: " + emojiName : ""}${emojiHost ? ", host: " + emojiHost : ""})`,
       );
 
       // Resolve remote actor
@@ -58,7 +69,10 @@ export class LikeHandler extends BaseHandler {
 
       // Save remote custom emoji to database if present
       if (customEmojiUrl && emojiName && emojiHost) {
+        console.log(`💾 Saving remote emoji: :${emojiName}:@${emojiHost} -> ${customEmojiUrl}`);
         await this.saveRemoteEmoji(c, emojiName, emojiHost, customEmojiUrl);
+      } else if (emojiName) {
+        console.log(`⚠️ Cannot save remote emoji :${emojiName}: - missing: ${!customEmojiUrl ? 'URL' : ''} ${!emojiHost ? 'host' : ''}`);
       }
 
       // Check if reaction already exists
