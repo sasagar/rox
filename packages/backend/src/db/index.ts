@@ -72,7 +72,9 @@ export function createDatabase(): Database {
       const client = postgres(databaseUrl, {
         max: parseInt(process.env.DB_POOL_MAX || "10", 10), // Max connections in pool
         idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10), // Close idle connections after 20s
-        max_lifetime: 60 * 5, // 5 minutes - keep short to avoid timeout overflow issues
+        // max_lifetime disabled (0) to avoid negative timeout warnings on reconnect
+        // See: https://github.com/porsager/postgres/issues/718
+        max_lifetime: 0,
         connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), // Connection timeout 10s
         connection: {
           application_name: "rox",
