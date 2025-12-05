@@ -138,6 +138,35 @@ server {
         proxy_read_timeout 60s;
     }
 
+    # ===========================================
+    # WebSocket Routes (Real-time streaming)
+    # ===========================================
+
+    # WebSocket endpoints for real-time updates
+    location /ws/ {
+        proxy_pass http://rox_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket-specific headers
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        # Long timeout for persistent WebSocket connections
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+
+        # Disable buffering for real-time communication
+        proxy_buffering off;
+    }
+
+    # ===========================================
+    # SSE Routes (Legacy, kept for compatibility)
+    # ===========================================
+
     # SSE endpoint (special configuration for long-lived connections)
     location /api/notifications/stream {
         limit_conn sse_conn 50;  # Multiple tabs, reconnections need higher limit
