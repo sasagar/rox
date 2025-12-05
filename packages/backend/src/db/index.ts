@@ -76,6 +76,9 @@ export function createDatabase(): Database {
         // See: https://github.com/porsager/postgres/issues/718
         max_lifetime: 0,
         connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), // Connection timeout 10s
+        // Backoff configuration to prevent negative timeout issues during reconnect
+        // Uses exponential backoff with a reasonable max delay
+        backoff: (attemptNum) => Math.min(1000 * Math.pow(2, attemptNum), 30000),
         connection: {
           application_name: "rox",
         },
