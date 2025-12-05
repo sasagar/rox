@@ -515,12 +515,12 @@ function NoteCardComponent({
                     disabled={isRemoteNote ? undefined : isReacting}
                     className={`
                       flex items-center gap-1.5 px-2.5 py-1 rounded-full
-                      border transition-all
+                      transition-all
                       ${isRemoteNote
-                        ? "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 cursor-default"
+                        ? "bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-500 cursor-default opacity-80"
                         : myReactions.includes(emoji)
-                          ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
-                          : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"}
+                          ? "border border-solid bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
+                          : "border border-solid bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"}
                     `}
                     aria-label={isRemoteNote
                       ? `${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
