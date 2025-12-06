@@ -60,6 +60,7 @@ import { MigrationService } from "../services/MigrationService.js";
 import { NotificationService } from "../services/NotificationService.js";
 import { WebPushService } from "../services/WebPushService.js";
 import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
+import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -115,14 +116,14 @@ export function createContainer(): AppContainer {
   const cacheService = new DragonflyCacheAdapter();
   // Initialize in background (non-blocking)
   cacheService.waitForInit().catch((error) => {
-    console.warn("Cache service initialization failed (caching disabled):", error);
+    logger.debug({ err: error }, "Cache service initialization failed (caching disabled)");
   });
 
   // Activity Delivery Queue
   const activityDeliveryQueue = new ActivityDeliveryQueue();
   // Initialize in background (non-blocking)
   activityDeliveryQueue.waitForInit().catch((error) => {
-    console.error("Failed to initialize ActivityDeliveryQueue:", error);
+    logger.error({ err: error }, "Failed to initialize ActivityDeliveryQueue");
   });
 
   // Remote Actor/Note Services for ActivityPub federation

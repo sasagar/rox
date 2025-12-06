@@ -71,11 +71,20 @@ export default function AdminSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets">("instance");
-  const [assets, setAssets] = useState<{ icon: string | null; darkIcon: string | null; banner: string | null; favicon: string | null }>({
+  const [assets, setAssets] = useState<{
+    icon: string | null;
+    darkIcon: string | null;
+    banner: string | null;
+    favicon: string | null;
+    pwaIcon192: string | null;
+    pwaIcon512: string | null;
+  }>({
     icon: null,
     darkIcon: null,
     banner: null,
     favicon: null,
+    pwaIcon192: null,
+    pwaIcon512: null,
   });
   const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
 
@@ -103,7 +112,14 @@ export default function AdminSettingsPage() {
         // Load admin settings and assets
         const [settingsResponse, assetsResponse] = await Promise.all([
           apiClient.get<AdminSettings>("/api/admin/settings"),
-          apiClient.get<{ icon: string | null; darkIcon: string | null; banner: string | null; favicon: string | null }>("/api/admin/assets"),
+          apiClient.get<{
+            icon: string | null;
+            darkIcon: string | null;
+            banner: string | null;
+            favicon: string | null;
+            pwaIcon192: string | null;
+            pwaIcon512: string | null;
+          }>("/api/admin/assets"),
         ]);
         setSettings(settingsResponse);
         setAssets(assetsResponse);
@@ -177,7 +193,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon", file: File) => {
+  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512", file: File) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -212,7 +228,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon") => {
+  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512") => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -809,6 +825,28 @@ export default function AdminSettingsPage() {
               onUpload={(file) => handleAssetUpload("favicon", file)}
               onDelete={() => handleAssetDelete("favicon")}
               previewClassName="w-8 h-8 rounded"
+            />
+
+            <AssetUploadCard
+              type="pwaIcon192"
+              title={<Trans>PWA Icon (192x192)</Trans>}
+              description={<Trans>Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set.</Trans>}
+              currentUrl={assets.pwaIcon192}
+              isUploading={isUploadingAsset === "pwaIcon192"}
+              onUpload={(file) => handleAssetUpload("pwaIcon192", file)}
+              onDelete={() => handleAssetDelete("pwaIcon192")}
+              previewClassName="w-12 h-12 rounded-lg"
+            />
+
+            <AssetUploadCard
+              type="pwaIcon512"
+              title={<Trans>PWA Icon (512x512)</Trans>}
+              description={<Trans>High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set.</Trans>}
+              currentUrl={assets.pwaIcon512}
+              isUploading={isUploadingAsset === "pwaIcon512"}
+              onUpload={(file) => handleAssetUpload("pwaIcon512", file)}
+              onDelete={() => handleAssetDelete("pwaIcon512")}
+              previewClassName="w-16 h-16 rounded-lg"
             />
           </CardContent>
         </Card>

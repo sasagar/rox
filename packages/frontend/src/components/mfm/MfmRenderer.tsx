@@ -284,7 +284,7 @@ export function MfmRenderer({
               src={getProxiedImageUrl(emojiUrl) || ""}
               alt={`:${emojiName}:`}
               title={`:${emojiName}:`}
-              className="inline-block h-6 w-6 align-middle mx-0.5"
+              className="inline-block h-6 w-auto max-w-16 align-middle mx-0.5 object-contain"
               loading="lazy"
             />
           );

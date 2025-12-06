@@ -13,6 +13,7 @@
  */
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * Signature configuration for authenticated fetches
@@ -110,9 +111,7 @@ export class RemoteFetchService {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        console.log(
-          `🔄 Fetching ${url} (attempt ${attempt + 1}/${maxRetries + 1})${signature ? " (signed)" : ""}`,
-        );
+        logger.debug({ url, attempt: attempt + 1, maxRetries: maxRetries + 1, signed: !!signature }, "Fetching remote object");
 
         // Build request headers
         let requestHeaders: Record<string, string> = {
@@ -153,25 +152,25 @@ export class RemoteFetchService {
             result.error.statusCode < 500 &&
             result.error.statusCode !== 429)
         ) {
-          console.warn(`❌ Non-retryable error for ${url}:`, result.error);
+          logger.debug({ url, error: result.error }, "Non-retryable error");
           return result;
         }
 
         // Handle rate limiting
         if (result.error?.type === "rate_limit" && result.error.retryAfter) {
           retryDelay = result.error.retryAfter * 1000; // Convert to milliseconds
-          console.warn(`⏱️  Rate limited, waiting ${retryDelay}ms before retry`);
+          logger.debug({ url, retryDelayMs: retryDelay }, "Rate limited, waiting before retry");
         }
 
         // Don't wait after the last attempt
         if (attempt < maxRetries) {
-          console.log(`⏳ Waiting ${retryDelay}ms before retry...`);
+          logger.debug({ url, retryDelayMs: retryDelay }, "Waiting before retry");
           await this.sleep(retryDelay);
           retryDelay *= 2; // Exponential backoff
         }
       } catch (error) {
         // Unexpected error (should not happen due to try/catch in performFetch)
-        console.error(`❌ Unexpected error fetching ${url}:`, error);
+        logger.error({ err: error, url }, "Unexpected error fetching remote object");
         lastError = {
           type: "network",
           message: error instanceof Error ? error.message : "Unknown error",

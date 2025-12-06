@@ -14,6 +14,7 @@ import type { IUserRepository } from "../interfaces/repositories/IUserRepository
 import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
 import type { RemoteActorService } from "./ap/RemoteActorService.js";
 import { ActivityDeliveryService } from "./ap/ActivityDeliveryService.js";
+import { logger } from "../lib/logger.js";
 
 /** Migration cooldown period in days */
 const MIGRATION_COOLDOWN_DAYS = 30;
@@ -320,12 +321,13 @@ export class MigrationService {
         await deliveryService.deliver(moveActivity, inbox, keyId, user.privateKey);
         notifiedCount++;
       } catch (err) {
-        console.error(`Failed to deliver Move to ${inbox}:`, err);
+        logger.error({ err, inbox }, "Failed to deliver Move activity");
       }
     }
 
-    console.log(
-      `🚚 Migration initiated: ${localUri} → ${targetUri}, ${notifiedCount} inboxes notified`,
+    logger.info(
+      { from: localUri, to: targetUri, notifiedCount },
+      "Migration initiated",
     );
 
     return {

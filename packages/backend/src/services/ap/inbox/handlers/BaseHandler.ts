@@ -11,6 +11,7 @@ import type { Context } from "hono";
 import { generateId } from "shared";
 import type { Activity, HandlerContext, HandlerResult, IActivityHandler } from "../types.js";
 import { getActorUri } from "../types.js";
+import { logger } from "../../../../lib/logger.js";
 
 /**
  * Abstract base class for activity handlers
@@ -118,22 +119,22 @@ export abstract class BaseHandler implements IActivityHandler {
   /**
    * Log handler activity
    */
-  protected log(emoji: string, message: string): void {
-    console.log(`${emoji} ${message}`);
+  protected log(_emoji: string, message: string): void {
+    logger.debug({ handler: this.activityType }, message);
   }
 
   /**
    * Log warning
    */
   protected warn(message: string): void {
-    console.warn(message);
+    logger.warn({ handler: this.activityType }, message);
   }
 
   /**
    * Log error
    */
   protected error(message: string, err?: Error): void {
-    console.error(message, err);
+    logger.error({ err, handler: this.activityType }, message);
   }
 
   /**

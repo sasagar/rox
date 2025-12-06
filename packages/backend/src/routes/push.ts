@@ -9,6 +9,7 @@ import type { Context } from "hono";
 import { requireAuth } from "../middleware/auth.js";
 import type { AppContainer } from "../di/container.js";
 import type { User } from "../db/schema/pg.js";
+import { logger } from "../lib/logger.js";
 
 const push = new Hono();
 
@@ -85,7 +86,7 @@ push.post("/subscribe", requireAuth(), async (c: Context) => {
       },
     });
   } catch (error) {
-    console.error("Failed to subscribe:", error);
+    logger.error({ err: error }, "Failed to subscribe");
     return c.json({ error: "Failed to subscribe" }, 500);
   }
 });
@@ -110,7 +111,7 @@ push.post("/unsubscribe", requireAuth(), async (c: Context) => {
 
     return c.json({ success });
   } catch (error) {
-    console.error("Failed to unsubscribe:", error);
+    logger.error({ err: error }, "Failed to unsubscribe");
     return c.json({ error: "Failed to unsubscribe" }, 500);
   }
 });
@@ -136,7 +137,7 @@ push.get("/subscriptions", requireAuth(), async (c: Context) => {
       })),
     });
   } catch (error) {
-    console.error("Failed to get subscriptions:", error);
+    logger.error({ err: error }, "Failed to get subscriptions");
     return c.json({ error: "Failed to get subscriptions" }, 500);
   }
 });
@@ -150,10 +151,10 @@ push.post("/test", requireAuth(), async (c: Context) => {
   const container = c.get("container") as AppContainer;
   const { webPushService, instanceSettingsService } = container;
 
-  console.log("[Push Test] Request received for user:", user.id);
+  logger.debug({ userId: user.id }, "Push test request received");
 
   if (!webPushService.isAvailable()) {
-    console.log("[Push Test] Web Push not available");
+    logger.debug("Web Push not available");
     return c.json({ error: "Web Push is not configured" }, 503);
   }
 
@@ -168,7 +169,7 @@ push.post("/test", requireAuth(), async (c: Context) => {
   const notificationIcon = iconUrl || `${baseUrl}/icon-192.png`;
 
   // Send notification asynchronously (fire-and-forget) to avoid blocking the response
-  console.log("[Push Test] Queuing test notification...");
+  logger.debug("Queuing test notification");
   const timestamp = Date.now();
   webPushService
     .sendToUser(user.id, {
@@ -182,10 +183,10 @@ push.post("/test", requireAuth(), async (c: Context) => {
       },
     })
     .then((count) => {
-      console.log("[Push Test] Sent to", count, "subscriptions");
+      logger.debug({ count }, "Push test sent to subscriptions");
     })
     .catch((error) => {
-      console.error("[Push Test] Failed to send test notification:", error);
+      logger.error({ err: error }, "Failed to send test notification");
     });
 
   // Return immediately

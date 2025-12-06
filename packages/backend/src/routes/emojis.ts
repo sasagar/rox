@@ -12,6 +12,7 @@ import type { Context } from "hono";
 import { generateId } from "shared";
 import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
+import { logger } from "../lib/logger.js";
 
 /** Allowed emoji file types */
 const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"];
@@ -556,7 +557,7 @@ app.post("/adopt", async (c: Context) => {
       }
     }
   } catch (error) {
-    console.error(`Failed to download remote emoji:`, error);
+    logger.error({ err: error }, "Failed to download remote emoji");
     return c.json({ error: "Failed to download remote emoji" }, 502);
   }
 
@@ -592,7 +593,7 @@ app.post("/adopt", async (c: Context) => {
     localOnly: false,
   });
 
-  console.log(`✨ Adopted remote emoji :${remoteEmoji.name}: from ${remoteEmoji.host} as local :${newName}:`);
+  logger.info({ remoteEmojiName: remoteEmoji.name, host: remoteEmoji.host, newName }, "Adopted remote emoji as local");
 
   return c.json(
     {
@@ -825,8 +826,9 @@ app.post("/import", async (c: Context) => {
     }
   }
 
-  console.log(
-    `📦 Emoji import complete: ${results.success.length} success, ${results.skipped.length} skipped, ${results.failed.length} failed`,
+  logger.info(
+    { success: results.success.length, skipped: results.skipped.length, failed: results.failed.length },
+    "Emoji import complete",
   );
 
   return c.json({

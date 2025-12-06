@@ -11,6 +11,7 @@
 
 import sharp from "sharp";
 import { encode as blurhashEncode } from "blurhash";
+import { logger } from "../lib/logger.js";
 
 /**
  * Processed image result
@@ -198,7 +199,7 @@ export class ImageProcessor {
 
       return blurhashEncode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
     } catch (error) {
-      console.warn("Failed to generate blurhash:", error);
+      logger.debug({ err: error }, "Failed to generate blurhash");
       return null;
     }
   }

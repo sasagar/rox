@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useMemo } from "react";
 import { useAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
@@ -75,6 +75,30 @@ function NoteCardComponent({
     note.reactionEmojis || {},
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+
+  // Convert profileEmojis array to emoji map for MfmRenderer
+  const userProfileEmojiMap = useMemo(() => {
+    if (!note.user.profileEmojis || note.user.profileEmojis.length === 0) return {};
+    return note.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.user.profileEmojis]);
+
+  // Convert renote user's profileEmojis to emoji map
+  const renoteUserProfileEmojiMap = useMemo(() => {
+    if (!note.renote?.user?.profileEmojis || note.renote.user.profileEmojis.length === 0) return {};
+    return note.renote.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.renote?.user?.profileEmojis]);
 
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
@@ -268,7 +292,7 @@ function NoteCardComponent({
                 }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name ? <MfmRenderer text={note.user.name} plain /> : note.user.username}
+                {note.user.name ? <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} /> : note.user.username}
               </SpaLink>
               <SpaLink
                 to={
@@ -287,15 +311,14 @@ function NoteCardComponent({
                   href={`https://${note.user.host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40 text-(--text-secondary)"
                   style={{
                     backgroundColor: remoteInstance?.themeColor
-                      ? `${remoteInstance.themeColor}20`
+                      ? `${remoteInstance.themeColor}15`
                       : "var(--bg-tertiary)",
-                    color: remoteInstance?.themeColor || "var(--text-muted)",
                     borderLeft: remoteInstance?.themeColor
                       ? `2px solid ${remoteInstance.themeColor}`
-                      : undefined,
+                      : "2px solid var(--border-color)",
                   }}
                   title={
                     remoteInstance
@@ -438,7 +461,7 @@ function NoteCardComponent({
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
-                      <MfmRenderer text={note.renote.user.name} plain />
+                      <MfmRenderer text={note.renote.user.name} plain customEmojis={renoteUserProfileEmojiMap} />
                     ) : (
                       note.renote.user.username
                     )}
@@ -487,6 +510,7 @@ function NoteCardComponent({
             <Repeat2 className="w-4 h-4" />
             <span>{note.renoteCount || 0}</span>
           </Button>
+          {/* Reaction button - always shown, allows adding new reactions */}
           <ReactionButton
             onReactionSelect={handleReaction}
             selectedReactions={myReactions}
@@ -502,21 +526,29 @@ function NoteCardComponent({
                 // Check if this is a custom emoji (format: :emoji_name:)
                 const isCustomEmoji = emoji.startsWith(":") && emoji.endsWith(":");
                 const customEmojiUrl = reactionEmojis[emoji];
+                const isRemoteNote = Boolean(note.user.host);
+
+                // For remote notes, use div (display-only); for local notes, use button (interactive)
+                const ReactionElement = isRemoteNote ? "div" : "button";
 
                 return (
-                  <button
+                  <ReactionElement
                     key={emoji}
-                    onClick={() => handleReaction(emoji)}
-                    disabled={isReacting}
+                    onClick={isRemoteNote ? undefined : () => handleReaction(emoji)}
+                    disabled={isRemoteNote ? undefined : isReacting}
                     className={`
                       flex items-center gap-1.5 px-2.5 py-1 rounded-full
-                      border transition-all
-                      ${myReactions.includes(emoji)
-                        ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600"
-                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"}
+                      transition-all
+                      ${isRemoteNote
+                        ? "bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-500 cursor-default opacity-80"
+                        : myReactions.includes(emoji)
+                          ? "border border-solid bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
+                          : "border border-solid bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"}
                     `}
-                    aria-label={`${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
-                    aria-pressed={myReactions.includes(emoji)}
+                    aria-label={isRemoteNote
+                      ? `${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
+                      : `${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
+                    aria-pressed={isRemoteNote ? undefined : myReactions.includes(emoji)}
                   >
                     {isCustomEmoji && customEmojiUrl ? (
                       <img
@@ -526,10 +558,10 @@ function NoteCardComponent({
                         loading="lazy"
                       />
                     ) : (
-                      <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
+                      <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
                     )}
                     <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
-                  </button>
+                  </ReactionElement>
                 );
               })}
             </div>

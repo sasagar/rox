@@ -8,6 +8,7 @@
 
 import { Hono } from "hono";
 import { getMetrics, getMetricsContentType } from "../lib/metrics.js";
+import { logger } from "../lib/logger.js";
 
 const app = new Hono();
 
@@ -38,7 +39,7 @@ app.get("/", async (c) => {
       },
     });
   } catch (error) {
-    console.error("Failed to get metrics:", error);
+    logger.error({ err: error }, "Failed to get metrics");
     return c.text("Error collecting metrics", 500);
   }
 });

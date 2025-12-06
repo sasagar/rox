@@ -12,6 +12,7 @@ import type { IUserRepository } from "../../interfaces/repositories/IUserReposit
 import type { Note } from "shared";
 import { generateId } from "shared";
 import { RemoteActorService } from "./RemoteActorService.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * ActivityPub Note object
@@ -71,7 +72,7 @@ export class RemoteNoteService {
     // Check if note already exists
     const existing = await this.noteRepository.findByUri(noteObject.id);
     if (existing) {
-      console.log(`⚠️  Note already exists: ${noteObject.id}`);
+      logger.debug({ noteUri: noteObject.id }, "Note already exists");
       return existing;
     }
 
@@ -127,7 +128,7 @@ export class RemoteNoteService {
       deletionReason: null,
     });
 
-    console.log(`✅ Remote note created: ${noteObject.id} by ${author.username}@${author.host}`);
+    logger.debug({ noteUri: noteObject.id, author: `${author.username}@${author.host}` }, "Remote note created");
 
     return note;
   }

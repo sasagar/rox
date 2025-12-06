@@ -65,11 +65,11 @@ msgstr "{0} uploaded by you"
 msgid "{0} used (Unlimited)"
 msgstr "{0} used (Unlimited)"
 
-#: src/pages/admin/settings.tsx:222
+#: src/pages/admin/settings.tsx:239
 msgid "{assetType} removed"
 msgstr "{assetType} removed"
 
-#: src/pages/admin/settings.tsx:204
+#: src/pages/admin/settings.tsx:221
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType} uploaded successfully"
 
@@ -175,7 +175,7 @@ msgstr "Admin"
 msgid "Admin Role"
 msgstr "Admin Role"
 
-#: src/pages/admin/settings.tsx:256
+#: src/pages/admin/settings.tsx:273
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
@@ -230,7 +230,7 @@ msgstr "All Servers"
 msgid "All Types"
 msgstr "All Types"
 
-#: src/pages/admin/settings.tsx:517
+#: src/pages/admin/settings.tsx:534
 msgid "Allow new users to register accounts"
 msgstr "Allow new users to register accounts"
 
@@ -255,7 +255,7 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
-#: src/pages/admin/settings.tsx:307
+#: src/pages/admin/settings.tsx:324
 msgid "Assets"
 msgstr "Assets"
 
@@ -304,7 +304,7 @@ msgstr "Banner removed"
 msgid "Banner updated successfully"
 msgstr "Banner updated successfully"
 
-#: src/pages/admin/settings.tsx:398
+#: src/pages/admin/settings.tsx:415
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -367,11 +367,11 @@ msgstr "Blocking an instance will prevent all federation with that server. Users
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/settings.tsx:434
+#: src/pages/admin/settings.tsx:451
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
 
-#: src/pages/admin/settings.tsx:794
+#: src/pages/admin/settings.tsx:822
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 
@@ -478,7 +478,7 @@ msgstr "Color"
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
-#: src/pages/admin/settings.tsx:259
+#: src/pages/admin/settings.tsx:276
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
 
@@ -490,7 +490,7 @@ msgstr "Connect with users across the fediverse using ActivityPub protocol"
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:328
+#: src/components/note/NoteCard.tsx:350
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -573,9 +573,13 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
 
-#: src/pages/admin/settings.tsx:710
+#: src/pages/admin/settings.tsx:727
 msgid "Dark"
 msgstr "Dark"
+
+#: src/pages/admin/settings.tsx:799
+msgid "Dark Mode Icon"
+msgstr "Dark Mode Icon"
 
 #: src/pages/admin/roles.tsx:611
 msgid "Default"
@@ -585,7 +589,7 @@ msgstr "Default"
 msgid "Default (auto-assign to new users)"
 msgstr "Default (auto-assign to new users)"
 
-#: src/pages/admin/settings.tsx:653
+#: src/pages/admin/settings.tsx:670
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
 
@@ -638,7 +642,7 @@ msgid "Describe the reason for this warning..."
 msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:343
+#: src/pages/admin/settings.tsx:360
 msgid "Description"
 msgstr "Description"
 
@@ -779,7 +783,7 @@ msgstr "Empty folder"
 msgid "Enable"
 msgstr "Enable"
 
-#: src/pages/admin/settings.tsx:514
+#: src/pages/admin/settings.tsx:531
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
@@ -858,7 +862,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:183
+#: src/components/note/NoteCard.tsx:205
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -992,7 +996,7 @@ msgstr "Failed to remove instance"
 msgid "Failed to rename passkey"
 msgstr "Failed to rename passkey"
 
-#: src/components/note/NoteCard.tsx:201
+#: src/components/note/NoteCard.tsx:223
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -1058,11 +1062,11 @@ msgstr "Failed to upload file"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "Fast and efficient with minimal resource usage"
 
-#: src/pages/admin/settings.tsx:793
+#: src/pages/admin/settings.tsx:821
 msgid "Favicon"
 msgstr "Favicon"
 
-#: src/pages/admin/settings.tsx:418
+#: src/pages/admin/settings.tsx:435
 msgid "Favicon URL"
 msgstr "Favicon URL"
 
@@ -1164,7 +1168,7 @@ msgstr "Global"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
-#: src/pages/admin/settings.tsx:783
+#: src/pages/admin/settings.tsx:811
 msgid "Header image for your instance (max 5MB)"
 msgstr "Header image for your instance (max 5MB)"
 
@@ -1172,6 +1176,10 @@ msgstr "Header image for your instance (max 5MB)"
 #: src/pages/admin/federation.tsx:316
 msgid "Healthy"
 msgstr "Healthy"
+
+#: src/pages/admin/settings.tsx:844
+msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
+msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 
 #: src/components/layout/Sidebar.tsx:86
 #: src/components/note/NoteComposer.tsx:408
@@ -1187,7 +1195,15 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:380
+#: src/pages/admin/settings.tsx:800
+msgid "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
+msgstr "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
+
+#: src/pages/admin/settings.tsx:833
+msgid "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
+msgstr "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
+
+#: src/pages/admin/settings.tsx:397
 msgid "Icon URL"
 msgstr "Icon URL"
 
@@ -1222,11 +1238,11 @@ msgstr "Importing emojis..."
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/pages/admin/settings.tsx:277
+#: src/pages/admin/settings.tsx:294
 msgid "Instance"
 msgstr "Instance"
 
-#: src/pages/admin/settings.tsx:782
+#: src/pages/admin/settings.tsx:810
 msgid "Instance Banner"
 msgstr "Instance Banner"
 
@@ -1255,15 +1271,15 @@ msgstr "Instance Domain"
 msgid "Instance Hostname"
 msgstr "Instance Hostname"
 
-#: src/pages/admin/settings.tsx:771
+#: src/pages/admin/settings.tsx:788
 msgid "Instance Icon"
 msgstr "Instance Icon"
 
-#: src/pages/admin/settings.tsx:319
+#: src/pages/admin/settings.tsx:336
 msgid "Instance Information"
 msgstr "Instance Information"
 
-#: src/pages/admin/settings.tsx:325
+#: src/pages/admin/settings.tsx:342
 msgid "Instance Name"
 msgstr "Instance Name"
 
@@ -1275,7 +1291,7 @@ msgstr "Instance Overview"
 msgid "Instance removed from cache"
 msgstr "Instance removed from cache"
 
-#: src/pages/admin/settings.tsx:129
+#: src/pages/admin/settings.tsx:146
 msgid "Instance settings saved"
 msgstr "Instance settings saved"
 
@@ -1324,7 +1340,7 @@ msgid "Invite limit:"
 msgstr "Invite limit:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:537
+#: src/pages/admin/settings.tsx:554
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "Invite Only"
@@ -1368,7 +1384,7 @@ msgstr "Leave empty for auto-generated code"
 msgid "License"
 msgstr "License"
 
-#: src/pages/admin/settings.tsx:691
+#: src/pages/admin/settings.tsx:708
 msgid "Light"
 msgstr "Light"
 
@@ -1439,7 +1455,7 @@ msgstr "Looking up remote user..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "Lowercase letters, numbers, and underscores only"
 
-#: src/pages/admin/settings.tsx:361
+#: src/pages/admin/settings.tsx:378
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
@@ -1526,7 +1542,7 @@ msgstr "Moderator access required"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/components/note/NoteCard.tsx:523
+#: src/components/note/NoteCard.tsx:556
 msgid "More options"
 msgstr "More options"
 
@@ -1548,7 +1564,7 @@ msgstr "Never"
 msgid "New"
 msgstr "New"
 
-#: src/pages/admin/settings.tsx:563
+#: src/pages/admin/settings.tsx:580
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
 
@@ -1694,7 +1710,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:195
+#: src/components/note/NoteCard.tsx:217
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -1857,7 +1873,7 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:550
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:736
-#: src/pages/admin/settings.tsx:722
+#: src/pages/admin/settings.tsx:739
 msgid "Preview"
 msgstr "Preview"
 
@@ -1865,11 +1881,11 @@ msgstr "Preview"
 msgid "Previous"
 msgstr "Previous"
 
-#: src/pages/admin/settings.tsx:729
+#: src/pages/admin/settings.tsx:746
 msgid "Primary Button"
 msgstr "Primary Button"
 
-#: src/pages/admin/settings.tsx:592
+#: src/pages/admin/settings.tsx:609
 msgid "Primary Color"
 msgstr "Primary Color"
 
@@ -1885,7 +1901,7 @@ msgstr "Privacy First"
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: src/pages/admin/settings.tsx:459
+#: src/pages/admin/settings.tsx:476
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
@@ -1932,6 +1948,14 @@ msgstr "Push notifications disabled"
 msgid "Push notifications enabled"
 msgstr "Push notifications enabled"
 
+#: src/pages/admin/settings.tsx:832
+msgid "PWA Icon (192x192)"
+msgstr "PWA Icon (192x192)"
+
+#: src/pages/admin/settings.tsx:843
+msgid "PWA Icon (512x512)"
+msgstr "PWA Icon (512x512)"
+
 #: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "Quota updated"
@@ -1957,7 +1981,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:176
+#: src/components/note/NoteCard.tsx:198
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -2026,7 +2050,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/pages/admin/settings.tsx:287
+#: src/pages/admin/settings.tsx:304
 msgid "Registration"
 msgstr "Registration"
 
@@ -2039,11 +2063,11 @@ msgstr "Registration Closed"
 msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
-#: src/pages/admin/settings.tsx:495
+#: src/pages/admin/settings.tsx:512
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
-#: src/pages/admin/settings.tsx:148
+#: src/pages/admin/settings.tsx:165
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
@@ -2102,7 +2126,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:319
+#: src/components/note/NoteCard.tsx:341
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -2128,7 +2152,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:538
+#: src/components/note/NoteCard.tsx:571
 msgid "Report"
 msgstr "Report"
 
@@ -2198,11 +2222,11 @@ msgstr "Reports"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
-#: src/pages/admin/settings.tsx:540
+#: src/pages/admin/settings.tsx:557
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
 
-#: src/pages/admin/settings.tsx:560
+#: src/pages/admin/settings.tsx:577
 msgid "Require Approval"
 msgstr "Require Approval"
 
@@ -2312,11 +2336,11 @@ msgstr "Save Changes"
 msgid "Save draft"
 msgstr "Save draft"
 
-#: src/pages/admin/settings.tsx:482
+#: src/pages/admin/settings.tsx:499
 msgid "Save Instance Settings"
 msgstr "Save Instance Settings"
 
-#: src/pages/admin/settings.tsx:573
+#: src/pages/admin/settings.tsx:590
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
@@ -2324,7 +2348,7 @@ msgstr "Save Registration Settings"
 msgid "Save Settings"
 msgstr "Save Settings"
 
-#: src/pages/admin/settings.tsx:748
+#: src/pages/admin/settings.tsx:765
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
@@ -2386,7 +2410,7 @@ msgstr "Search users..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "Search users... (e.g., alice or alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:738
+#: src/pages/admin/settings.tsx:755
 msgid "Secondary"
 msgstr "Secondary"
 
@@ -2415,7 +2439,7 @@ msgstr "Send test"
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
-#: src/pages/admin/settings.tsx:761
+#: src/pages/admin/settings.tsx:778
 msgid "Server Assets"
 msgstr "Server Assets"
 
@@ -2437,7 +2461,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:338
+#: src/components/note/NoteCard.tsx:360
 msgid "Show content"
 msgstr "Show content"
 
@@ -2548,7 +2572,7 @@ msgstr "Suspended"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/pages/admin/settings.tsx:672
+#: src/pages/admin/settings.tsx:689
 msgid "System"
 msgstr "System"
 
@@ -2581,7 +2605,7 @@ msgstr "Terms"
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
-#: src/pages/admin/settings.tsx:441
+#: src/pages/admin/settings.tsx:458
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
@@ -2598,15 +2622,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:297
+#: src/pages/admin/settings.tsx:314
 msgid "Theme"
 msgstr "Theme"
 
-#: src/pages/admin/settings.tsx:586
+#: src/pages/admin/settings.tsx:603
 msgid "Theme Settings"
 msgstr "Theme Settings"
 
-#: src/pages/admin/settings.tsx:167
+#: src/pages/admin/settings.tsx:184
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
@@ -2761,7 +2785,7 @@ msgstr "Upload Banner"
 msgid "Upload files to see them here"
 msgstr "Upload files to see them here"
 
-#: src/pages/admin/settings.tsx:766
+#: src/pages/admin/settings.tsx:783
 msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
 msgstr "Upload images for your instance branding. Files are automatically converted to WebP format."
 
@@ -2781,7 +2805,7 @@ msgstr "Uploading..."
 msgid "Used"
 msgstr "Used"
 
-#: src/pages/admin/settings.tsx:772
+#: src/pages/admin/settings.tsx:789
 msgid "Used for push notifications and instance branding (max 2MB)"
 msgstr "Used for push notifications and instance branding (max 2MB)"
 
@@ -2835,7 +2859,7 @@ msgstr "Username is required"
 msgid "Users"
 msgstr "Users"
 
-#: src/pages/admin/settings.tsx:715
+#: src/pages/admin/settings.tsx:732
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 

@@ -11,6 +11,7 @@ import { AuthService } from "../services/AuthService.js";
 import { PasskeyService } from "../services/PasskeyService.js";
 import { requireAuth } from "../middleware/auth.js";
 import { rateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
+import { logger } from "../lib/logger.js";
 import type { Context } from "hono";
 
 const app = new Hono();
@@ -381,7 +382,7 @@ app.post("/passkey/register/begin", requireAuth(), async (c) => {
 
     return c.json(options);
   } catch (error) {
-    console.error("Passkey registration begin error:", error);
+    logger.error({ err: error }, "Passkey registration begin error");
     return c.json(
       { error: error instanceof Error ? error.message : "Failed to generate registration options" },
       400,
@@ -424,7 +425,7 @@ app.post("/passkey/register/finish", requireAuth(), async (c) => {
       },
     });
   } catch (error) {
-    console.error("Passkey registration finish error:", error);
+    logger.error({ err: error }, "Passkey registration finish error");
     return c.json(
       { error: error instanceof Error ? error.message : "Failed to verify registration" },
       400,
@@ -449,7 +450,7 @@ app.post("/passkey/authenticate/begin", rateLimit(RateLimitPresets.login), async
 
     return c.json(options);
   } catch (error) {
-    console.error("Passkey authentication begin error:", error);
+    logger.error({ err: error }, "Passkey authentication begin error");
     return c.json(
       { error: error instanceof Error ? error.message : "Failed to generate authentication options" },
       400,
@@ -484,7 +485,7 @@ app.post("/passkey/authenticate/finish", rateLimit(RateLimitPresets.login), asyn
       token: session.token,
     });
   } catch (error) {
-    console.error("Passkey authentication finish error:", error);
+    logger.error({ err: error }, "Passkey authentication finish error");
     if (error instanceof Error) {
       if (error.message.includes("suspended")) {
         return c.json({ error: "Account is suspended" }, 403);
@@ -525,7 +526,7 @@ app.get("/passkey", requireAuth(), async (c) => {
       })),
     });
   } catch (error) {
-    console.error("List passkeys error:", error);
+    logger.error({ err: error }, "List passkeys error");
     return c.json({ error: "Failed to list passkeys" }, 500);
   }
 });
@@ -554,7 +555,7 @@ app.delete("/passkey/:id", requireAuth(), async (c) => {
 
     return c.json({ success: true });
   } catch (error) {
-    console.error("Delete passkey error:", error);
+    logger.error({ err: error }, "Delete passkey error");
     return c.json(
       { error: error instanceof Error ? error.message : "Failed to delete passkey" },
       400,
@@ -601,7 +602,7 @@ app.patch("/passkey/:id", requireAuth(), async (c) => {
       },
     });
   } catch (error) {
-    console.error("Rename passkey error:", error);
+    logger.error({ err: error }, "Rename passkey error");
     return c.json(
       { error: error instanceof Error ? error.message : "Failed to rename passkey" },
       400,

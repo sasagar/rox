@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2025.12.0-beta.8",
+  "version": "2025.12.0-rc.1",
   "devDependencies": {
     "@types/bun": "latest",
     "bun-types": "^1.3.2",

@@ -21,6 +21,7 @@ import {
 } from "../../utils/activityValidation.js";
 import { getInboxService } from "../../services/ap/inbox/index.js";
 import type { Activity } from "../../services/ap/inbox/index.js";
+import { logger } from "../../lib/logger.js";
 
 const inbox = new Hono();
 
@@ -67,7 +68,7 @@ inbox.post(
         activity = await c.req.json();
       }
     } catch (error) {
-      console.error("Failed to parse activity JSON:", error);
+      logger.error({ err: error }, "Failed to parse activity JSON");
       return c.json({ error: "Invalid JSON" }, 400);
     }
 
@@ -76,11 +77,10 @@ inbox.post(
     const validationResult = validateActivity(activity, signatureKeyId);
 
     if (!validationResult.valid) {
-      console.warn("Activity validation failed:", {
-        activity: activity.type,
-        actor: activity.actor,
-        errors: validationResult.errors,
-      });
+      logger.warn(
+        { activityType: activity.type, actor: activity.actor, errors: validationResult.errors },
+        "Activity validation failed",
+      );
 
       // Determine appropriate status code based on error type
       const hasAuthError = validationResult.errors.some(
@@ -98,7 +98,7 @@ inbox.post(
       );
     }
 
-    console.log(`📥 Inbox: Received ${activity.type} from ${activity.actor} for ${username}`);
+    logger.debug({ activityType: activity.type, actor: activity.actor, username }, "Inbox received activity");
 
     // Check if actor's instance is blocked
     const actorUrl =
@@ -110,12 +110,12 @@ inbox.post(
         const isBlocked = await instanceBlockRepository.isBlocked(actorHost);
 
         if (isBlocked) {
-          console.log(`🚫 Activity from blocked instance ${actorHost}, rejecting`);
+          logger.debug({ actorHost }, "Activity from blocked instance, rejecting");
           // Return 202 to not reveal block status to remote (security through obscurity)
           return c.json({ status: "accepted" }, 202);
         }
       } catch (error) {
-        console.error("Instance block check failed:", error);
+        logger.error({ err: error }, "Instance block check failed");
         // Continue processing if block check fails
       }
     }
@@ -134,7 +134,7 @@ inbox.post(
           .limit(1);
 
         if (existing.length > 0) {
-          console.log(`⚠️  Duplicate activity detected (ID: ${activityId}), skipping`);
+          logger.debug({ activityId }, "Duplicate activity detected, skipping");
           return c.json({ status: "accepted" }, 202);
         }
 
@@ -144,7 +144,7 @@ inbox.post(
           receivedAt: new Date(),
         });
       } catch (error) {
-        console.error("Deduplication check failed:", error);
+        logger.error({ err: error }, "Deduplication check failed");
         // Continue processing even if deduplication fails
       }
     }
@@ -154,7 +154,7 @@ inbox.post(
       const inboxService = getInboxService();
       await inboxService.handleActivity(c, activity, user.id);
     } catch (error) {
-      console.error("Activity handling error:", error);
+      logger.error({ err: error }, "Activity handling error");
       // Return 202 even on errors (don't reveal internal errors to remote servers)
     }
 

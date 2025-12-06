@@ -8,6 +8,7 @@
 
 import type { Activity, HandlerContext, HandlerResult } from "../types.js";
 import { BaseHandler } from "./BaseHandler.js";
+import { getTimelineStreamService } from "../../../TimelineStreamService.js";
 
 /**
  * Handler for Create activities
@@ -48,6 +49,49 @@ export class CreateHandler extends BaseHandler {
       );
 
       this.log("✅", `Note created: ${note.id} (URI: ${note.uri})`);
+
+      // Push to social timelines of local users who follow this remote user
+      if (note.visibility === "public") {
+        try {
+          const followRepository = this.getFollowRepository(c);
+          const userRepository = this.getUserRepository(c);
+
+          // Find local users who follow this remote user
+          const followers = await followRepository.findByFolloweeId(note.userId, 10000);
+          const localFollowerIds = followers.map((f) => f.followerId);
+
+          if (localFollowerIds.length > 0) {
+            // Fetch user data to include in the note for frontend rendering
+            const author = await userRepository.findById(note.userId);
+
+            // Create note with user data for WebSocket push
+            // Include both 'name' and 'displayName' for frontend compatibility
+            const noteWithUser = {
+              ...note,
+              user: author
+                ? {
+                    id: author.id,
+                    username: author.username,
+                    name: author.displayName || author.username,
+                    displayName: author.displayName,
+                    avatarUrl: author.avatarUrl,
+                    host: author.host,
+                    profileEmojis: author.profileEmojis,
+                  }
+                : null,
+            };
+
+            const streamService = getTimelineStreamService();
+            streamService.pushToSocialTimelines(localFollowerIds, noteWithUser);
+            streamService.pushToHomeTimelines(localFollowerIds, noteWithUser);
+            this.log("📡", `Pushed to ${localFollowerIds.length} followers' timelines`);
+          }
+        } catch (err) {
+          // Don't fail the activity if timeline push fails
+          this.warn(`Failed to push to timelines: ${err}`);
+        }
+      }
+
       return this.success(`Note created: ${note.id}`);
     } catch (error) {
       this.error("Failed to handle Create activity:", error as Error);

@@ -9,6 +9,7 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { logger } from "../../lib/logger.js";
 
 const note = new Hono();
 
@@ -56,7 +57,7 @@ note.get("/notes/:id", async (c: Context) => {
   const author = await userRepository.findById(noteData.userId);
 
   if (!author) {
-    console.error(`Note author not found: ${noteData.userId}`);
+    logger.error({ userId: noteData.userId }, "Note author not found");
     return c.notFound();
   }
 

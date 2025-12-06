@@ -9,6 +9,7 @@
 
 import type { Note } from "../../../../../shared/src/types/note.js";
 import type { User } from "../../../../../shared/src/types/user.js";
+import { logger } from "../../../lib/logger.js";
 
 /**
  * Base ActivityPub activity structure
@@ -270,7 +271,7 @@ export class ActivityBuilder {
       ];
     }
 
-    console.log(`📤 Built Like activity:`, JSON.stringify(activity, null, 2));
+    logger.debug({ activity }, "Built Like activity");
     return activity;
   }
 

@@ -10,6 +10,7 @@
 import { getDatabase } from "../db/index.js";
 import { receivedActivities } from "../db/schema/pg.js";
 import { lt } from "drizzle-orm";
+import { logger } from "../lib/logger.js";
 
 /**
  * Cleanup configuration
@@ -68,24 +69,25 @@ export class ReceivedActivitiesCleanupService {
    */
   public start(): void {
     if (this.isRunning) {
-      console.log("⚠️  ReceivedActivitiesCleanupService is already running");
+      logger.warn("ReceivedActivitiesCleanupService is already running");
       return;
     }
 
     this.isRunning = true;
-    console.log(
-      `🧹 Starting ReceivedActivitiesCleanupService (retention: ${this.config.retentionDays} days, interval: ${this.config.intervalMs}ms)`,
+    logger.info(
+      { retentionDays: this.config.retentionDays, intervalMs: this.config.intervalMs },
+      "Starting ReceivedActivitiesCleanupService",
     );
 
     // Run cleanup immediately on start
     this.cleanup().catch((error) => {
-      console.error("Initial cleanup failed:", error);
+      logger.error({ err: error }, "Initial cleanup failed");
     });
 
     // Schedule periodic cleanup
     this.intervalId = setInterval(() => {
       this.cleanup().catch((error) => {
-        console.error("Scheduled cleanup failed:", error);
+        logger.error({ err: error }, "Scheduled cleanup failed");
       });
     }, this.config.intervalMs);
   }
@@ -97,7 +99,7 @@ export class ReceivedActivitiesCleanupService {
    */
   public stop(): void {
     if (!this.isRunning) {
-      console.log("⚠️  ReceivedActivitiesCleanupService is not running");
+      logger.warn("ReceivedActivitiesCleanupService is not running");
       return;
     }
 
@@ -107,7 +109,7 @@ export class ReceivedActivitiesCleanupService {
     }
 
     this.isRunning = false;
-    console.log("🧹 Stopped ReceivedActivitiesCleanupService");
+    logger.info("Stopped ReceivedActivitiesCleanupService");
   }
 
   /**
@@ -125,18 +127,18 @@ export class ReceivedActivitiesCleanupService {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.config.retentionDays);
 
-      console.log(`🧹 Cleaning up received_activities older than ${cutoffDate.toISOString()}`);
+      logger.debug({ cutoffDate: cutoffDate.toISOString() }, "Cleaning up received_activities");
 
       const db = getDatabase();
 
       // Delete old entries
       await db.delete(receivedActivities).where(lt(receivedActivities.receivedAt, cutoffDate));
 
-      console.log(`✅ Cleanup completed`);
+      logger.debug("Cleanup completed");
 
       return 0; // Return 0 as we don't have a reliable way to get the count across all DB types
     } catch (error) {
-      console.error("❌ Cleanup failed:", error);
+      logger.error({ err: error }, "Cleanup failed");
       throw error;
     }
   }

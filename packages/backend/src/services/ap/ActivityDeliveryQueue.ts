@@ -10,6 +10,7 @@
 import { Queue, Worker, type Job } from "bullmq";
 import { Redis } from "ioredis";
 import { ActivityDeliveryService } from "./ActivityDeliveryService.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * Job priority levels
@@ -134,7 +135,7 @@ export class ActivityDeliveryQueue {
   private async initializeQueue(): Promise<void> {
     // Check if queue is explicitly disabled via environment variable
     if (process.env.USE_QUEUE === "false") {
-      console.log("📤 Queue disabled via USE_QUEUE=false, using synchronous delivery");
+      logger.info("Queue disabled via USE_QUEUE=false, using synchronous delivery");
       this.useQueue = false;
       return;
     }
@@ -161,7 +162,7 @@ export class ActivityDeliveryQueue {
         this.redis!.once("error", (err) => reject(err));
       });
 
-      console.log("✅ Redis connected, using BullMQ for delivery queue");
+      logger.info("Redis connected, using BullMQ for delivery queue");
 
       // Initialize queue
       // Note: Using simple prefix without hash tags for Dragonfly compatibility
@@ -185,13 +186,12 @@ export class ActivityDeliveryQueue {
       );
 
       this.worker.on("failed", (job, err) => {
-        console.error(`Job ${job?.id} failed:`, err);
+        logger.error({ err, jobId: job?.id }, "Delivery job failed");
       });
 
       this.useQueue = true;
     } catch (error) {
-      console.warn("⚠️  Redis not available, using synchronous delivery fallback");
-      console.warn(`   Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      logger.debug({ err: error }, "Redis not available, using synchronous delivery fallback");
       this.useQueue = false;
 
       // Clean up failed connection
@@ -323,11 +323,11 @@ export class ActivityDeliveryQueue {
 
         // Cap delay at 60 seconds (backpressure limit)
         if (delay > 60000) {
-          console.warn(`⚠️  Rate limit backpressure too high for ${hostname}, dropping delivery`);
+          logger.warn({ hostname }, "Rate limit backpressure too high, dropping delivery");
           return; // Drop the job if backpressure is too high
         }
 
-        console.log(`⏳ Rate limit reached for ${hostname}, delaying by ${delay}ms`);
+        logger.debug({ hostname, delayMs: delay }, "Rate limit reached, delaying delivery");
       }
 
       try {
@@ -348,18 +348,11 @@ export class ActivityDeliveryQueue {
           jobId: this.generateJobId(data),
         });
 
-        const priorityLabel =
-          priority === JobPriority.URGENT ? "🚨" : priority === JobPriority.LOW ? "🐌" : "📤";
-        const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : "";
-        console.log(
-          `${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`,
-        );
+        logger.debug({ inboxUrl: data.inboxUrl, priority, delayMs: delay }, "Queued delivery");
       } catch (error) {
         // Queue operation failed (e.g., Dragonfly cluster mode issue)
         // Fall back to synchronous delivery
-        console.warn(
-          `⚠️  Queue operation failed, falling back to sync delivery: ${error instanceof Error ? error.message : "Unknown error"}`,
-        );
+        logger.debug({ err: error }, "Queue operation failed, falling back to sync delivery");
         await this.deliverSync(data);
       }
     } else {
@@ -368,12 +361,12 @@ export class ActivityDeliveryQueue {
       if (!rateLimitOk) {
         const delay = this.calculateRateLimitDelay(hostname);
         if (delay > 0 && delay <= 60000) {
-          console.log(`⏳ Rate limit reached for ${hostname}, waiting ${delay}ms`);
+          logger.debug({ hostname, delayMs: delay }, "Rate limit reached, waiting");
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
 
-      console.log(`📤 Synchronous delivery to ${data.inboxUrl}`);
+      logger.debug({ inboxUrl: data.inboxUrl }, "Synchronous delivery");
       await this.deliverSync(data);
     }
   }
@@ -416,12 +409,12 @@ export class ActivityDeliveryQueue {
   private async processJob(job: Job<DeliveryJobData>): Promise<void> {
     const { activity, inboxUrl, keyId, privateKey } = job.data;
 
-    console.log(`📤 Processing delivery to ${inboxUrl} (attempt ${job.attemptsMade + 1})`);
+    logger.debug({ inboxUrl, attempt: job.attemptsMade + 1 }, "Processing delivery");
 
     try {
       await this.deliveryService.deliver(activity, inboxUrl, keyId, privateKey);
 
-      console.log(`✅ Delivered to ${inboxUrl}`);
+      logger.debug({ inboxUrl }, "Delivered successfully");
 
       // Record success metric
       this.recordMetric(inboxUrl, "success");
@@ -541,29 +534,22 @@ export class ActivityDeliveryQueue {
   public logDeliveryStatistics(): void {
     const stats = this.getDeliveryStatistics();
 
-    console.log("\n" + "=".repeat(60));
-    console.log("📊 ActivityPub Delivery Statistics");
-    console.log("=".repeat(60));
-    console.log(`Total Deliveries:      ${stats.totalDeliveries}`);
-    console.log(`✅ Successful:         ${stats.successfulDeliveries} (${stats.successRate}%)`);
-    console.log(`❌ Failed:             ${stats.failedDeliveries}`);
-    console.log(`🌐 Unique Servers:     ${stats.serverCount}`);
-
-    if (stats.topServers.length > 0) {
-      console.log("\n📈 Top 10 Servers by Delivery Count:");
-      console.log("─".repeat(60));
-
-      for (const server of stats.topServers) {
-        const total = server.success + server.failure;
-        const hostname = this.extractHostname(server.inbox);
-        console.log(`  ${hostname}`);
-        console.log(
-          `    Total: ${total} | Success: ${server.success} | Failed: ${server.failure} | Rate: ${server.successRate}%`,
-        );
-      }
-    }
-
-    console.log("=".repeat(60) + "\n");
+    logger.info(
+      {
+        totalDeliveries: stats.totalDeliveries,
+        successfulDeliveries: stats.successfulDeliveries,
+        failedDeliveries: stats.failedDeliveries,
+        successRate: stats.successRate,
+        serverCount: stats.serverCount,
+        topServers: stats.topServers.map((s) => ({
+          hostname: this.extractHostname(s.inbox),
+          success: s.success,
+          failure: s.failure,
+          successRate: s.successRate,
+        })),
+      },
+      "ActivityPub Delivery Statistics",
+    );
   }
 
   /**
@@ -585,12 +571,12 @@ export class ActivityDeliveryQueue {
 
         // Warn if success rate is below 95%
         if (stats.successRate < 95) {
-          console.warn(`⚠️  Delivery success rate (${stats.successRate}%) is below target (95%)`);
+          logger.warn({ successRate: stats.successRate }, "Delivery success rate is below target (95%)");
         }
       }
     }, intervalMs);
 
-    console.log(`📊 Periodic statistics logging started (interval: ${intervalMs}ms)`);
+    logger.info({ intervalMs }, "Periodic statistics logging started");
   }
 
   /**
@@ -602,7 +588,7 @@ export class ActivityDeliveryQueue {
     if (this.statsInterval) {
       clearInterval(this.statsInterval);
       this.statsInterval = null;
-      console.log("📊 Periodic statistics logging stopped");
+      logger.info("Periodic statistics logging stopped");
     }
   }
 
@@ -617,9 +603,9 @@ export class ActivityDeliveryQueue {
   private async deliverSync(data: DeliveryJobData): Promise<void> {
     try {
       await this.deliveryService.deliver(data.activity, data.inboxUrl, data.keyId, data.privateKey);
-      console.log(`✅ Delivered to ${data.inboxUrl}`);
+      logger.debug({ inboxUrl: data.inboxUrl }, "Delivered successfully");
     } catch (error) {
-      console.error(`❌ Failed to deliver to ${data.inboxUrl}:`, error);
+      logger.error({ err: error, inboxUrl: data.inboxUrl }, "Failed to deliver");
       // In sync mode, we don't retry - just log the error
     }
   }
@@ -639,7 +625,7 @@ export class ActivityDeliveryQueue {
    * ```
    */
   public async shutdown(): Promise<void> {
-    console.log("Shutting down ActivityDeliveryQueue...");
+    logger.info("Shutting down ActivityDeliveryQueue...");
 
     // Stop periodic statistics logging
     this.stopPeriodicStatsLogging();
@@ -647,7 +633,7 @@ export class ActivityDeliveryQueue {
     // Log final statistics
     const stats = this.getDeliveryStatistics();
     if (stats.totalDeliveries > 0) {
-      console.log("\n📊 Final Delivery Statistics:");
+      logger.info("Final Delivery Statistics:");
       this.logDeliveryStatistics();
     }
 
@@ -663,6 +649,6 @@ export class ActivityDeliveryQueue {
       await this.redis.quit();
     }
 
-    console.log("ActivityDeliveryQueue shut down");
+    logger.info("ActivityDeliveryQueue shut down");
   }
 }

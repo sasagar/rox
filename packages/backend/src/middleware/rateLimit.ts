@@ -10,6 +10,7 @@
 import type { Context, Next } from "hono";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import type { RoleService } from "../services/RoleService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Rate limit configuration
@@ -277,7 +278,7 @@ export function rateLimit(config: RateLimitConfig) {
       return next();
     } catch (error) {
       // On error, allow the request (fail open)
-      console.warn("Rate limit check failed:", error);
+      logger.debug({ err: error }, "Rate limit check failed");
       return next();
     }
   };
@@ -380,7 +381,7 @@ export function userRateLimit(config: Omit<RateLimitConfig, "keyGenerator">) {
       return next();
     } catch (error) {
       // On error, allow the request (fail open)
-      console.warn("Rate limit check failed:", error);
+      logger.debug({ err: error }, "Rate limit check failed");
       return next();
     }
   };

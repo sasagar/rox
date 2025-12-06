@@ -12,6 +12,7 @@ import type { INotificationRepository } from "../interfaces/repositories/INotifi
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import { getNotificationStreamService } from "./NotificationStreamService.js";
 import type { WebPushService } from "./WebPushService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Notification with populated user data
@@ -445,11 +446,11 @@ export class NotificationService {
           );
           await this.webPushService.sendToUser(notification.userId, payload);
         } catch (pushError) {
-          console.error("Failed to send web push notification:", pushError);
+          logger.error({ err: pushError }, "Failed to send web push notification");
         }
       }
     } catch (error) {
-      console.error("Failed to push notification to stream:", error);
+      logger.error({ err: error }, "Failed to push notification to stream");
     }
   }
 }

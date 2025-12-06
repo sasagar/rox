@@ -7,6 +7,7 @@
  */
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { logger } from "../lib/logger.js";
 
 /**
  * Global Error Handler
@@ -38,7 +39,7 @@ export async function errorHandler(c: Context, next: Next) {
     }
 
     // その他のエラーはログに記録して500エラーを返す
-    console.error("Unhandled error:", error);
+    logger.error({ err: error }, "Unhandled error");
 
     return c.json(
       {

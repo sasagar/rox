@@ -16,6 +16,7 @@ import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
 import { getTimelineStreamService } from "./TimelineStreamService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Reaction creation input data
@@ -138,11 +139,12 @@ export class ReactionService {
       if (emoji?.url) {
         customEmojiUrl = emoji.url;
         customEmojiHost = emoji.host; // Store the host for remote emojis
-        console.log(
-          `🎨 Found custom emoji "${emojiName}" from ${emoji.host || "local"}: ${emoji.url}`,
+        logger.debug(
+          { emojiName, host: emoji.host || "local", url: emoji.url },
+          "Found custom emoji",
         );
       } else {
-        console.log(`⚠️ Custom emoji "${emojiName}" not found in database`);
+        logger.debug({ emojiName }, "Custom emoji not found in database");
       }
     }
 
@@ -177,7 +179,7 @@ export class ReactionService {
             : undefined,
         )
         .catch((error) => {
-          console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
+          logger.error({ err: error, reactionId: newReaction.id }, "Failed to deliver Like activity");
         });
     }
 
@@ -186,7 +188,7 @@ export class ReactionService {
       this.notificationService
         .createReactionNotification(noteAuthor.id, userId, noteId, reaction)
         .catch((error) => {
-          console.error(`Failed to create reaction notification:`, error);
+          logger.error({ err: error, noteId, reaction }, "Failed to create reaction notification");
         });
     }
 
@@ -215,7 +217,7 @@ export class ReactionService {
       const streamService = getTimelineStreamService();
       streamService.pushNoteReacted(noteId, noteAuthorId, reaction, action, counts, emojis);
     } catch (error) {
-      console.error(`Failed to push reaction event:`, error);
+      logger.error({ err: error, noteId, reaction }, "Failed to push reaction event");
     }
   }
 
@@ -260,7 +262,7 @@ export class ReactionService {
       // 1. Reactor is a local user (reactor.host is null)
       // 2. Note author is a remote user (noteAuthor.host is not null)
       this.deliveryService.deliverUndoLike(reactor, note, noteAuthor).catch((error) => {
-        console.error(`Failed to deliver Undo Like activity:`, error);
+        logger.error({ err: error, noteId }, "Failed to deliver Undo Like activity");
       });
     }
 

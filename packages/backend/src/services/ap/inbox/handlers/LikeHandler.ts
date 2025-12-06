@@ -11,6 +11,7 @@ import type { Activity, HandlerContext, HandlerResult } from "../types.js";
 import { getObjectUri } from "../types.js";
 import { BaseHandler } from "./BaseHandler.js";
 import { extractReactionFromLike } from "../../../../utils/activitypub/reaction.js";
+import { logger } from "../../../../lib/logger.js";
 
 /**
  * Handler for Like activities
@@ -34,13 +35,13 @@ export class LikeHandler extends BaseHandler {
 
       // Debug: Log received activity for custom emoji troubleshooting
       if (activity._misskey_reaction || activity.content) {
-        console.log(`📥 Like activity received:`, JSON.stringify({
+        logger.debug({
           actor: activity.actor,
           object: objectUri,
           content: activity.content,
           _misskey_reaction: activity._misskey_reaction,
           tag: activity.tag,
-        }, null, 2));
+        }, "Like activity received with reaction");
       }
 
       // Extract reaction (supports Misskey custom emoji)
@@ -69,10 +70,10 @@ export class LikeHandler extends BaseHandler {
 
       // Save remote custom emoji to database if present
       if (customEmojiUrl && emojiName && emojiHost) {
-        console.log(`💾 Saving remote emoji: :${emojiName}:@${emojiHost} -> ${customEmojiUrl}`);
+        logger.debug({ emojiName, emojiHost, customEmojiUrl }, "Saving remote emoji");
         await this.saveRemoteEmoji(c, emojiName, emojiHost, customEmojiUrl);
       } else if (emojiName) {
-        console.log(`⚠️ Cannot save remote emoji :${emojiName}: - missing: ${!customEmojiUrl ? 'URL' : ''} ${!emojiHost ? 'host' : ''}`);
+        logger.debug({ emojiName, hasUrl: !!customEmojiUrl, hasHost: !!emojiHost }, "Cannot save remote emoji - missing data");
       }
 
       // Check if reaction already exists

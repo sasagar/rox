@@ -22,6 +22,8 @@ export type InstanceSettingKey =
   | "instance.darkIconUrl"
   | "instance.bannerUrl"
   | "instance.faviconUrl"
+  | "instance.pwaIcon192Url"
+  | "instance.pwaIcon512Url"
   | "instance.tosUrl"
   | "instance.privacyPolicyUrl"
   | "theme.primaryColor"

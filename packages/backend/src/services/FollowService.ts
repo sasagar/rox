@@ -13,6 +13,7 @@ import type { Follow } from "../../../shared/src/types/user.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Follow Service
@@ -98,14 +99,14 @@ export class FollowService {
     if (this.deliveryService && followee.host) {
       // Fire-and-forget delivery (don't await to avoid blocking)
       this.deliveryService.deliverFollow(follower, followee).catch((error) => {
-        console.error(`Failed to deliver Follow activity:`, error);
+        logger.error({ err: error, followerId, followeeId }, "Failed to deliver Follow activity");
       });
     }
 
     // Create notification for the followee (only for local users)
     if (this.notificationService && !followee.host) {
       this.notificationService.createFollowNotification(followeeId, followerId).catch((error) => {
-        console.error(`Failed to create follow notification:`, error);
+        logger.error({ err: error, followeeId, followerId }, "Failed to create follow notification");
       });
     }
 
@@ -143,7 +144,7 @@ export class FollowService {
     if (this.deliveryService && follower && followee && followee.host) {
       // Fire-and-forget delivery (don't await to avoid blocking)
       this.deliveryService.deliverUndoFollow(follower, followee).catch((error) => {
-        console.error(`Failed to deliver Undo Follow activity:`, error);
+        logger.error({ err: error, followerId, followeeId }, "Failed to deliver Undo Follow activity");
       });
     }
   }

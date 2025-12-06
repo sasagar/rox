@@ -9,6 +9,7 @@
 
 import { Redis } from "ioredis";
 import type { ICacheService, CacheSetOptions } from "../../interfaces/ICacheService.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * Default TTL values in seconds
@@ -77,9 +78,9 @@ export class DragonflyCacheAdapter implements ICacheService {
       await this.redis.ping();
 
       this.available = true;
-      console.log("✅ Dragonfly cache connected");
+      logger.info("Dragonfly cache connected");
     } catch (error) {
-      console.warn("⚠️  Dragonfly cache not available, caching disabled:", (error as Error).message);
+      logger.debug({ err: error }, "Dragonfly cache not available, caching disabled");
       this.available = false;
       this.redis = null;
     }
@@ -114,7 +115,7 @@ export class DragonflyCacheAdapter implements ICacheService {
       }
       return JSON.parse(value) as T;
     } catch (error) {
-      console.error(`Cache get error for key ${key}:`, error);
+      logger.debug({ err: error, key }, "Cache get error");
       return null;
     }
   }
@@ -135,7 +136,7 @@ export class DragonflyCacheAdapter implements ICacheService {
         await this.redis.set(key, serialized);
       }
     } catch (error) {
-      console.error(`Cache set error for key ${key}:`, error);
+      logger.debug({ err: error, key }, "Cache set error");
     }
   }
 
@@ -150,7 +151,7 @@ export class DragonflyCacheAdapter implements ICacheService {
     try {
       await this.redis.del(key);
     } catch (error) {
-      console.error(`Cache delete error for key ${key}:`, error);
+      logger.debug({ err: error, key }, "Cache delete error");
     }
   }
 
@@ -168,7 +169,7 @@ export class DragonflyCacheAdapter implements ICacheService {
         await this.redis.del(...keys);
       }
     } catch (error) {
-      console.error(`Cache deletePattern error for pattern ${pattern}:`, error);
+      logger.debug({ err: error, pattern }, "Cache deletePattern error");
     }
   }
 
@@ -184,7 +185,7 @@ export class DragonflyCacheAdapter implements ICacheService {
       const result = await this.redis.exists(key);
       return result === 1;
     } catch (error) {
-      console.error(`Cache exists error for key ${key}:`, error);
+      logger.debug({ err: error, key }, "Cache exists error");
       return false;
     }
   }
@@ -200,7 +201,7 @@ export class DragonflyCacheAdapter implements ICacheService {
     try {
       return await this.redis.ttl(key);
     } catch (error) {
-      console.error(`Cache ttl error for key ${key}:`, error);
+      logger.debug({ err: error, key }, "Cache ttl error");
       return -2;
     }
   }

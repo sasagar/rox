@@ -45,6 +45,7 @@ export class PostgresNoteRepository implements INoteRepository {
       user: {
         id: result.users.id,
         username: result.users.username,
+        name: result.users.displayName || result.users.username,
         displayName: result.users.displayName,
         avatarUrl: result.users.avatarUrl,
         host: result.users.host,
@@ -69,6 +70,7 @@ export class PostgresNoteRepository implements INoteRepository {
       user: {
         id: result.users.id,
         username: result.users.username,
+        name: result.users.displayName || result.users.username,
         displayName: result.users.displayName,
         avatarUrl: result.users.avatarUrl,
         host: result.users.host,
@@ -110,9 +112,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -153,9 +157,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -208,9 +214,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -249,9 +257,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -288,9 +298,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -327,9 +339,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -366,9 +380,11 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -484,6 +500,7 @@ export class PostgresNoteRepository implements INoteRepository {
           user: {
             id: r.users.id,
             username: r.users.username,
+            name: r.users.displayName || r.users.username,
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,

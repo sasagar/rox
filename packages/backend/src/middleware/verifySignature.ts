@@ -17,6 +17,7 @@ import {
 } from "../utils/httpSignature.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * In-memory cache fallback for public keys when Redis is unavailable
@@ -98,7 +99,7 @@ async function fetchPublicKey(keyId: string, cacheService?: ICacheService): Prom
 
     return publicKey;
   } catch (error) {
-    console.error(`Failed to fetch public key from ${actorUrl}:`, error);
+    logger.error({ err: error, actorUrl }, "Failed to fetch public key");
     throw error;
   }
 }
@@ -124,7 +125,7 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
   const signatureHeader = c.req.header("Signature");
 
   if (!signatureHeader) {
-    console.warn("Missing Signature header");
+    logger.debug("Missing Signature header");
     return c.json({ error: "Missing signature" }, 401);
   }
 
@@ -157,14 +158,14 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     const isValid = verifySignature(publicKey, signatureString, params.signature, params.algorithm);
 
     if (!isValid) {
-      console.warn("Invalid signature", { keyId: params.keyId });
+      logger.warn({ keyId: params.keyId }, "Invalid signature");
       return c.json({ error: "Invalid signature" }, 401);
     }
 
     // Verify Date header (prevent replay attacks)
     const dateHeader = c.req.header("Date");
     if (dateHeader && !verifyDateHeader(dateHeader, 30)) {
-      console.warn("Date header too old or invalid", { date: dateHeader });
+      logger.warn({ date: dateHeader }, "Date header too old or invalid");
       return c.json({ error: "Request too old" }, 401);
     }
 
@@ -173,7 +174,7 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     if (digestHeader) {
       const body = await c.req.text();
       if (!verifyDigest(body, digestHeader)) {
-        console.warn("Invalid digest");
+        logger.warn("Invalid digest");
         return c.json({ error: "Invalid digest" }, 401);
       }
       // Store body for later use (since we've already read it)
@@ -183,11 +184,11 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     // Store keyId for activity validation
     c.set("signatureKeyId", params.keyId);
 
-    console.log("Signature verified successfully", { keyId: params.keyId });
+    logger.debug({ keyId: params.keyId }, "Signature verified successfully");
 
     return await next();
   } catch (error) {
-    console.error("Signature verification error:", error);
+    logger.error({ err: error }, "Signature verification error");
     return c.json({ error: "Signature verification failed" }, 401);
   }
 }

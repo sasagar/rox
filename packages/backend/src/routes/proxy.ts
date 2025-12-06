@@ -12,6 +12,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { createHash } from "node:crypto";
+import { logger } from "../lib/logger.js";
 
 const proxy = new Hono();
 
@@ -204,7 +205,7 @@ proxy.get("/", async (c: Context) => {
     c.header("X-Content-Type-Options", "nosniff");
     return c.body(buffer);
   } catch (error) {
-    console.error(`Proxy fetch error for ${url}:`, error);
+    logger.error({ err: error, url }, "Proxy fetch error");
 
     if (error instanceof Error && error.name === "AbortError") {
       c.header("Cache-Control", CACHE_ERROR);

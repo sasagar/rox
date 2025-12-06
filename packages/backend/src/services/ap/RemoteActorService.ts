@@ -14,6 +14,7 @@ import type { ICacheService } from "../../interfaces/ICacheService.js";
 import { generateId } from "shared";
 import { RemoteFetchService, type SignatureConfig } from "./RemoteFetchService.js";
 import { CacheTTL, CachePrefix } from "../../adapters/cache/DragonflyCacheAdapter.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * ActivityPub Emoji tag
@@ -174,7 +175,7 @@ export class RemoteActorService {
     if (!forceRefresh && this.cacheService?.isAvailable()) {
       const cached = await this.cacheService.get<User>(cacheKey);
       if (cached) {
-        console.log(`⚡ L1 cache hit for actor: ${cached.username}@${cached.host}`);
+        logger.debug({ username: cached.username, host: cached.host }, "L1 cache hit for actor");
         return cached;
       }
     }
@@ -188,19 +189,19 @@ export class RemoteActorService {
       const DB_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
       if (cacheAge < DB_CACHE_TTL) {
-        console.log(`📦 L2 cache hit for actor: ${existing.username}@${existing.host}`);
+        logger.debug({ username: existing.username, host: existing.host }, "L2 cache hit for actor");
 
         // Warm L1 cache for future requests
         if (this.cacheService?.isAvailable()) {
           this.cacheService.set(cacheKey, existing, { ttl: CacheTTL.LONG }).catch((err) => {
-            console.warn("Failed to warm L1 cache:", err);
+            logger.debug({ err }, "Failed to warm L1 cache");
           });
         }
 
         return existing;
       }
 
-      console.log(`🔄 Actor cache expired, refreshing: ${existing.username}@${existing.host}`);
+      logger.debug({ username: existing.username, host: existing.host }, "Actor cache expired, refreshing");
     }
 
     // Fetch actor document from remote server
@@ -228,12 +229,12 @@ export class RemoteActorService {
         profileEmojis,
       });
 
-      console.log(`✅ Refreshed remote user: ${actor.preferredUsername}@${host}`);
+      logger.debug({ username: actor.preferredUsername, host }, "Refreshed remote user");
 
       // Update L1 cache
       if (this.cacheService?.isAvailable()) {
         this.cacheService.set(cacheKey, updated, { ttl: CacheTTL.LONG }).catch((err) => {
-          console.warn("Failed to update L1 cache:", err);
+          logger.debug({ err }, "Failed to update L1 cache");
         });
       }
 
@@ -272,12 +273,12 @@ export class RemoteActorService {
       storageQuotaMb: null,
     });
 
-    console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);
+    logger.debug({ username: actor.preferredUsername, host }, "Created remote user");
 
     // Update L1 cache
     if (this.cacheService?.isAvailable()) {
       this.cacheService.set(cacheKey, user, { ttl: CacheTTL.LONG }).catch((err) => {
-        console.warn("Failed to update L1 cache:", err);
+        logger.debug({ err }, "Failed to update L1 cache");
       });
     }
 
@@ -300,18 +301,16 @@ export class RemoteActorService {
     });
 
     if (!result.success) {
-      const errorMsg = `Failed to fetch actor ${actorUri}: ${result.error?.message}`;
-      console.error(errorMsg, result.error);
-      throw new Error(errorMsg);
+      logger.error({ err: result.error, actorUri }, "Failed to fetch actor");
+      throw new Error(`Failed to fetch actor ${actorUri}: ${result.error?.message}`);
     }
 
     const actor = result.data!;
 
     // Validate actor document
     if (!actor.id || !actor.type || !actor.preferredUsername || !actor.inbox) {
-      const errorMsg = `Invalid actor document: missing required fields (id, type, preferredUsername, or inbox)`;
-      console.error(errorMsg, actor);
-      throw new Error(errorMsg);
+      logger.error({ actorUri }, "Invalid actor document: missing required fields");
+      throw new Error("Invalid actor document: missing required fields (id, type, preferredUsername, or inbox)");
     }
 
     return actor;
@@ -377,13 +376,13 @@ export class RemoteActorService {
     // Check if user already exists in database
     const existingUser = await this.userRepository.findByUsername(username, host);
     if (existingUser) {
-      console.log(`📦 Found cached remote user: ${username}@${host}`);
+      logger.debug({ username, host }, "Found cached remote user");
       return existingUser;
     }
 
     // Perform WebFinger lookup
     const webfingerUrl = `https://${host}/.well-known/webfinger?resource=acct:${encodeURIComponent(normalizedAcct)}`;
-    console.log(`🔍 WebFinger lookup: ${webfingerUrl}`);
+    logger.debug({ webfingerUrl }, "Performing WebFinger lookup");
 
     const webfingerResult = await this.fetchService.fetchActivityPubObject<WebFingerResponse>(
       webfingerUrl,
@@ -412,7 +411,7 @@ export class RemoteActorService {
       throw new Error(`No ActivityPub actor link found in WebFinger response for ${acct}`);
     }
 
-    console.log(`🔗 Found actor URI: ${actorLink.href}`);
+    logger.debug({ actorUri: actorLink.href }, "Found actor URI via WebFinger");
 
     // Resolve actor from URI
     return this.resolveActor(actorLink.href);

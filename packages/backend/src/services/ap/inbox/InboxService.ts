@@ -21,6 +21,7 @@ import {
   UndoHandler,
   MoveHandler,
 } from "./handlers/index.js";
+import { logger } from "../../../lib/logger.js";
 
 /**
  * InboxService - Activity dispatcher
@@ -100,7 +101,7 @@ export class InboxService {
     const handler = this.handlers.get(activity.type);
 
     if (!handler) {
-      console.log(`Unsupported activity type: ${activity.type}`);
+      logger.debug({ activityType: activity.type }, "Unsupported activity type");
       return {
         success: true,
         message: `Unsupported activity type: ${activity.type}`,

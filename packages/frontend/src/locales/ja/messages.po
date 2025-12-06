@@ -65,11 +65,11 @@ msgstr "{0} ファイルをアップロード済み"
 msgid "{0} used (Unlimited)"
 msgstr "{0} 使用中（無制限）"
 
-#: src/pages/admin/settings.tsx:222
+#: src/pages/admin/settings.tsx:239
 msgid "{assetType} removed"
 msgstr "{assetType}を削除しました"
 
-#: src/pages/admin/settings.tsx:204
+#: src/pages/admin/settings.tsx:221
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType}をアップロードしました"
 
@@ -151,7 +151,7 @@ msgstr "最初のカスタム絵文字を追加して始めましょう"
 
 #: src/pages/admin/emojis.tsx:1067
 msgid "Added"
-msgstr ""
+msgstr "追加済み"
 
 #. placeholder {0}: formatDate(passkey.createdAt)
 #: src/components/settings/PasskeySection.tsx:299
@@ -175,7 +175,7 @@ msgstr "管理"
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:256
+#: src/pages/admin/settings.tsx:273
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -185,11 +185,11 @@ msgstr "管理者ユーザーは停止できません"
 
 #: src/pages/admin/emojis.tsx:968
 msgid "Adopt"
-msgstr ""
+msgstr "採用"
 
 #: src/pages/admin/emojis.tsx:961
 msgid "Adopt as local emoji"
-msgstr ""
+msgstr "ローカル絵文字として採用"
 
 #: src/components/settings/AccountMigrationSection.tsx:96
 msgid "Alias added successfully"
@@ -224,13 +224,13 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 
 #: src/pages/admin/emojis.tsx:907
 msgid "All Servers"
-msgstr ""
+msgstr "すべてのサーバー"
 
 #: src/pages/mod/audit-logs.tsx:259
 msgid "All Types"
 msgstr "すべてのタイプ"
 
-#: src/pages/admin/settings.tsx:517
+#: src/pages/admin/settings.tsx:534
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -255,7 +255,7 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
-#: src/pages/admin/settings.tsx:307
+#: src/pages/admin/settings.tsx:324
 msgid "Assets"
 msgstr "素材"
 
@@ -304,7 +304,7 @@ msgstr "バナーを削除しました"
 msgid "Banner updated successfully"
 msgstr "バナーを更新しました"
 
-#: src/pages/admin/settings.tsx:398
+#: src/pages/admin/settings.tsx:415
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -367,21 +367,21 @@ msgstr "インスタンスをブロックすると、そのサーバーとの連
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/settings.tsx:434
+#: src/pages/admin/settings.tsx:451
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 
-#: src/pages/admin/settings.tsx:794
+#: src/pages/admin/settings.tsx:822
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大512KB）"
 
 #: src/pages/admin/emojis.tsx:577
 msgid "Bulk Import"
-msgstr ""
+msgstr "一括インポート"
 
 #: src/pages/admin/emojis.tsx:988
 msgid "Bulk Import Emojis"
-msgstr ""
+msgstr "絵文字を一括インポート"
 
 #: src/components/settings/StorageSection.tsx:222
 #: src/pages/admin/storage.tsx:339
@@ -452,7 +452,7 @@ msgstr "すべてクリア"
 
 #: src/pages/admin/emojis.tsx:1048
 msgid "Click to select a ZIP file or drag and drop"
-msgstr ""
+msgstr "クリックしてZIPファイルを選択、またはドラッグ＆ドロップ"
 
 #: src/pages/admin/emojis.tsx:655
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
@@ -478,7 +478,7 @@ msgstr "カラー"
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
-#: src/pages/admin/settings.tsx:259
+#: src/pages/admin/settings.tsx:276
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -490,7 +490,7 @@ msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザー�
 msgid "Contact"
 msgstr "連絡先"
 
-#: src/components/note/NoteCard.tsx:328
+#: src/components/note/NoteCard.tsx:350
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -573,9 +573,13 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
-#: src/pages/admin/settings.tsx:710
+#: src/pages/admin/settings.tsx:727
 msgid "Dark"
 msgstr "ダーク"
+
+#: src/pages/admin/settings.tsx:799
+msgid "Dark Mode Icon"
+msgstr "ダークモードアイコン"
 
 #: src/pages/admin/roles.tsx:611
 msgid "Default"
@@ -585,7 +589,7 @@ msgstr "デフォルト"
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:653
+#: src/pages/admin/settings.tsx:670
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
@@ -638,7 +642,7 @@ msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:343
+#: src/pages/admin/settings.tsx:360
 msgid "Description"
 msgstr "説明"
 
@@ -731,12 +735,12 @@ msgstr "メールアドレスを入力してください"
 
 #: src/pages/admin/emojis.tsx:1094
 msgid "Emoji"
-msgstr ""
+msgstr "絵文字"
 
 #. placeholder {0}: emoji.name
 #: src/pages/admin/emojis.tsx:162
 msgid "Emoji \":{0}:\" adopted as local emoji"
-msgstr ""
+msgstr "絵文字「:{0}:」をローカル絵文字として採用しました"
 
 #. placeholder {0}: emoji.name
 #: src/pages/admin/emojis.tsx:437
@@ -749,7 +753,7 @@ msgstr "絵文字 \":{name}:\" を追加しました"
 
 #: src/pages/admin/emojis.tsx:1006
 msgid "Emoji names are derived from filenames if no meta.json is provided"
-msgstr ""
+msgstr "meta.jsonがない場合、絵文字名はファイル名から生成されます"
 
 #: src/components/ui/EmojiPicker.tsx:838
 msgid "Emoji Picker"
@@ -779,7 +783,7 @@ msgstr "空のフォルダ"
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:514
+#: src/pages/admin/settings.tsx:531
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
@@ -848,7 +852,7 @@ msgstr "有効期限: {0}"
 
 #: src/pages/admin/emojis.tsx:1083
 msgid "Failed"
-msgstr ""
+msgstr "失敗"
 
 #: src/components/settings/AccountMigrationSection.tsx:101
 msgid "Failed to add alias"
@@ -858,13 +862,13 @@ msgstr "エイリアスの追加に失敗しました"
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
-#: src/components/note/NoteCard.tsx:183
+#: src/components/note/NoteCard.tsx:205
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
 #: src/pages/admin/emojis.tsx:171
 msgid "Failed to adopt emoji"
-msgstr ""
+msgstr "絵文字の採用に失敗しました"
 
 #: src/pages/admin/blocks.tsx:134
 #: src/pages/mod/instances.tsx:150
@@ -916,7 +920,7 @@ msgstr "ユーザーが見つかりませんでした"
 
 #: src/pages/admin/emojis.tsx:234
 msgid "Failed to import emojis"
-msgstr ""
+msgstr "絵文字のインポートに失敗しました"
 
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
@@ -940,7 +944,7 @@ msgstr "パスキーの読み込みに失敗しました"
 
 #: src/pages/admin/emojis.tsx:143
 msgid "Failed to load remote emojis"
-msgstr ""
+msgstr "リモート絵文字の読み込みに失敗しました"
 
 #: src/pages/admin/reports.tsx:157
 #: src/pages/mod/reports.tsx:145
@@ -992,7 +996,7 @@ msgstr "インスタンスの削除に失敗しました"
 msgid "Failed to rename passkey"
 msgstr "パスキーの名前変更に失敗しました"
 
-#: src/components/note/NoteCard.tsx:201
+#: src/components/note/NoteCard.tsx:223
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
@@ -1058,11 +1062,11 @@ msgstr "ファイルのアップロードに失敗しました"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
-#: src/pages/admin/settings.tsx:793
+#: src/pages/admin/settings.tsx:821
 msgid "Favicon"
 msgstr "ファビコン"
 
-#: src/pages/admin/settings.tsx:418
+#: src/pages/admin/settings.tsx:435
 msgid "Favicon URL"
 msgstr "ファビコンURL"
 
@@ -1089,7 +1093,7 @@ msgstr "ファイルが大きすぎます。最大サイズ: 256KB"
 
 #: src/pages/admin/emojis.tsx:195
 msgid "File too large. Maximum size: 50MB"
-msgstr ""
+msgstr "ファイルが大きすぎます。最大サイズ: 50MB"
 
 #: src/pages/admin/emojis.tsx:348
 msgid "File uploaded successfully"
@@ -1164,7 +1168,7 @@ msgstr "グローバル"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
-#: src/pages/admin/settings.tsx:783
+#: src/pages/admin/settings.tsx:811
 msgid "Header image for your instance (max 5MB)"
 msgstr "インスタンスのヘッダー画像（最大5MB）"
 
@@ -1172,6 +1176,10 @@ msgstr "インスタンスのヘッダー画像（最大5MB）"
 #: src/pages/admin/federation.tsx:316
 msgid "Healthy"
 msgstr "正常"
+
+#: src/pages/admin/settings.tsx:844
+msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
+msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピクセル（最大2MB）。未設定の場合はインスタンスアイコンを使用します。"
 
 #: src/components/layout/Sidebar.tsx:86
 #: src/components/note/NoteComposer.tsx:408
@@ -1187,7 +1195,15 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:380
+#: src/pages/admin/settings.tsx:800
+msgid "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
+msgstr "ダークモード用アイコン。未設定の場合は標準アイコンを使用します（最大2MB）"
+
+#: src/pages/admin/settings.tsx:833
+msgid "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
+msgstr "PWAアプリ用アイコン、192x192ピクセル（最大1MB）。未設定の場合はインスタンスアイコンを使用します。"
+
+#: src/pages/admin/settings.tsx:397
 msgid "Icon URL"
 msgstr "アイコンURL"
 
@@ -1208,25 +1224,25 @@ msgstr "画像は5MB以下にしてください"
 #. placeholder {2}: result.failed
 #: src/pages/admin/emojis.tsx:225
 msgid "Import complete: {0} added, {1} skipped, {2} failed"
-msgstr ""
+msgstr "インポート完了: {0}件追加、{1}件スキップ、{2}件失敗"
 
 #: src/pages/admin/emojis.tsx:1059
 msgid "Import Results"
-msgstr ""
+msgstr "インポート結果"
 
 #: src/pages/admin/emojis.tsx:1041
 msgid "Importing emojis..."
-msgstr ""
+msgstr "絵文字をインポート中..."
 
 #: src/components/settings/AccountMigrationSection.tsx:395
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:277
+#: src/pages/admin/settings.tsx:294
 msgid "Instance"
 msgstr "インスタンス"
 
-#: src/pages/admin/settings.tsx:782
+#: src/pages/admin/settings.tsx:810
 msgid "Instance Banner"
 msgstr "インスタンスバナー"
 
@@ -1255,15 +1271,15 @@ msgstr "インスタンスドメイン"
 msgid "Instance Hostname"
 msgstr "インスタンスのホスト名"
 
-#: src/pages/admin/settings.tsx:771
+#: src/pages/admin/settings.tsx:788
 msgid "Instance Icon"
 msgstr "インスタンスアイコン"
 
-#: src/pages/admin/settings.tsx:319
+#: src/pages/admin/settings.tsx:336
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:325
+#: src/pages/admin/settings.tsx:342
 msgid "Instance Name"
 msgstr "インスタンス名"
 
@@ -1275,7 +1291,7 @@ msgstr "インスタンス概要"
 msgid "Instance removed from cache"
 msgstr "インスタンスをキャッシュから削除しました"
 
-#: src/pages/admin/settings.tsx:129
+#: src/pages/admin/settings.tsx:146
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
 
@@ -1324,7 +1340,7 @@ msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:537
+#: src/pages/admin/settings.tsx:554
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1368,7 +1384,7 @@ msgstr "空欄にすると自動生成されます"
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:691
+#: src/pages/admin/settings.tsx:708
 msgid "Light"
 msgstr "ライト"
 
@@ -1405,7 +1421,7 @@ msgstr "ローカル"
 
 #: src/pages/admin/emojis.tsx:555
 msgid "Local Emojis"
-msgstr ""
+msgstr "ローカル絵文字"
 
 #: src/pages/search.tsx:391
 msgid "Local only"
@@ -1439,7 +1455,7 @@ msgstr "リモートユーザーを検索中..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:361
+#: src/pages/admin/settings.tsx:378
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1474,11 +1490,11 @@ msgstr "最大使用回数"
 
 #: src/pages/admin/emojis.tsx:1004
 msgid "Maximum file size per emoji: 256KB"
-msgstr ""
+msgstr "絵文字1つあたりの最大サイズ: 256KB"
 
 #: src/pages/admin/emojis.tsx:1005
 msgid "Maximum ZIP size: 50MB"
-msgstr ""
+msgstr "ZIPファイルの最大サイズ: 50MB"
 
 #: src/pages/admin/storage.tsx:526
 msgid "MB (-1 for unlimited)"
@@ -1526,7 +1542,7 @@ msgstr "モデレーター権限が必要です"
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
-#: src/components/note/NoteCard.tsx:523
+#: src/components/note/NoteCard.tsx:556
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -1548,7 +1564,7 @@ msgstr "無期限"
 msgid "New"
 msgstr "新規"
 
-#: src/pages/admin/settings.tsx:563
+#: src/pages/admin/settings.tsx:580
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
@@ -1644,7 +1660,7 @@ msgstr "まだ投稿がありません"
 
 #: src/pages/admin/emojis.tsx:926
 msgid "No remote emojis collected yet"
-msgstr ""
+msgstr "リモート絵文字はまだ収集されていません"
 
 #: src/components/pages/NoteDetailPageClient.tsx:182
 msgid "No replies yet"
@@ -1694,7 +1710,7 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:195
+#: src/components/note/NoteCard.tsx:217
 msgid "Note renoted"
 msgstr "リノートしました"
 
@@ -1829,7 +1845,7 @@ msgstr "プロフィールを更新するにはログインしてください"
 
 #: src/pages/admin/emojis.tsx:186
 msgid "Please select a ZIP file"
-msgstr ""
+msgstr "ZIPファイルを選択してください"
 
 #: src/components/settings/ProfileImageSection.tsx:48
 #: src/components/settings/ProfileImageSection.tsx:99
@@ -1857,7 +1873,7 @@ msgstr "Powered by"
 #: src/components/note/NoteComposer.tsx:550
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:736
-#: src/pages/admin/settings.tsx:722
+#: src/pages/admin/settings.tsx:739
 msgid "Preview"
 msgstr "プレビュー"
 
@@ -1865,11 +1881,11 @@ msgstr "プレビュー"
 msgid "Previous"
 msgstr "前へ"
 
-#: src/pages/admin/settings.tsx:729
+#: src/pages/admin/settings.tsx:746
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:592
+#: src/pages/admin/settings.tsx:609
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -1885,7 +1901,7 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:459
+#: src/pages/admin/settings.tsx:476
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
@@ -1932,6 +1948,14 @@ msgstr "プッシュ通知が無効"
 msgid "Push notifications enabled"
 msgstr "プッシュ通知が有効"
 
+#: src/pages/admin/settings.tsx:832
+msgid "PWA Icon (192x192)"
+msgstr "PWAアイコン (192x192)"
+
+#: src/pages/admin/settings.tsx:843
+msgid "PWA Icon (512x512)"
+msgstr "PWAアイコン (512x512)"
+
 #: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "クォータを更新しました"
@@ -1957,7 +1981,7 @@ msgstr "がリアクションしました"
 msgid "Reaction"
 msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:176
+#: src/components/note/NoteCard.tsx:198
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
@@ -2026,7 +2050,7 @@ msgstr "登録済みデバイス"
 msgid "Registering..."
 msgstr "登録中..."
 
-#: src/pages/admin/settings.tsx:287
+#: src/pages/admin/settings.tsx:304
 msgid "Registration"
 msgstr "登録"
 
@@ -2039,11 +2063,11 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:495
+#: src/pages/admin/settings.tsx:512
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:148
+#: src/pages/admin/settings.tsx:165
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
@@ -2063,15 +2087,15 @@ msgstr "却下済み"
 
 #: src/pages/admin/emojis.tsx:566
 msgid "Remote Emojis"
-msgstr ""
+msgstr "リモート絵文字"
 
 #: src/pages/admin/emojis.tsx:891
 msgid "Remote emojis are collected from reactions received from other servers. You can adopt them as local emojis to use on your instance."
-msgstr ""
+msgstr "リモート絵文字は他のサーバーからのリアクションで収集されます。これらをローカル絵文字として採用してインスタンスで使用できます。"
 
 #: src/pages/admin/emojis.tsx:929
 msgid "Remote emojis will appear here when users from other servers react with custom emojis"
-msgstr ""
+msgstr "他のサーバーのユーザーがカスタム絵文字でリアクションすると、ここに表示されます"
 
 #: src/pages/admin/federation.tsx:334
 msgid "Remote Instances"
@@ -2102,7 +2126,7 @@ msgstr "名前を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:319
+#: src/components/note/NoteCard.tsx:341
 msgid "Renoted"
 msgstr "リノート"
 
@@ -2128,7 +2152,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:538
+#: src/components/note/NoteCard.tsx:571
 msgid "Report"
 msgstr "報告"
 
@@ -2198,11 +2222,11 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
-#: src/pages/admin/settings.tsx:540
+#: src/pages/admin/settings.tsx:557
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:560
+#: src/pages/admin/settings.tsx:577
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -2312,11 +2336,11 @@ msgstr "変更を保存"
 msgid "Save draft"
 msgstr "下書きを保存"
 
-#: src/pages/admin/settings.tsx:482
+#: src/pages/admin/settings.tsx:499
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:573
+#: src/pages/admin/settings.tsx:590
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -2324,7 +2348,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:748
+#: src/pages/admin/settings.tsx:765
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -2386,7 +2410,7 @@ msgstr "ユーザーを検索..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:738
+#: src/pages/admin/settings.tsx:755
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -2415,7 +2439,7 @@ msgstr "テスト送信"
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/pages/admin/settings.tsx:761
+#: src/pages/admin/settings.tsx:778
 msgid "Server Assets"
 msgstr "サーバー素材"
 
@@ -2437,7 +2461,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:338
+#: src/components/note/NoteCard.tsx:360
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -2488,7 +2512,7 @@ msgstr "サインイン中..."
 
 #: src/pages/admin/emojis.tsx:1075
 msgid "Skipped"
-msgstr ""
+msgstr "スキップ"
 
 #: src/pages/timeline.tsx:141
 msgid "Social"
@@ -2508,7 +2532,7 @@ msgstr "標準絵文字"
 
 #: src/pages/admin/emojis.tsx:1095
 msgid "Status"
-msgstr ""
+msgstr "ステータス"
 
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
@@ -2529,7 +2553,7 @@ msgstr "報告を送信"
 
 #: src/pages/admin/emojis.tsx:1003
 msgid "Supported formats: PNG, GIF, WebP, APNG"
-msgstr ""
+msgstr "対応フォーマット: PNG, GIF, WebP, APNG"
 
 #: src/pages/mod/audit-logs.tsx:246
 #: src/pages/mod/users.tsx:503
@@ -2548,7 +2572,7 @@ msgstr "停止中"
 msgid "Synced"
 msgstr "同期済み"
 
-#: src/pages/admin/settings.tsx:672
+#: src/pages/admin/settings.tsx:689
 msgid "System"
 msgstr "システム"
 
@@ -2581,7 +2605,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:441
+#: src/pages/admin/settings.tsx:458
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -2598,15 +2622,15 @@ msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
 #: src/components/settings/UISettingsSection.tsx:249
-#: src/pages/admin/settings.tsx:297
+#: src/pages/admin/settings.tsx:314
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:586
+#: src/pages/admin/settings.tsx:603
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:167
+#: src/pages/admin/settings.tsx:184
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
@@ -2677,7 +2701,7 @@ msgstr "合計: {0}個の絵文字"
 #. placeholder {1}: remoteHosts.length
 #: src/pages/admin/emojis.tsx:976
 msgid "Total: {0} remote emojis from {1} servers"
-msgstr ""
+msgstr "合計: {1}サーバーから{0}件のリモート絵文字"
 
 #: src/pages/search.tsx:440
 msgid "Try a different search term or check the spelling"
@@ -2747,7 +2771,7 @@ msgstr "アップロード"
 
 #: src/pages/admin/emojis.tsx:991
 msgid "Upload a ZIP file containing emoji images. You can optionally include a meta.json file to specify emoji names, categories, and other metadata."
-msgstr ""
+msgstr "絵文字画像を含むZIPファイルをアップロードしてください。オプションでmeta.jsonファイルを含めて、絵文字名、カテゴリ、その他のメタデータを指定できます。"
 
 #: src/components/settings/ProfileImageSection.tsx:260
 msgid "Upload Avatar"
@@ -2761,7 +2785,7 @@ msgstr "バナーをアップロード"
 msgid "Upload files to see them here"
 msgstr "ファイルをアップロードするとここに表示されます"
 
-#: src/pages/admin/settings.tsx:766
+#: src/pages/admin/settings.tsx:783
 msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
 msgstr "インスタンスのブランディング用画像をアップロードしてください。ファイルは自動的にWebP形式に変換されます。"
 
@@ -2781,7 +2805,7 @@ msgstr "アップロード中..."
 msgid "Used"
 msgstr "使用済み"
 
-#: src/pages/admin/settings.tsx:772
+#: src/pages/admin/settings.tsx:789
 msgid "Used for push notifications and instance branding (max 2MB)"
 msgstr "プッシュ通知やインスタンスのブランディングに使用（最大2MB）"
 
@@ -2835,7 +2859,7 @@ msgstr "ユーザー名を入力してください"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:715
+#: src/pages/admin/settings.tsx:732
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
@@ -3005,4 +3029,4 @@ msgstr "ストレージがいっぱいです。アップロードするにはフ
 
 #: src/pages/admin/emojis.tsx:1000
 msgid "ZIP Format"
-msgstr ""
+msgstr "ZIPフォーマット"

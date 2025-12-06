@@ -7,7 +7,7 @@
  */
 
 // Service Worker version - bump this to force cache refresh
-const SW_VERSION = "2.1.0";
+const SW_VERSION = "2.2.0";
 
 // Cache names
 const CACHE_NAME = `rox-cache-v${SW_VERSION}`;
@@ -78,6 +78,11 @@ self.addEventListener("fetch", (event) => {
 
   // Skip non-GET requests
   if (request.method !== "GET") {
+    return;
+  }
+
+  // Skip non-http(s) requests (e.g., chrome-extension://)
+  if (!url.protocol.startsWith("http")) {
     return;
   }
 

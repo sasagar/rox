@@ -15,6 +15,7 @@ import type { DriveFile, FileSource } from "../../../shared/src/types/file.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import { getImageProcessor } from "./ImageProcessor.js";
 import type { RoleService } from "./RoleService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * File upload input data
@@ -175,12 +176,13 @@ export class FileService {
         });
         thumbnailUrl = this.storage.getUrl(thumbnailKey);
 
-        console.log(
-          `🖼️  Image processed: ${name} → WebP (${Math.round(processed.webp.byteLength / 1024)}KB)`,
+        logger.debug(
+          { name, sizeKb: Math.round(processed.webp.byteLength / 1024) },
+          "Image processed to WebP",
         );
       } catch (error) {
         // Fall back to original file if processing fails
-        console.warn(`⚠️  Image processing failed for ${name}, using original:`, error);
+        logger.warn({ err: error, name }, "Image processing failed, using original");
       }
     }
 

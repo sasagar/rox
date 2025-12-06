@@ -8,6 +8,7 @@
  */
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * Delivery timeout in milliseconds (30 seconds)
@@ -85,21 +86,19 @@ export class ActivityDeliveryService {
       }
 
       if (!response.ok) {
-        console.error(
-          `Failed to deliver activity to ${inboxUrl}: ${response.status} ${response.statusText}`,
-        );
+        logger.error({ inboxUrl, status: response.status, statusText: response.statusText }, "Failed to deliver activity");
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      console.log(`✅ Activity delivered to ${inboxUrl}: ${activity.type}`);
+      logger.debug({ inboxUrl, activityType: activity.type }, "Activity delivered");
       return true;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        console.error(`⏱️  Timeout delivering activity to ${inboxUrl} (${DELIVERY_TIMEOUT}ms)`);
+        logger.error({ inboxUrl, timeoutMs: DELIVERY_TIMEOUT }, "Timeout delivering activity");
         throw new Error(`Delivery timeout after ${DELIVERY_TIMEOUT}ms`);
       }
 
-      console.error(`Error delivering activity to ${inboxUrl}:`, error);
+      logger.error({ err: error, inboxUrl }, "Error delivering activity");
       throw error; // Re-throw for queue retry logic
     }
   }

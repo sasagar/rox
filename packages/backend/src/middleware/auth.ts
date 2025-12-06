@@ -11,6 +11,7 @@ import type { Context, Next } from "hono";
 import type { User, Session } from "shared";
 import { AuthService } from "../services/AuthService.js";
 import type { RolePolicies } from "../db/schema/pg.js";
+import { logger } from "../lib/logger.js";
 
 declare module "hono" {
   interface ContextVariableMap {
@@ -112,8 +113,9 @@ export function requireAuth() {
 
     if (!result) {
       // Debug log for troubleshooting authentication issues
-      console.log(
-        `[Auth] Token validation failed - token prefix: ${token.substring(0, 8)}..., path: ${c.req.path}`,
+      logger.debug(
+        { tokenPrefix: token.substring(0, 8), path: c.req.path },
+        "Token validation failed",
       );
       return c.json({ error: "Invalid or expired token" }, 401);
     }

@@ -19,6 +19,7 @@ import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 import type { NotificationService } from "./NotificationService.js";
 import { getTimelineStreamService } from "./TimelineStreamService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Note creation input data
@@ -208,7 +209,7 @@ export class NoteService {
     if (author && !author.host && !localOnly && visibility === "public") {
       // Fire and forget - don't await to avoid blocking the response
       this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-        console.error(`Failed to deliver Create activity for note ${noteId}:`, error);
+        logger.error({ err: error, noteId }, "Failed to deliver Create activity");
       });
     }
 
@@ -220,7 +221,7 @@ export class NoteService {
         this.deliveryService
           .deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor)
           .catch((error) => {
-            console.error(`Failed to deliver Announce activity for renote ${noteId}:`, error);
+            logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
           });
       }
     }
@@ -228,7 +229,7 @@ export class NoteService {
     // Invalidate timeline cache on new local note
     if (this.cacheService?.isAvailable() && visibility === "public") {
       this.cacheService.deletePattern(`${CachePrefix.TIMELINE_LOCAL}:*`).catch((error) => {
-        console.warn("Failed to invalidate timeline cache:", error);
+        logger.debug({ err: error }, "Failed to invalidate timeline cache");
       });
     }
 
@@ -236,14 +237,14 @@ export class NoteService {
     if (this.notificationService) {
       this.createNotifications(note, userId, mentions, replyId, renoteId, renoteTarget).catch(
         (error) => {
-          console.error(`Failed to create notifications for note ${noteId}:`, error);
+          logger.error({ err: error, noteId }, "Failed to create notifications");
         },
       );
     }
 
     // Push to timeline streams (async, non-blocking)
     this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
-      console.error(`Failed to push note ${noteId} to timeline streams:`, error);
+      logger.error({ err: error, noteId }, "Failed to push note to timeline streams");
     });
 
     return note;
@@ -303,7 +304,7 @@ export class NoteService {
     if (author && !author.host) {
       // Only deliver if author is a local user
       this.deliveryService.deliverDelete(note, author).catch((error) => {
-        console.error(`Failed to deliver Delete activity for note ${noteId}:`, error);
+        logger.error({ err: error, noteId }, "Failed to deliver Delete activity");
       });
     }
   }
@@ -715,8 +716,23 @@ export class NoteService {
     // Only push public notes from local users
     if (visibility !== "public" || author.host) return;
 
+    // Create note with user data for WebSocket push (frontend expects note.user)
+    // Include both 'name' and 'displayName' for frontend compatibility
+    const noteWithUser = {
+      ...note,
+      user: {
+        id: author.id,
+        username: author.username,
+        name: author.displayName || author.username,
+        displayName: author.displayName,
+        avatarUrl: author.avatarUrl,
+        host: author.host,
+        profileEmojis: author.profileEmojis,
+      },
+    };
+
     // Push to local timeline (all local public notes)
-    streamService.pushToLocalTimeline(note);
+    streamService.pushToLocalTimeline(noteWithUser);
 
     // Get followers to push to home/social timelines
     // findByFolloweeId returns follows where authorId is the followee (i.e., their followers)
@@ -725,7 +741,7 @@ export class NoteService {
 
     if (followerIds.length > 0) {
       // Push to home timelines of followers
-      streamService.pushToHomeTimelines(followerIds, note);
+      streamService.pushToHomeTimelines(followerIds, noteWithUser);
 
       // Push to social timelines of followers (for followed remote user notes)
       // For local users, social timeline = local + followed remote users

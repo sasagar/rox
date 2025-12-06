@@ -12,6 +12,7 @@ import type { User } from "../db/schema/pg.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * User profile update input data
@@ -87,14 +88,14 @@ export class UserService {
     if (this.cacheService?.isAvailable()) {
       const cacheKey = `${CachePrefix.USER_PROFILE}:${userId}`;
       this.cacheService.delete(cacheKey).catch((error) => {
-        console.warn(`Failed to invalidate user cache for ${userId}:`, error);
+        logger.debug({ err: error, userId }, "Failed to invalidate user cache");
       });
 
       // Also invalidate username cache if we have the username
       if (updatedUser?.username) {
         const usernameKey = `${CachePrefix.USER_BY_USERNAME}:${updatedUser.username}`;
         this.cacheService.delete(usernameKey).catch((error) => {
-          console.warn(`Failed to invalidate username cache for ${updatedUser.username}:`, error);
+          logger.debug({ err: error, username: updatedUser.username }, "Failed to invalidate username cache");
         });
       }
     }
@@ -103,7 +104,7 @@ export class UserService {
     if (updatedUser && !updatedUser.host) {
       // Only deliver if user is local
       this.deliveryService.deliverUpdate(updatedUser).catch((error) => {
-        console.error(`Failed to deliver Update activity for user ${userId}:`, error);
+        logger.error({ err: error, userId }, "Failed to deliver Update activity");
       });
     }
 

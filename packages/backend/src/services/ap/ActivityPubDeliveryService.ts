@@ -14,6 +14,7 @@ import type { Note } from "shared";
 import type { User } from "../../db/schema/pg.js";
 import { ActivityDeliveryQueue, JobPriority } from "./ActivityDeliveryQueue.js";
 import { ActivityBuilder, type Activity, type CustomEmojiInfo } from "./delivery/ActivityBuilder.js";
+import { logger } from "../../lib/logger.js";
 
 /**
  * Delivery options for enqueuing activities
@@ -99,13 +100,13 @@ export class ActivityPubDeliveryService {
     const { activity, inboxUrl, actor, priority = JobPriority.NORMAL } = options;
 
     if (!actor.privateKey) {
-      console.log(`⚠️  Cannot deliver: actor has no private key`);
+      logger.warn({ actorId: actor.id }, "Cannot deliver: actor has no private key");
       return;
     }
 
     // Check if the target instance is blocked
     if (await this.isHostBlocked(inboxUrl)) {
-      console.log(`🚫 Skipping delivery to blocked instance: ${inboxUrl}`);
+      logger.debug({ inboxUrl }, "Skipping delivery to blocked instance");
       return;
     }
 
@@ -141,7 +142,7 @@ export class ActivityPubDeliveryService {
 
     const remoteFollowers = await this.getRemoteFollowers(author.id);
     if (remoteFollowers.length === 0) {
-      console.log(`📭 No followers to deliver to for note ${note.id}`);
+      logger.debug({ noteId: note.id }, "No followers to deliver Create activity to");
       return;
     }
 
@@ -149,7 +150,7 @@ export class ActivityPubDeliveryService {
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, author);
-    console.log(`📤 Enqueued Create activity to ${inboxUrls.size} inboxes for note ${note.id}`);
+    logger.debug({ noteId: note.id, inboxCount: inboxUrls.size }, "Enqueued Create activity");
   }
 
   /**
@@ -179,7 +180,7 @@ export class ActivityPubDeliveryService {
       actor: reactor,
     });
 
-    console.log(`📤 Enqueued Like activity (${reaction || "❤️"}) to ${noteAuthorInbox} for note ${noteId}`);
+    logger.debug({ noteId, reaction: reaction || "❤️", inboxUrl: noteAuthorInbox }, "Enqueued Like activity");
   }
 
   /**
@@ -198,8 +199,9 @@ export class ActivityPubDeliveryService {
       priority: JobPriority.URGENT,
     });
 
-    console.log(
-      `📤 Enqueued Follow activity to ${followee.inbox} (${follower.username} → ${followee.username}@${followee.host})`,
+    logger.debug(
+      { follower: follower.username, followee: `${followee.username}@${followee.host}`, inboxUrl: followee.inbox },
+      "Enqueued Follow activity",
     );
     return activity.id;
   }
@@ -224,8 +226,9 @@ export class ActivityPubDeliveryService {
       priority: JobPriority.URGENT,
     });
 
-    console.log(
-      `📤 Enqueued Undo Follow activity to ${followee.inbox} (${follower.username} unfollowing ${followee.username}@${followee.host})`,
+    logger.debug(
+      { follower: follower.username, followee: `${followee.username}@${followee.host}`, inboxUrl: followee.inbox },
+      "Enqueued Undo Follow activity",
     );
   }
 
@@ -245,7 +248,7 @@ export class ActivityPubDeliveryService {
       actor: reactor,
     });
 
-    console.log(`📤 Enqueued Undo Like activity to ${noteAuthor.inbox} for note ${note.id}`);
+    logger.debug({ noteId: note.id, inboxUrl: noteAuthor.inbox }, "Enqueued Undo Like activity");
   }
 
   /**
@@ -262,7 +265,7 @@ export class ActivityPubDeliveryService {
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, author, JobPriority.LOW);
-    console.log(`📤 Enqueued Delete activity to ${inboxUrls.size} inboxes for note ${note.id}`);
+    logger.debug({ noteId: note.id, inboxCount: inboxUrls.size }, "Enqueued Delete activity");
   }
 
   /**
@@ -273,7 +276,7 @@ export class ActivityPubDeliveryService {
 
     const remoteFollowers = await this.getRemoteFollowers(actor.id);
     if (remoteFollowers.length === 0) {
-      console.log(`📭 No followers to deliver Update to for user ${actor.username}`);
+      logger.debug({ username: actor.username }, "No followers to deliver Update activity to");
       return;
     }
 
@@ -281,9 +284,7 @@ export class ActivityPubDeliveryService {
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, actor, JobPriority.LOW);
-    console.log(
-      `📤 Enqueued Update activity to ${inboxUrls.size} inboxes for user ${actor.username}`,
-    );
+    logger.debug({ username: actor.username, inboxCount: inboxUrls.size }, "Enqueued Update activity");
   }
 
   /**
@@ -308,6 +309,6 @@ export class ActivityPubDeliveryService {
       actor,
     });
 
-    console.log(`📤 Enqueued Announce activity to ${targetNoteAuthor.inbox} for note ${noteId}`);
+    logger.debug({ noteId, inboxUrl: targetNoteAuthor.inbox }, "Enqueued Announce activity");
   }
 }

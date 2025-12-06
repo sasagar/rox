@@ -206,7 +206,7 @@ export class WebPushService {
     const TIMEOUT_MS = 15000; // 15 seconds
 
     try {
-      console.log("[WebPush] Sending to endpoint:", subscription.endpoint.substring(0, 60) + "...");
+      logger.debug({ endpoint: subscription.endpoint.substring(0, 60) }, "Sending push notification");
       const startTime = Date.now();
 
       // Use web-push to generate the encrypted payload and headers
@@ -235,8 +235,7 @@ export class WebPushService {
         clearTimeout(timeoutId);
 
         if (response.status === 201 || response.status === 200) {
-          console.log("[WebPush] Success, took", Date.now() - startTime, "ms");
-          logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
+          logger.debug({ subscriptionId: subscription.id, durationMs: Date.now() - startTime }, "Push notification sent");
           return true;
         }
 
@@ -251,7 +250,6 @@ export class WebPushService {
         }
 
         const errorText = await response.text();
-        console.log("[WebPush] Error response:", response.status, errorText.substring(0, 200));
         logger.error(
           {
             subscriptionId: subscription.id,
@@ -266,7 +264,6 @@ export class WebPushService {
         clearTimeout(timeoutId);
 
         if (fetchError.name === "AbortError") {
-          console.log("[WebPush] Error: Request timed out after", TIMEOUT_MS, "ms");
           logger.warn(
             {
               subscriptionId: subscription.id,
@@ -280,9 +277,6 @@ export class WebPushService {
         throw fetchError;
       }
     } catch (error: any) {
-      console.log("[WebPush] Error:", error.message, "code:", error.code);
-
-      // Log detailed error information
       logger.error(
         {
           err: error,

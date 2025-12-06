@@ -11,6 +11,7 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import type { MigrationService } from "../services/MigrationService.js";
 import { requireAuth } from "../middleware/auth.js";
+import { logger } from "../lib/logger.js";
 
 const app = new Hono();
 
@@ -32,7 +33,7 @@ app.get("/", requireAuth(), async (c: Context) => {
     const status = await migrationService.getMigrationStatus(user.id);
     return c.json(status);
   } catch (error) {
-    console.error("Failed to get migration status:", error);
+    logger.error({ err: error }, "Failed to get migration status");
     return c.json({ error: "Failed to get migration status" }, 500);
   }
 });
@@ -54,7 +55,7 @@ app.get("/aliases", requireAuth(), async (c: Context) => {
     const aliases = await migrationService.getAliases(user.id);
     return c.json({ aliases });
   } catch (error) {
-    console.error("Failed to get aliases:", error);
+    logger.error({ err: error }, "Failed to get aliases");
     return c.json({ error: "Failed to get aliases" }, 500);
   }
 });
@@ -87,7 +88,7 @@ app.post("/aliases", requireAuth(), async (c: Context) => {
     if (error instanceof Error) {
       return c.json({ error: error.message }, 400);
     }
-    console.error("Failed to add alias:", error);
+    logger.error({ err: error }, "Failed to add alias");
     return c.json({ error: "Failed to add alias" }, 500);
   }
 });
@@ -120,7 +121,7 @@ app.delete("/aliases", requireAuth(), async (c: Context) => {
     if (error instanceof Error) {
       return c.json({ error: error.message }, 400);
     }
-    console.error("Failed to remove alias:", error);
+    logger.error({ err: error }, "Failed to remove alias");
     return c.json({ error: "Failed to remove alias" }, 500);
   }
 });
@@ -151,7 +152,7 @@ app.post("/validate", requireAuth(), async (c: Context) => {
     const result = await migrationService.validateMigration(user.id, body.targetUri.trim());
     return c.json(result);
   } catch (error) {
-    console.error("Failed to validate migration:", error);
+    logger.error({ err: error }, "Failed to validate migration");
     return c.json({ error: "Failed to validate migration" }, 500);
   }
 });
@@ -189,7 +190,7 @@ app.post("/initiate", requireAuth(), async (c: Context) => {
 
     return c.json(result);
   } catch (error) {
-    console.error("Failed to initiate migration:", error);
+    logger.error({ err: error }, "Failed to initiate migration");
     return c.json({ error: "Failed to initiate migration" }, 500);
   }
 });
@@ -212,7 +213,7 @@ app.get("/can-migrate", requireAuth(), async (c: Context) => {
     const result = await migrationService.canMigrate(user.id);
     return c.json(result);
   } catch (error) {
-    console.error("Failed to check migration eligibility:", error);
+    logger.error({ err: error }, "Failed to check migration eligibility");
     return c.json({ error: "Failed to check migration eligibility" }, 500);
   }
 });

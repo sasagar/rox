@@ -32,6 +32,8 @@ export interface InstanceMetadata {
   darkIconUrl: string | null;
   bannerUrl: string | null;
   faviconUrl: string | null;
+  pwaIcon192Url: string | null;
+  pwaIcon512Url: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
 }
@@ -64,6 +66,8 @@ const DEFAULT_METADATA: InstanceMetadata = {
   darkIconUrl: null,
   bannerUrl: null,
   faviconUrl: null,
+  pwaIcon192Url: null,
+  pwaIcon512Url: null,
   tosUrl: null,
   privacyPolicyUrl: null,
 };
@@ -374,6 +378,44 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get PWA icon 192x192 URL
+   */
+  async getPwaIcon192Url(): Promise<string | null> {
+    return this.getCachedValue<string | null>("instance.pwaIcon192Url", DEFAULT_METADATA.pwaIcon192Url);
+  }
+
+  /**
+   * Set PWA icon 192x192 URL
+   */
+  async setPwaIcon192Url(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.pwaIcon192Url");
+    } else {
+      await this.settingsRepository.set("instance.pwaIcon192Url", url, updatedById);
+    }
+    await this.invalidateCache("instance.pwaIcon192Url");
+  }
+
+  /**
+   * Get PWA icon 512x512 URL
+   */
+  async getPwaIcon512Url(): Promise<string | null> {
+    return this.getCachedValue<string | null>("instance.pwaIcon512Url", DEFAULT_METADATA.pwaIcon512Url);
+  }
+
+  /**
+   * Set PWA icon 512x512 URL
+   */
+  async setPwaIcon512Url(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.pwaIcon512Url");
+    } else {
+      await this.settingsRepository.set("instance.pwaIcon512Url", url, updatedById);
+    }
+    await this.invalidateCache("instance.pwaIcon512Url");
+  }
+
+  /**
    * Get Terms of Service URL
    */
   async getTosUrl(): Promise<string | null> {
@@ -436,6 +478,8 @@ export class InstanceSettingsService {
       "instance.darkIconUrl",
       "instance.bannerUrl",
       "instance.faviconUrl",
+      "instance.pwaIcon192Url",
+      "instance.pwaIcon512Url",
       "instance.tosUrl",
       "instance.privacyPolicyUrl",
     ];
@@ -452,6 +496,10 @@ export class InstanceSettingsService {
       bannerUrl: (values.get("instance.bannerUrl") as string | null) ?? DEFAULT_METADATA.bannerUrl,
       faviconUrl:
         (values.get("instance.faviconUrl") as string | null) ?? DEFAULT_METADATA.faviconUrl,
+      pwaIcon192Url:
+        (values.get("instance.pwaIcon192Url") as string | null) ?? DEFAULT_METADATA.pwaIcon192Url,
+      pwaIcon512Url:
+        (values.get("instance.pwaIcon512Url") as string | null) ?? DEFAULT_METADATA.pwaIcon512Url,
       tosUrl: (values.get("instance.tosUrl") as string | null) ?? DEFAULT_METADATA.tosUrl,
       privacyPolicyUrl:
         (values.get("instance.privacyPolicyUrl") as string | null) ??
@@ -500,6 +548,12 @@ export class InstanceSettingsService {
     }
     if (metadata.faviconUrl !== undefined) {
       await this.setFaviconUrl(metadata.faviconUrl, updatedById);
+    }
+    if (metadata.pwaIcon192Url !== undefined) {
+      await this.setPwaIcon192Url(metadata.pwaIcon192Url, updatedById);
+    }
+    if (metadata.pwaIcon512Url !== undefined) {
+      await this.setPwaIcon512Url(metadata.pwaIcon512Url, updatedById);
     }
     if (metadata.tosUrl !== undefined) {
       await this.setTosUrl(metadata.tosUrl, updatedById);

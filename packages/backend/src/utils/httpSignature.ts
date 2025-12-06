@@ -8,6 +8,7 @@
  */
 
 import { createVerify, createHash } from "node:crypto";
+import { logger } from "../lib/logger.js";
 
 /**
  * Parsed HTTP Signature parameters
@@ -140,7 +141,7 @@ export function verifySignature(
     verifier.update(signatureString);
     return verifier.verify(publicKey, signature, "base64");
   } catch (error) {
-    console.error("Signature verification error:", error);
+    logger.debug({ err: error }, "Signature verification error");
     return false;
   }
 }
@@ -168,7 +169,7 @@ export function verifyDigest(body: string, digestHeader: string): boolean {
 
     return providedDigest === calculatedDigest;
   } catch (error) {
-    console.error("Digest verification error:", error);
+    logger.debug({ err: error }, "Digest verification error");
     return false;
   }
 }
@@ -192,7 +193,7 @@ export function verifyDateHeader(dateHeader: string, maxAgeSeconds = 30): boolea
     // Allow some clock skew (check both past and future)
     return Math.abs(ageSeconds) <= maxAgeSeconds;
   } catch (error) {
-    console.error("Date verification error:", error);
+    logger.debug({ err: error }, "Date verification error");
     return false;
   }
 }

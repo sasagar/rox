@@ -11,6 +11,7 @@
 import { Hono } from "hono";
 import rootPackageJson from "../../../../../package.json";
 import { InstanceSettingsService } from "../../services/InstanceSettingsService.js";
+import { logger } from "../../lib/logger.js";
 
 const app = new Hono();
 
@@ -81,7 +82,7 @@ app.get("/nodeinfo/2.1", async (c) => {
     }
   } catch {
     // Gracefully handle missing count methods
-    console.warn("NodeInfo: Count methods not available, using default values");
+    logger.debug("NodeInfo: Count methods not available, using default values");
   }
 
   return c.json({
@@ -157,7 +158,7 @@ app.get("/nodeinfo/2.0", async (c) => {
     }
   } catch {
     // Gracefully handle missing count methods
-    console.warn("NodeInfo: Count methods not available, using default values");
+    logger.debug("NodeInfo: Count methods not available, using default values");
   }
 
   return c.json({

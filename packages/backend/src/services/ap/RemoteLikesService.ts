@@ -14,6 +14,7 @@ import type { INoteRepository } from "../../interfaces/repositories/INoteReposit
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
 import { generateId } from "shared";
+import { logger } from "../../lib/logger.js";
 
 /**
  * ActivityPub Collection interface (OrderedCollection or Collection)
@@ -126,7 +127,7 @@ export class RemoteLikesService {
     // Get the note
     const note = await this.noteRepository.findById(noteId);
     if (!note || !note.uri) {
-      console.log(`Note ${noteId} not found or is not a remote note`);
+      logger.debug({ noteId }, "Note not found or is not a remote note");
       return null;
     }
 
@@ -137,7 +138,7 @@ export class RemoteLikesService {
     }>(note.uri);
 
     if (!noteResult.success || !noteResult.data) {
-      console.warn(`Failed to fetch remote note ${note.uri}:`, noteResult.error);
+      logger.warn({ noteUri: note.uri, err: noteResult.error }, "Failed to fetch remote note");
       return null;
     }
 
@@ -149,7 +150,7 @@ export class RemoteLikesService {
       if (misskeyResult) {
         return misskeyResult;
       }
-      console.log(`No likes collection found for note ${note.uri}`);
+      logger.debug({ noteUri: note.uri }, "No likes collection found for note");
       // Return existing local counts if no remote likes available
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
     }
@@ -157,7 +158,7 @@ export class RemoteLikesService {
     // Fetch likes collection
     const likesResult = await this.fetchService.fetchActivityPubObject<APCollection>(likesUrl);
     if (!likesResult.success || !likesResult.data) {
-      console.warn(`Failed to fetch likes collection ${likesUrl}:`, likesResult.error);
+      logger.warn({ likesUrl, err: likesResult.error }, "Failed to fetch likes collection");
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
     }
 
@@ -215,7 +216,7 @@ export class RemoteLikesService {
         return this.reactionRepository.countByNoteIdWithEmojis(noteId);
       }
 
-      console.log(`📥 Fetched ${reactions.length} reactions from Misskey API for ${noteUri}`);
+      logger.debug({ count: reactions.length, noteUri }, "Fetched reactions from Misskey API");
 
       // Aggregate reaction counts and collect custom emoji names
       const counts: Record<string, number> = {};
@@ -245,7 +246,7 @@ export class RemoteLikesService {
 
       return { counts, emojis };
     } catch (error) {
-      console.warn(`Failed to fetch Misskey reactions:`, error);
+      logger.debug({ err: error }, "Failed to fetch Misskey reactions");
       return null;
     }
   }
@@ -276,7 +277,7 @@ export class RemoteLikesService {
       });
 
       if (!response.ok) {
-        console.warn(`Failed to fetch emojis from ${baseUrl}: ${response.status}`);
+        logger.debug({ baseUrl, status: response.status }, "Failed to fetch emojis from Misskey instance");
         return {};
       }
 
@@ -302,10 +303,10 @@ export class RemoteLikesService {
         }
       }
 
-      console.log(`📥 Fetched ${Object.keys(emojis).length} emoji URLs from ${baseUrl}`);
+      logger.debug({ count: Object.keys(emojis).length, baseUrl }, "Fetched emoji URLs from Misskey instance");
       return emojis;
     } catch (error) {
-      console.warn(`Failed to fetch emoji URLs from ${baseUrl}:`, error);
+      logger.debug({ err: error, baseUrl }, "Failed to fetch emoji URLs");
       return {};
     }
   }
@@ -330,7 +331,7 @@ export class RemoteLikesService {
         // Update URL if it changed
         if (existing.url !== url) {
           await this.customEmojiRepository.update(existing.id, { url, updatedAt: new Date() });
-          console.log(`🔄 Updated remote emoji: :${name}:@${host}`);
+          logger.debug({ name, host }, "Updated remote emoji URL");
         }
         return;
       }
@@ -347,10 +348,10 @@ export class RemoteLikesService {
         localOnly: false,
       });
 
-      console.log(`✨ Saved remote emoji: :${name}:@${host}`);
+      logger.debug({ name, host }, "Saved remote emoji");
     } catch (error) {
       // Don't fail if emoji saving fails
-      console.warn(`Failed to save remote emoji :${name}:@${host}: ${error}`);
+      logger.debug({ err: error, name, host }, "Failed to save remote emoji");
     }
   }
 
@@ -467,10 +468,10 @@ export class RemoteLikesService {
           reaction,
           ...(customEmojiUrl && { customEmojiUrl }),
         });
-        console.log(`✅ Stored remote reaction: ${user.username}@${user.host} ${reaction} on ${noteId}`);
+        logger.debug({ username: user.username, host: user.host, reaction, noteId }, "Stored remote reaction");
       }
     } catch (error) {
-      console.warn(`Failed to process like item:`, error);
+      logger.debug({ err: error }, "Failed to process like item");
     }
   }
 

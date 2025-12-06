@@ -185,24 +185,27 @@ app.get("/manifest.json", async (c: Context) => {
 
   const instanceUrl = process.env.URL || "http://localhost:3000";
 
-  // Build icons array - use instance icon if available, otherwise default favicon
+  // Build icons array - use dedicated PWA icons if available, otherwise fall back to instance icon or default
   const icons = [];
-  const iconUrl = metadata.iconUrl || "/favicon.png";
+  const fallbackIcon = metadata.iconUrl || "/favicon.png";
 
-  icons.push(
-    {
-      src: iconUrl,
-      sizes: "192x192",
-      type: "image/png",
-      purpose: "any maskable",
-    },
-    {
-      src: iconUrl,
-      sizes: "512x512",
-      type: "image/png",
-      purpose: "any maskable",
-    },
-  );
+  // 192x192 icon - use dedicated PWA icon or fallback
+  const icon192 = metadata.pwaIcon192Url || fallbackIcon;
+  icons.push({
+    src: icon192,
+    sizes: "192x192",
+    type: "image/png",
+    purpose: "any maskable",
+  });
+
+  // 512x512 icon - use dedicated PWA icon or fallback
+  const icon512 = metadata.pwaIcon512Url || fallbackIcon;
+  icons.push({
+    src: icon512,
+    sizes: "512x512",
+    type: "image/png",
+    purpose: "any maskable",
+  });
 
   const manifest = {
     name: metadata.name || "Rox",
