@@ -311,15 +311,14 @@ function NoteCardComponent({
                   href={`https://${note.user.host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40 text-(--text-secondary)"
                   style={{
                     backgroundColor: remoteInstance?.themeColor
-                      ? `${remoteInstance.themeColor}20`
+                      ? `${remoteInstance.themeColor}15`
                       : "var(--bg-tertiary)",
-                    color: remoteInstance?.themeColor || "var(--text-muted)",
                     borderLeft: remoteInstance?.themeColor
                       ? `2px solid ${remoteInstance.themeColor}`
-                      : undefined,
+                      : "2px solid var(--border-color)",
                   }}
                   title={
                     remoteInstance
