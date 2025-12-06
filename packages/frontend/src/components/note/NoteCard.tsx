@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useMemo } from "react";
 import { useAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
@@ -75,6 +75,30 @@ function NoteCardComponent({
     note.reactionEmojis || {},
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+
+  // Convert profileEmojis array to emoji map for MfmRenderer
+  const userProfileEmojiMap = useMemo(() => {
+    if (!note.user.profileEmojis || note.user.profileEmojis.length === 0) return {};
+    return note.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.user.profileEmojis]);
+
+  // Convert renote user's profileEmojis to emoji map
+  const renoteUserProfileEmojiMap = useMemo(() => {
+    if (!note.renote?.user?.profileEmojis || note.renote.user.profileEmojis.length === 0) return {};
+    return note.renote.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.renote?.user?.profileEmojis]);
 
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
@@ -268,7 +292,7 @@ function NoteCardComponent({
                 }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name ? <MfmRenderer text={note.user.name} plain /> : note.user.username}
+                {note.user.name ? <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} /> : note.user.username}
               </SpaLink>
               <SpaLink
                 to={
@@ -438,7 +462,7 @@ function NoteCardComponent({
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
-                      <MfmRenderer text={note.renote.user.name} plain />
+                      <MfmRenderer text={note.renote.user.name} plain customEmojis={renoteUserProfileEmojiMap} />
                     ) : (
                       note.renote.user.username
                     )}

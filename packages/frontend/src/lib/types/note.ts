@@ -7,6 +7,16 @@ import type { NoteWithRelations, Visibility } from "shared";
 export type NoteVisibility = Visibility | "direct";
 
 /**
+ * Profile emoji (custom emoji used in user profile)
+ */
+export interface ProfileEmoji {
+  /** Emoji shortcode (without colons) */
+  name: string;
+  /** URL to the emoji image */
+  url: string;
+}
+
+/**
  * User information in note responses
  */
 export interface NoteUser {
@@ -15,6 +25,8 @@ export interface NoteUser {
   name: string;
   avatarUrl?: string;
   host?: string;
+  /** Custom emojis for display name (remote users) */
+  profileEmojis?: ProfileEmoji[] | null;
 }
 
 /**

@@ -113,6 +113,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -156,6 +157,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -211,6 +213,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -252,6 +255,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -291,6 +295,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -330,6 +335,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );
@@ -369,6 +375,7 @@ export class PostgresNoteRepository implements INoteRepository {
             displayName: r.users.displayName,
             avatarUrl: r.users.avatarUrl,
             host: r.users.host,
+            profileEmojis: r.users.profileEmojis,
           },
         }) as Note,
     );

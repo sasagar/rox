@@ -726,6 +726,7 @@ export class NoteService {
         displayName: author.displayName,
         avatarUrl: author.avatarUrl,
         host: author.host,
+        profileEmojis: author.profileEmojis,
       },
     };
 

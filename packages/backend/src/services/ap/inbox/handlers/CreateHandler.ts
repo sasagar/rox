@@ -76,6 +76,7 @@ export class CreateHandler extends BaseHandler {
                     displayName: author.displayName,
                     avatarUrl: author.avatarUrl,
                     host: author.host,
+                    profileEmojis: author.profileEmojis,
                   }
                 : null,
             };
