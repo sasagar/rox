@@ -14,7 +14,8 @@ export default defineConfig({
       tailwindcss(),
       react({
         babel: {
-          plugins: ["babel-plugin-react-compiler", "@lingui/babel-plugin-lingui-macro"],
+          // Temporarily disabled react-compiler to debug browser freeze issue
+          plugins: ["@lingui/babel-plugin-lingui-macro"],
         },
       }),
       lingui(),
