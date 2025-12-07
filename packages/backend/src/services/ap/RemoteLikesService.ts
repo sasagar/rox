@@ -86,13 +86,50 @@ interface APLike {
 }
 
 /**
+ * Rate limit state for a host
+ */
+interface HostRateLimitState {
+  /** Timestamp of last request */
+  lastRequest: number;
+  /** Number of consecutive failures */
+  failures: number;
+  /** Timestamp when cooldown expires (if in cooldown) */
+  cooldownUntil?: number;
+}
+
+/**
  * Remote Likes Service
  *
  * Fetches and processes likes from remote ActivityPub servers.
  * Supports both standard ActivityPub likes and Misskey-style reactions.
+ *
+ * Includes per-host rate limiting to avoid overwhelming remote servers.
  */
 export class RemoteLikesService {
   private fetchService: RemoteFetchService;
+
+  /**
+   * Per-host rate limiting state
+   * Prevents overwhelming remote servers with too many requests
+   */
+  private static hostRateLimits: Map<string, HostRateLimitState> = new Map();
+
+  /**
+   * Minimum interval between requests to the same host (ms)
+   */
+  private static readonly MIN_REQUEST_INTERVAL = 1000;
+
+  /**
+   * Cooldown duration after failures (ms)
+   * Exponential backoff: 5s, 10s, 20s, 40s, max 60s
+   */
+  private static readonly BASE_COOLDOWN = 5000;
+  private static readonly MAX_COOLDOWN = 60000;
+
+  /**
+   * Max failures before entering extended cooldown
+   */
+  private static readonly MAX_FAILURES = 5;
 
   constructor(
     private reactionRepository: IReactionRepository,
@@ -101,6 +138,71 @@ export class RemoteLikesService {
     private customEmojiRepository?: ICustomEmojiRepository,
   ) {
     this.fetchService = new RemoteFetchService();
+  }
+
+  /**
+   * Check if we should skip fetching from a host due to rate limiting
+   *
+   * @param host - Remote host to check
+   * @returns true if request should be skipped
+   */
+  private shouldSkipHost(host: string): boolean {
+    const state = RemoteLikesService.hostRateLimits.get(host);
+    if (!state) return false;
+
+    const now = Date.now();
+
+    // Check if in cooldown
+    if (state.cooldownUntil && now < state.cooldownUntil) {
+      logger.debug({ host, cooldownRemaining: state.cooldownUntil - now }, "Host in cooldown, skipping");
+      return true;
+    }
+
+    // Check minimum interval
+    if (now - state.lastRequest < RemoteLikesService.MIN_REQUEST_INTERVAL) {
+      logger.debug({ host, timeSinceLastRequest: now - state.lastRequest }, "Rate limiting: too soon");
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Record a successful request to a host
+   */
+  private recordSuccess(host: string): void {
+    RemoteLikesService.hostRateLimits.set(host, {
+      lastRequest: Date.now(),
+      failures: 0,
+    });
+  }
+
+  /**
+   * Record a failed request to a host
+   */
+  private recordFailure(host: string): void {
+    const state = RemoteLikesService.hostRateLimits.get(host) || {
+      lastRequest: 0,
+      failures: 0,
+    };
+
+    const failures = state.failures + 1;
+    const cooldownDuration = Math.min(
+      RemoteLikesService.BASE_COOLDOWN * Math.pow(2, failures - 1),
+      RemoteLikesService.MAX_COOLDOWN,
+    );
+
+    RemoteLikesService.hostRateLimits.set(host, {
+      lastRequest: Date.now(),
+      failures,
+      cooldownUntil: failures >= RemoteLikesService.MAX_FAILURES
+        ? Date.now() + cooldownDuration
+        : undefined,
+    });
+
+    if (failures >= RemoteLikesService.MAX_FAILURES) {
+      logger.warn({ host, failures, cooldownMs: cooldownDuration }, "Host entering cooldown after repeated failures");
+    }
   }
 
   /**
@@ -131,6 +233,21 @@ export class RemoteLikesService {
       return null;
     }
 
+    // Extract host from note URI for rate limiting
+    let host: string;
+    try {
+      host = new URL(note.uri).hostname;
+    } catch {
+      logger.debug({ noteUri: note.uri }, "Invalid note URI");
+      return null;
+    }
+
+    // Check rate limit before making request
+    if (this.shouldSkipHost(host)) {
+      // Return local counts when rate limited
+      return this.reactionRepository.countByNoteIdWithEmojis(noteId);
+    }
+
     // Fetch the note object from remote server to get likes collection URL
     const noteResult = await this.fetchService.fetchActivityPubObject<{
       likes?: string | APCollection;
@@ -138,9 +255,14 @@ export class RemoteLikesService {
     }>(note.uri);
 
     if (!noteResult.success || !noteResult.data) {
+      this.recordFailure(host);
       logger.warn({ noteUri: note.uri, err: noteResult.error }, "Failed to fetch remote note");
-      return null;
+      // Return local counts on failure instead of null
+      return this.reactionRepository.countByNoteIdWithEmojis(noteId);
     }
+
+    // Record success
+    this.recordSuccess(host);
 
     // Get likes collection URL (some servers use 'reactions' instead of 'likes')
     const likesUrl = this.getLikesUrl(noteResult.data);
