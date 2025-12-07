@@ -9,6 +9,7 @@
 
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
+import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
 import type { Note } from "shared";
 import { generateId } from "shared";
 import { RemoteActorService } from "./RemoteActorService.js";
@@ -56,6 +57,7 @@ export class RemoteNoteService {
     private noteRepository: INoteRepository,
     private userRepository: IUserRepository,
     private remoteActorService?: RemoteActorService,
+    private customEmojiRepository?: ICustomEmojiRepository,
   ) {}
 
   /**
@@ -105,8 +107,23 @@ export class RemoteNoteService {
     // Extract hashtags
     const tags = this.extractHashtags(noteObject.tag);
 
-    // Extract custom emojis from tags
+    // Extract custom emojis from tags and save to database
     const emojis = this.extractEmojis(noteObject.tag);
+
+    // Extract host from note URI for emoji storage
+    let noteHost: string | null = null;
+    try {
+      noteHost = new URL(noteObject.id).hostname;
+    } catch {
+      // Ignore invalid URL
+    }
+
+    // Save remote emojis to database (fire-and-forget)
+    if (noteHost && this.customEmojiRepository) {
+      this.saveRemoteEmojis(noteObject.tag, noteHost).catch((err) => {
+        logger.warn({ err, noteUri: noteObject.id }, "Failed to save remote emojis");
+      });
+    }
 
     // Find reply target
     let replyId: string | null = null;
@@ -277,5 +294,69 @@ export class RemoteNoteService {
     }
 
     return emojis;
+  }
+
+  /**
+   * Save remote emojis to database
+   *
+   * Stores emoji metadata from ActivityPub tags for later rendering.
+   * Skips emojis that already exist in the database.
+   *
+   * @param tags - ActivityPub tags array
+   * @param host - Remote server hostname
+   */
+  private async saveRemoteEmojis(
+    tags: Array<{ type: string; name?: string; href?: string; icon?: { url: string } }> | undefined,
+    host: string,
+  ): Promise<void> {
+    if (!tags || !this.customEmojiRepository) return;
+
+    for (const tag of tags) {
+      if (tag.type !== "Emoji" || !tag.name || !tag.icon?.url) continue;
+
+      // Normalize emoji name (remove colons)
+      let emojiName = tag.name;
+      if (emojiName.startsWith(":")) {
+        emojiName = emojiName.slice(1);
+      }
+      if (emojiName.endsWith(":")) {
+        emojiName = emojiName.slice(0, -1);
+      }
+
+      try {
+        // Check if emoji already exists
+        const existing = await this.customEmojiRepository.findByName(emojiName, host);
+
+        if (existing) {
+          // Update URL if it changed
+          if (existing.url !== tag.icon.url) {
+            await this.customEmojiRepository.update(existing.id, {
+              url: tag.icon.url,
+              publicUrl: tag.icon.url,
+              updatedAt: new Date(),
+            });
+            logger.debug({ emojiName, host }, "Updated remote emoji URL");
+          }
+          continue;
+        }
+
+        // Create new remote emoji entry
+        await this.customEmojiRepository.create({
+          id: generateId(),
+          name: emojiName,
+          host,
+          url: tag.icon.url,
+          publicUrl: tag.icon.url,
+          aliases: [],
+          isSensitive: false,
+          localOnly: false,
+        });
+
+        logger.debug({ emojiName, host, url: tag.icon.url }, "Saved remote emoji");
+      } catch (error) {
+        // Don't fail note processing if emoji saving fails
+        logger.warn({ err: error, emojiName, host }, "Failed to save remote emoji");
+      }
+    }
   }
 }

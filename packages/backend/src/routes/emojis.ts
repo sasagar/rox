@@ -103,12 +103,26 @@ app.post("/lookup", async (c: Context) => {
   // Limit to 100 names per request
   const names = body.names.slice(0, 100);
 
-  const emojiMap = await customEmojiRepository.findManyByNames(names, null);
+  // First, try to find local emojis
+  const localEmojiMap = await customEmojiRepository.findManyByNames(names, null);
 
   // Transform to simple name -> URL mapping
   const response: Record<string, string> = {};
-  for (const [name, emoji] of emojiMap) {
+  for (const [name, emoji] of localEmojiMap) {
     response[name] = emoji.publicUrl || emoji.url;
+  }
+
+  // Find names not found locally and search in remote emojis
+  const missingNames = names.filter((name) => !response[name]);
+
+  if (missingNames.length > 0) {
+    // Look up each missing name in remote emojis
+    for (const name of missingNames) {
+      const remoteEmoji = await customEmojiRepository.findByNameAnyHost(name);
+      if (remoteEmoji) {
+        response[name] = remoteEmoji.publicUrl || remoteEmoji.url;
+      }
+    }
   }
 
   return c.json({ emojis: response });
