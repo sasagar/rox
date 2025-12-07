@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, memo, useMemo } from "react";
+import { useState, useEffect, memo, useMemo, useRef, useCallback } from "react";
 import { useAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
@@ -76,6 +76,59 @@ function NoteCardComponent({
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
 
+  // Refs for lazy loading with IntersectionObserver
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasLoadedReactionData = useRef(false);
+  const hasLoadedInstanceInfo = useRef(false);
+
+  // Callback to load reaction data when card becomes visible
+  const loadReactionData = useCallback(async () => {
+    if (hasLoadedReactionData.current) return;
+    hasLoadedReactionData.current = true;
+
+    try {
+      // Load user's own reactions first if logged in
+      let userReactions: string[] = [];
+      if (token) {
+        const reactions = await getMyReactions(note.id, token);
+        userReactions = reactions.map((r) => r.reaction);
+        setMyReactions(userReactions);
+      }
+
+      // Load custom emoji URLs
+      // For remote user notes, fetch reactions from remote server
+      const isRemoteNote = Boolean(note.user.host);
+      const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
+
+      if (Object.keys(reactionData.counts).length > 0) {
+        // Merge with user's own reactions to prevent count from jumping back
+        const merged = { ...reactionData.counts };
+        for (const reaction of userReactions) {
+          if (merged[reaction] === undefined || merged[reaction] < 1) {
+            merged[reaction] = Math.max(merged[reaction] || 0, 1);
+          }
+        }
+        setLocalReactions(merged);
+      }
+      if (Object.keys(reactionData.emojis).length > 0) {
+        setReactionEmojis(reactionData.emojis);
+      }
+    } catch (error) {
+      console.error("Failed to load reaction data:", error);
+    }
+  }, [note.id, note.user.host, token]);
+
+  // Callback to load remote instance info when card becomes visible
+  const loadInstanceInfo = useCallback(async () => {
+    if (hasLoadedInstanceInfo.current || !note.user.host) return;
+    hasLoadedInstanceInfo.current = true;
+
+    const info = await getRemoteInstanceInfo(note.user.host);
+    if (info) {
+      setRemoteInstance(info);
+    }
+  }, [note.user.host]);
+
   // Convert profileEmojis array to emoji map for MfmRenderer
   const userProfileEmojiMap = useMemo(() => {
     if (!note.user.profileEmojis || note.user.profileEmojis.length === 0) return {};
@@ -113,66 +166,36 @@ function NoteCardComponent({
     }
   }, [note.reactionEmojis]);
 
-  // Load remote instance info for remote users
+  // Lazy load reaction data and instance info when card becomes visible
+  // This prevents N+1 API calls from blocking the main thread on initial render
   useEffect(() => {
-    if (note.user.host) {
-      getRemoteInstanceInfo(note.user.host).then((info) => {
-        if (info) {
-          setRemoteInstance(info);
+    const element = cardRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          // Load data when card becomes visible
+          loadReactionData();
+          loadInstanceInfo();
+          // Disconnect after first intersection - we only need to load once
+          observer.disconnect();
         }
-      });
-    }
-  }, [note.user.host]);
+      },
+      {
+        // Start loading slightly before the card enters the viewport
+        rootMargin: "100px",
+        threshold: 0,
+      },
+    );
 
-  // Load user's existing reactions and custom emoji URLs on mount
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadReactionData = async () => {
-      try {
-        // Load user's own reactions first if logged in
-        let userReactions: string[] = [];
-        if (token) {
-          const reactions = await getMyReactions(note.id, token);
-          userReactions = reactions.map((r) => r.reaction);
-          if (isMounted) {
-            setMyReactions(userReactions);
-          }
-        }
-
-        // Load custom emoji URLs
-        // For remote user notes, fetch reactions from remote server
-        const isRemoteNote = Boolean(note.user.host);
-        const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
-
-        if (!isMounted) return;
-
-        if (Object.keys(reactionData.counts).length > 0) {
-          // Merge with user's own reactions to prevent count from jumping back
-          // This ensures optimistic updates aren't overwritten by stale remote data
-          const merged = { ...reactionData.counts };
-          // For each of user's reactions, ensure count is at least 1
-          for (const reaction of userReactions) {
-            if (merged[reaction] === undefined || merged[reaction] < 1) {
-              merged[reaction] = Math.max(merged[reaction] || 0, 1);
-            }
-          }
-          setLocalReactions(merged);
-        }
-        if (Object.keys(reactionData.emojis).length > 0) {
-          setReactionEmojis(reactionData.emojis);
-        }
-      } catch (error) {
-        console.error("Failed to load reaction data:", error);
-      }
-    };
-
-    loadReactionData();
+    observer.observe(element);
 
     return () => {
-      isMounted = false;
+      observer.disconnect();
     };
-  }, [note.id, note.user.host, token]);
+  }, [loadReactionData, loadInstanceInfo]);
 
   const handleReaction = async (reaction: string) => {
     if (isReacting || !token) return;
@@ -261,6 +284,7 @@ function NoteCardComponent({
 
   return (
     <Card
+      ref={cardRef}
       hover
       className="transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
       role="article"
