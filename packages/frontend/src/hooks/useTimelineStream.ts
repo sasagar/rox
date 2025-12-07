@@ -284,6 +284,15 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     [setNotes],
   );
 
+  // Refs to store stable references to latest values
+  const tokenRef = useRef(token);
+  const isInitializedRef = useRef(false);
+
+  // Keep token ref up to date
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
   /**
    * Connect to stream
    */
@@ -291,8 +300,8 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     // Home timeline requires authentication
     if (timelineType === "home" && !isAuthenticated) return;
 
-    connectTimelineWS(timelineType, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
-  }, [timelineType, isAuthenticated, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected]);
+    connectTimelineWS(timelineType, tokenRef.current, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
+  }, [timelineType, isAuthenticated, handleNote, handleNoteDeleted, handleNoteReacted, setConnected]);
 
   /**
    * Disconnect from stream
@@ -313,8 +322,12 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     connection.connectionCount++;
 
     // Connect on first subscriber
-    if (connection.connectionCount === 1) {
-      connect();
+    if (connection.connectionCount === 1 && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      // Use Promise.resolve to avoid blocking
+      Promise.resolve().then(() => {
+        connectTimelineWS(timelineType, tokenRef.current, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
+      });
     }
 
     return () => {
@@ -324,19 +337,24 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
       // Disconnect when last subscriber unmounts
       if (connection.connectionCount <= 0) {
         connection.connectionCount = 0;
+        isInitializedRef.current = false;
         disconnectTimelineWS(timelineType, setConnected, true);
       }
     };
-  }, [enabled, timelineType, isAuthenticated, connect, setConnected]);
+    // Only depend on auth/enabled state changes, not on callback functions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, timelineType, isAuthenticated]);
 
   // Handle auth state changes
   useEffect(() => {
     if (timelineType === "home" && !isAuthenticated) {
       const connection = timelineConnections[timelineType];
       connection.connectionCount = 0;
+      isInitializedRef.current = false;
       disconnectTimelineWS(timelineType, setConnected, true);
     }
-  }, [timelineType, isAuthenticated, setConnected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timelineType, isAuthenticated]);
 
   return {
     connected: connectionState[timelineType],

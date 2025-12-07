@@ -8,7 +8,7 @@
  * connections when the hook is used in multiple components.
  */
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { atom, useAtom, useAtomValue, useSetAtom, getDefaultStore } from "jotai";
 import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { uiSettingsAtom } from "../lib/atoms/uiSettings";
@@ -300,15 +300,30 @@ export function useNotifications() {
     }
   }, [notifications, loading, fetchNotifications]);
 
+  // Refs to store stable references to latest values
+  const uiSettingsRef = useRef(uiSettings);
+  const tokenRef = useRef(token);
+  const isInitializedRef = useRef(false);
+
+  // Keep refs up to date
+  useEffect(() => {
+    uiSettingsRef.current = uiSettings;
+  }, [uiSettings]);
+
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
   /**
    * Connect to WebSocket stream for real-time updates
    */
   const connectWS = useCallback(() => {
-    if (!token) return;
-    // Use the captured uiSettings in a getter function for the singleton
-    const getUiSettings = () => uiSettings;
-    connectWSSingleton(token, setNotifications, setUnreadCount, setWsConnected, getUiSettings);
-  }, [token, setNotifications, setUnreadCount, setWsConnected, uiSettings]);
+    const currentToken = tokenRef.current;
+    if (!currentToken) return;
+    // Use ref to get latest uiSettings without causing re-renders
+    const getUiSettings = () => uiSettingsRef.current;
+    connectWSSingleton(currentToken, setNotifications, setUnreadCount, setWsConnected, getUiSettings);
+  }, [setNotifications, setUnreadCount, setWsConnected]);
 
   /**
    * Disconnect WebSocket stream
@@ -324,10 +339,14 @@ export function useNotifications() {
       wsConnectionCount++;
 
       // Only fetch and connect on first subscriber
-      if (wsConnectionCount === 1) {
-        fetchNotifications();
-        fetchUnreadCount();
-        connectWS();
+      if (wsConnectionCount === 1 && !isInitializedRef.current) {
+        isInitializedRef.current = true;
+        // Use Promise.resolve to avoid blocking and potential race conditions
+        Promise.resolve().then(() => {
+          fetchNotifications();
+          fetchUnreadCount();
+          connectWS();
+        });
       }
     }
 
@@ -338,22 +357,27 @@ export function useNotifications() {
         // Only disconnect when last subscriber unmounts
         if (wsConnectionCount <= 0) {
           wsConnectionCount = 0;
+          isInitializedRef.current = false;
           disconnectWSSingleton(setWsConnected, true);
         }
       }
     };
-  }, [isAuthenticated, token, fetchNotifications, fetchUnreadCount, connectWS, setWsConnected]);
+    // Only depend on auth state changes, not on callback functions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, token]);
 
   // Handle auth state changes (logout)
   useEffect(() => {
     if (!isAuthenticated) {
       // Force disconnect and clear state on logout
       wsConnectionCount = 0;
+      isInitializedRef.current = false;
       disconnectWSSingleton(setWsConnected, true);
       setNotifications([]);
       setUnreadCount(0);
     }
-  }, [isAuthenticated, setWsConnected, setNotifications, setUnreadCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   return {
     notifications,
