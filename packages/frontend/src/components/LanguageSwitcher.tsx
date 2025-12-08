@@ -14,11 +14,18 @@ import { loadLocale, locales, type Locale } from "../lib/i18n/index.js";
  * ```
  */
 export function LanguageSwitcher() {
-  const [currentLocale, setCurrentLocale] = useState<Locale>(
-    (typeof window !== "undefined" ? (localStorage.getItem("locale") as Locale) : null) || "en",
-  );
+  // Start with default to avoid hydration mismatch
+  const [currentLocale, setCurrentLocale] = useState<Locale>("en");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Restore locale from localStorage after hydration
+  useEffect(() => {
+    const saved = localStorage.getItem("locale") as Locale | null;
+    if (saved && locales[saved]) {
+      setCurrentLocale(saved);
+    }
+  }, []);
 
   const handleLocaleChange = async (locale: Locale) => {
     try {

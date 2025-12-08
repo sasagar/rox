@@ -376,8 +376,11 @@ function NoteCardComponent({
               to={`/notes/${note.id}`}
               className="text-xs text-(--text-muted) hover:underline"
               title={new Date(note.createdAt).toLocaleString()}
+              suppressHydrationWarning
             >
-              {new Date(note.createdAt).toLocaleString()}
+              <span suppressHydrationWarning>
+                {new Date(note.createdAt).toLocaleString()}
+              </span>
             </SpaLink>
           </div>
         </div>
