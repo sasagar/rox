@@ -85,6 +85,8 @@ services/
 ├── ScheduledNotePublisher.ts
 ├── RemoteInstanceService.ts  # Instance info
 ├── WebPushService.ts       # Web push
+├── OAuthService.ts         # OAuth 2.0 + PKCE
+├── MiAuthService.ts        # MiAuth (Misskey compat)
 └── ap/                     # ActivityPub
     ├── RemoteActorService.ts
     ├── RemoteNoteService.ts
@@ -167,6 +169,20 @@ packages/frontend/src/
 ### Push API (`/api/push/*`)
 - Web push subscription management
 - VAPID key endpoint
+
+### OAuth 2.0 (`/oauth/*`)
+- `/oauth/authorize` - Authorization endpoint (GET/POST)
+- `/oauth/token` - Token exchange endpoint
+- `/oauth/revoke` - Token revocation
+- `/oauth/introspect` - Token introspection
+
+### MiAuth (`/miauth/*`)
+- `/miauth/:sessionId` - Session-based auth flow (Misskey compatibility)
+- `/api/miauth/:sessionId/check` - Check session result
+
+### Media Proxy (`/api/proxy`)
+- Proxies external images to bypass hotlink protection
+- Used by: `getProxiedImageUrl()` utility function
 
 ### ActivityPub
 - `/.well-known/webfinger`
