@@ -15,6 +15,13 @@
       "when": 1764763945462,
       "tag": "0001_passkey_credentials",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765178771585,
+      "tag": "0002_mixed_winter_soldier",
+      "breakpoints": true
     }
   ]
 }

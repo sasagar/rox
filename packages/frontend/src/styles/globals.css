@@ -18,7 +18,11 @@
 
   /* Animations */
   --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-slide-in-down: slide-in-down 0.3s ease-out;
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
   --animate-spin: spin 1s linear infinite;
+  --animate-pulse-subtle: pulse-subtle 2s ease-in-out infinite;
   --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
 }
 
@@ -101,6 +105,50 @@ body {
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* Slide in from top animation (for new timeline items) */
+@keyframes slide-in-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale in animation (for buttons, reactions) */
+@keyframes scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Subtle pulse animation (for status indicators) */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
   }
 }
 

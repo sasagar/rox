@@ -37,6 +37,7 @@ app.use("/*", requireAdmin());
  * - limit: Maximum number of users (default: 100, max: 1000)
  * - offset: Number of users to skip (default: 0)
  * - localOnly: Filter to local users only (default: false)
+ * - remoteOnly: Filter to remote users only (default: false)
  * - isAdmin: Filter by admin status (optional)
  * - isSuspended: Filter by suspended status (optional)
  *
@@ -53,6 +54,7 @@ app.get("/users", async (c) => {
 
   const { limit, offset } = parsePagination(c);
   const localOnly = c.req.query("localOnly") === "true";
+  const remoteOnly = c.req.query("remoteOnly") === "true";
   const isAdmin =
     c.req.query("isAdmin") !== undefined ? c.req.query("isAdmin") === "true" : undefined;
   const isSuspended =
@@ -62,11 +64,17 @@ app.get("/users", async (c) => {
     limit,
     offset,
     localOnly,
+    remoteOnly,
     isAdmin,
     isSuspended,
   });
 
-  const total = await userRepository.count(localOnly);
+  // Count based on filter
+  const total = localOnly
+    ? await userRepository.count(true)
+    : remoteOnly
+      ? await userRepository.countRemote()
+      : await userRepository.count();
 
   // Remove sensitive data
   const sanitizedUsers = users.map((user: any) => sanitizeUser(user));
@@ -92,6 +100,62 @@ app.get("/users/:id", async (c) => {
 
   // Remove password hash but keep other admin-relevant info
   return c.json(sanitizeUser(user));
+});
+
+/**
+ * Refresh Remote User
+ *
+ * POST /api/admin/users/:id/refresh
+ *
+ * Forces a refresh of remote user information from their origin server.
+ * Only works for remote users (users with a host).
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "message": "User refreshed successfully",
+ *   "user": { ... }
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: Cannot refresh local users
+ * - 404: User not found
+ * - 502: Failed to fetch from remote server
+ */
+app.post("/users/:id/refresh", async (c) => {
+  const userRepository = c.get("userRepository");
+  const remoteActorService = c.get("remoteActorService");
+  const userId = c.req.param("id");
+
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  // Only remote users can be refreshed
+  if (user.host === null) {
+    return errorResponse(c, "Cannot refresh local users", 400);
+  }
+
+  if (!user.uri) {
+    return errorResponse(c, "User has no ActivityPub URI", 400);
+  }
+
+  try {
+    // Force refresh the actor from remote server
+    const refreshedUser = await remoteActorService.resolveActor(user.uri, true);
+
+    return c.json({
+      success: true,
+      message: "User refreshed successfully",
+      user: sanitizeUser(refreshedUser),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to refresh user";
+    return errorResponse(c, message, 500);
+  }
 });
 
 /**
@@ -187,32 +251,49 @@ app.post("/users/:id/suspend", async (c) => {
  *
  * DELETE /api/admin/users/:id
  *
- * Permanently deletes a user and all associated data.
- * Use with caution - this cannot be undone.
+ * Soft deletes a user account with ActivityPub compliance:
+ * - For local users: marks as deleted, sends Delete activity to followers
+ * - For remote users: marks as deleted (for incoming Delete activities)
+ *
+ * Query Parameters:
+ * - deleteNotes: If "true", also deletes all user's notes (local users only)
+ *
+ * This is a soft delete - the user record remains but is marked as deleted.
+ * Deleted actors will return HTTP 410 Gone on their ActivityPub endpoints.
  */
 app.delete("/users/:id", async (c) => {
-  const userRepository = c.get("userRepository");
+  const userDeletionService = c.get("userDeletionService");
   const currentAdmin = c.get("user");
   const userId = c.req.param("id");
+  const deleteNotes = c.req.query("deleteNotes") === "true";
 
   // Prevent self-deletion
   if (userId === currentAdmin?.id) {
     return errorResponse(c, "Cannot delete yourself");
   }
 
-  const user = await userRepository.findById(userId);
-  if (!user) {
-    return errorResponse(c, "User not found", 404);
+  const result = await userDeletionService.deleteLocalUser(userId, {
+    deleteNotes,
+    deletedBy: currentAdmin?.id,
+  });
+
+  if (!result.success) {
+    // Determine appropriate HTTP status
+    if (result.message === "User not found") {
+      return errorResponse(c, result.message, 404);
+    }
+    if (result.isRemoteUser) {
+      return errorResponse(c, result.message);
+    }
+    return errorResponse(c, result.message);
   }
 
-  // Cannot delete other admins
-  if (user.isAdmin) {
-    return errorResponse(c, "Cannot delete an admin user. Remove admin status first.");
-  }
-
-  await userRepository.delete(userId);
-
-  return c.json({ success: true, message: `User ${user.username} has been deleted` });
+  return c.json({
+    success: true,
+    message: result.message,
+    deletedUserId: result.deletedUserId,
+    activitiesSent: result.activitiesSent,
+  });
 });
 
 // ============================================================================
@@ -1532,5 +1613,92 @@ app.get("/assets", async (c) => {
     pwaIcon512: metadata.pwaIcon512Url,
   });
 });
+
+// ============================================================================
+// Job Queue Statistics Endpoints
+// ============================================================================
+
+/**
+ * Get Delivery Queue Statistics
+ *
+ * GET /api/admin/queue/stats
+ *
+ * Returns ActivityPub delivery queue statistics including success rates
+ * and per-server breakdown.
+ */
+app.get("/queue/stats", async (c) => {
+  const deliveryQueue = c.get("activityDeliveryQueue");
+
+  if (!deliveryQueue) {
+    return c.json({
+      available: false,
+      message: "Delivery queue is not configured (USE_QUEUE=false or Redis unavailable)",
+    });
+  }
+
+  const stats = deliveryQueue.getDeliveryStatistics();
+
+  return c.json({
+    available: true,
+    ...stats,
+    // Convert topServers inbox URLs to just hostnames for readability
+    topServers: stats.topServers.map((server) => ({
+      ...server,
+      host: extractHostname(server.inbox),
+    })),
+  });
+});
+
+/**
+ * Get Per-Server Delivery Metrics
+ *
+ * GET /api/admin/queue/metrics
+ *
+ * Returns detailed delivery metrics for all known servers.
+ */
+app.get("/queue/metrics", async (c) => {
+  const deliveryQueue = c.get("activityDeliveryQueue");
+
+  if (!deliveryQueue) {
+    return c.json({
+      available: false,
+      servers: [],
+    });
+  }
+
+  const metrics = deliveryQueue.getMetrics();
+
+  // Convert to array with hostnames
+  const servers = Array.from(metrics.entries())
+    .map(([inbox, data]) => ({
+      host: extractHostname(inbox),
+      inbox,
+      success: data.success,
+      failure: data.failure,
+      total: data.success + data.failure,
+      successRate:
+        data.success + data.failure > 0
+          ? Math.round((data.success / (data.success + data.failure)) * 100 * 100) / 100
+          : 0,
+    }))
+    .sort((a, b) => b.total - a.total);
+
+  return c.json({
+    available: true,
+    serverCount: servers.length,
+    servers,
+  });
+});
+
+/**
+ * Extract hostname from URL
+ */
+function extractHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
 
 export default app;

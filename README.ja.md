@@ -11,6 +11,7 @@
 - **Misskey API互換**: 既存Misskeyユーザーのシームレスな移行
 - **マルチデータベース対応**: PostgreSQL、MySQL、SQLite/D1
 - **柔軟なストレージ**: ローカルファイルシステムまたはS3互換ストレージ（AWS S3、Cloudflare R2、MinIO）
+- **複数認証方式**: パスワード、Passkey（WebAuthn）、OAuth（GitHub、Google、Discord、Mastodon）
 
 ## プロジェクト構造
 
@@ -147,6 +148,47 @@ S3_SECRET_KEY=your-secret-key
 S3_REGION=auto
 ```
 
+### OAuth設定（オプション）
+
+外部OAuthプロバイダーを設定して、ユーザーが既存のアカウントでサインインできるようにします：
+
+#### GitHub
+
+```bash
+# OAuthアプリを作成: https://github.com/settings/developers
+GITHUB_CLIENT_ID=your-client-id
+GITHUB_CLIENT_SECRET=your-client-secret
+GITHUB_REDIRECT_URI=https://your-domain.com/api/auth/oauth/github/callback
+```
+
+#### Google
+
+```bash
+# 認証情報を作成: https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=https://your-domain.com/api/auth/oauth/google/callback
+```
+
+#### Discord
+
+```bash
+# アプリケーションを作成: https://discord.com/developers/applications
+DISCORD_CLIENT_ID=your-client-id
+DISCORD_CLIENT_SECRET=your-client-secret
+DISCORD_REDIRECT_URI=https://your-domain.com/api/auth/oauth/discord/callback
+```
+
+#### Mastodon
+
+```bash
+# Mastodonインスタンスでアプリを登録: 設定 > 開発 > 新規アプリ
+MASTODON_CLIENT_ID=your-client-id
+MASTODON_CLIENT_SECRET=your-client-secret
+MASTODON_INSTANCE_URL=https://mastodon.social
+MASTODON_REDIRECT_URI=https://your-domain.com/api/auth/oauth/mastodon/callback
+```
+
 ## アーキテクチャ
 
 Roxは**リポジトリパターン**と**アダプターパターン**を使用して、ビジネスロジックをインフラストラクチャの懸念事項から分離しています：
@@ -179,7 +221,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 | UIコンポーネント | React Aria Components | 1.6.3 | アクセシブルなヘッドレスUI |
 | スタイリング | Tailwind CSS v4 | 4.1.17 | ユーティリティファーストCSS（OKLCH色空間） |
 | 国際化 | Lingui | 5.6.0 | 3kb最適化i18n（英語/日本語） |
-| 認証 | Passkey + Password | カスタム実装 | WebAuthn + 従来型認証 |
+| 認証 | Passkey + Password + OAuth | カスタム実装 | WebAuthn、従来型認証、OAuth2 |
 
 ## 実装フェーズ
 
@@ -190,7 +232,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
   - ✅ Tailwind CSS v4（OKLCH色空間対応）
   - ✅ React Aria Components（Button、TextField、Dialog、Form、Avatar、Card）
   - ✅ Lingui国際化（英語/日本語 - 87メッセージ）
-  - ✅ 認証（Passkey + Password）
+  - ✅ 認証（Passkey + Password + OAuth）
   - ✅ タイムライン（表示、無限スクロール）
   - ✅ ノート投稿（テキスト、画像、CW、公開範囲、リプライ、リノート）
   - ✅ ユーザーインタラクション（リプライ、リアクション、フォロー/アンフォロー）

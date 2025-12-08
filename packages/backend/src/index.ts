@@ -11,6 +11,7 @@ import { logger } from "./lib/logger.js";
 import metricsRoute from "./routes/metrics.js";
 import usersRoute from "./routes/users.js";
 import authRoute from "./routes/auth.js";
+import oauthRoute from "./routes/oauth.js";
 import driveRoute from "./routes/drive.js";
 import notesRoute from "./routes/notes.js";
 import reactionsRoute from "./routes/reactions.js";
@@ -70,6 +71,7 @@ app.get("/", (c) => {
 // APIルート
 app.route("/api/users", usersRoute);
 app.route("/api/auth", authRoute);
+app.route("/api/auth/oauth", oauthRoute);
 app.route("/api/drive", driveRoute);
 app.route("/api/notes", notesRoute);
 app.route("/api/notes/reactions", reactionsRoute);

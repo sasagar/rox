@@ -6,17 +6,19 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe } from "lucide-react";
+import { Settings, Users, UserCog, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity } from "lucide-react";
 
 /**
  * Admin navigation items
  */
 const ADMIN_NAV_ITEMS = [
   { href: "/admin/settings", icon: Settings, label: "Settings" },
+  { href: "/admin/users", icon: UserCog, label: "Users" },
   { href: "/admin/roles", icon: Users, label: "Roles" },
   { href: "/admin/emojis", icon: Smile, label: "Emojis" },
   { href: "/admin/storage", icon: HardDrive, label: "Storage" },
   { href: "/admin/federation", icon: Globe, label: "Federation" },
+  { href: "/admin/queue", icon: Activity, label: "Queue" },
   { href: "/admin/invitations", icon: Ticket, label: "Invitations" },
   { href: "/admin/blocks", icon: Shield, label: "Blocks" },
   { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },

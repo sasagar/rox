@@ -99,6 +99,9 @@ export const users = pgTable(
     bannerUrl: text("banner_url"),
     isAdmin: boolean("is_admin").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
+    // Soft delete fields for account deletion
+    isDeleted: boolean("is_deleted").notNull().default(false),
+    deletedAt: timestamp("deleted_at"),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: text("host"), // null for local users
@@ -127,6 +130,7 @@ export const users = pgTable(
     usernameHostIdx: uniqueIndex("username_host_idx").on(table.username, table.host),
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
+    isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
   }),
 );
 
@@ -197,6 +201,42 @@ export type PasskeyCredential = typeof passkeyCredentials.$inferSelect;
 export type NewPasskeyCredential = typeof passkeyCredentials.$inferInsert;
 export type PasskeyChallenge = typeof passkeyChallenges.$inferSelect;
 export type NewPasskeyChallenge = typeof passkeyChallenges.$inferInsert;
+
+// OAuth accounts table for external authentication providers
+export const oauthAccounts = pgTable(
+  "oauth_accounts",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(), // 'github', 'google', 'discord', 'mastodon'
+    providerAccountId: text("provider_account_id").notNull(), // User ID from the OAuth provider
+    accessToken: text("access_token"), // Current access token (may be encrypted)
+    refreshToken: text("refresh_token"), // Refresh token if provider supports it
+    tokenExpiresAt: timestamp("token_expires_at"), // When access token expires
+    scope: text("scope"), // Granted scopes
+    tokenType: text("token_type"), // Usually 'Bearer'
+    providerUsername: text("provider_username"), // Username on the provider (for display)
+    providerEmail: text("provider_email"), // Email from provider (may differ from user.email)
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    // Unique constraint: one provider account per user per provider
+    userProviderIdx: uniqueIndex("oauth_user_provider_idx").on(table.userId, table.provider),
+    // Unique constraint: each provider account ID is unique per provider
+    providerAccountIdx: uniqueIndex("oauth_provider_account_idx").on(
+      table.provider,
+      table.providerAccountId,
+    ),
+    userIdIdx: index("oauth_user_id_idx").on(table.userId),
+  }),
+);
+
+// Type exports for OAuth tables
+export type OAuthAccount = typeof oauthAccounts.$inferSelect;
+export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
 
 // Notes table
 export const notes = pgTable(

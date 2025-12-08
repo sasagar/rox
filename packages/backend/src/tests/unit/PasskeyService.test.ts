@@ -59,6 +59,8 @@ describe("PasskeyService", () => {
     bio: null,
     isAdmin: false,
     isSuspended: false,
+    isDeleted: false,
+    deletedAt: null,
     publicKey: "mock-public-key",
     privateKey: "mock-private-key",
     inbox: "http://localhost:3000/users/testuser/inbox",

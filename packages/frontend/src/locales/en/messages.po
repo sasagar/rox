@@ -118,6 +118,10 @@ msgstr "Action Log"
 msgid "Actions"
 msgstr "Actions"
 
+#: src/pages/admin/queue.tsx:199
+msgid "ActivityPub delivery is running in synchronous mode."
+msgstr "ActivityPub delivery is running in synchronous mode."
+
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
@@ -168,6 +172,7 @@ msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
 #: src/components/layout/Sidebar.tsx:120
+#: src/pages/admin/users.tsx:453
 msgid "Admin"
 msgstr "Admin"
 
@@ -178,6 +183,14 @@ msgstr "Admin Role"
 #: src/pages/admin/settings.tsx:273
 msgid "Admin Settings"
 msgstr "Admin Settings"
+
+#: src/pages/admin/users.tsx:170
+msgid "Admin status granted"
+msgstr "Admin status granted"
+
+#: src/pages/admin/users.tsx:169
+msgid "Admin status removed"
+msgstr "Admin status removed"
 
 #: src/pages/mod/users.tsx:587
 msgid "Admin users cannot be suspended"
@@ -205,6 +218,7 @@ msgstr "Aliases"
 
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
+#: src/pages/admin/users.tsx:381
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:379
 msgid "All"
@@ -242,10 +256,19 @@ msgstr "Already have an account?"
 msgid "Already have an account? Sign in"
 msgstr "Already have an account? Sign in"
 
+#: src/pages/admin/users.tsx:588
+msgid "Also delete all notes by this user"
+msgstr "Also delete all notes by this user"
+
 #. placeholder {0}: emoji.name
 #: src/pages/admin/emojis.tsx:429
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
+
+#. placeholder {0}: userToDelete.username
+#: src/pages/admin/users.tsx:560
+msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
+msgstr "Are you sure you want to delete <0>@{0}</0>? This action will:"
 
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
@@ -288,6 +311,10 @@ msgstr "Avatar removed"
 msgid "Avatar updated successfully"
 msgstr "Avatar updated successfully"
 
+#: src/pages/admin/queue.tsx:410
+msgid "Avg per Server"
+msgstr "Avg per Server"
+
 #: src/components/pages/NoteDetailPageClient.tsx:97
 msgid "Back to timeline"
 msgstr "Back to timeline"
@@ -308,7 +335,7 @@ msgstr "Banner updated successfully"
 msgid "Banner URL"
 msgstr "Banner URL"
 
-#: src/components/timeline/Timeline.tsx:223
+#: src/components/timeline/Timeline.tsx:230
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
@@ -420,6 +447,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/emojis.tsx:769
 #: src/pages/admin/roles.tsx:568
 #: src/pages/admin/storage.tsx:543
+#: src/pages/admin/users.tsx:600
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:288
@@ -486,11 +514,15 @@ msgstr "Configure your instance settings"
 msgid "Connect with users across the fediverse using ActivityPub protocol"
 msgstr "Connect with users across the fediverse using ActivityPub protocol"
 
+#: src/pages/admin/queue.tsx:402
+msgid "Connected Servers"
+msgstr "Connected Servers"
+
 #: src/components/LandingPage.tsx:263
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:350
+#: src/components/note/NoteCard.tsx:394
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -599,6 +631,7 @@ msgstr "Default Roles"
 
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:861
+#: src/pages/admin/users.tsx:613
 msgid "Delete"
 msgstr "Delete"
 
@@ -623,9 +656,26 @@ msgstr "Delete Notes"
 msgid "Delete role"
 msgstr "Delete role"
 
+#: src/pages/admin/users.tsx:511
+msgid "Delete user"
+msgstr "Delete user"
+
+#: src/pages/admin/users.tsx:555
+msgid "Delete User"
+msgstr "Delete User"
+
 #: src/pages/mod/users.tsx:419
 msgid "Delete warning"
 msgstr "Delete warning"
+
+#: src/pages/admin/users.tsx:463
+msgid "Deleted"
+msgstr "Deleted"
+
+#. placeholder {0}: formatDate(user.deletedAt)
+#: src/pages/admin/users.tsx:535
+msgid "Deleted {0}"
+msgstr "Deleted {0}"
 
 #: src/pages/mod/notes.tsx:170
 #: src/pages/mod/notes.tsx:181
@@ -815,7 +865,7 @@ msgstr "Enter username (e.g., alice or alice@remote.server)"
 msgid "Enter your invitation code to register"
 msgstr "Enter your invitation code to register"
 
-#: src/components/timeline/Timeline.tsx:163
+#: src/components/timeline/Timeline.tsx:165
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
@@ -851,6 +901,8 @@ msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
 #: src/pages/admin/emojis.tsx:1083
+#: src/pages/admin/queue.tsx:278
+#: src/pages/admin/queue.tsx:454
 msgid "Failed"
 msgstr "Failed"
 
@@ -862,7 +914,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:205
+#: src/components/note/NoteCard.tsx:242
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -909,6 +961,10 @@ msgstr "Failed to delete passkey"
 #: src/pages/admin/roles.tsx:282
 msgid "Failed to delete role"
 msgstr "Failed to delete role"
+
+#: src/pages/admin/users.tsx:208
+msgid "Failed to delete user"
+msgstr "Failed to delete user"
 
 #: src/pages/mod/users.tsx:243
 msgid "Failed to delete warning"
@@ -972,6 +1028,10 @@ msgstr "Failed to process report"
 msgid "Failed to refresh instance"
 msgstr "Failed to refresh instance"
 
+#: src/pages/admin/users.tsx:231
+msgid "Failed to refresh user"
+msgstr "Failed to refresh user"
+
 #: src/components/settings/PasskeySection.tsx:122
 msgid "Failed to register passkey"
 msgstr "Failed to register passkey"
@@ -996,7 +1056,7 @@ msgstr "Failed to remove instance"
 msgid "Failed to rename passkey"
 msgstr "Failed to rename passkey"
 
-#: src/components/note/NoteCard.tsx:223
+#: src/components/note/NoteCard.tsx:260
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -1040,6 +1100,11 @@ msgstr "Failed to update emoji"
 #: src/pages/admin/storage.tsx:245
 msgid "Failed to update quota"
 msgstr "Failed to update quota"
+
+#: src/pages/admin/users.tsx:152
+#: src/pages/admin/users.tsx:177
+msgid "Failed to update user"
+msgstr "Failed to update user"
 
 #. placeholder {0}: file.name
 #: src/components/note/NoteComposer.tsx:329
@@ -1160,7 +1225,7 @@ msgstr "Found on remote server"
 msgid "Get Started"
 msgstr "Get Started"
 
-#: src/pages/timeline.tsx:155
+#: src/pages/timeline.tsx:157
 msgid "Global"
 msgstr "Global"
 
@@ -1183,7 +1248,7 @@ msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls bac
 
 #: src/components/layout/Sidebar.tsx:86
 #: src/components/note/NoteComposer.tsx:408
-#: src/pages/timeline.tsx:169
+#: src/pages/timeline.tsx:171
 msgid "Home"
 msgstr "Home"
 
@@ -1307,6 +1372,10 @@ msgstr "Instance unblocked successfully"
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 
+#: src/pages/admin/users.tsx:571
+msgid "Invalidate all active sessions"
+msgstr "Invalidate all active sessions"
+
 #: src/pages/signup.tsx:148
 msgid "Invitation Code"
 msgstr "Invitation Code"
@@ -1350,9 +1419,19 @@ msgstr "Invite Only"
 msgid "Issue Warning"
 msgstr "Issue Warning"
 
+#: src/pages/admin/queue.tsx:181
+#: src/pages/admin/queue.tsx:218
+msgid "Job Queue"
+msgstr "Job Queue"
+
 #: src/pages/signup.tsx:133
 msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
+
+#. placeholder {0}: formatDate(user.createdAt)
+#: src/pages/admin/users.tsx:475
+msgid "Joined {0}"
+msgstr "Joined {0}"
 
 #. placeholder {0}: formatDate(selectedUser.user.createdAt)
 #: src/pages/mod/users.tsx:358
@@ -1397,16 +1476,16 @@ msgid "Line Height"
 msgstr "Line Height"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
-#: src/components/timeline/Timeline.tsx:232
+#: src/components/timeline/Timeline.tsx:239
 #: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "Load more"
 
-#: src/components/timeline/Timeline.tsx:191
+#: src/components/timeline/Timeline.tsx:198
 msgid "Loading more posts..."
 msgstr "Loading more posts..."
 
-#: src/components/timeline/Timeline.tsx:176
+#: src/components/timeline/Timeline.tsx:178
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
@@ -1415,7 +1494,9 @@ msgstr "Loading posts..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/pages/timeline.tsx:127
+#: src/pages/admin/users.tsx:316
+#: src/pages/admin/users.tsx:392
+#: src/pages/timeline.tsx:129
 msgid "Local"
 msgstr "Local"
 
@@ -1459,6 +1540,10 @@ msgstr "Lowercase letters, numbers, and underscores only"
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
+#: src/pages/admin/users.tsx:487
+msgid "Make admin"
+msgstr "Make admin"
+
 #: src/pages/mod/instances.tsx:237
 msgid "Manage blocked instances"
 msgstr "Manage blocked instances"
@@ -1475,6 +1560,10 @@ msgstr "Manage invitation codes for new user registration"
 msgid "Manage remote instances and federation status"
 msgstr "Manage remote instances and federation status"
 
+#: src/pages/admin/users.tsx:283
+msgid "Manage user accounts"
+msgstr "Manage user accounts"
+
 #: src/pages/settings.tsx:147
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
@@ -1483,6 +1572,10 @@ msgstr "Manage your profile information"
 #: src/pages/notifications.tsx:187
 msgid "Mark all as read"
 msgstr "Mark all as read"
+
+#: src/pages/admin/users.tsx:568
+msgid "Mark the account as deleted"
+msgstr "Mark the account as deleted"
 
 #: src/pages/admin/invitations.tsx:276
 msgid "Max Uses"
@@ -1542,7 +1635,12 @@ msgstr "Moderator access required"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/components/note/NoteCard.tsx:556
+#: src/pages/admin/queue.tsx:184
+#: src/pages/admin/queue.tsx:221
+msgid "Monitor ActivityPub delivery queue status"
+msgstr "Monitor ActivityPub delivery queue status"
+
+#: src/components/note/NoteCard.tsx:598
 msgid "More options"
 msgstr "More options"
 
@@ -1600,6 +1698,10 @@ msgstr "No custom emojis yet"
 msgid "No deleted notes"
 msgstr "No deleted notes"
 
+#: src/pages/admin/queue.tsx:341
+msgid "No deliveries recorded yet"
+msgstr "No deliveries recorded yet"
+
 #: src/components/note/NoteComposer.tsx:742
 msgid "No drafts saved"
 msgstr "No drafts saved"
@@ -1637,7 +1739,11 @@ msgstr "No invitation codes yet"
 msgid "No matching notifications"
 msgstr "No matching notifications"
 
-#: src/components/timeline/Timeline.tsx:220
+#: src/pages/admin/queue.tsx:436
+msgid "No metrics available"
+msgstr "No metrics available"
+
+#: src/components/timeline/Timeline.tsx:227
 msgid "No notes yet"
 msgstr "No notes yet"
 
@@ -1675,6 +1781,10 @@ msgstr "No reports found"
 msgid "No roles yet"
 msgstr "No roles yet"
 
+#: src/pages/admin/queue.tsx:440
+msgid "No server metrics recorded yet"
+msgstr "No server metrics recorded yet"
+
 #: src/pages/admin/storage.tsx:396
 msgid "No system files"
 msgstr "No system files"
@@ -1686,6 +1796,7 @@ msgid "No text content"
 msgstr "No text content"
 
 #: src/pages/admin/storage.tsx:495
+#: src/pages/admin/users.tsx:416
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "No users found"
@@ -1710,7 +1821,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:217
+#: src/components/note/NoteCard.tsx:254
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -1773,6 +1884,14 @@ msgstr "Optional"
 msgid "Or continue with password"
 msgstr "Or continue with password"
 
+#: src/pages/admin/queue.tsx:384
+msgid "Overall Success Rate"
+msgstr "Overall Success Rate"
+
+#: src/pages/admin/queue.tsx:313
+msgid "Overview"
+msgstr "Overview"
+
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
 msgid "Passkey {0}"
@@ -1826,6 +1945,10 @@ msgstr "Pending"
 #: src/pages/mod/reports.tsx:254
 msgid "Pending Reports"
 msgstr "Pending Reports"
+
+#: src/pages/admin/queue.tsx:323
+msgid "Per Server"
+msgstr "Per Server"
 
 #: src/pages/admin/roles.tsx:456
 msgid "Permissions"
@@ -1956,6 +2079,14 @@ msgstr "PWA Icon (192x192)"
 msgid "PWA Icon (512x512)"
 msgstr "PWA Icon (512x512)"
 
+#: src/pages/admin/queue.tsx:375
+msgid "Queue Health"
+msgstr "Queue Health"
+
+#: src/pages/admin/queue.tsx:193
+msgid "Queue Not Available"
+msgstr "Queue Not Available"
+
 #: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "Quota updated"
@@ -1973,6 +2104,10 @@ msgstr "Quote"
 msgid "quoted your note"
 msgstr "quoted your note"
 
+#: src/pages/admin/queue.tsx:460
+msgid "Rate"
+msgstr "Rate"
+
 #: src/components/notification/NotificationItem.tsx:83
 msgid "reacted with"
 msgstr "reacted with"
@@ -1981,7 +2116,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:198
+#: src/components/note/NoteCard.tsx:235
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -2018,7 +2153,7 @@ msgstr "Reason: {0}"
 msgid "Recent Moderation History"
 msgstr "Recent Moderation History"
 
-#: src/pages/timeline.tsx:104
+#: src/pages/timeline.tsx:106
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
@@ -2035,12 +2170,17 @@ msgstr "Recommended: Square image, max 2MB"
 #: src/pages/admin/emojis.tsx:520
 #: src/pages/admin/emojis.tsx:538
 #: src/pages/admin/federation.tsx:440
+#: src/pages/admin/queue.tsx:230
 msgid "Refresh"
 msgstr "Refresh"
 
 #: src/pages/admin/federation.tsx:245
 msgid "Refresh List"
 msgstr "Refresh List"
+
+#: src/pages/admin/users.tsx:526
+msgid "Refresh user information"
+msgstr "Refresh user information"
 
 #: src/components/settings/PushNotificationSection.tsx:216
 msgid "Registered devices"
@@ -2085,6 +2225,11 @@ msgstr "Reject Report"
 msgid "Rejected"
 msgstr "Rejected"
 
+#: src/pages/admin/users.tsx:331
+#: src/pages/admin/users.tsx:403
+msgid "Remote"
+msgstr "Remote"
+
 #: src/pages/admin/emojis.tsx:566
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
@@ -2106,9 +2251,17 @@ msgstr "Remote Instances"
 msgid "Remove"
 msgstr "Remove"
 
+#: src/pages/admin/users.tsx:487
+msgid "Remove admin"
+msgstr "Remove admin"
+
 #: src/components/settings/AccountMigrationSection.tsx:286
 msgid "Remove alias"
 msgstr "Remove alias"
+
+#: src/pages/admin/users.tsx:574
+msgid "Remove all follow relationships"
+msgstr "Remove all follow relationships"
 
 #: src/components/settings/ProfileImageSection.tsx:223
 msgid "Remove avatar"
@@ -2126,7 +2279,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:341
+#: src/components/note/NoteCard.tsx:385
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -2152,7 +2305,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:571
+#: src/components/note/NoteCard.tsx:613
 msgid "Report"
 msgstr "Report"
 
@@ -2403,6 +2556,7 @@ msgid "Search User"
 msgstr "Search User"
 
 #: src/pages/admin/storage.tsx:461
+#: src/pages/admin/users.tsx:365
 msgid "Search users..."
 msgstr "Search users..."
 
@@ -2431,6 +2585,10 @@ msgstr "Select from Drive"
 msgid "Send a test notification to verify your setup."
 msgstr "Send a test notification to verify your setup."
 
+#: src/pages/admin/users.tsx:577
+msgid "Send Delete activity to remote followers"
+msgstr "Send Delete activity to remote followers"
+
 #: src/components/settings/PushNotificationSection.tsx:205
 msgid "Send test"
 msgstr "Send test"
@@ -2439,9 +2597,17 @@ msgstr "Send test"
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
+#: src/pages/admin/queue.tsx:448
+msgid "Server"
+msgstr "Server"
+
 #: src/pages/admin/settings.tsx:778
 msgid "Server Assets"
 msgstr "Server Assets"
+
+#: src/pages/admin/queue.tsx:430
+msgid "Server Metrics"
+msgstr "Server Metrics"
 
 #: src/pages/settings.tsx:329
 msgid "Session"
@@ -2461,7 +2627,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:360
+#: src/components/note/NoteCard.tsx:404
 msgid "Show content"
 msgstr "Show content"
 
@@ -2514,7 +2680,7 @@ msgstr "Signing in..."
 msgid "Skipped"
 msgstr "Skipped"
 
-#: src/pages/timeline.tsx:141
+#: src/pages/timeline.tsx:143
 msgid "Social"
 msgstr "Social"
 
@@ -2551,9 +2717,25 @@ msgstr "Storage Usage"
 msgid "Submit Report"
 msgstr "Submit Report"
 
+#: src/pages/admin/queue.tsx:451
+msgid "Success"
+msgstr "Success"
+
+#: src/pages/admin/queue.tsx:294
+msgid "Success Rate"
+msgstr "Success Rate"
+
+#: src/pages/admin/queue.tsx:262
+msgid "Successful"
+msgstr "Successful"
+
 #: src/pages/admin/emojis.tsx:1003
 msgid "Supported formats: PNG, GIF, WebP, APNG"
 msgstr "Supported formats: PNG, GIF, WebP, APNG"
+
+#: src/pages/admin/users.tsx:498
+msgid "Suspend"
+msgstr "Suspend"
 
 #: src/pages/mod/audit-logs.tsx:246
 #: src/pages/mod/users.tsx:503
@@ -2564,6 +2746,8 @@ msgstr "Suspend User"
 msgid "Suspend Users"
 msgstr "Suspend Users"
 
+#: src/pages/admin/users.tsx:346
+#: src/pages/admin/users.tsx:458
 #: src/pages/mod/users.tsx:349
 msgid "Suspended"
 msgstr "Suspended"
@@ -2621,6 +2805,10 @@ msgstr "Test notification"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
+#: src/pages/admin/queue.tsx:196
+msgid "The job queue system is not currently configured or running."
+msgstr "The job queue system is not currently configured or running."
+
 #: src/components/settings/UISettingsSection.tsx:249
 #: src/pages/admin/settings.tsx:314
 msgid "Theme"
@@ -2659,13 +2847,22 @@ msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
 #: src/components/pages/NoteDetailPageClient.tsx:115
-#: src/pages/timeline.tsx:101
+#: src/pages/timeline.tsx:103
 msgid "Timeline"
 msgstr "Timeline"
 
 #: src/pages/search.tsx:400
 msgid "Tip: To find users on other servers, enter their full address like @user@example.com"
 msgstr "Tip: To find users on other servers, enter their full address like @user@example.com"
+
+#: src/pages/admin/queue.tsx:335
+msgid "Top Servers by Delivery"
+msgstr "Top Servers by Delivery"
+
+#: src/pages/admin/queue.tsx:457
+#: src/pages/admin/users.tsx:301
+msgid "Total"
+msgstr "Total"
 
 #: src/pages/mod/audit-logs.tsx:221
 msgid "Total Actions"
@@ -2674,6 +2871,10 @@ msgstr "Total Actions"
 #: src/pages/admin/invitations.tsx:237
 msgid "Total Codes"
 msgstr "Total Codes"
+
+#: src/pages/admin/queue.tsx:246
+msgid "Total Deliveries"
+msgstr "Total Deliveries"
 
 #: src/pages/admin/storage.tsx:303
 msgid "Total Files"
@@ -2752,6 +2953,10 @@ msgstr "Unknown"
 msgid "Unknown User"
 msgstr "Unknown User"
 
+#: src/pages/admin/users.tsx:498
+msgid "Unsuspend"
+msgstr "Unsuspend"
+
 #: src/pages/mod/audit-logs.tsx:247
 #: src/pages/mod/users.tsx:488
 msgid "Unsuspend User"
@@ -2809,9 +3014,26 @@ msgstr "Used"
 msgid "Used for push notifications and instance branding (max 2MB)"
 msgstr "Used for push notifications and instance branding (max 2MB)"
 
+#: src/pages/admin/users.tsx:199
+msgid "User deleted successfully"
+msgstr "User deleted successfully"
+
+#. placeholder {0}: response.activitiesSent
+#: src/pages/admin/users.tsx:198
+msgid "User deleted. {0} Delete activities sent to followers."
+msgstr "User deleted. {0} Delete activities sent to followers."
+
 #: src/pages/mod/users.tsx:317
 msgid "User Details"
 msgstr "User Details"
+
+#: src/pages/admin/users.tsx:224
+msgid "User information refreshed"
+msgstr "User information refreshed"
+
+#: src/pages/admin/users.tsx:358
+msgid "User List"
+msgstr "User List"
 
 #: src/pages/mod/users.tsx:264
 msgid "User Moderation"
@@ -2831,9 +3053,17 @@ msgstr "User Report"
 msgid "User Storage"
 msgstr "User Storage"
 
+#: src/pages/admin/users.tsx:145
+msgid "User suspended"
+msgstr "User suspended"
+
 #: src/pages/mod/users.tsx:138
 msgid "User suspended successfully"
 msgstr "User suspended successfully"
+
+#: src/pages/admin/users.tsx:144
+msgid "User unsuspended"
+msgstr "User unsuspended"
 
 #: src/pages/mod/users.tsx:169
 msgid "User unsuspended successfully"
@@ -2855,6 +3085,7 @@ msgid "Username is required"
 msgstr "Username is required"
 
 #: src/pages/admin/federation.tsx:398
+#: src/pages/admin/users.tsx:280
 #: src/pages/mod/audit-logs.tsx:261
 msgid "Users"
 msgstr "Users"
@@ -2995,7 +3226,7 @@ msgstr "You're all caught up!"
 msgid "You've reached the end"
 msgstr "You've reached the end"
 
-#: src/components/timeline/Timeline.tsx:206
+#: src/components/timeline/Timeline.tsx:213
 msgid "You've reached the end of the timeline"
 msgstr "You've reached the end of the timeline"
 

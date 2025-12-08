@@ -22,6 +22,7 @@ import type {
   IScheduledNoteRepository,
   IPasskeyCredentialRepository,
   IPasskeyChallengeRepository,
+  IOAuthAccountRepository,
 } from "../interfaces/repositories/index.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
@@ -47,6 +48,7 @@ import {
   PostgresScheduledNoteRepository,
   PostgresPasskeyCredentialRepository,
   PostgresPasskeyChallengeRepository,
+  PostgresOAuthAccountRepository,
 } from "../repositories/pg/index.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
@@ -60,6 +62,7 @@ import { MigrationService } from "../services/MigrationService.js";
 import { NotificationService } from "../services/NotificationService.js";
 import { WebPushService } from "../services/WebPushService.js";
 import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
+import { UserDeletionService } from "../services/UserDeletionService.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -84,6 +87,7 @@ export interface AppContainer {
   scheduledNoteRepository: IScheduledNoteRepository;
   passkeyCredentialRepository: IPasskeyCredentialRepository;
   passkeyChallengeRepository: IPasskeyChallengeRepository;
+  oauthAccountRepository: IOAuthAccountRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -96,6 +100,7 @@ export interface AppContainer {
   notificationService: NotificationService;
   webPushService: WebPushService;
   remoteInstanceService: RemoteInstanceService;
+  userDeletionService: UserDeletionService;
 }
 
 /**
@@ -181,6 +186,15 @@ export function createContainer(): AppContainer {
   // Remote Instance Service for fetching federated server metadata
   const remoteInstanceService = new RemoteInstanceService(repositories.remoteInstanceRepository);
 
+  // User Deletion Service for account deletion with ActivityPub compliance
+  const userDeletionService = new UserDeletionService(
+    repositories.userRepository,
+    repositories.followRepository,
+    repositories.sessionRepository,
+    repositories.noteRepository,
+    activityPubDeliveryService,
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -195,6 +209,7 @@ export function createContainer(): AppContainer {
     notificationService,
     webPushService,
     remoteInstanceService,
+    userDeletionService,
   };
 }
 
@@ -226,6 +241,7 @@ function createRepositories(db: any, dbType: string) {
         scheduledNoteRepository: new PostgresScheduledNoteRepository(db),
         passkeyCredentialRepository: new PostgresPasskeyCredentialRepository(db),
         passkeyChallengeRepository: new PostgresPasskeyChallengeRepository(db),
+        oauthAccountRepository: new PostgresOAuthAccountRepository(db),
       };
 
     case "mysql":

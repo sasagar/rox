@@ -47,6 +47,24 @@ actor.get("/:username", async (c: Context) => {
     return c.notFound();
   }
 
+  // 410 Gone if user is deleted (ActivityPub spec compliance)
+  if (user.isDeleted) {
+    const baseUrl = process.env.URL || "http://localhost:3000";
+    // Return a Tombstone object for deleted actors
+    return c.json(
+      {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        id: `${baseUrl}/users/${user.username}`,
+        type: "Tombstone",
+        deleted: user.deletedAt?.toISOString(),
+      },
+      410,
+      {
+        "Content-Type": "application/activity+json; charset=utf-8",
+      },
+    );
+  }
+
   const baseUrl = process.env.URL || "http://localhost:3000";
 
   // Build ActivityPub Actor document

@@ -19,3 +19,4 @@ export * from "./IRemoteInstanceRepository.js";
 export * from "./IScheduledNoteRepository.js";
 export * from "./IPasskeyCredentialRepository.js";
 export * from "./IPasskeyChallengeRepository.js";
+export * from "./IOAuthAccountRepository.js";

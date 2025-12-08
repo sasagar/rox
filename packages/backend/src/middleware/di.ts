@@ -43,6 +43,7 @@ export function diMiddleware() {
     c.set("notificationService", container.notificationService);
     c.set("webPushService", container.webPushService);
     c.set("remoteInstanceService", container.remoteInstanceService);
+    c.set("userDeletionService", container.userDeletionService);
 
     // Also set the container itself for routes that need multiple services
     c.set("container", container);
