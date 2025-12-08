@@ -17,6 +17,7 @@ import { TimelineSkeleton } from "../ui/Skeleton";
 import { Spinner } from "../ui/Spinner";
 import { ErrorMessage } from "../ui/ErrorMessage";
 import { ScrollToTop } from "../ui/ScrollToTop";
+import { AnimatedList } from "../ui/AnimatedList";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 import { useTimelineStream, type TimelineType as StreamTimelineType } from "../../hooks/useTimelineStream";
@@ -156,6 +157,7 @@ export function Timeline({ type = "local" }: TimelineProps) {
       role="feed"
       aria-busy={loading}
       aria-label={`${type} timeline`}
+      style={{ willChange: "contents" }}
     >
       {/* Enhanced Error Message with Retry */}
       {error && (
@@ -178,10 +180,15 @@ export function Timeline({ type = "local" }: TimelineProps) {
         </div>
       )}
 
-      {/* Notes List */}
-      {notes.map((note) => (
-        <NoteCard key={note.id} note={note} onDelete={() => handleNoteDelete(note.id)} />
-      ))}
+      {/* Notes List with Animation */}
+      <AnimatedList
+        items={notes}
+        keyExtractor={(note) => note.id}
+        className="space-y-4"
+        renderItem={(note) => (
+          <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />
+        )}
+      />
 
       {/* Loading More Indicator - Show spinner when loading additional notes */}
       {loading && notes.length > 0 && (
