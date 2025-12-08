@@ -17,7 +17,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
-import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
+import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
 import { LanguageSwitcher } from "../LanguageSwitcher";
@@ -35,7 +35,7 @@ export function Sidebar() {
   const logout = useSetAtom(logoutAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);
+  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedAtom);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Toggle collapsed state

@@ -118,22 +118,6 @@ export function createLogger(config: LoggerConfig = {}): pino.Logger {
 export const logger = createLogger();
 
 /**
- * Create a child logger with additional context
- *
- * @param bindings - Additional context to include in all logs
- * @returns Child logger instance
- *
- * @example
- * ```typescript
- * const requestLogger = logger.child({ requestId: '123' });
- * requestLogger.info('Processing request');
- * ```
- */
-export function createChildLogger(bindings: Record<string, unknown>): pino.Logger {
-  return logger.child(bindings);
-}
-
-/**
  * Request context for logging
  */
 export interface RequestContext {

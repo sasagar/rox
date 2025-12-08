@@ -153,9 +153,3 @@ export function CardContent({ children, className }: { children: ReactNode; clas
   return <div className={className || ""}>{children}</div>;
 }
 
-/**
- * CardFooter component for card actions and footers
- */
-export function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={`mt-4 flex items-center gap-2 ${className || ""}`}>{children}</div>;
-}

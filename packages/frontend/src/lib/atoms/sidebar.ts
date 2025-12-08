@@ -38,8 +38,3 @@ export const sidebarCollapsedAtom = atomWithStorage<boolean>(
   { getOnInit: true }
 );
 
-/**
- * Alias for backward compatibility
- * The atom now handles persistence automatically
- */
-export const sidebarCollapsedWithPersistenceAtom = sidebarCollapsedAtom;

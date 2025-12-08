@@ -137,28 +137,3 @@ export function errorResponse(
   return c.json({ error: message } satisfies ErrorResponse, status);
 }
 
-/**
- * Parses and validates a status filter from query string.
- * Used for filtering reports, warnings, etc.
- *
- * @param c - Hono context
- * @param validStatuses - Array of valid status values
- * @param defaultStatus - Default status if not specified (optional)
- * @returns Parsed status or undefined
- *
- * @example
- * ```typescript
- * const status = parseStatusFilter(c, ["open", "resolved"], "open");
- * ```
- */
-export function parseStatusFilter<T extends string>(
-  c: Context,
-  validStatuses: readonly T[],
-  defaultStatus?: T
-): T | undefined {
-  const status = c.req.query("status") as T | undefined;
-  if (status && validStatuses.includes(status)) {
-    return status;
-  }
-  return defaultStatus;
-}
