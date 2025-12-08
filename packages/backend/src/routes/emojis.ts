@@ -13,6 +13,7 @@ import { generateId } from "shared";
 import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import { logger } from "../lib/logger.js";
+import { optionalAuth } from "../middleware/auth.js";
 
 /** Allowed emoji file types */
 const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"];
@@ -21,6 +22,11 @@ const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"
 const MAX_EMOJI_SIZE = 256 * 1024;
 
 const app = new Hono();
+
+// Apply optional authentication to all routes
+// This allows public endpoints to work without auth,
+// while authenticated endpoints can access c.get("user")
+app.use("*", optionalAuth());
 
 /**
  * List All Local Emojis
