@@ -10,6 +10,8 @@ export interface ListUsersOptions {
   offset?: number;
   /** Filter by local users only (host is null) */
   localOnly?: boolean;
+  /** Filter by remote users only (host is not null) */
+  remoteOnly?: boolean;
   /** Filter by admin status */
   isAdmin?: boolean;
   /** Filter by suspended status */
@@ -87,6 +89,11 @@ export interface IUserRepository {
    * @param localOnly ローカルユーザーのみをカウントする場合はtrue
    */
   count(localOnly?: boolean): Promise<number>;
+
+  /**
+   * リモートユーザー数を取得
+   */
+  countRemote(): Promise<number>;
 
   /**
    * Search users by username or displayName

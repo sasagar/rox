@@ -172,7 +172,7 @@ msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
 #: src/components/layout/Sidebar.tsx:120
-#: src/pages/admin/users.tsx:429
+#: src/pages/admin/users.tsx:453
 msgid "Admin"
 msgstr "Admin"
 
@@ -218,7 +218,7 @@ msgstr "Aliases"
 
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
-#: src/pages/admin/users.tsx:360
+#: src/pages/admin/users.tsx:381
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:379
 msgid "All"
@@ -256,7 +256,7 @@ msgstr "Already have an account?"
 msgid "Already have an account? Sign in"
 msgstr "Already have an account? Sign in"
 
-#: src/pages/admin/users.tsx:553
+#: src/pages/admin/users.tsx:588
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
@@ -266,7 +266,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
 #. placeholder {0}: userToDelete.username
-#: src/pages/admin/users.tsx:525
+#: src/pages/admin/users.tsx:560
 msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
 msgstr "Are you sure you want to delete <0>@{0}</0>? This action will:"
 
@@ -447,7 +447,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/emojis.tsx:769
 #: src/pages/admin/roles.tsx:568
 #: src/pages/admin/storage.tsx:543
-#: src/pages/admin/users.tsx:565
+#: src/pages/admin/users.tsx:600
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:288
@@ -631,7 +631,7 @@ msgstr "Default Roles"
 
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:861
-#: src/pages/admin/users.tsx:578
+#: src/pages/admin/users.tsx:613
 msgid "Delete"
 msgstr "Delete"
 
@@ -656,11 +656,11 @@ msgstr "Delete Notes"
 msgid "Delete role"
 msgstr "Delete role"
 
-#: src/pages/admin/users.tsx:490
+#: src/pages/admin/users.tsx:511
 msgid "Delete user"
 msgstr "Delete user"
 
-#: src/pages/admin/users.tsx:520
+#: src/pages/admin/users.tsx:555
 msgid "Delete User"
 msgstr "Delete User"
 
@@ -668,12 +668,12 @@ msgstr "Delete User"
 msgid "Delete warning"
 msgstr "Delete warning"
 
-#: src/pages/admin/users.tsx:439
+#: src/pages/admin/users.tsx:463
 msgid "Deleted"
 msgstr "Deleted"
 
 #. placeholder {0}: formatDate(user.deletedAt)
-#: src/pages/admin/users.tsx:500
+#: src/pages/admin/users.tsx:535
 msgid "Deleted {0}"
 msgstr "Deleted {0}"
 
@@ -1028,6 +1028,10 @@ msgstr "Failed to process report"
 msgid "Failed to refresh instance"
 msgstr "Failed to refresh instance"
 
+#: src/pages/admin/users.tsx:231
+msgid "Failed to refresh user"
+msgstr "Failed to refresh user"
+
 #: src/components/settings/PasskeySection.tsx:122
 msgid "Failed to register passkey"
 msgstr "Failed to register passkey"
@@ -1368,7 +1372,7 @@ msgstr "Instance unblocked successfully"
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 
-#: src/pages/admin/users.tsx:536
+#: src/pages/admin/users.tsx:571
 msgid "Invalidate all active sessions"
 msgstr "Invalidate all active sessions"
 
@@ -1425,7 +1429,7 @@ msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
 
 #. placeholder {0}: formatDate(user.createdAt)
-#: src/pages/admin/users.tsx:454
+#: src/pages/admin/users.tsx:475
 msgid "Joined {0}"
 msgstr "Joined {0}"
 
@@ -1490,8 +1494,8 @@ msgstr "Loading posts..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/pages/admin/users.tsx:295
-#: src/pages/admin/users.tsx:371
+#: src/pages/admin/users.tsx:316
+#: src/pages/admin/users.tsx:392
 #: src/pages/timeline.tsx:129
 msgid "Local"
 msgstr "Local"
@@ -1536,7 +1540,7 @@ msgstr "Lowercase letters, numbers, and underscores only"
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
-#: src/pages/admin/users.tsx:466
+#: src/pages/admin/users.tsx:487
 msgid "Make admin"
 msgstr "Make admin"
 
@@ -1556,7 +1560,7 @@ msgstr "Manage invitation codes for new user registration"
 msgid "Manage remote instances and federation status"
 msgstr "Manage remote instances and federation status"
 
-#: src/pages/admin/users.tsx:262
+#: src/pages/admin/users.tsx:283
 msgid "Manage user accounts"
 msgstr "Manage user accounts"
 
@@ -1569,7 +1573,7 @@ msgstr "Manage your profile information"
 msgid "Mark all as read"
 msgstr "Mark all as read"
 
-#: src/pages/admin/users.tsx:533
+#: src/pages/admin/users.tsx:568
 msgid "Mark the account as deleted"
 msgstr "Mark the account as deleted"
 
@@ -1792,7 +1796,7 @@ msgid "No text content"
 msgstr "No text content"
 
 #: src/pages/admin/storage.tsx:495
-#: src/pages/admin/users.tsx:395
+#: src/pages/admin/users.tsx:416
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "No users found"
@@ -2174,6 +2178,10 @@ msgstr "Refresh"
 msgid "Refresh List"
 msgstr "Refresh List"
 
+#: src/pages/admin/users.tsx:526
+msgid "Refresh user information"
+msgstr "Refresh user information"
+
 #: src/components/settings/PushNotificationSection.tsx:216
 msgid "Registered devices"
 msgstr "Registered devices"
@@ -2217,8 +2225,8 @@ msgstr "Reject Report"
 msgid "Rejected"
 msgstr "Rejected"
 
-#: src/pages/admin/users.tsx:310
-#: src/pages/admin/users.tsx:382
+#: src/pages/admin/users.tsx:331
+#: src/pages/admin/users.tsx:403
 msgid "Remote"
 msgstr "Remote"
 
@@ -2243,7 +2251,7 @@ msgstr "Remote Instances"
 msgid "Remove"
 msgstr "Remove"
 
-#: src/pages/admin/users.tsx:466
+#: src/pages/admin/users.tsx:487
 msgid "Remove admin"
 msgstr "Remove admin"
 
@@ -2251,7 +2259,7 @@ msgstr "Remove admin"
 msgid "Remove alias"
 msgstr "Remove alias"
 
-#: src/pages/admin/users.tsx:539
+#: src/pages/admin/users.tsx:574
 msgid "Remove all follow relationships"
 msgstr "Remove all follow relationships"
 
@@ -2548,7 +2556,7 @@ msgid "Search User"
 msgstr "Search User"
 
 #: src/pages/admin/storage.tsx:461
-#: src/pages/admin/users.tsx:344
+#: src/pages/admin/users.tsx:365
 msgid "Search users..."
 msgstr "Search users..."
 
@@ -2577,7 +2585,7 @@ msgstr "Select from Drive"
 msgid "Send a test notification to verify your setup."
 msgstr "Send a test notification to verify your setup."
 
-#: src/pages/admin/users.tsx:542
+#: src/pages/admin/users.tsx:577
 msgid "Send Delete activity to remote followers"
 msgstr "Send Delete activity to remote followers"
 
@@ -2725,7 +2733,7 @@ msgstr "Successful"
 msgid "Supported formats: PNG, GIF, WebP, APNG"
 msgstr "Supported formats: PNG, GIF, WebP, APNG"
 
-#: src/pages/admin/users.tsx:477
+#: src/pages/admin/users.tsx:498
 msgid "Suspend"
 msgstr "Suspend"
 
@@ -2738,8 +2746,8 @@ msgstr "Suspend User"
 msgid "Suspend Users"
 msgstr "Suspend Users"
 
-#: src/pages/admin/users.tsx:325
-#: src/pages/admin/users.tsx:434
+#: src/pages/admin/users.tsx:346
+#: src/pages/admin/users.tsx:458
 #: src/pages/mod/users.tsx:349
 msgid "Suspended"
 msgstr "Suspended"
@@ -2852,7 +2860,7 @@ msgid "Top Servers by Delivery"
 msgstr "Top Servers by Delivery"
 
 #: src/pages/admin/queue.tsx:457
-#: src/pages/admin/users.tsx:280
+#: src/pages/admin/users.tsx:301
 msgid "Total"
 msgstr "Total"
 
@@ -2945,7 +2953,7 @@ msgstr "Unknown"
 msgid "Unknown User"
 msgstr "Unknown User"
 
-#: src/pages/admin/users.tsx:477
+#: src/pages/admin/users.tsx:498
 msgid "Unsuspend"
 msgstr "Unsuspend"
 
@@ -3019,7 +3027,11 @@ msgstr "User deleted. {0} Delete activities sent to followers."
 msgid "User Details"
 msgstr "User Details"
 
-#: src/pages/admin/users.tsx:337
+#: src/pages/admin/users.tsx:224
+msgid "User information refreshed"
+msgstr "User information refreshed"
+
+#: src/pages/admin/users.tsx:358
 msgid "User List"
 msgstr "User List"
 
@@ -3073,7 +3085,7 @@ msgid "Username is required"
 msgstr "Username is required"
 
 #: src/pages/admin/federation.tsx:398
-#: src/pages/admin/users.tsx:259
+#: src/pages/admin/users.tsx:280
 #: src/pages/mod/audit-logs.tsx:261
 msgid "Users"
 msgstr "Users"

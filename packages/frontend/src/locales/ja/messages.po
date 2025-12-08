@@ -172,7 +172,7 @@ msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
 #: src/components/layout/Sidebar.tsx:120
-#: src/pages/admin/users.tsx:429
+#: src/pages/admin/users.tsx:453
 msgid "Admin"
 msgstr "管理"
 
@@ -218,7 +218,7 @@ msgstr "エイリアス"
 
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
-#: src/pages/admin/users.tsx:360
+#: src/pages/admin/users.tsx:381
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:379
 msgid "All"
@@ -256,7 +256,7 @@ msgstr "すでにアカウントをお持ちですか？"
 msgid "Already have an account? Sign in"
 msgstr "すでにアカウントをお持ちですか？サインイン"
 
-#: src/pages/admin/users.tsx:553
+#: src/pages/admin/users.tsx:588
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
@@ -266,7 +266,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: userToDelete.username
-#: src/pages/admin/users.tsx:525
+#: src/pages/admin/users.tsx:560
 msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
 msgstr "<0>@{0}</0> を削除してもよろしいですか？この操作により："
 
@@ -447,7 +447,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:769
 #: src/pages/admin/roles.tsx:568
 #: src/pages/admin/storage.tsx:543
-#: src/pages/admin/users.tsx:565
+#: src/pages/admin/users.tsx:600
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:288
@@ -631,7 +631,7 @@ msgstr "デフォルトロール数"
 
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:861
-#: src/pages/admin/users.tsx:578
+#: src/pages/admin/users.tsx:613
 msgid "Delete"
 msgstr "削除"
 
@@ -656,11 +656,11 @@ msgstr "ノート削除"
 msgid "Delete role"
 msgstr "ロールを削除"
 
-#: src/pages/admin/users.tsx:490
+#: src/pages/admin/users.tsx:511
 msgid "Delete user"
 msgstr "ユーザーを削除"
 
-#: src/pages/admin/users.tsx:520
+#: src/pages/admin/users.tsx:555
 msgid "Delete User"
 msgstr "ユーザー削除"
 
@@ -668,12 +668,12 @@ msgstr "ユーザー削除"
 msgid "Delete warning"
 msgstr "警告を削除"
 
-#: src/pages/admin/users.tsx:439
+#: src/pages/admin/users.tsx:463
 msgid "Deleted"
 msgstr "削除済み"
 
 #. placeholder {0}: formatDate(user.deletedAt)
-#: src/pages/admin/users.tsx:500
+#: src/pages/admin/users.tsx:535
 msgid "Deleted {0}"
 msgstr "{0} 削除済み"
 
@@ -1028,6 +1028,10 @@ msgstr "報告の処理に失敗しました"
 msgid "Failed to refresh instance"
 msgstr "インスタンス情報の更新に失敗しました"
 
+#: src/pages/admin/users.tsx:231
+msgid "Failed to refresh user"
+msgstr "ユーザー情報の更新に失敗しました"
+
 #: src/components/settings/PasskeySection.tsx:122
 msgid "Failed to register passkey"
 msgstr "パスキーの登録に失敗しました"
@@ -1368,7 +1372,7 @@ msgstr "インスタンスのブロックを解除しました"
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "無効なファイル形式です。PNG、GIF、WebP、APNGのみ対応"
 
-#: src/pages/admin/users.tsx:536
+#: src/pages/admin/users.tsx:571
 msgid "Invalidate all active sessions"
 msgstr "全てのアクティブなセッションを無効化"
 
@@ -1425,7 +1429,7 @@ msgid "Join Rox and start sharing"
 msgstr "Roxに参加して共有を始めましょう"
 
 #. placeholder {0}: formatDate(user.createdAt)
-#: src/pages/admin/users.tsx:454
+#: src/pages/admin/users.tsx:475
 msgid "Joined {0}"
 msgstr "{0} に参加"
 
@@ -1490,8 +1494,8 @@ msgstr "投稿を読み込み中..."
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: src/pages/admin/users.tsx:295
-#: src/pages/admin/users.tsx:371
+#: src/pages/admin/users.tsx:316
+#: src/pages/admin/users.tsx:392
 #: src/pages/timeline.tsx:129
 msgid "Local"
 msgstr "ローカル"
@@ -1536,7 +1540,7 @@ msgstr "小文字、数字、アンダースコアのみ使用可"
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
-#: src/pages/admin/users.tsx:466
+#: src/pages/admin/users.tsx:487
 msgid "Make admin"
 msgstr "管理者にする"
 
@@ -1556,7 +1560,7 @@ msgstr "新規ユーザー登録用の招待コードを管理"
 msgid "Manage remote instances and federation status"
 msgstr "リモートインスタンスと連合ステータスを管理"
 
-#: src/pages/admin/users.tsx:262
+#: src/pages/admin/users.tsx:283
 msgid "Manage user accounts"
 msgstr "ユーザーアカウントを管理"
 
@@ -1569,7 +1573,7 @@ msgstr "プロフィール情報を管理"
 msgid "Mark all as read"
 msgstr "すべて既読にする"
 
-#: src/pages/admin/users.tsx:533
+#: src/pages/admin/users.tsx:568
 msgid "Mark the account as deleted"
 msgstr "アカウントを削除済みとしてマーク"
 
@@ -1792,7 +1796,7 @@ msgid "No text content"
 msgstr "テキストコンテンツなし"
 
 #: src/pages/admin/storage.tsx:495
-#: src/pages/admin/users.tsx:395
+#: src/pages/admin/users.tsx:416
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "ユーザーが見つかりませんでした"
@@ -2174,6 +2178,10 @@ msgstr "更新"
 msgid "Refresh List"
 msgstr "リストを更新"
 
+#: src/pages/admin/users.tsx:526
+msgid "Refresh user information"
+msgstr "ユーザー情報を更新"
+
 #: src/components/settings/PushNotificationSection.tsx:216
 msgid "Registered devices"
 msgstr "登録済みデバイス"
@@ -2217,8 +2225,8 @@ msgstr "通報を却下"
 msgid "Rejected"
 msgstr "却下済み"
 
-#: src/pages/admin/users.tsx:310
-#: src/pages/admin/users.tsx:382
+#: src/pages/admin/users.tsx:331
+#: src/pages/admin/users.tsx:403
 msgid "Remote"
 msgstr "リモート"
 
@@ -2243,7 +2251,7 @@ msgstr "リモートインスタンス"
 msgid "Remove"
 msgstr "削除"
 
-#: src/pages/admin/users.tsx:466
+#: src/pages/admin/users.tsx:487
 msgid "Remove admin"
 msgstr "管理者を解除"
 
@@ -2251,7 +2259,7 @@ msgstr "管理者を解除"
 msgid "Remove alias"
 msgstr "エイリアスを削除"
 
-#: src/pages/admin/users.tsx:539
+#: src/pages/admin/users.tsx:574
 msgid "Remove all follow relationships"
 msgstr "全てのフォロー関係を削除"
 
@@ -2548,7 +2556,7 @@ msgid "Search User"
 msgstr "ユーザーを検索"
 
 #: src/pages/admin/storage.tsx:461
-#: src/pages/admin/users.tsx:344
+#: src/pages/admin/users.tsx:365
 msgid "Search users..."
 msgstr "ユーザーを検索..."
 
@@ -2577,7 +2585,7 @@ msgstr "ドライブから選択"
 msgid "Send a test notification to verify your setup."
 msgstr "テスト通知を送信して、設定を確認します。"
 
-#: src/pages/admin/users.tsx:542
+#: src/pages/admin/users.tsx:577
 msgid "Send Delete activity to remote followers"
 msgstr "リモートフォロワーにDelete Activityを送信"
 
@@ -2725,7 +2733,7 @@ msgstr "成功"
 msgid "Supported formats: PNG, GIF, WebP, APNG"
 msgstr "対応フォーマット: PNG, GIF, WebP, APNG"
 
-#: src/pages/admin/users.tsx:477
+#: src/pages/admin/users.tsx:498
 msgid "Suspend"
 msgstr "停止"
 
@@ -2738,8 +2746,8 @@ msgstr "ユーザーを停止"
 msgid "Suspend Users"
 msgstr "ユーザー凍結"
 
-#: src/pages/admin/users.tsx:325
-#: src/pages/admin/users.tsx:434
+#: src/pages/admin/users.tsx:346
+#: src/pages/admin/users.tsx:458
 #: src/pages/mod/users.tsx:349
 msgid "Suspended"
 msgstr "停止中"
@@ -2852,7 +2860,7 @@ msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
 
 #: src/pages/admin/queue.tsx:457
-#: src/pages/admin/users.tsx:280
+#: src/pages/admin/users.tsx:301
 msgid "Total"
 msgstr "合計"
 
@@ -2945,7 +2953,7 @@ msgstr "不明"
 msgid "Unknown User"
 msgstr "不明なユーザー"
 
-#: src/pages/admin/users.tsx:477
+#: src/pages/admin/users.tsx:498
 msgid "Unsuspend"
 msgstr "停止解除"
 
@@ -3019,7 +3027,11 @@ msgstr "ユーザーを削除しました。{0}件のDelete Activityをフォロ
 msgid "User Details"
 msgstr "ユーザー詳細"
 
-#: src/pages/admin/users.tsx:337
+#: src/pages/admin/users.tsx:224
+msgid "User information refreshed"
+msgstr "ユーザー情報を更新しました"
+
+#: src/pages/admin/users.tsx:358
 msgid "User List"
 msgstr "ユーザー一覧"
 
@@ -3073,7 +3085,7 @@ msgid "Username is required"
 msgstr "ユーザー名を入力してください"
 
 #: src/pages/admin/federation.tsx:398
-#: src/pages/admin/users.tsx:259
+#: src/pages/admin/users.tsx:280
 #: src/pages/mod/audit-logs.tsx:261
 msgid "Users"
 msgstr "ユーザー"

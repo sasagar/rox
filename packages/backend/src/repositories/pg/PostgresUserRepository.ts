@@ -1,4 +1,4 @@
-import { eq, and, isNull, sql, desc, or, ilike } from "drizzle-orm";
+import { eq, and, isNull, isNotNull, sql, desc, or, ilike } from "drizzle-orm";
 import type { Database } from "../../db/index.js";
 import { users, type User } from "../../db/schema/pg.js";
 import type {
@@ -91,13 +91,24 @@ export class PostgresUserRepository implements IUserRepository {
     return result?.count ?? 0;
   }
 
+  async countRemote(): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(users)
+      .where(isNotNull(users.host));
+
+    return result?.count ?? 0;
+  }
+
   async findAll(options: ListUsersOptions = {}): Promise<User[]> {
-    const { limit = 100, offset = 0, localOnly, isAdmin, isSuspended } = options;
+    const { limit = 100, offset = 0, localOnly, remoteOnly, isAdmin, isSuspended } = options;
 
     const conditions = [];
 
     if (localOnly === true) {
       conditions.push(isNull(users.host));
+    } else if (remoteOnly === true) {
+      conditions.push(isNotNull(users.host));
     }
 
     if (isAdmin !== undefined) {

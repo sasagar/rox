@@ -31,6 +31,13 @@ import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
 import { AdminNav } from "../../components/admin/AdminNav";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
+import { MfmRenderer } from "../../components/mfm/MfmRenderer";
+
+interface ProfileEmoji {
+  name: string;
+  url: string;
+}
 
 interface AdminUser {
   id: string;
@@ -44,6 +51,7 @@ interface AdminUser {
   isDeleted: boolean;
   deletedAt: string | null;
   createdAt: string;
+  profileEmojis?: ProfileEmoji[];
 }
 
 interface UsersResponse {
@@ -61,8 +69,8 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filter state
-  const [localOnly, setLocalOnly] = useState(false);
+  // Filter state - "all" | "local" | "remote"
+  const [userFilter, setUserFilter] = useState<"all" | "local" | "remote">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Delete modal state
@@ -77,8 +85,10 @@ export default function AdminUsersPage() {
       apiClient.setToken(token);
       const params = new URLSearchParams();
       params.set("limit", "100");
-      if (localOnly) {
+      if (userFilter === "local") {
         params.set("localOnly", "true");
+      } else if (userFilter === "remote") {
+        params.set("remoteOnly", "true");
       }
       const response = await apiClient.get<UsersResponse>(
         `/api/admin/users?${params}`,
@@ -91,7 +101,7 @@ export default function AdminUsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, localOnly]);
+  }, [token, userFilter]);
 
   // Check admin access and load users
   useEffect(() => {
@@ -208,8 +218,39 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleRefreshUser = async (user: AdminUser) => {
+    if (!token || !user.host) return;
+
+    try {
+      apiClient.setToken(token);
+      await apiClient.post(`/api/admin/users/${user.id}/refresh`, {});
+
+      addToast({
+        type: "success",
+        message: t`User information refreshed`,
+      });
+
+      await loadUsers();
+    } catch (err: any) {
+      addToast({
+        type: "error",
+        message: err.message || t`Failed to refresh user`,
+      });
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  // Convert profileEmojis array to Record<string, string> for MfmRenderer
+  const getEmojiMap = (emojis?: ProfileEmoji[]): Record<string, string> => {
+    if (!emojis || emojis.length === 0) return {};
+    const map: Record<string, string> = {};
+    for (const emoji of emojis) {
+      map[emoji.name] = emoji.url;
+    }
+    return map;
   };
 
   const filteredUsers = users.filter((user) => {
@@ -343,15 +384,41 @@ export default function AdminUsersPage() {
                   className="pl-9 pr-3 py-1 text-sm border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 w-48"
                 />
               </div>
-              <label className="flex items-center gap-2 text-sm text-(--text-secondary)">
-                <input
-                  type="checkbox"
-                  checked={localOnly}
-                  onChange={(e) => setLocalOnly(e.target.checked)}
-                  className="rounded"
-                />
-                <Trans>Local only</Trans>
-              </label>
+              <div className="flex rounded-lg border border-(--border-color) overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setUserFilter("all")}
+                  className={`px-3 py-1 text-sm ${
+                    userFilter === "all"
+                      ? "bg-primary-600 text-white"
+                      : "bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
+                  }`}
+                >
+                  <Trans>All</Trans>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserFilter("local")}
+                  className={`px-3 py-1 text-sm border-l border-(--border-color) ${
+                    userFilter === "local"
+                      ? "bg-primary-600 text-white"
+                      : "bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
+                  }`}
+                >
+                  <Trans>Local</Trans>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserFilter("remote")}
+                  className={`px-3 py-1 text-sm border-l border-(--border-color) ${
+                    userFilter === "remote"
+                      ? "bg-primary-600 text-white"
+                      : "bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-tertiary)"
+                  }`}
+                >
+                  <Trans>Remote</Trans>
+                </button>
+              </div>
               <Button variant="ghost" size="sm" onPress={loadUsers}>
                 <RefreshCw className="w-4 h-4" />
               </Button>
@@ -379,7 +446,7 @@ export default function AdminUsersPage() {
                     <div className="flex items-center gap-3">
                       {user.avatarUrl ? (
                         <img
-                          src={user.avatarUrl}
+                          src={getProxiedImageUrl(user.avatarUrl) || user.avatarUrl}
                           alt={user.username}
                           className="w-10 h-10 rounded-full object-cover"
                         />
@@ -391,8 +458,14 @@ export default function AdminUsersPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-(--text-primary)">
-                            @{user.username}
-                            {user.host && `@${user.host}`}
+                            {user.displayName ? (
+                              <MfmRenderer
+                                text={user.displayName}
+                                customEmojis={getEmojiMap(user.profileEmojis)}
+                              />
+                            ) : (
+                              `@${user.username}`
+                            )}
                           </span>
                           {user.isAdmin && (
                             <span className="px-2 py-0.5 text-xs rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
@@ -414,14 +487,15 @@ export default function AdminUsersPage() {
                           )}
                         </div>
                         <div className="text-sm text-(--text-muted)">
-                          {user.displayName || user.email}
+                          @{user.username}
+                          {user.host && `@${user.host}`}
                         </div>
                         <div className="text-xs text-(--text-muted)">
                           <Trans>Joined {formatDate(user.createdAt)}</Trans>
                         </div>
                       </div>
                     </div>
-                    {/* Actions - only for local, non-deleted users */}
+                    {/* Actions for local users */}
                     {user.host === null && !user.isDeleted && (
                       <div className="flex items-center gap-2">
                         {/* Toggle Admin */}
@@ -457,6 +531,20 @@ export default function AdminUsersPage() {
                           isDisabled={user.isAdmin}
                         >
                           <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
+                    )}
+                    {/* Actions for remote users */}
+                    {user.host !== null && (
+                      <div className="flex items-center gap-2">
+                        {/* Refresh remote user info */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onPress={() => handleRefreshUser(user)}
+                          aria-label={t`Refresh user information`}
+                        >
+                          <RefreshCw className="w-4 h-4 text-(--text-muted)" />
                         </Button>
                       </div>
                     )}
