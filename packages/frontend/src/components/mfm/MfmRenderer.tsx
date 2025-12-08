@@ -16,9 +16,10 @@
  * - Block quotes
  */
 
-import { useMemo, memo, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, memo, type ReactNode } from "react";
 import * as mfm from "mfm-js";
 import type { MfmNode } from "mfm-js";
+import { lookupEmojis } from "../../lib/atoms/customEmoji";
 import { containsHtml, htmlToMfm } from "../../lib/utils/htmlToText";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
@@ -89,8 +90,59 @@ function MfmRendererComponent({
     }
   }, [processedText, plain, nestLimit]);
 
-  // Use provided custom emojis directly (no dynamic fetching to avoid re-render loops)
-  const mergedEmojis = customEmojis;
+  // State for fetched custom emojis
+  const [fetchedEmojis, setFetchedEmojis] = useState<Record<string, string>>({});
+  const hasFetchedRef = useRef(false);
+  const lastEmojiNamesRef = useRef<string>("");
+
+  // Extract custom emoji names from AST
+  const emojiNames = useMemo(() => {
+    const names: string[] = [];
+    const collectEmojiNames = (nodeList: MfmNode[]) => {
+      for (const node of nodeList) {
+        if (node.type === "emojiCode") {
+          names.push(node.props.name);
+        }
+        if (node.children) {
+          collectEmojiNames(node.children);
+        }
+      }
+    };
+    collectEmojiNames(nodes);
+    return names;
+  }, [nodes]);
+
+  // Fetch custom emoji URLs only once per unique set of emoji names
+  useEffect(() => {
+    const missingEmojis = emojiNames.filter(
+      (name) => !customEmojis[name] && !customEmojis[`:${name}:`] && !fetchedEmojis[name],
+    );
+    if (missingEmojis.length === 0) return;
+
+    // Create a stable key from emoji names to prevent duplicate fetches
+    const emojiKey = missingEmojis.sort().join(",");
+    if (emojiKey === lastEmojiNamesRef.current) return;
+    lastEmojiNamesRef.current = emojiKey;
+
+    // Only fetch once
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
+    lookupEmojis(missingEmojis).then((emojiMap) => {
+      const newEmojis: Record<string, string> = {};
+      for (const [name, url] of emojiMap) {
+        newEmojis[name] = url;
+      }
+      if (Object.keys(newEmojis).length > 0) {
+        setFetchedEmojis(newEmojis);
+      }
+    });
+  }, [emojiNames, customEmojis, fetchedEmojis]);
+
+  // Merge provided and fetched emojis
+  const mergedEmojis = useMemo(() => {
+    return { ...fetchedEmojis, ...customEmojis };
+  }, [customEmojis, fetchedEmojis]);
 
   // Render a single MFM node
   const renderNode = (node: MfmNode, index: number): ReactNode => {
