@@ -605,9 +605,14 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) mb-1">
                 <Trans>Primary Color</Trans>
               </label>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>
+                  This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers.
+                </Trans>
+              </p>
 
               {/* Color Presets */}
               <div className="flex flex-wrap gap-2 mb-4">

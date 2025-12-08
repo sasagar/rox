@@ -3333,3 +3333,7 @@ msgstr "ZIPフォーマット"
 #: src/components/note/ComposeModal.tsx
 msgid "New Note"
 msgstr "新規投稿"
+
+#: src/pages/admin/settings.tsx
+msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
+msgstr "この色はサーバーのブランドカラーです。ボタン、リンク、UIのアクセントカラーとして使用され、連合先のサーバーにも共有されます。"
