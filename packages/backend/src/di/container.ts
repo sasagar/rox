@@ -60,6 +60,7 @@ import { MigrationService } from "../services/MigrationService.js";
 import { NotificationService } from "../services/NotificationService.js";
 import { WebPushService } from "../services/WebPushService.js";
 import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
+import { UserDeletionService } from "../services/UserDeletionService.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -96,6 +97,7 @@ export interface AppContainer {
   notificationService: NotificationService;
   webPushService: WebPushService;
   remoteInstanceService: RemoteInstanceService;
+  userDeletionService: UserDeletionService;
 }
 
 /**
@@ -181,6 +183,15 @@ export function createContainer(): AppContainer {
   // Remote Instance Service for fetching federated server metadata
   const remoteInstanceService = new RemoteInstanceService(repositories.remoteInstanceRepository);
 
+  // User Deletion Service for account deletion with ActivityPub compliance
+  const userDeletionService = new UserDeletionService(
+    repositories.userRepository,
+    repositories.followRepository,
+    repositories.sessionRepository,
+    repositories.noteRepository,
+    activityPubDeliveryService,
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -195,6 +206,7 @@ export function createContainer(): AppContainer {
     notificationService,
     webPushService,
     remoteInstanceService,
+    userDeletionService,
   };
 }
 

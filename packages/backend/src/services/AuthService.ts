@@ -113,6 +113,8 @@ export class AuthService {
       bio: null,
       isAdmin: isFirstUser, // First user becomes admin
       isSuspended: false,
+      isDeleted: false,
+      deletedAt: null,
       publicKey,
       privateKey,
       customCss: null, // Custom CSS for profile page

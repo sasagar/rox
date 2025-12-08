@@ -85,6 +85,9 @@ export const users = sqliteTable(
     bannerUrl: text("banner_url"),
     isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
     isSuspended: integer("is_suspended", { mode: "boolean" }).notNull().default(false),
+    // Soft delete fields for account deletion
+    isDeleted: integer("is_deleted", { mode: "boolean" }).notNull().default(false),
+    deletedAt: integer("deleted_at", { mode: "timestamp" }),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: text("host"),
@@ -112,6 +115,7 @@ export const users = sqliteTable(
     usernameHostIdx: uniqueIndex("username_host_idx").on(table.username, table.host),
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
+    isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
   }),
 );
 

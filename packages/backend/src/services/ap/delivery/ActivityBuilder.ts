@@ -332,7 +332,7 @@ export class ActivityBuilder {
   }
 
   /**
-   * Build a Delete activity
+   * Build a Delete activity for a note
    */
   delete(objectUri: string, actor: User): Activity {
     return {
@@ -344,6 +344,28 @@ export class ActivityBuilder {
         id: objectUri,
         type: "Tombstone",
       },
+    };
+  }
+
+  /**
+   * Build a Delete activity for an actor (account deletion)
+   *
+   * When an actor is deleted, the Delete activity should have:
+   * - actor: the actor being deleted
+   * - object: the actor URI (not a Tombstone, as the actor itself is the object)
+   *
+   * Some implementations expect just the URI, others expect a Tombstone.
+   * Using just the URI is more common for actor deletions.
+   */
+  deleteActor(actor: User): Activity {
+    const actorUri = this.actorUri(actor.username);
+    return {
+      "@context": AS_CONTEXT,
+      type: "Delete",
+      id: this.activityId("delete", actor.id, Date.now()),
+      actor: actorUri,
+      object: actorUri,
+      to: [AS_PUBLIC],
     };
   }
 

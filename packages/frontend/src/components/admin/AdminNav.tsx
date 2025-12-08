@@ -6,13 +6,14 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity } from "lucide-react";
+import { Settings, Users, UserCog, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity } from "lucide-react";
 
 /**
  * Admin navigation items
  */
 const ADMIN_NAV_ITEMS = [
   { href: "/admin/settings", icon: Settings, label: "Settings" },
+  { href: "/admin/users", icon: UserCog, label: "Users" },
   { href: "/admin/roles", icon: Users, label: "Roles" },
   { href: "/admin/emojis", icon: Smile, label: "Emojis" },
   { href: "/admin/storage", icon: HardDrive, label: "Storage" },

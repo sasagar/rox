@@ -62,6 +62,11 @@ webfinger.get("/.well-known/webfinger", async (c: Context) => {
     return c.notFound();
   }
 
+  // 410 Gone if user is deleted (ActivityPub spec compliance)
+  if (user.isDeleted) {
+    return c.json({ error: "Resource has been deleted" }, 410);
+  }
+
   // Build WebFinger response (JRD)
   const jrd = {
     subject: resource,

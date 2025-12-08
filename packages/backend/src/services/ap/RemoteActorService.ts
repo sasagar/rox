@@ -254,6 +254,8 @@ export class RemoteActorService {
       bio: actor.summary || null,
       isAdmin: false,
       isSuspended: false,
+      isDeleted: false,
+      deletedAt: null,
       publicKey: actor.publicKey?.publicKeyPem || null,
       privateKey: null, // Remote users don't have private keys
       inbox: actor.inbox,

@@ -311,4 +311,34 @@ export class ActivityPubDeliveryService {
 
     logger.debug({ noteId, inboxUrl: targetNoteAuthor.inbox }, "Enqueued Announce activity");
   }
+
+  /**
+   * Deliver Delete activity for actor (account deletion)
+   *
+   * This sends a Delete activity to all remote followers when an account is deleted.
+   * The activity must be sent BEFORE the actor's private key is cleared.
+   *
+   * @param actor - The actor being deleted (must still have privateKey)
+   * @returns Number of inboxes the activity was enqueued to
+   */
+  async deliverDeleteActor(actor: User): Promise<number> {
+    if (actor.host) return 0; // Can't send delete for remote users
+
+    const remoteFollowers = await this.getRemoteFollowers(actor.id);
+    if (remoteFollowers.length === 0) {
+      logger.debug({ username: actor.username }, "No remote followers to notify about deletion");
+      return 0;
+    }
+
+    const activity = this.builder.deleteActor(actor);
+    const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
+
+    await this.deliverToInboxes(activity, inboxUrls, actor, JobPriority.URGENT);
+    logger.info(
+      { username: actor.username, inboxCount: inboxUrls.size },
+      "Enqueued Delete actor activity",
+    );
+
+    return inboxUrls.size;
+  }
 }

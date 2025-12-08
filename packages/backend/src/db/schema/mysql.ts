@@ -95,6 +95,9 @@ export const users = mysqlTable(
     bannerUrl: text("banner_url"),
     isAdmin: boolean("is_admin").notNull().default(false),
     isSuspended: boolean("is_suspended").notNull().default(false),
+    // Soft delete fields for account deletion
+    isDeleted: boolean("is_deleted").notNull().default(false),
+    deletedAt: datetime("deleted_at"),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: varchar("host", { length: 256 }),
@@ -122,6 +125,7 @@ export const users = mysqlTable(
     usernameHostIdx: uniqueIndex("username_host_idx").on(table.username, table.host),
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
+    isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
   }),
 );
 

@@ -16,6 +16,7 @@ describe("DeleteHandler", () => {
   let handler: DeleteHandler;
   let mockContext: HandlerContext;
   let mockNoteRepository: any;
+  let mockUserRepository: any;
   let mockRemoteActorService: any;
 
   const createMockHonoContext = (): Partial<Context> => {
@@ -33,6 +34,10 @@ describe("DeleteHandler", () => {
       delete: mock(() => Promise.resolve()),
     };
 
+    mockUserRepository = {
+      findByUri: mock(() => Promise.resolve(null)),
+    };
+
     mockRemoteActorService = {
       resolveActor: mock(() =>
         Promise.resolve({
@@ -44,6 +49,7 @@ describe("DeleteHandler", () => {
     };
 
     contextMap.set("noteRepository", mockNoteRepository);
+    contextMap.set("userRepository", mockUserRepository);
     contextMap.set("remoteActorService", mockRemoteActorService);
 
     return {
@@ -109,6 +115,7 @@ describe("DeleteHandler", () => {
 
   test("should handle non-existent note gracefully", async () => {
     mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    mockUserRepository.findByUri = mock(() => Promise.resolve(null));
 
     const activity: Activity = {
       "@context": "https://www.w3.org/ns/activitystreams",
@@ -121,7 +128,7 @@ describe("DeleteHandler", () => {
     const result = await handler.handle(activity, mockContext);
 
     expect(result.success).toBe(true);
-    expect(result.message).toContain("not found or not supported");
+    expect(result.message).toContain("Delete target not found");
     expect(mockNoteRepository.delete).not.toHaveBeenCalled();
   });
 

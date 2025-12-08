@@ -20,6 +20,9 @@ export interface User extends Timestamps {
   bannerUrl: string | null;
   isAdmin: boolean;
   isSuspended: boolean;
+  // Soft delete fields for account deletion
+  isDeleted: boolean;
+  deletedAt: Date | null;
   publicKey: string | null;
   privateKey: string | null;
   host: string | null; // null for local users, domain for remote users

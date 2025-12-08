@@ -187,32 +187,49 @@ app.post("/users/:id/suspend", async (c) => {
  *
  * DELETE /api/admin/users/:id
  *
- * Permanently deletes a user and all associated data.
- * Use with caution - this cannot be undone.
+ * Soft deletes a user account with ActivityPub compliance:
+ * - For local users: marks as deleted, sends Delete activity to followers
+ * - For remote users: marks as deleted (for incoming Delete activities)
+ *
+ * Query Parameters:
+ * - deleteNotes: If "true", also deletes all user's notes (local users only)
+ *
+ * This is a soft delete - the user record remains but is marked as deleted.
+ * Deleted actors will return HTTP 410 Gone on their ActivityPub endpoints.
  */
 app.delete("/users/:id", async (c) => {
-  const userRepository = c.get("userRepository");
+  const userDeletionService = c.get("userDeletionService");
   const currentAdmin = c.get("user");
   const userId = c.req.param("id");
+  const deleteNotes = c.req.query("deleteNotes") === "true";
 
   // Prevent self-deletion
   if (userId === currentAdmin?.id) {
     return errorResponse(c, "Cannot delete yourself");
   }
 
-  const user = await userRepository.findById(userId);
-  if (!user) {
-    return errorResponse(c, "User not found", 404);
+  const result = await userDeletionService.deleteLocalUser(userId, {
+    deleteNotes,
+    deletedBy: currentAdmin?.id,
+  });
+
+  if (!result.success) {
+    // Determine appropriate HTTP status
+    if (result.message === "User not found") {
+      return errorResponse(c, result.message, 404);
+    }
+    if (result.isRemoteUser) {
+      return errorResponse(c, result.message);
+    }
+    return errorResponse(c, result.message);
   }
 
-  // Cannot delete other admins
-  if (user.isAdmin) {
-    return errorResponse(c, "Cannot delete an admin user. Remove admin status first.");
-  }
-
-  await userRepository.delete(userId);
-
-  return c.json({ success: true, message: `User ${user.username} has been deleted` });
+  return c.json({
+    success: true,
+    message: result.message,
+    deletedUserId: result.deletedUserId,
+    activitiesSent: result.activitiesSent,
+  });
 });
 
 // ============================================================================
