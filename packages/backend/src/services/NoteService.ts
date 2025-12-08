@@ -219,25 +219,25 @@ export class NoteService {
       });
     }
 
-    // Deliver Create activity to followers (async, non-blocking)
+    // Determine if this is a pure renote (no text, no CW, no reply, no files)
+    // Pure renotes get Announce activity, quote renotes get Create activity
+    const isPureRenote = renoteTarget && !text && !cw && !replyId && fileIds.length === 0;
+
+    // Deliver ActivityPub activity to followers (async, non-blocking)
     const author = await this.userRepository.findById(userId);
     if (author && !author.host && !localOnly && visibility === "public") {
-      // Fire and forget - don't await to avoid blocking the response
-      this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-        logger.error({ err: error, noteId }, "Failed to deliver Create activity");
-      });
-    }
-
-    // Deliver Announce activity to remote note author (async, non-blocking)
-    if (renoteTarget && author && !author.host && !localOnly && visibility === "public") {
-      const renoteAuthor = await this.userRepository.findById(renoteTarget.userId);
-      if (renoteAuthor && renoteAuthor.host && renoteAuthor.inbox) {
-        // Only deliver if renote target is a remote user with inbox
+      if (isPureRenote && renoteTarget) {
+        // Pure renote: send Announce activity to all followers
         this.deliveryService
-          .deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor)
+          .deliverAnnounceActivity(note.id, renoteTarget, author)
           .catch((error) => {
             logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
           });
+      } else {
+        // Regular note or quote renote: send Create activity
+        this.deliveryService.deliverCreateNote(note, author).catch((error) => {
+          logger.error({ err: error, noteId }, "Failed to deliver Create activity");
+        });
       }
     }
 
