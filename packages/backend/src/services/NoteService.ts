@@ -842,16 +842,13 @@ export class NoteService {
     const followers = await this.followRepository.findByFolloweeId(authorId, 10000);
     const followerIds = followers.map((f) => f.followerId);
 
-    if (followerIds.length > 0) {
-      // Push to home timelines of followers
-      streamService.pushToHomeTimelines(followerIds, noteWithUser);
+    // Push to home timeline of the author themselves and their followers
+    // The author should see their own notes in their home timeline
+    const homeTimelineUserIds = [authorId, ...followerIds];
+    streamService.pushToHomeTimelines(homeTimelineUserIds, noteWithUser);
 
-      // Push to social timelines of followers (for followed remote user notes)
-      // For local users, social timeline = local + followed remote users
-      // Since this is a local user's note, it's already in local timeline
-      // So we only need to push to social timeline for remote followers
-      // But since we're filtering to local users only (author.host check above),
-      // we don't need to push to social timeline separately
-    }
+    // Push to social timelines (author + followers)
+    // Social timeline = home timeline + local timeline for local users
+    streamService.pushToSocialTimelines(homeTimelineUserIds, noteWithUser);
   }
 }
