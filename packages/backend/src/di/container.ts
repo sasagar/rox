@@ -24,6 +24,7 @@ import type {
   IPasskeyChallengeRepository,
   IOAuthAccountRepository,
 } from "../interfaces/repositories/index.js";
+import type { IContactRepository } from "../interfaces/repositories/IContactRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import {
@@ -50,6 +51,7 @@ import {
   PostgresPasskeyChallengeRepository,
   PostgresOAuthAccountRepository,
 } from "../repositories/pg/index.js";
+import { PostgresContactRepository } from "../repositories/pg/PostgresContactRepository.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
 import { DragonflyCacheAdapter } from "../adapters/cache/DragonflyCacheAdapter.js";
@@ -63,6 +65,7 @@ import { NotificationService } from "../services/NotificationService.js";
 import { WebPushService } from "../services/WebPushService.js";
 import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
 import { UserDeletionService } from "../services/UserDeletionService.js";
+import { UserDataExportService } from "../services/UserDataExportService.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -88,6 +91,7 @@ export interface AppContainer {
   passkeyCredentialRepository: IPasskeyCredentialRepository;
   passkeyChallengeRepository: IPasskeyChallengeRepository;
   oauthAccountRepository: IOAuthAccountRepository;
+  contactRepository: IContactRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -101,6 +105,7 @@ export interface AppContainer {
   webPushService: WebPushService;
   remoteInstanceService: RemoteInstanceService;
   userDeletionService: UserDeletionService;
+  userDataExportService: UserDataExportService;
 }
 
 /**
@@ -195,6 +200,15 @@ export function createContainer(): AppContainer {
     activityPubDeliveryService,
   );
 
+  // User Data Export Service for GDPR data portability
+  const userDataExportService = new UserDataExportService(
+    repositories.userRepository,
+    repositories.noteRepository,
+    repositories.followRepository,
+    repositories.driveFileRepository,
+    repositories.notificationRepository,
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -210,6 +224,7 @@ export function createContainer(): AppContainer {
     webPushService,
     remoteInstanceService,
     userDeletionService,
+    userDataExportService,
   };
 }
 
@@ -242,6 +257,7 @@ function createRepositories(db: any, dbType: string) {
         passkeyCredentialRepository: new PostgresPasskeyCredentialRepository(db),
         passkeyChallengeRepository: new PostgresPasskeyChallengeRepository(db),
         oauthAccountRepository: new PostgresOAuthAccountRepository(db),
+        contactRepository: new PostgresContactRepository(db),
       };
 
     case "mysql":

@@ -36,6 +36,7 @@ import moderatorRoute from "./routes/moderator.js";
 import notificationsRoute from "./routes/notifications.js";
 import pushRoute from "./routes/push.js";
 import scheduledNotesRoute from "./routes/scheduled-notes.js";
+import contactRoute from "./routes/contact.js";
 import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
@@ -86,6 +87,7 @@ app.route("/api/i/migration", migrationRoute);
 app.route("/api/notifications", notificationsRoute);
 app.route("/api/push", pushRoute);
 app.route("/api/scheduled-notes", scheduledNotesRoute);
+app.route("/api/contact", contactRoute);
 
 // WebSocket routes for real-time updates
 app.route("/ws", wsRoute);

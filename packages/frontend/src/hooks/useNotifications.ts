@@ -13,9 +13,9 @@ import { atom, useAtom, useAtomValue, useSetAtom, getDefaultStore } from "jotai"
 import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { uiSettingsAtom } from "../lib/atoms/uiSettings";
 import { notificationsApi } from "../lib/api/notifications";
-import { playNotificationSound } from "../lib/utils/notificationSound";
+import { playNotificationSoundForType } from "../lib/utils/notificationSound";
 import type { Notification, NotificationFetchOptions } from "../lib/types/notification";
-import type { NotificationSound } from "../lib/types/uiSettings";
+import type { NotificationSound, NotificationSoundType, NotificationSoundsByType } from "../lib/types/uiSettings";
 
 /**
  * Notifications list atom
@@ -63,7 +63,11 @@ function connectWSSingleton(
   setNotifications: (fn: (prev: Notification[]) => Notification[]) => void,
   setUnreadCount: (fn: (prev: number) => number | number) => void,
   setWsConnected: (connected: boolean) => void,
-  getUiSettings: () => { notificationSound?: NotificationSound; notificationVolume?: number },
+  getUiSettings: () => {
+    notificationSound?: NotificationSound;
+    notificationVolume?: number;
+    notificationSoundsByType?: NotificationSoundsByType;
+  },
 ) {
   // Already connected or connecting
   if (wsSocket && wsSocket.readyState === WebSocket.OPEN) return;
@@ -100,10 +104,23 @@ function connectWSSingleton(
           // Add new notification at the beginning
           setNotifications((prev) => [notification, ...prev]);
 
-          // Play notification sound
+          // Play notification sound based on notification type
           const uiSettings = getUiSettings();
-          if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
-            playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
+          const defaultSound = uiSettings.notificationSound ?? "default";
+          const defaultVolume = uiSettings.notificationVolume ?? 50;
+
+          // Only play if default sound is not "none" or there's a per-type override
+          if (defaultSound !== "none" || uiSettings.notificationSoundsByType) {
+            // Map notification type to sound type (exclude warning and follow_request_accepted)
+            const soundType = notification.type as NotificationSoundType;
+            if (["follow", "mention", "reply", "reaction", "renote", "quote"].includes(notification.type)) {
+              playNotificationSoundForType(
+                soundType,
+                uiSettings.notificationSoundsByType,
+                defaultSound,
+                defaultVolume,
+              );
+            }
           }
           break;
         }

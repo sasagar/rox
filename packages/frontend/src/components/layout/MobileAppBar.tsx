@@ -36,34 +36,38 @@ export function MobileAppBar() {
     return null;
   }
 
+  // Use fixed pixel sizes for icons to prevent scaling with UI font size settings
+  // (rem-based sizes like w-6 h-6 would scale with --rox-font-size)
+  const iconStyle = { width: "24px", height: "24px" };
+
   const navItems = [
     {
-      icon: <Home className="w-6 h-6" />,
+      icon: <Home style={iconStyle} />,
       href: "/timeline",
       key: "home",
       label: "Home",
     },
     {
-      icon: <Search className="w-6 h-6" />,
+      icon: <Search style={iconStyle} />,
       href: "/search",
       key: "search",
       label: "Search",
     },
     {
-      icon: <PenSquare className="w-6 h-6" />,
+      icon: <PenSquare style={iconStyle} />,
       key: "post",
       label: "Post",
       highlight: true,
       isButton: true,
     },
     {
-      icon: <Bell className="w-6 h-6" />,
+      icon: <Bell style={iconStyle} />,
       href: "/notifications",
       key: "notifications",
       label: "Notifications",
     },
     {
-      icon: <User className="w-6 h-6" />,
+      icon: <User style={iconStyle} />,
       href: `/${currentUser.username}`,
       key: "profile",
       label: "Profile",

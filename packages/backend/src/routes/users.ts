@@ -914,4 +914,60 @@ app.post("/@me/delete", requireAuth(), async (c) => {
   }
 });
 
+/**
+ * Export User Data (GDPR Article 20 - Data Portability)
+ *
+ * GET /api/users/@me/export
+ *
+ * Exports all personal data associated with the authenticated user
+ * in a portable JSON format. This endpoint supports GDPR compliance
+ * for the right to data portability.
+ *
+ * @remarks
+ * Response (200):
+ * ```json
+ * {
+ *   "exportVersion": "1.0",
+ *   "exportedAt": "2024-01-01T00:00:00.000Z",
+ *   "dataSubject": { ... },
+ *   "profile": { ... },
+ *   "content": { "notes": [...], "noteCount": 123 },
+ *   "social": { "following": [...], "followers": [...] },
+ *   "interactions": { "reactions": [...] },
+ *   "media": { "files": [...] },
+ *   "notifications": { ... }
+ * }
+ * ```
+ *
+ * Errors:
+ * - 401: Unauthorized
+ * - 500: Export failed
+ */
+app.get("/@me/export", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  try {
+    const userDataExportService = c.get("userDataExportService");
+    const exportData = await userDataExportService.exportUserData(user.id);
+
+    // Set headers for file download
+    c.header("Content-Type", "application/json");
+    c.header(
+      "Content-Disposition",
+      `attachment; filename="user-data-export-${user.username}-${new Date().toISOString().split("T")[0]}.json"`,
+    );
+
+    return c.json(exportData);
+  } catch (error) {
+    console.error("Failed to export user data:", error);
+    if (error instanceof Error) {
+      return errorResponse(c, error.message, 500);
+    }
+    return errorResponse(c, "Failed to export user data", 500);
+  }
+});
+
 export default app;

@@ -821,7 +821,7 @@ export class NoteService {
 
     // Create note with user data for WebSocket push (frontend expects note.user)
     // Include both 'name' and 'displayName' for frontend compatibility
-    const noteWithUser = {
+    const noteWithUser: Record<string, unknown> = {
       ...note,
       user: {
         id: author.id,
@@ -833,6 +833,50 @@ export class NoteService {
         profileEmojis: author.profileEmojis,
       },
     };
+
+    // Hydrate reply information if this is a reply
+    if (note.replyId) {
+      const replyNote = await this.noteRepository.findById(note.replyId);
+      if (replyNote) {
+        const replyUser = await this.userRepository.findById(replyNote.userId);
+        if (replyUser) {
+          noteWithUser.reply = {
+            ...replyNote,
+            user: {
+              id: replyUser.id,
+              username: replyUser.username,
+              name: replyUser.displayName || replyUser.username,
+              displayName: replyUser.displayName,
+              avatarUrl: replyUser.avatarUrl,
+              host: replyUser.host,
+              profileEmojis: replyUser.profileEmojis,
+            },
+          };
+        }
+      }
+    }
+
+    // Hydrate renote information if this is a renote/quote
+    if (note.renoteId) {
+      const renoteNote = await this.noteRepository.findById(note.renoteId);
+      if (renoteNote) {
+        const renoteUser = await this.userRepository.findById(renoteNote.userId);
+        if (renoteUser) {
+          noteWithUser.renote = {
+            ...renoteNote,
+            user: {
+              id: renoteUser.id,
+              username: renoteUser.username,
+              name: renoteUser.displayName || renoteUser.username,
+              displayName: renoteUser.displayName,
+              avatarUrl: renoteUser.avatarUrl,
+              host: renoteUser.host,
+              profileEmojis: renoteUser.profileEmojis,
+            },
+          };
+        }
+      }
+    }
 
     // Push to local timeline (all local public notes)
     streamService.pushToLocalTimeline(noteWithUser);

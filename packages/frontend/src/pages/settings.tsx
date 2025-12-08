@@ -20,6 +20,7 @@ import { StorageSection } from "../components/settings/StorageSection";
 import { ProfileImageSection } from "../components/settings/ProfileImageSection";
 import { PasskeySection } from "../components/settings/PasskeySection";
 import { AccountDeletionSection } from "../components/settings/AccountDeletionSection";
+import { DataExportSection } from "../components/settings/DataExportSection";
 
 /**
  * Settings page
@@ -321,6 +322,11 @@ export default function SettingsPage() {
       {/* Account Migration Section */}
       <div className="mt-6">
         <AccountMigrationSection />
+      </div>
+
+      {/* Data Export Section */}
+      <div className="mt-6">
+        <DataExportSection />
       </div>
 
       {/* Logout Section */}

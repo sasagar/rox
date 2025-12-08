@@ -53,14 +53,14 @@ describe("UserDeletionService", () => {
     updatedAt: new Date(),
   };
 
-  const mockRemoteUser: User = {
+  const mockRemoteUser = {
     ...mockLocalUser,
     id: "remote-user-1",
     username: "remoteuser",
-    email: null,
+    email: null as unknown as string, // Remote users may not have email
     host: "remote.example.com",
     privateKey: null,
-  };
+  } as User;
 
   const mockAdminUser: User = {
     ...mockLocalUser,

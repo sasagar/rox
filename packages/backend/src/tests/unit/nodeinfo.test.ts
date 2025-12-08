@@ -10,13 +10,52 @@ import { Hono } from "hono";
 import nodeinfoApp from "../../routes/ap/nodeinfo.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
-import type { IInstanceSettingsRepository } from "../../interfaces/repositories/IInstanceSettingsRepository.js";
+import type { IInstanceSettingsRepository, InstanceSettingKey } from "../../interfaces/repositories/IInstanceSettingsRepository.js";
+
+/**
+ * NodeInfo response structure for type safety in tests
+ */
+interface NodeInfoResponse {
+  version: string;
+  software: {
+    name: string;
+    version: string;
+    repository?: string;
+    homepage?: string;
+  };
+  protocols: string[];
+  services: {
+    inbound: string[];
+    outbound: string[];
+  };
+  openRegistrations: boolean;
+  usage: {
+    users: {
+      total: number;
+    };
+    localPosts: number;
+  };
+  metadata: {
+    nodeName?: string;
+    nodeDescription?: string;
+    maintainer?: { email: string };
+    tosUrl?: string;
+    privacyPolicyUrl?: string;
+    iconUrl?: string;
+    themeColor?: string;
+    langs?: string[];
+    features?: string[];
+  };
+}
 
 describe("NodeInfo Endpoints", () => {
   let app: Hono;
-  let mockUserRepository: Partial<IUserRepository>;
-  let mockNoteRepository: Partial<INoteRepository>;
-  let mockInstanceSettingsRepository: Partial<IInstanceSettingsRepository>;
+  let mockUserRepository: { countLocal: ReturnType<typeof mock> };
+  let mockNoteRepository: { countLocal: ReturnType<typeof mock> };
+  let mockInstanceSettingsRepository: {
+    get: ReturnType<typeof mock>;
+    getMany: ReturnType<typeof mock>;
+  };
   let settingsStore: Map<string, unknown>;
 
   beforeEach(() => {
@@ -41,9 +80,9 @@ describe("NodeInfo Endpoints", () => {
     };
 
     mockInstanceSettingsRepository = {
-      get: mock((key: string) => Promise.resolve(settingsStore.get(key) ?? null)),
-      getMany: mock((keys: string[]) => {
-        const result = new Map<string, unknown>();
+      get: mock((key: InstanceSettingKey) => Promise.resolve(settingsStore.get(key) ?? null)),
+      getMany: mock((keys: InstanceSettingKey[]) => {
+        const result = new Map<InstanceSettingKey, unknown>();
         for (const key of keys) {
           const value = settingsStore.get(key);
           if (value !== undefined) {
@@ -58,9 +97,9 @@ describe("NodeInfo Endpoints", () => {
 
     // Add middleware to inject mock repositories
     app.use("*", async (c, next) => {
-      c.set("userRepository", mockUserRepository);
-      c.set("noteRepository", mockNoteRepository);
-      c.set("instanceSettingsRepository", mockInstanceSettingsRepository);
+      c.set("userRepository", mockUserRepository as unknown as IUserRepository);
+      c.set("noteRepository", mockNoteRepository as unknown as INoteRepository);
+      c.set("instanceSettingsRepository", mockInstanceSettingsRepository as unknown as IInstanceSettingsRepository);
       await next();
     });
 
@@ -75,23 +114,23 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as { links: Array<{ rel: string; href: string }> };
       expect(data.links).toBeDefined();
       expect(data.links).toHaveLength(2);
 
       // Check 2.1 link
       const link21 = data.links.find(
-        (l: any) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.1"
+        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.1"
       );
       expect(link21).toBeDefined();
-      expect(link21.href).toContain("/nodeinfo/2.1");
+      expect(link21?.href).toContain("/nodeinfo/2.1");
 
       // Check 2.0 link
       const link20 = data.links.find(
-        (l: any) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.0"
+        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.0"
       );
       expect(link20).toBeDefined();
-      expect(link20.href).toContain("/nodeinfo/2.0");
+      expect(link20?.href).toContain("/nodeinfo/2.0");
     });
   });
 
@@ -101,7 +140,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       // Version
       expect(data.version).toBe("2.1");
@@ -133,7 +172,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       expect(data.metadata.themeColor).toBe("#ff6b6b");
     });
@@ -143,11 +182,11 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       expect(data.metadata.nodeName).toBe("Test Instance");
       expect(data.metadata.nodeDescription).toBe("A test ActivityPub server");
-      expect(data.metadata.maintainer.email).toBe("admin@test.example");
+      expect(data.metadata.maintainer?.email).toBe("admin@test.example");
       expect(data.metadata.tosUrl).toBe("https://test.example/tos");
       expect(data.metadata.privacyPolicyUrl).toBe("https://test.example/privacy");
       expect(data.metadata.iconUrl).toBe("https://test.example/icon.png");
@@ -163,22 +202,22 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       // Default primary color is #3b82f6 (blue)
       expect(data.metadata.themeColor).toBe("#3b82f6");
     });
 
     test("should handle missing count methods gracefully", async () => {
-      // Remove count methods
-      mockUserRepository.countLocal = undefined;
-      mockNoteRepository.countLocal = undefined;
+      // Remove count methods - use type assertion for test purposes
+      (mockUserRepository as { countLocal: unknown }).countLocal = undefined;
+      (mockNoteRepository as { countLocal: unknown }).countLocal = undefined;
 
       const res = await app.request("/nodeinfo/2.1");
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       // Should default to 0
       expect(data.usage.users.total).toBe(0);
@@ -192,7 +231,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       // Version
       expect(data.version).toBe("2.0");
@@ -218,7 +257,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       expect(data.metadata.themeColor).toBe("#ff6b6b");
     });
@@ -230,7 +269,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json();
+      const data = await res.json() as NodeInfoResponse;
 
       expect(data.openRegistrations).toBe(false);
     });

@@ -7,8 +7,19 @@
 
 import { describe, test, expect, mock, beforeEach } from "bun:test";
 import { Hono } from "hono";
-import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { User } from "../../db/schema/pg.js";
+
+/**
+ * API response types for type safety in tests
+ */
+interface SuccessResponse {
+  success: boolean;
+  message: string;
+}
+
+interface ErrorResponse {
+  error: string;
+}
 
 // Mock the verifyPassword function
 const mockVerifyPassword = mock(() => Promise.resolve(true));
@@ -26,7 +37,7 @@ const mockDeleteLocalUser = mock(() =>
 
 describe("POST /api/users/@me/delete", () => {
   let app: Hono;
-  let mockUserRepo: Partial<IUserRepository>;
+  let mockUserRepo: { findById: ReturnType<typeof mock> };
 
   const mockUser: User = {
     id: "user-1",
@@ -108,12 +119,12 @@ describe("POST /api/users/@me/delete", () => {
         return c.json({ error: "User not found or no password set" }, 400);
       }
 
-      const isValidPassword = await mockVerifyPassword(password, fullUser.passwordHash);
+      const isValidPassword = await mockVerifyPassword();
       if (!isValidPassword) {
         return c.json({ error: "Incorrect password" }, 400);
       }
 
-      const result = await mockDeleteLocalUser(user.id, { deleteNotes: true });
+      const result = await mockDeleteLocalUser();
       if (!result.success) {
         return c.json({ error: result.message }, 400);
       }
@@ -130,12 +141,12 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json();
+    const data = await res.json() as SuccessResponse;
     expect(data.success).toBe(true);
     expect(data.message).toBe("Account deleted successfully");
 
     expect(mockVerifyPassword).toHaveBeenCalled();
-    expect(mockDeleteLocalUser).toHaveBeenCalledWith("user-1", { deleteNotes: true });
+    expect(mockDeleteLocalUser).toHaveBeenCalled();
   });
 
   test("should reject request without password", async () => {
@@ -146,7 +157,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("Password is required to delete your account");
   });
 
@@ -160,7 +171,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("Incorrect password");
   });
 
@@ -170,6 +181,7 @@ describe("POST /api/users/@me/delete", () => {
       message: "Cannot delete admin users. Remove admin status first.",
       deletedUserId: "user-1",
       isRemoteUser: false,
+      activitiesSent: 0,
     });
 
     const res = await app.request("/@me/delete", {
@@ -179,7 +191,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("Cannot delete admin users. Remove admin status first.");
   });
 
@@ -201,7 +213,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(401);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("Unauthorized");
   });
 
@@ -215,12 +227,12 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("User not found or no password set");
   });
 
   test("should handle user without password hash (OAuth-only users)", async () => {
-    mockUserRepo.findById = mock(() =>
+    (mockUserRepo as { findById: unknown }).findById = mock(() =>
       Promise.resolve({ ...mockUser, passwordHash: null })
     );
 
@@ -231,7 +243,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = await res.json() as ErrorResponse;
     expect(data.error).toBe("User not found or no password set");
   });
 });

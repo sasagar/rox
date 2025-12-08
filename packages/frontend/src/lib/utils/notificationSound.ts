@@ -4,7 +4,11 @@
  * Generates and plays notification sounds using Web Audio API
  */
 
-import type { NotificationSound } from "../types/uiSettings";
+import type {
+  NotificationSound,
+  NotificationSoundType,
+  NotificationSoundsByType,
+} from "../types/uiSettings";
 
 let audioContext: AudioContext | null = null;
 
@@ -183,5 +187,33 @@ export function playPostSound(soundType: NotificationSound, volumePercent: numbe
     playPostSuccessSound(volume);
   } catch (error) {
     console.error("Failed to play post sound:", error);
+  }
+}
+
+/**
+ * Play notification sound for a specific notification type
+ *
+ * Uses per-type settings if available, otherwise falls back to default settings.
+ *
+ * @param notificationType - The type of notification (follow, mention, reply, etc.)
+ * @param soundsByType - Per-type sound settings (optional)
+ * @param defaultSound - Default sound type to use if no per-type setting
+ * @param defaultVolume - Default volume to use if no per-type setting
+ */
+export function playNotificationSoundForType(
+  notificationType: NotificationSoundType,
+  soundsByType: NotificationSoundsByType | undefined,
+  defaultSound: NotificationSound,
+  defaultVolume: number,
+): void {
+  // Check for per-type settings first
+  const typeSettings = soundsByType?.[notificationType];
+
+  if (typeSettings) {
+    // Use per-type settings
+    playNotificationSound(typeSettings.sound, typeSettings.volume);
+  } else {
+    // Fall back to default settings
+    playNotificationSound(defaultSound, defaultVolume);
   }
 }
