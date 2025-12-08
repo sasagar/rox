@@ -40,6 +40,7 @@ import type { NoteVisibility } from "../../lib/api/notes";
 import { uploadFile, type DriveFile } from "../../lib/api/drive";
 import { useDraft } from "../../hooks/useDraft";
 import { useMentionSuggestions } from "../../hooks/useMentionSuggestions";
+import { useEmojiSuggestions } from "../../hooks/useEmojiSuggestions";
 import { scheduledNotesApi } from "../../lib/api/scheduled-notes";
 import { DrivePickerDialog } from "../drive/DrivePickerDialog";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
@@ -125,6 +126,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     selectSuggestion: selectMentionSuggestion,
     closeSuggestions: closeMentionSuggestions,
   } = useMentionSuggestions();
+
+  // Emoji suggestions
+  const {
+    suggestions: emojiSuggestions,
+    isLoading: isEmojiLoading,
+    selectedIndex: emojiSelectedIndex,
+    showSuggestions: showEmojiSuggestions,
+    handleTextChange: handleEmojiTextChange,
+    handleKeyDown: handleEmojiKeyDown,
+    selectSuggestion: selectEmojiSuggestion,
+    closeSuggestions: closeEmojiSuggestions,
+  } = useEmojiSuggestions();
 
   // Load draft on mount (only if not replying)
   useEffect(() => {
@@ -238,9 +251,11 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     }
     // Trigger mention detection
     handleMentionTextChange(newText, cursorPosition);
+    // Trigger emoji detection
+    handleEmojiTextChange(newText, cursorPosition);
   };
 
-  // Handle keyboard events for mention suggestions
+  // Handle keyboard events for suggestions (mentions and emojis)
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       // Check if mention suggestions should handle this event
@@ -260,9 +275,38 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             }, 0);
           }
         }
+        return;
+      }
+
+      // Check if emoji suggestions should handle this event
+      if (handleEmojiKeyDown(e)) {
+        e.preventDefault();
+        // If Enter or Tab was pressed, select the current suggestion
+        if (e.key === "Enter" || e.key === "Tab") {
+          const suggestion = emojiSuggestions[emojiSelectedIndex];
+          if (suggestion) {
+            const newText = selectEmojiSuggestion(suggestion);
+            setText(newText);
+            // Update cursor position after the inserted emoji
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus();
+              }
+            }, 0);
+          }
+        }
       }
     },
-    [handleMentionKeyDown, mentionSuggestions, mentionSelectedIndex, selectMentionSuggestion],
+    [
+      handleMentionKeyDown,
+      mentionSuggestions,
+      mentionSelectedIndex,
+      selectMentionSuggestion,
+      handleEmojiKeyDown,
+      emojiSuggestions,
+      emojiSelectedIndex,
+      selectEmojiSuggestion,
+    ],
   );
 
   // Handle clicking on a mention suggestion
@@ -281,6 +325,24 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       }
     },
     [mentionSuggestions, selectMentionSuggestion],
+  );
+
+  // Handle clicking on an emoji suggestion
+  const handleEmojiClick = useCallback(
+    (index: number) => {
+      const suggestion = emojiSuggestions[index];
+      if (suggestion) {
+        const newText = selectEmojiSuggestion(suggestion);
+        setText(newText);
+        // Focus back on textarea
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+          }
+        }, 0);
+      }
+    },
+    [emojiSuggestions, selectEmojiSuggestion],
   );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -579,7 +641,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 onKeyDown={handleKeyDown}
                 onBlur={() => {
                   // Delay closing to allow click on suggestions
-                  setTimeout(() => closeMentionSuggestions(), 150);
+                  setTimeout(() => {
+                    closeMentionSuggestions();
+                    closeEmojiSuggestions();
+                  }, 150);
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -629,6 +694,52 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                           </div>
                         </div>
                         <AtSign className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* Emoji suggestions popup */}
+              {showEmojiSuggestions && !showMentionSuggestions && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                  {isEmojiLoading ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <Trans>Loading...</Trans>
+                    </div>
+                  ) : emojiSuggestions.length === 0 ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                      <Trans>No emojis found</Trans>
+                    </div>
+                  ) : (
+                    emojiSuggestions.map((suggestion, index) => (
+                      <div
+                        key={`${suggestion.name}-${index}`}
+                        onClick={() => handleEmojiClick(index)}
+                        onMouseDown={(e) => e.preventDefault()} // Prevent blur
+                        className={`flex items-center gap-2 px-3 py-2 cursor-pointer ${
+                          index === emojiSelectedIndex
+                            ? "bg-primary-50 dark:bg-primary-900/30"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                        }`}
+                        role="option"
+                        aria-selected={index === emojiSelectedIndex}
+                      >
+                        {suggestion.isCustom && suggestion.url ? (
+                          <img
+                            src={getProxiedImageUrl(suggestion.url) || suggestion.url}
+                            alt={suggestion.name}
+                            className="w-6 h-6 object-contain"
+                          />
+                        ) : (
+                          <span className="text-2xl leading-none">{suggestion.emoji}</span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            :{suggestion.name}:
+                          </div>
+                        </div>
                       </div>
                     ))
                   )}
