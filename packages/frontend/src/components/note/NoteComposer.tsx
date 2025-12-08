@@ -29,10 +29,12 @@ import { ProgressBar } from "../ui/ProgressBar";
 import { Spinner } from "../ui/Spinner";
 import { InlineError } from "../ui/ErrorMessage";
 import { EmojiPicker } from "../ui/EmojiPicker";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { notificationSoundAtom, notificationVolumeAtom } from "../../lib/atoms/uiSettings";
 import { notesApi } from "../../lib/api/notes";
+import { playPostSound } from "../../lib/utils/notificationSound";
 import type { NoteVisibility } from "../../lib/api/notes";
 import { uploadFile, type DriveFile } from "../../lib/api/drive";
 import { useDraft } from "../../hooks/useDraft";
@@ -71,6 +73,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
+  const notificationSound = useAtomValue(notificationSoundAtom);
+  const notificationVolume = useAtomValue(notificationVolumeAtom);
   const [text, setText] = useState("");
   const [cw, setCw] = useState("");
   const [showCw, setShowCw] = useState(false);
@@ -358,6 +362,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           fileIds: fileIds.length > 0 ? fileIds : undefined,
           replyId,
         });
+
+        // Play success sound
+        playPostSound(notificationSound, notificationVolume);
 
         addToast({
           type: "success",

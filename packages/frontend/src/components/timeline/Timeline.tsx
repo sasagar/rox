@@ -10,6 +10,8 @@ import {
   timelineHasMoreAtom,
   timelineLastNoteIdAtom,
 } from "../../lib/atoms/timeline";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { notificationSoundAtom, notificationVolumeAtom } from "../../lib/atoms/uiSettings";
 import { notesApi } from "../../lib/api/notes";
 import { NoteCard } from "../note/NoteCard";
 import { Button } from "../ui/Button";
@@ -21,6 +23,7 @@ import { AnimatedList } from "../ui/AnimatedList";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 import { useTimelineStream, type TimelineType as StreamTimelineType } from "../../hooks/useTimelineStream";
+import { playNotificationSound } from "../../lib/utils/notificationSound";
 
 /**
  * Props for the Timeline component
@@ -42,15 +45,31 @@ export function Timeline({ type = "local" }: TimelineProps) {
   const [error, setError] = useAtom(timelineErrorAtom);
   const [hasMore, setHasMore] = useAtom(timelineHasMoreAtom);
   const lastNoteId = useAtomValue(timelineLastNoteIdAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const notificationSound = useAtomValue(notificationSoundAtom);
+  const notificationVolume = useAtomValue(notificationVolumeAtom);
 
   const timelineContainerRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
+
+  // Callback for new note received via WebSocket
+  const handleNewNote = useCallback(
+    (note: { user: { id: string } }) => {
+      // Don't play sound for own notes
+      if (currentUser && note.user.id === currentUser.id) {
+        return;
+      }
+      // Play notification sound
+      playNotificationSound(notificationSound, notificationVolume);
+    },
+    [currentUser, notificationSound, notificationVolume],
+  );
 
   // Enable real-time updates via SSE for supported timeline types
   // "global" type maps to "local" stream since global includes all public notes
   const streamType: StreamTimelineType | null =
     type === "home" ? "home" : type === "social" ? "social" : type === "local" ? "local" : "local";
-  useTimelineStream(streamType, true);
+  useTimelineStream(streamType, { enabled: true, onNewNote: handleNewNote });
 
   // Reset and load data when type changes (component remounts via key)
   useEffect(() => {
