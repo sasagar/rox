@@ -520,10 +520,8 @@ function NoteCardComponent({
 
             {/* Reply Source - Speech bubble style showing the note being replied to */}
             {note.reply && (
-              <div className="mb-3 relative">
-                {/* Speech bubble tail pointing up */}
-                <div className="absolute -top-2 left-6 w-4 h-4 bg-gray-100 dark:bg-gray-800 border-l border-t border-gray-200 dark:border-gray-700 transform rotate-45" />
-                <div className="relative rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 p-3">
+              <div className="mb-3">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 p-3">
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
                     <MessageCircle className="h-3 w-3" />
                     <Trans>In reply to</Trans>
