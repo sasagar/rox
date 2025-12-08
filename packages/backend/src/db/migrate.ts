@@ -17,9 +17,9 @@
  * - Migration files are placed in `drizzle/{dbType}/`
  * - Database backup recommended before execution
  */
-import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
 
 const dbType = process.env.DB_TYPE || "postgres";
 
@@ -50,14 +50,17 @@ async function runMigrations() {
 
   try {
     if (dbType === "postgres") {
-      const connection = postgres(databaseUrl, { max: 1 });
-      const db = drizzle(connection);
+      const pool = new Pool({
+        connectionString: databaseUrl,
+        max: 1, // Single connection for migrations
+      });
+      const db = drizzle({ client: pool });
 
       await migrate(db, {
         migrationsFolder: `./drizzle/${dbType}`,
       });
 
-      await connection.end();
+      await pool.end();
       console.log("✅ Migrations completed successfully");
     } else {
       console.error(`❌ Migration for ${dbType} is not yet implemented`);

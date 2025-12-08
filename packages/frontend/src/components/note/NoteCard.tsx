@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, memo, useMemo } from "react";
-import { useAtom } from "jotai";
+import { useState, useEffect, memo, useMemo, useRef, useCallback } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -64,9 +64,9 @@ function NoteCardComponent({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
-  const [token] = useAtom(tokenAtom);
-  const [currentUser] = useAtom(currentUserAtom);
-  const [, addToast] = useAtom(addToastAtom);
+  const token = useAtomValue(tokenAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const addToast = useSetAtom(addToastAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
   const [localReactions, setLocalReactions] = useState<Record<string, number>>(
     note.reactions || {},
@@ -75,6 +75,59 @@ function NoteCardComponent({
     note.reactionEmojis || {},
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+
+  // Refs for lazy loading with IntersectionObserver
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasLoadedReactionData = useRef(false);
+  const hasLoadedInstanceInfo = useRef(false);
+
+  // Callback to load reaction data when card becomes visible
+  const loadReactionData = useCallback(async () => {
+    if (hasLoadedReactionData.current) return;
+    hasLoadedReactionData.current = true;
+
+    try {
+      // Load user's own reactions first if logged in
+      let userReactions: string[] = [];
+      if (token) {
+        const reactions = await getMyReactions(note.id, token);
+        userReactions = reactions.map((r) => r.reaction);
+        setMyReactions(userReactions);
+      }
+
+      // Load custom emoji URLs
+      // For remote user notes, fetch reactions from remote server
+      const isRemoteNote = Boolean(note.user.host);
+      const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
+
+      if (Object.keys(reactionData.counts).length > 0) {
+        // Merge with user's own reactions to prevent count from jumping back
+        const merged = { ...reactionData.counts };
+        for (const reaction of userReactions) {
+          if (merged[reaction] === undefined || merged[reaction] < 1) {
+            merged[reaction] = Math.max(merged[reaction] || 0, 1);
+          }
+        }
+        setLocalReactions(merged);
+      }
+      if (Object.keys(reactionData.emojis).length > 0) {
+        setReactionEmojis(reactionData.emojis);
+      }
+    } catch (error) {
+      console.error("Failed to load reaction data:", error);
+    }
+  }, [note.id, note.user.host, token]);
+
+  // Callback to load remote instance info when card becomes visible
+  const loadInstanceInfo = useCallback(async () => {
+    if (hasLoadedInstanceInfo.current || !note.user.host) return;
+    hasLoadedInstanceInfo.current = true;
+
+    const info = await getRemoteInstanceInfo(note.user.host);
+    if (info) {
+      setRemoteInstance(info);
+    }
+  }, [note.user.host]);
 
   // Convert profileEmojis array to emoji map for MfmRenderer
   const userProfileEmojiMap = useMemo(() => {
@@ -113,66 +166,26 @@ function NoteCardComponent({
     }
   }, [note.reactionEmojis]);
 
-  // Load remote instance info for remote users
+  // Lazy load reaction data and instance info when card becomes visible
   useEffect(() => {
-    if (note.user.host) {
-      getRemoteInstanceInfo(note.user.host).then((info) => {
-        if (info) {
-          setRemoteInstance(info);
+    const element = cardRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          loadReactionData();
+          loadInstanceInfo();
+          observer.disconnect();
         }
-      });
-    }
-  }, [note.user.host]);
+      },
+      { rootMargin: "100px", threshold: 0 },
+    );
 
-  // Load user's existing reactions and custom emoji URLs on mount
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadReactionData = async () => {
-      try {
-        // Load user's own reactions first if logged in
-        let userReactions: string[] = [];
-        if (token) {
-          const reactions = await getMyReactions(note.id, token);
-          userReactions = reactions.map((r) => r.reaction);
-          if (isMounted) {
-            setMyReactions(userReactions);
-          }
-        }
-
-        // Load custom emoji URLs
-        // For remote user notes, fetch reactions from remote server
-        const isRemoteNote = Boolean(note.user.host);
-        const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
-
-        if (!isMounted) return;
-
-        if (Object.keys(reactionData.counts).length > 0) {
-          // Merge with user's own reactions to prevent count from jumping back
-          // This ensures optimistic updates aren't overwritten by stale remote data
-          const merged = { ...reactionData.counts };
-          // For each of user's reactions, ensure count is at least 1
-          for (const reaction of userReactions) {
-            if (merged[reaction] === undefined || merged[reaction] < 1) {
-              merged[reaction] = Math.max(merged[reaction] || 0, 1);
-            }
-          }
-          setLocalReactions(merged);
-        }
-        if (Object.keys(reactionData.emojis).length > 0) {
-          setReactionEmojis(reactionData.emojis);
-        }
-      } catch (error) {
-        console.error("Failed to load reaction data:", error);
-      }
-    };
-
-    loadReactionData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [note.id, note.user.host, token]);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [loadReactionData, loadInstanceInfo]);
 
   const handleReaction = async (reaction: string) => {
     if (isReacting || !token) return;
@@ -261,6 +274,7 @@ function NoteCardComponent({
 
   return (
     <Card
+      ref={cardRef}
       hover
       className="transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
       role="article"
@@ -292,7 +306,11 @@ function NoteCardComponent({
                 }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name ? <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} /> : note.user.username}
+                {note.user.name ? (
+                  <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} />
+                ) : (
+                  note.user.username
+                )}
               </SpaLink>
               <SpaLink
                 to={
@@ -352,8 +370,11 @@ function NoteCardComponent({
               to={`/notes/${note.id}`}
               className="text-xs text-(--text-muted) hover:underline"
               title={new Date(note.createdAt).toLocaleString()}
+              suppressHydrationWarning
             >
-              {new Date(note.createdAt).toLocaleString()}
+              <span suppressHydrationWarning>
+                {new Date(note.createdAt).toLocaleString()}
+              </span>
             </SpaLink>
           </div>
         </div>

@@ -84,6 +84,29 @@ export class PostgresCustomEmojiRepository implements ICustomEmojiRepository {
     return map;
   }
 
+  async findManyByNamesAnyHost(names: string[]): Promise<Map<string, CustomEmoji>> {
+    if (names.length === 0) {
+      return new Map();
+    }
+
+    // Find emojis by name from any host (for remote emoji lookup)
+    // Returns first match per name (may have duplicates across hosts)
+    const results = await this.db
+      .select()
+      .from(customEmojis)
+      .where(inArray(customEmojis.name, names));
+
+    // Use Map to keep only first match per name
+    const map = new Map<string, CustomEmoji>();
+    for (const emoji of results) {
+      if (!map.has(emoji.name)) {
+        map.set(emoji.name, emoji);
+      }
+    }
+
+    return map;
+  }
+
   async list(options: ListCustomEmojisOptions = {}): Promise<CustomEmoji[]> {
     const { host, category, search, limit = 100, offset = 0, includeSensitive = false } = options;
 

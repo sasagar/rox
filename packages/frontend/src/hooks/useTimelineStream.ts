@@ -5,10 +5,14 @@
  *
  * Provides WebSocket-based real-time updates for timelines.
  * Uses a singleton pattern for WebSocket connection per timeline type.
+ *
+ * IMPORTANT: Uses module-level state and refs to avoid re-render loops.
+ * The connection state is tracked via useState with a subscription pattern
+ * to prevent atom-based re-renders from affecting unrelated components.
  */
 
-import { useEffect, useCallback, useRef } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useEffect, useCallback, useRef, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { timelineNotesAtom } from "../lib/atoms/timeline";
 import type { Note } from "../lib/types/note";
@@ -18,30 +22,43 @@ import type { Note } from "../lib/types/note";
  */
 export type TimelineType = "home" | "local" | "social";
 
-/**
- * WebSocket connection state atom per timeline type
- */
-import { atom } from "jotai";
-export const timelineStreamConnectedAtom = atom<Record<TimelineType, boolean>>({
-  home: false,
-  local: false,
-  social: false,
-});
-
-// --- Singleton WebSocket Connection Manager per Timeline ---
+// --- Module-level connection state management ---
+// This avoids Jotai atom re-renders that were causing performance issues
 
 interface TimelineWSConnection {
   socket: WebSocket | null;
   reconnectTimeout: ReturnType<typeof setTimeout> | null;
   connectionCount: number;
   pingInterval: ReturnType<typeof setInterval> | null;
+  connected: boolean;
+  // Store refs to callbacks to avoid stale closures
+  callbacks: {
+    onNote: ((note: Note) => void) | null;
+    onNoteDeleted: ((noteId: string) => void) | null;
+    onNoteReacted: ((event: NoteReactedEvent) => void) | null;
+  };
 }
 
 const timelineConnections: Record<TimelineType, TimelineWSConnection> = {
-  home: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
-  local: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
-  social: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null },
+  home: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
+  local: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
+  social: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
 };
+
+// Subscribers for connection state changes (for React state sync)
+type ConnectionStateListener = (connected: boolean) => void;
+const connectionListeners: Record<TimelineType, Set<ConnectionStateListener>> = {
+  home: new Set(),
+  local: new Set(),
+  social: new Set(),
+};
+
+function notifyConnectionChange(timelineType: TimelineType, connected: boolean) {
+  timelineConnections[timelineType].connected = connected;
+  for (const listener of connectionListeners[timelineType]) {
+    listener(connected);
+  }
+}
 
 /**
  * Get WebSocket endpoint URL for timeline type
@@ -81,15 +98,13 @@ export interface NoteReactedEvent {
 function connectTimelineWS(
   timelineType: TimelineType,
   token: string | null,
-  onNote: (note: Note) => void,
-  onNoteDeleted: (noteId: string) => void,
-  onNoteReacted: (event: NoteReactedEvent) => void,
-  setConnected: (connected: boolean) => void,
 ) {
   const connection = timelineConnections[timelineType];
 
-  // Already connected
-  if (connection.socket && connection.socket.readyState === WebSocket.OPEN) return;
+  // Already connected or connecting
+  if (connection.socket && (connection.socket.readyState === WebSocket.OPEN || connection.socket.readyState === WebSocket.CONNECTING)) {
+    return;
+  }
 
   // Clear any pending reconnect
   if (connection.reconnectTimeout) {
@@ -114,18 +129,20 @@ function connectTimelineWS(
   socket.onmessage = (event) => {
     try {
       const message = JSON.parse(event.data);
+      const { callbacks } = connection;
+
       switch (message.event) {
         case "connected":
-          setConnected(true);
+          notifyConnectionChange(timelineType, true);
           break;
         case "note":
-          onNote(message.data as Note);
+          callbacks.onNote?.(message.data as Note);
           break;
         case "noteDeleted":
-          onNoteDeleted(message.data.noteId);
+          callbacks.onNoteDeleted?.(message.data.noteId);
           break;
         case "noteReacted":
-          onNoteReacted(message.data as NoteReactedEvent);
+          callbacks.onNoteReacted?.(message.data as NoteReactedEvent);
           break;
         case "heartbeat":
         case "pong":
@@ -142,7 +159,7 @@ function connectTimelineWS(
 
   socket.onclose = (event) => {
     console.log(`Timeline WebSocket closed: ${timelineType} (code: ${event.code})`);
-    setConnected(false);
+    notifyConnectionChange(timelineType, false);
     connection.socket = null;
 
     if (connection.pingInterval) {
@@ -153,7 +170,7 @@ function connectTimelineWS(
     // Reconnect after delay (only if there are still subscribers and not auth error)
     if (connection.connectionCount > 0 && event.code !== 4001) {
       connection.reconnectTimeout = setTimeout(() => {
-        connectTimelineWS(timelineType, token, onNote, onNoteDeleted, onNoteReacted, setConnected);
+        connectTimelineWS(timelineType, token);
       }, 5000);
     }
   };
@@ -166,11 +183,7 @@ function connectTimelineWS(
 /**
  * Disconnect timeline WebSocket stream (singleton)
  */
-function disconnectTimelineWS(
-  timelineType: TimelineType,
-  setConnected: (connected: boolean) => void,
-  force = false,
-) {
+function disconnectTimelineWS(timelineType: TimelineType, force = false) {
   const connection = timelineConnections[timelineType];
 
   if (force || connection.connectionCount <= 0) {
@@ -187,7 +200,7 @@ function disconnectTimelineWS(
     if (connection.socket) {
       connection.socket.close();
       connection.socket = null;
-      setConnected(false);
+      notifyConnectionChange(timelineType, false);
     }
   }
 }
@@ -208,67 +221,68 @@ function disconnectTimelineWS(
  * ```
  */
 export function useTimelineStream(timelineType: TimelineType, enabled = true) {
-  const setNotes = useAtom(timelineNotesAtom)[1];
-  const [connectionState, setConnectionState] = useAtom(timelineStreamConnectedAtom);
+  const setNotes = useSetAtom(timelineNotesAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
+
+  // Local state for connection status (synced via subscription)
+  const [connected, setConnected] = useState(() => timelineConnections[timelineType].connected);
 
   // Track if this is the active timeline type
   const isActiveRef = useRef(false);
 
-  /**
-   * Set connected state for this timeline type
-   */
-  const setConnected = useCallback(
-    (connected: boolean) => {
-      setConnectionState((prev) => ({
-        ...prev,
-        [timelineType]: connected,
-      }));
-    },
-    [timelineType, setConnectionState],
-  );
+  // Refs to store stable references to latest values
+  const tokenRef = useRef(token);
+  const setNotesRef = useRef(setNotes);
+  const isInitializedRef = useRef(false);
 
-  /**
-   * Handle new note from stream
-   */
-  const handleNote = useCallback(
-    (note: Note) => {
-      // Only update if this is the active timeline
+  // Keep refs up to date
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
+  useEffect(() => {
+    setNotesRef.current = setNotes;
+  }, [setNotes]);
+
+  // Subscribe to connection state changes
+  useEffect(() => {
+    const listener: ConnectionStateListener = (isConnected) => {
+      setConnected(isConnected);
+    };
+
+    connectionListeners[timelineType].add(listener);
+    // Sync initial state
+    setConnected(timelineConnections[timelineType].connected);
+
+    return () => {
+      connectionListeners[timelineType].delete(listener);
+    };
+  }, [timelineType]);
+
+  // Update callbacks in the connection object
+  // These are called from WebSocket message handler and need latest refs
+  useEffect(() => {
+    const connection = timelineConnections[timelineType];
+
+    connection.callbacks.onNote = (note: Note) => {
       if (!isActiveRef.current) return;
-
-      // Add new note at the beginning, avoiding duplicates
-      setNotes((prev) => {
+      setNotesRef.current((prev) => {
         if (prev.some((n) => n.id === note.id)) {
           return prev;
         }
         return [note, ...prev];
       });
-    },
-    [setNotes],
-  );
+    };
 
-  /**
-   * Handle note deletion from stream
-   */
-  const handleNoteDeleted = useCallback(
-    (noteId: string) => {
+    connection.callbacks.onNoteDeleted = (noteId: string) => {
       if (!isActiveRef.current) return;
+      setNotesRef.current((prev) => prev.filter((n) => n.id !== noteId));
+    };
 
-      setNotes((prev) => prev.filter((n) => n.id !== noteId));
-    },
-    [setNotes],
-  );
-
-  /**
-   * Handle note reaction update from stream
-   */
-  const handleNoteReacted = useCallback(
-    (event: NoteReactedEvent) => {
+    connection.callbacks.onNoteReacted = (event: NoteReactedEvent) => {
       if (!isActiveRef.current) return;
-
-      // Update the note's reactions in the timeline
-      setNotes((prev) =>
+      setNotesRef.current((prev) =>
         prev.map((note) => {
           if (note.id === event.noteId) {
             return {
@@ -280,26 +294,12 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
           return note;
         }),
       );
-    },
-    [setNotes],
-  );
+    };
 
-  /**
-   * Connect to stream
-   */
-  const connect = useCallback(() => {
-    // Home timeline requires authentication
-    if (timelineType === "home" && !isAuthenticated) return;
-
-    connectTimelineWS(timelineType, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
-  }, [timelineType, isAuthenticated, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected]);
-
-  /**
-   * Disconnect from stream
-   */
-  const disconnect = useCallback(() => {
-    disconnectTimelineWS(timelineType, setConnected);
-  }, [timelineType, setConnected]);
+    return () => {
+      // Don't clear callbacks on unmount - other subscribers might need them
+    };
+  }, [timelineType]);
 
   // Manage WebSocket connection lifecycle
   useEffect(() => {
@@ -313,8 +313,12 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
     connection.connectionCount++;
 
     // Connect on first subscriber
-    if (connection.connectionCount === 1) {
-      connect();
+    if (connection.connectionCount === 1 && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      // Use Promise.resolve to avoid blocking the render
+      Promise.resolve().then(() => {
+        connectTimelineWS(timelineType, tokenRef.current);
+      });
     }
 
     return () => {
@@ -324,22 +328,39 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
       // Disconnect when last subscriber unmounts
       if (connection.connectionCount <= 0) {
         connection.connectionCount = 0;
-        disconnectTimelineWS(timelineType, setConnected, true);
+        isInitializedRef.current = false;
+        disconnectTimelineWS(timelineType, true);
       }
     };
-  }, [enabled, timelineType, isAuthenticated, connect, setConnected]);
+  }, [enabled, timelineType, isAuthenticated]);
 
-  // Handle auth state changes
+  // Handle auth state changes (logout)
   useEffect(() => {
     if (timelineType === "home" && !isAuthenticated) {
       const connection = timelineConnections[timelineType];
       connection.connectionCount = 0;
-      disconnectTimelineWS(timelineType, setConnected, true);
+      isInitializedRef.current = false;
+      disconnectTimelineWS(timelineType, true);
     }
-  }, [timelineType, isAuthenticated, setConnected]);
+  }, [timelineType, isAuthenticated]);
+
+  /**
+   * Manual connect function
+   */
+  const connect = useCallback(() => {
+    if (timelineType === "home" && !isAuthenticated) return;
+    connectTimelineWS(timelineType, tokenRef.current);
+  }, [timelineType, isAuthenticated]);
+
+  /**
+   * Manual disconnect function
+   */
+  const disconnect = useCallback(() => {
+    disconnectTimelineWS(timelineType);
+  }, [timelineType]);
 
   return {
-    connected: connectionState[timelineType],
+    connected,
     connect,
     disconnect,
   };
@@ -349,6 +370,20 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
  * Hook to get timeline stream connection status
  */
 export function useTimelineStreamStatus(timelineType: TimelineType) {
-  const connectionState = useAtomValue(timelineStreamConnectedAtom);
-  return connectionState[timelineType];
+  const [connected, setConnected] = useState(() => timelineConnections[timelineType].connected);
+
+  useEffect(() => {
+    const listener: ConnectionStateListener = (isConnected) => {
+      setConnected(isConnected);
+    };
+
+    connectionListeners[timelineType].add(listener);
+    setConnected(timelineConnections[timelineType].connected);
+
+    return () => {
+      connectionListeners[timelineType].delete(listener);
+    };
+  }, [timelineType]);
+
+  return connected;
 }

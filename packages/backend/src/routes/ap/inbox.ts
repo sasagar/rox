@@ -149,16 +149,14 @@ inbox.post(
       }
     }
 
-    // Handle activity using InboxService
-    try {
-      const inboxService = getInboxService();
-      await inboxService.handleActivity(c, activity, user.id);
-    } catch (error) {
-      logger.error({ err: error }, "Activity handling error");
-      // Return 202 even on errors (don't reveal internal errors to remote servers)
-    }
+    // Handle activity using InboxService (async, don't wait)
+    // Return 202 immediately and process in background to avoid timeout
+    const inboxService = getInboxService();
+    inboxService.handleActivity(c, activity, user.id).catch((error) => {
+      logger.error({ err: error, activityType: activity.type, actor: activity.actor }, "Activity handling error");
+    });
 
-    // Always return 202 Accepted
+    // Return 202 Accepted immediately
     return c.json({ status: "accepted" }, 202);
   },
 );

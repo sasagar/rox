@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import {
   Home,
@@ -17,7 +17,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
-import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
+import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
 import { LanguageSwitcher } from "../LanguageSwitcher";
@@ -31,11 +31,11 @@ import { useInstanceInfo } from "../../hooks/useInstanceInfo";
  * Responsive: Desktop shows fixed sidebar, mobile shows hamburger menu
  */
 export function Sidebar() {
-  const [currentUser] = useAtom(currentUserAtom);
-  const [, logout] = useAtom(logoutAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const logout = useSetAtom(logoutAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);
+  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedAtom);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Toggle collapsed state

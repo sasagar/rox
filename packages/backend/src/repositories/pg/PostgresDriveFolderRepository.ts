@@ -116,7 +116,7 @@ export class PostgresDriveFolderRepository implements IDriveFolderRepository {
       ORDER BY depth DESC
     `);
 
-    return result as DriveFolder[];
+    return result.rows as DriveFolder[];
   }
 
   async countChildren(id: string): Promise<number> {

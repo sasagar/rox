@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useRef } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import {
   timelineNotesAtom,
@@ -40,7 +40,7 @@ export function Timeline({ type = "local" }: TimelineProps) {
   const [loading, setLoading] = useAtom(timelineLoadingAtom);
   const [error, setError] = useAtom(timelineErrorAtom);
   const [hasMore, setHasMore] = useAtom(timelineHasMoreAtom);
-  const [lastNoteId] = useAtom(timelineLastNoteIdAtom);
+  const lastNoteId = useAtomValue(timelineLastNoteIdAtom);
 
   const timelineContainerRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);

@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode, type Ref } from "react";
 
 /**
  * Card variant styles using Class Variance Authority
@@ -82,21 +82,25 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
  * </Card>
  * ```
  */
-export function Card({
-  children,
-  padding,
-  shadow,
-  hover,
-  className,
-  onClick,
-  role,
-  "aria-label": ariaLabel,
-  tabIndex,
-}: CardProps) {
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  {
+    children,
+    padding,
+    shadow,
+    hover,
+    className,
+    onClick,
+    role,
+    "aria-label": ariaLabel,
+    tabIndex,
+  },
+  ref,
+) {
   const Component = onClick ? "button" : "div";
 
   return (
     <Component
+      ref={ref as Ref<HTMLDivElement> & Ref<HTMLButtonElement>}
       className={cardVariants({ padding, shadow, hover, className })}
       onClick={onClick}
       type={onClick ? "button" : undefined}
@@ -107,7 +111,7 @@ export function Card({
       {children}
     </Component>
   );
-}
+});
 
 /**
  * CardHeader component for card titles and headers
@@ -149,9 +153,3 @@ export function CardContent({ children, className }: { children: ReactNode; clas
   return <div className={className || ""}>{children}</div>;
 }
 
-/**
- * CardFooter component for card actions and footers
- */
-export function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={`mt-4 flex items-center gap-2 ${className || ""}`}>{children}</div>;
-}

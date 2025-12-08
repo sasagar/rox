@@ -9,6 +9,7 @@
  */
 
 import { Hono } from "hono";
+import { sql } from "drizzle-orm";
 import { getDatabase } from "../db/index.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import {
@@ -139,7 +140,7 @@ async function checkDatabase(): Promise<{
   try {
     const db = getDatabase();
     // Execute a simple query to check connectivity
-    await db.execute("SELECT 1");
+    await db.execute(sql`SELECT 1`);
 
     return {
       status: "ok",

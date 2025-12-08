@@ -1,6 +1,6 @@
 "use client";
 
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Sidebar } from "./Sidebar";
@@ -25,8 +25,8 @@ export interface LayoutProps {
  * Applies user UI settings (font size, line height, content width, theme)
  */
 export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: LayoutProps) {
-  const [currentUser] = useAtom(currentUserAtom);
-  const [isCollapsed] = useAtom(sidebarCollapsedAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const isCollapsed = useAtomValue(sidebarCollapsedAtom);
 
   // Apply UI settings (CSS variables, theme, custom CSS)
   useUISettings();

@@ -9,6 +9,7 @@
 
 import { spawn, type Subprocess } from "bun";
 import { join } from "path";
+import { Socket } from "net";
 
 const ROOT_DIR = join(import.meta.dir, "..");
 
@@ -24,6 +25,29 @@ interface ProcessInfo {
 }
 
 const processes: ProcessInfo[] = [];
+
+/**
+ * Wait for a port to become available
+ */
+async function waitForPort(port: number, maxAttempts = 30): Promise<boolean> {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const socket = new Socket();
+      await new Promise<void>((resolve, reject) => {
+        socket.once("connect", () => {
+          socket.destroy();
+          resolve();
+        });
+        socket.once("error", reject);
+        socket.connect(port, "127.0.0.1");
+      });
+      return true;
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+  }
+  return false;
+}
 
 /**
  * Start a subprocess and track it
@@ -116,6 +140,10 @@ process.on("SIGINT", () => {
 // Check if frontend should be started
 const ENABLE_FRONTEND = process.env.ENABLE_FRONTEND !== "false";
 
+// Get port configuration from environment
+const BACKEND_PORT = process.env.PORT || "3000";
+const FRONTEND_PORT = process.env.FRONTEND_PORT || "3001";
+
 // Main startup sequence
 async function main(): Promise<void> {
   console.log("═".repeat(50));
@@ -127,31 +155,49 @@ async function main(): Promise<void> {
   console.log(`Frontend enabled: ${ENABLE_FRONTEND}`);
   console.log("");
 
-  // Start backend (API server on port 3000)
+  const backendPortNum = parseInt(BACKEND_PORT, 10);
+  const frontendPortNum = parseInt(FRONTEND_PORT, 10);
+
+  // Start backend (API server)
   startProcess("Backend (API)", join(ROOT_DIR, "packages/backend"), [
     BUN_PATH,
     "run",
     "src/index.ts",
   ]);
 
-  if (ENABLE_FRONTEND) {
-    // Small delay to let backend start first
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Wait for backend to be ready
+  const backendReady = await waitForPort(backendPortNum);
+  if (!backendReady) {
+    console.error("❌ Backend failed to start within timeout");
+    await shutdown(1);
+    return;
+  }
+  console.log(`✅ Backend ready on port ${BACKEND_PORT}`);
 
-    // Start frontend (Waku on port 3001)
+  if (ENABLE_FRONTEND) {
+    // Start frontend (Waku)
     startProcess("Frontend (Waku)", join(ROOT_DIR, "packages/frontend"), [
       BUN_PATH,
       "run",
       "start",
     ]);
+
+    // Wait for frontend to be ready
+    const frontendReady = await waitForPort(frontendPortNum);
+    if (!frontendReady) {
+      console.error("❌ Frontend failed to start within timeout");
+      await shutdown(1);
+      return;
+    }
+    console.log(`✅ Frontend ready on port ${FRONTEND_PORT}`);
   }
 
   console.log("");
   console.log("═".repeat(50));
   console.log("✅ All services started");
-  console.log("   Backend:  http://localhost:3000");
+  console.log(`   Backend:  http://localhost:${BACKEND_PORT}`);
   if (ENABLE_FRONTEND) {
-    console.log("   Frontend: http://localhost:3001");
+    console.log(`   Frontend: http://localhost:${FRONTEND_PORT}`);
   }
   console.log("═".repeat(50));
   console.log("");

@@ -137,6 +137,7 @@ export function createContainer(): AppContainer {
     repositories.noteRepository,
     repositories.userRepository,
     remoteActorService,
+    repositories.customEmojiRepository,
   );
 
   // ActivityPub Delivery Service

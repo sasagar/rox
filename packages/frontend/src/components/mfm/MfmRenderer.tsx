@@ -16,7 +16,7 @@
  * - Block quotes
  */
 
-import { useMemo, useState, useEffect, type ReactNode } from "react";
+import { useMemo, useState, useEffect, useRef, memo, type ReactNode } from "react";
 import * as mfm from "mfm-js";
 import type { MfmNode } from "mfm-js";
 import { lookupEmojis } from "../../lib/atoms/customEmoji";
@@ -55,7 +55,7 @@ export interface MfmRendererProps {
  * <MfmRenderer text="Hello **world**! $[spin :tada:]" />
  * ```
  */
-export function MfmRenderer({
+function MfmRendererComponent({
   text,
   customEmojis = {},
   plain = false,
@@ -65,9 +65,6 @@ export function MfmRenderer({
   onHashtagClick,
   className = "",
 }: MfmRendererProps) {
-  // State for fetched custom emojis
-  const [fetchedEmojis, setFetchedEmojis] = useState<Record<string, string>>({});
-
   // Convert HTML to MFM if needed (for remote ActivityPub content)
   const processedText = useMemo(() => {
     if (!text) return "";
@@ -78,16 +75,25 @@ export function MfmRenderer({
     return text;
   }, [text]);
 
-  // Parse MFM text into AST
+  // Parse MFM text into AST with safety limits
   const nodes = useMemo(() => {
     if (!processedText) return [];
+    // Limit text length to prevent DoS from very long content
+    const safeText = processedText.length > 10000
+      ? processedText.slice(0, 10000) + "..."
+      : processedText;
     try {
-      return plain ? mfm.parseSimple(processedText) : mfm.parse(processedText, { nestLimit });
+      return plain ? mfm.parseSimple(safeText) : mfm.parse(safeText, { nestLimit });
     } catch (error) {
       console.error("MFM parse error:", error);
-      return [{ type: "text", props: { text: processedText } } as MfmNode];
+      return [{ type: "text", props: { text: safeText } } as MfmNode];
     }
   }, [processedText, plain, nestLimit]);
+
+  // State for fetched custom emojis - use ref to avoid triggering re-renders
+  const fetchedEmojisRef = useRef<Record<string, string>>({});
+  const [fetchedEmojisVersion, setFetchedEmojisVersion] = useState(0);
+  const pendingFetchRef = useRef<Set<string>>(new Set());
 
   // Extract custom emoji names from AST
   const emojiNames = useMemo(() => {
@@ -106,39 +112,47 @@ export function MfmRenderer({
     return names;
   }, [nodes]);
 
-  // Fetch custom emoji URLs
+  // Fetch custom emoji URLs - uses refs to prevent re-render loops
   useEffect(() => {
-    // Skip if no emoji names to look up or if all are already provided via props
     const missingEmojis = emojiNames.filter(
-      (name) => !customEmojis[name] && !customEmojis[`:${name}:`],
+      (name) =>
+        !customEmojis[name] &&
+        !customEmojis[`:${name}:`] &&
+        !fetchedEmojisRef.current[name] &&
+        !pendingFetchRef.current.has(name),
     );
-
     if (missingEmojis.length === 0) return;
 
-    let cancelled = false;
+    // Mark as pending to prevent duplicate fetches
+    for (const name of missingEmojis) {
+      pendingFetchRef.current.add(name);
+    }
 
     lookupEmojis(missingEmojis).then((emojiMap) => {
-      if (cancelled) return;
-
-      const newEmojis: Record<string, string> = {};
+      let hasNewEmojis = false;
       for (const [name, url] of emojiMap) {
-        newEmojis[name] = url;
+        if (!fetchedEmojisRef.current[name]) {
+          fetchedEmojisRef.current[name] = url;
+          hasNewEmojis = true;
+        }
+        pendingFetchRef.current.delete(name);
       }
-
-      if (Object.keys(newEmojis).length > 0) {
-        setFetchedEmojis((prev) => ({ ...prev, ...newEmojis }));
+      // Also remove any emojis that weren't found from pending
+      for (const name of missingEmojis) {
+        pendingFetchRef.current.delete(name);
+      }
+      // Trigger a single re-render if we got new emojis
+      if (hasNewEmojis) {
+        setFetchedEmojisVersion((v) => v + 1);
       }
     });
-
-    return () => {
-      cancelled = true;
-    };
   }, [emojiNames, customEmojis]);
 
-  // Merge provided and fetched emojis
+  // Merge provided and fetched emojis - fetchedEmojisVersion triggers re-computation
   const mergedEmojis = useMemo(() => {
-    return { ...fetchedEmojis, ...customEmojis };
-  }, [customEmojis, fetchedEmojis]);
+    return { ...fetchedEmojisRef.current, ...customEmojis };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customEmojis, fetchedEmojisVersion]);
 
   // Render a single MFM node
   const renderNode = (node: MfmNode, index: number): ReactNode => {
@@ -469,4 +483,6 @@ export function MfmRenderer({
   );
 }
 
+// Memoize to prevent unnecessary re-renders
+export const MfmRenderer = memo(MfmRendererComponent);
 export default MfmRenderer;

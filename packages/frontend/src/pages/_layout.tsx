@@ -5,12 +5,13 @@ import { ToastContainer } from "../components/ui/Toast";
 
 /**
  * Blocking script to apply UI settings from localStorage before React hydration.
- * This prevents flash of unstyled content (FOUC) for theme, font size, etc.
+ * This prevents flash of unstyled content (FOUC) for theme, font size, primary color, etc.
  */
 const uiSettingsScript = `
 (function() {
   try {
     var settings = JSON.parse(localStorage.getItem('rox-ui-settings') || '{}');
+    var instanceTheme = JSON.parse(localStorage.getItem('rox-instance-theme') || '{}');
     var html = document.documentElement;
 
     // Font size mapping
@@ -36,6 +37,56 @@ const uiSettingsScript = `
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         html.classList.add('dark');
       }
+    }
+
+    // Apply primary color from cached instance theme
+    var primaryColor = instanceTheme.primaryColor;
+    if (primaryColor && /^#[0-9A-Fa-f]{6}$/.test(primaryColor)) {
+      // Helper functions for color conversion (same as ThemeProvider.tsx)
+      function hexToRgb(hex) {
+        var result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
+        if (!result) return { r: 59, g: 130, b: 246 };
+        return { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) };
+      }
+      function srgbToLinear(c) {
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      }
+      function rgbToOklch(r, g, b) {
+        var rLin = srgbToLinear(r / 255), gLin = srgbToLinear(g / 255), bLin = srgbToLinear(b / 255);
+        var l_ = 0.4122214708 * rLin + 0.5363325363 * gLin + 0.0514459929 * bLin;
+        var m_ = 0.2119034982 * rLin + 0.6806995451 * gLin + 0.1073969566 * bLin;
+        var s_ = 0.0883024619 * rLin + 0.2817188376 * gLin + 0.6299787005 * bLin;
+        var lCbrt = Math.cbrt(l_), mCbrt = Math.cbrt(m_), sCbrt = Math.cbrt(s_);
+        var L = 0.2104542553 * lCbrt + 0.7936177850 * mCbrt - 0.0040720468 * sCbrt;
+        var a = 1.9779984951 * lCbrt - 2.4285922050 * mCbrt + 0.4505937099 * sCbrt;
+        var okb = 0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.8086757660 * sCbrt;
+        var c = Math.sqrt(a * a + okb * okb);
+        var h = Math.atan2(okb, a) * (180 / Math.PI);
+        if (h < 0) h += 360;
+        return { l: Math.round(L * 100) / 100, c: Math.round(c * 100) / 100, h: Math.round(h) };
+      }
+
+      var rgb = hexToRgb(primaryColor);
+      var oklch = rgbToOklch(rgb.r, rgb.g, rgb.b);
+      var baseChroma = Math.min(oklch.c, 0.25);
+      var h = oklch.h;
+
+      var style = document.createElement('style');
+      style.id = 'rox-theme-colors';
+      style.textContent = ':root {' +
+        '--color-primary-50: oklch(98% ' + (baseChroma * 0.05).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-100: oklch(95% ' + (baseChroma * 0.2).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-200: oklch(90% ' + (baseChroma * 0.4).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-300: oklch(83% ' + (baseChroma * 0.6).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-400: oklch(75% ' + (baseChroma * 0.8).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-500: oklch(' + Math.round(oklch.l * 100) + '% ' + baseChroma.toFixed(3) + ' ' + h + ');' +
+        '--color-primary-600: oklch(58% ' + (baseChroma * 0.95).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-700: oklch(48% ' + (baseChroma * 0.75).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-800: oklch(38% ' + (baseChroma * 0.55).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-900: oklch(30% ' + (baseChroma * 0.4).toFixed(3) + ' ' + h + ');' +
+        '--color-primary-950: oklch(20% ' + (baseChroma * 0.2).toFixed(3) + ' ' + h + ');' +
+      '}';
+      document.head.appendChild(style);
     }
 
     // Apply custom CSS if present

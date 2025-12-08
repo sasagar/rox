@@ -7,10 +7,10 @@
  * @module db
  */
 
-import { drizzle as drizzlePg, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { drizzle as drizzlePg, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle as drizzleMysql } from "drizzle-orm/mysql2";
 import { drizzle as drizzleSqlite, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
-import postgres from "postgres";
+import { Pool } from "pg";
 import mysql from "mysql2/promise";
 import BetterSqlite3 from "better-sqlite3";
 import * as pgSchema from "./schema/pg.js";
@@ -66,24 +66,16 @@ export function createDatabase(): Database {
       if (!databaseUrl) {
         throw new Error("DATABASE_URL environment variable is required for PostgreSQL");
       }
-      // Connection pooling configuration
-      // postgres.js has built-in connection pooling
-      // Note: All timeout values are in seconds for postgres.js
-      const client = postgres(databaseUrl, {
+      // Connection pooling configuration using node-postgres (pg)
+      // node-postgres is more stable for long-running processes
+      const pool = new Pool({
+        connectionString: databaseUrl,
         max: parseInt(process.env.DB_POOL_MAX || "10", 10), // Max connections in pool
-        idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10), // Close idle connections after 20s
-        // max_lifetime disabled (0) to avoid negative timeout warnings on reconnect
-        // See: https://github.com/porsager/postgres/issues/718
-        max_lifetime: 0,
-        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), // Connection timeout 10s
-        // Backoff configuration to prevent negative timeout issues during reconnect
-        // Uses exponential backoff with a reasonable max delay
-        backoff: (attemptNum) => Math.min(1000 * Math.pow(2, attemptNum), 30000),
-        connection: {
-          application_name: "rox",
-        },
+        idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10) * 1000, // Close idle connections after 20s
+        connectionTimeoutMillis: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10) * 1000, // Connection timeout 10s
+        application_name: "rox",
       });
-      return drizzlePg(client, { schema: pgSchema }) as Database;
+      return drizzlePg({ client: pool, schema: pgSchema }) as Database;
     }
 
     case "mysql": {
@@ -189,10 +181,10 @@ export type D1DatabaseInstance = BetterSQLite3Database<typeof sqliteSchema>;
  * Drizzle ORM Database Instance Type
  *
  * @remarks
- * Currently only PostgreSQL is implemented, so PostgresJsDatabase type is used.
+ * Currently only PostgreSQL is implemented, so NodePgDatabase type is used.
  * When MySQL/SQLite support is added, this type needs to be changed to a union type.
  */
-export type Database = PostgresJsDatabase<typeof pgSchema>;
+export type Database = NodePgDatabase<typeof pgSchema>;
 
 /**
  * Singleton Database Instance

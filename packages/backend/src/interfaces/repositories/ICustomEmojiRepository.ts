@@ -73,6 +73,17 @@ export interface ICustomEmojiRepository {
   findManyByNames(names: string[], host?: string | null): Promise<Map<string, CustomEmoji>>;
 
   /**
+   * Gets multiple emojis by names from any host (remote emojis)
+   *
+   * Useful for batch lookup of remote custom emojis.
+   * Returns the first matching emoji for each name if multiple hosts have it.
+   *
+   * @param names - Array of emoji shortcodes
+   * @returns Map of name to emoji
+   */
+  findManyByNamesAnyHost(names: string[]): Promise<Map<string, CustomEmoji>>;
+
+  /**
    * Lists emojis with optional filters
    * @param options - Filter options
    * @returns Array of emojis

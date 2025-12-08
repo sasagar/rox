@@ -1,11 +1,13 @@
 {
   "name": "rox",
-  "version": "2025.12.0-rc.1",
+  "version": "2025.12.0-rc.2",
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/bun": "latest",
     "bun-types": "^1.3.2",
     "oxfmt": "^0.16.0",
     "oxlint": "^0.15.15",
+    "playwright": "^1.57.0",
     "typedoc": "^0.28.14",
     "typescript": "^5.7.2"
   },

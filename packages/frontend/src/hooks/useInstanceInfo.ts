@@ -37,7 +37,11 @@ async function fetchInstanceInfo(): Promise<InstanceInfo> {
 }
 
 /**
- * Clear instance info cache (call when admin updates settings)
+ * Clear local instance info cache
+ *
+ * Call this when admin updates instance settings to force a refresh.
+ * This clears the cache for the current instance's information,
+ * not remote instance data (use clearRemoteInstanceCache for that).
  */
 export function clearInstanceInfoCache(): void {
   instanceInfoCache = null;

@@ -2,7 +2,7 @@
 
 import { Trans } from "@lingui/react/macro";
 import { useAtom } from "jotai";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Timeline } from "../components/timeline/Timeline";
 import { NoteComposer } from "../components/note/NoteComposer";
 import { Layout } from "../components/layout/Layout";
@@ -18,29 +18,31 @@ type TimelineType = "local" | "social" | "global" | "home";
 
 const TIMELINE_TYPE_STORAGE_KEY = "rox:timelineType";
 
-/**
- * Get saved timeline type from localStorage
- */
-function getSavedTimelineType(): TimelineType {
-  if (typeof window === "undefined") return "local";
-  const saved = localStorage.getItem(TIMELINE_TYPE_STORAGE_KEY);
-  if (saved === "local" || saved === "social" || saved === "global" || saved === "home") {
-    return saved;
-  }
-  return "local";
-}
-
 export default function TimelinePage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, setTimelineNotes] = useAtom(timelineNotesAtom);
-  const [timelineType, setTimelineType] = useState<TimelineType>(getSavedTimelineType);
+  // Start with default value to avoid hydration mismatch
+  // localStorage value is loaded in useEffect after hydration
+  const [timelineType, setTimelineType] = useState<TimelineType>("local");
   const [isLoading, setIsLoading] = useState(true);
+  const hasRestoredTimelineType = useRef(false);
 
   // Save timeline type to localStorage when it changes
   const handleTimelineTypeChange = useCallback((type: TimelineType) => {
     setTimelineType(type);
     localStorage.setItem(TIMELINE_TYPE_STORAGE_KEY, type);
+  }, []);
+
+  // Restore timeline type from localStorage after hydration
+  useEffect(() => {
+    if (hasRestoredTimelineType.current) return;
+    hasRestoredTimelineType.current = true;
+
+    const saved = localStorage.getItem(TIMELINE_TYPE_STORAGE_KEY);
+    if (saved === "local" || saved === "social" || saved === "global" || saved === "home") {
+      setTimelineType(saved);
+    }
   }, []);
 
   // Restore user session on mount

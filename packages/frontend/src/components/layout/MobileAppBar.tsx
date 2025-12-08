@@ -9,7 +9,7 @@
  * @module components/layout/MobileAppBar
  */
 
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { Home, Search, Bell, User, PenSquare } from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { SpaLink } from "../ui/SpaLink";
@@ -28,7 +28,7 @@ import { SpaLink } from "../ui/SpaLink";
  * Hidden when user is not logged in.
  */
 export function MobileAppBar() {
-  const [currentUser] = useAtom(currentUserAtom);
+  const currentUser = useAtomValue(currentUserAtom);
 
   if (!currentUser) {
     return null;

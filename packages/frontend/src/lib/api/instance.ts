@@ -97,8 +97,12 @@ export async function getRemoteInstanceInfoBatch(hosts: string[]): Promise<Map<s
 }
 
 /**
- * Clear the instance cache
+ * Clear the remote instance cache
+ *
+ * Clears cached information about remote federated instances.
+ * Use this when you need to refresh remote instance data.
+ * For local instance cache, use clearInstanceInfoCache from useInstanceInfo.
  */
-export function clearInstanceCache(): void {
+export function clearRemoteInstanceCache(): void {
   instanceCache.clear();
 }
