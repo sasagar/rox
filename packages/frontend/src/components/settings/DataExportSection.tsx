@@ -80,7 +80,7 @@ export function DataExportSection() {
         <div className="space-y-4">
           <div className="p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
             <div className="flex gap-3">
-              <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
               <div className="text-sm text-blue-700 dark:text-blue-300">
                 <p className="font-medium mb-1">
                   <Trans>Your Right to Data Portability</Trans>
