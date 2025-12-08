@@ -68,6 +68,51 @@ Required when `STORAGE_TYPE=s3`:
 | `ENABLE_REGISTRATION` | Allow new user registration | `false` |
 | `SESSION_EXPIRY_DAYS` | Session token lifetime in days | `30` |
 
+## OAuth Configuration (Optional)
+
+Enable users to sign in with external OAuth providers. Each provider requires its own set of credentials.
+
+### GitHub OAuth
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `GITHUB_CLIENT_ID` | GitHub OAuth App Client ID | `Iv1.a1b2c3d4e5f6g7h8` |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App Client Secret | `secret_xxx` |
+| `GITHUB_REDIRECT_URI` | Callback URL | `https://rox.example.com/api/auth/oauth/github/callback` |
+
+Create OAuth App at: <https://github.com/settings/developers>
+
+### Google OAuth
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `123456789.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | `GOCSPX-xxx` |
+| `GOOGLE_REDIRECT_URI` | Callback URL | `https://rox.example.com/api/auth/oauth/google/callback` |
+
+Create credentials at: <https://console.cloud.google.com/apis/credentials>
+
+### Discord OAuth
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DISCORD_CLIENT_ID` | Discord Application Client ID | `123456789012345678` |
+| `DISCORD_CLIENT_SECRET` | Discord Application Client Secret | `xxx` |
+| `DISCORD_REDIRECT_URI` | Callback URL | `https://rox.example.com/api/auth/oauth/discord/callback` |
+
+Create application at: <https://discord.com/developers/applications>
+
+### Mastodon OAuth
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MASTODON_CLIENT_ID` | Mastodon Application Client Key | `xxx` |
+| `MASTODON_CLIENT_SECRET` | Mastodon Application Client Secret | `xxx` |
+| `MASTODON_INSTANCE_URL` | Mastodon instance base URL | `https://mastodon.social` |
+| `MASTODON_REDIRECT_URI` | Callback URL | `https://rox.example.com/api/auth/oauth/mastodon/callback` |
+
+Register app in your Mastodon instance: Settings > Development > New Application (Scopes: `read:accounts`)
+
 ## Cache & Queue (Dragonfly/Redis)
 
 | Variable | Description | Default |
@@ -166,6 +211,27 @@ STORAGE_TYPE=s3
 # ... S3 config ...
 ```
 
+### Production with OAuth Providers
+
+```ini
+NODE_ENV=production
+ROX_URL=https://rox.example.com
+ROX_DOMAIN=rox.example.com
+POSTGRES_PASSWORD=your-secure-password
+ACME_EMAIL=admin@example.com
+ENABLE_REGISTRATION=true
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GITHUB_REDIRECT_URI=https://rox.example.com/api/auth/oauth/github/callback
+
+# Discord OAuth
+DISCORD_CLIENT_ID=your-discord-client-id
+DISCORD_CLIENT_SECRET=your-discord-client-secret
+DISCORD_REDIRECT_URI=https://rox.example.com/api/auth/oauth/discord/callback
+```
+
 ## Security Notes
 
 1. **Never commit secrets** - Use `.env` files or environment injection
@@ -173,3 +239,4 @@ STORAGE_TYPE=s3
 3. **Disable registration** - Set `ENABLE_REGISTRATION=false` after initial setup
 4. **Use HTTPS** - Always use `https://` in `ROX_URL` for production
 5. **Protect metrics** - `/metrics` endpoint should be internal-only in production
+6. **OAuth redirect URIs** - Always use HTTPS URLs for OAuth redirect URIs in production

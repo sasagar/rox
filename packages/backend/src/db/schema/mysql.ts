@@ -199,6 +199,42 @@ export const passkeyChallenges = mysqlTable(
   }),
 );
 
+// OAuth accounts table for external authentication providers
+export const oauthAccounts = mysqlTable(
+  "oauth_accounts",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    userId: varchar("user_id", { length: 32 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: varchar("provider", { length: 32 }).notNull(), // 'github', 'google', 'discord', 'mastodon'
+    providerAccountId: varchar("provider_account_id", { length: 256 }).notNull(), // User ID from the OAuth provider
+    accessToken: text("access_token"), // Current access token (may be encrypted)
+    refreshToken: text("refresh_token"), // Refresh token if provider supports it
+    tokenExpiresAt: datetime("token_expires_at"), // When access token expires
+    scope: text("scope"), // Granted scopes
+    tokenType: varchar("token_type", { length: 32 }), // Usually 'Bearer'
+    providerUsername: varchar("provider_username", { length: 256 }), // Username on the provider (for display)
+    providerEmail: varchar("provider_email", { length: 256 }), // Email from provider (may differ from user.email)
+    createdAt: datetime("created_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: datetime("updated_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    // Unique constraint: one provider account per user per provider
+    userProviderIdx: uniqueIndex("oauth_user_provider_idx").on(table.userId, table.provider),
+    // Unique constraint: each provider account ID is unique per provider
+    providerAccountIdx: uniqueIndex("oauth_provider_account_idx").on(
+      table.provider,
+      table.providerAccountId,
+    ),
+    userIdIdx: index("oauth_user_id_idx").on(table.userId),
+  }),
+);
+
 // Notes table
 export const notes = mysqlTable(
   "notes",

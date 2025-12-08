@@ -22,6 +22,7 @@ import type {
   IScheduledNoteRepository,
   IPasskeyCredentialRepository,
   IPasskeyChallengeRepository,
+  IOAuthAccountRepository,
 } from "../interfaces/repositories/index.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
@@ -47,6 +48,7 @@ import {
   PostgresScheduledNoteRepository,
   PostgresPasskeyCredentialRepository,
   PostgresPasskeyChallengeRepository,
+  PostgresOAuthAccountRepository,
 } from "../repositories/pg/index.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
@@ -85,6 +87,7 @@ export interface AppContainer {
   scheduledNoteRepository: IScheduledNoteRepository;
   passkeyCredentialRepository: IPasskeyCredentialRepository;
   passkeyChallengeRepository: IPasskeyChallengeRepository;
+  oauthAccountRepository: IOAuthAccountRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -238,6 +241,7 @@ function createRepositories(db: any, dbType: string) {
         scheduledNoteRepository: new PostgresScheduledNoteRepository(db),
         passkeyCredentialRepository: new PostgresPasskeyCredentialRepository(db),
         passkeyChallengeRepository: new PostgresPasskeyChallengeRepository(db),
+        oauthAccountRepository: new PostgresOAuthAccountRepository(db),
       };
 
     case "mysql":

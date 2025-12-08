@@ -19,3 +19,4 @@ export * from "./PostgresRemoteInstanceRepository.js";
 export * from "./PostgresScheduledNoteRepository.js";
 export * from "./PostgresPasskeyCredentialRepository.js";
 export * from "./PostgresPasskeyChallengeRepository.js";
+export * from "./PostgresOAuthAccountRepository.js";

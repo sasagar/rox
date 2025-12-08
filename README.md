@@ -11,6 +11,7 @@ A lightweight ActivityPub server & client with Misskey API compatibility.
 - **Misskey API Compatible**: Seamless migration for existing Misskey users
 - **Multi-Database Support**: PostgreSQL, MySQL, SQLite/D1
 - **Flexible Storage**: Local filesystem or S3-compatible storage (AWS S3, Cloudflare R2, MinIO)
+- **Multiple Auth Methods**: Password, Passkey (WebAuthn), and OAuth (GitHub, Google, Discord, Mastodon)
 
 ## Project Structure
 
@@ -147,6 +148,47 @@ S3_SECRET_KEY=your-secret-key
 S3_REGION=auto
 ```
 
+### OAuth Configuration (Optional)
+
+Configure external OAuth providers to allow users to sign in with their existing accounts:
+
+#### GitHub
+
+```bash
+# Create OAuth app at: https://github.com/settings/developers
+GITHUB_CLIENT_ID=your-client-id
+GITHUB_CLIENT_SECRET=your-client-secret
+GITHUB_REDIRECT_URI=https://your-domain.com/api/auth/oauth/github/callback
+```
+
+#### Google
+
+```bash
+# Create credentials at: https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=https://your-domain.com/api/auth/oauth/google/callback
+```
+
+#### Discord
+
+```bash
+# Create application at: https://discord.com/developers/applications
+DISCORD_CLIENT_ID=your-client-id
+DISCORD_CLIENT_SECRET=your-client-secret
+DISCORD_REDIRECT_URI=https://your-domain.com/api/auth/oauth/discord/callback
+```
+
+#### Mastodon
+
+```bash
+# Register app in your Mastodon instance: Settings > Development > New Application
+MASTODON_CLIENT_ID=your-client-id
+MASTODON_CLIENT_SECRET=your-client-secret
+MASTODON_INSTANCE_URL=https://mastodon.social
+MASTODON_REDIRECT_URI=https://your-domain.com/api/auth/oauth/mastodon/callback
+```
+
 ## Architecture
 
 Rox uses the **Repository Pattern** and **Adapter Pattern** to decouple business logic from infrastructure concerns:
@@ -179,7 +221,7 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
 | UI Components | React Aria Components | 1.6.3 | Accessible headless UI |
 | Styling | Tailwind CSS v4 | 4.1.17 | Utility-first CSS with OKLCH color space |
 | Internationalization | Lingui | 5.6.0 | 3kb optimized i18n (en/ja) |
-| Authentication | Passkey + Password | Custom | WebAuthn + traditional auth |
+| Authentication | Passkey + Password + OAuth | Custom | WebAuthn, traditional auth, OAuth2 |
 
 ## Implementation Phases
 
@@ -190,7 +232,7 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Tailwind CSS v4 with OKLCH colors
   - ✅ React Aria Components (Button, TextField, Dialog, Form, Avatar, Card)
   - ✅ Lingui i18n (English/Japanese - 87 messages)
-  - ✅ Authentication (Passkey + Password)
+  - ✅ Authentication (Passkey + Password + OAuth)
   - ✅ Timeline (display, infinite scroll pagination)
   - ✅ Note Composer (text, images, CW, visibility, reply, renote)
   - ✅ User interactions (reply, reaction, follow/unfollow)
