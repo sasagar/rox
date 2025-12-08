@@ -46,6 +46,12 @@ export function AppProviders({ children }: AppProvidersProps) {
         if (response.ok) {
           const data = await response.json();
           setTheme(data);
+          // Cache theme in localStorage for instant loading on next visit
+          try {
+            localStorage.setItem("rox-instance-theme", JSON.stringify(data));
+          } catch {
+            // Ignore localStorage errors (e.g., private browsing)
+          }
         }
       } catch (error) {
         console.error("Failed to fetch theme settings:", error);
