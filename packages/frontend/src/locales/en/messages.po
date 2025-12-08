@@ -690,7 +690,7 @@ msgstr "Contact Inquiries"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/note/NoteCard.tsx:452
+#: src/components/note/NoteCard.tsx:410
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -1611,6 +1611,10 @@ msgstr "Import Results"
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
+#: src/components/note/NoteCard.tsx:529
+msgid "In reply to"
+msgstr "In reply to"
+
 #: src/components/settings/AccountMigrationSection.tsx:395
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
@@ -1992,7 +1996,7 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:656
+#: src/components/note/NoteCard.tsx:668
 msgid "More options"
 msgstr "More options"
 
@@ -2727,7 +2731,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:443
+#: src/components/note/NoteCard.tsx:401
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -2749,12 +2753,11 @@ msgstr "Replies ({0})"
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteCard.tsx:403
 #: src/components/note/NoteComposer.tsx:615
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:671
+#: src/components/note/NoteCard.tsx:683
 msgid "Report"
 msgstr "Report"
 
@@ -3098,7 +3101,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:462
+#: src/components/note/NoteCard.tsx:420
 msgid "Show content"
 msgstr "Show content"
 
@@ -3685,7 +3688,7 @@ msgstr "Validate"
 msgid "Validation failed"
 msgstr "Validation failed"
 
-#: src/components/note/NoteCard.tsx:434
+#: src/components/note/NoteCard.tsx:568
 msgid "View"
 msgstr "View"
 

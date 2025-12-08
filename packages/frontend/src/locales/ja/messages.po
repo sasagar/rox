@@ -690,7 +690,7 @@ msgstr "お問い合わせ一覧"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/note/NoteCard.tsx:452
+#: src/components/note/NoteCard.tsx:410
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -1611,6 +1611,10 @@ msgstr "インポート結果"
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
+#: src/components/note/NoteCard.tsx:529
+msgid "In reply to"
+msgstr "返信元"
+
 #: src/components/settings/AccountMigrationSection.tsx:395
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
@@ -1992,7 +1996,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:656
+#: src/components/note/NoteCard.tsx:668
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -2727,7 +2731,7 @@ msgstr "名前を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:443
+#: src/components/note/NoteCard.tsx:401
 msgid "Renoted"
 msgstr "リノート"
 
@@ -2749,12 +2753,11 @@ msgstr "返信 ({0})"
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteCard.tsx:403
 #: src/components/note/NoteComposer.tsx:615
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:671
+#: src/components/note/NoteCard.tsx:683
 msgid "Report"
 msgstr "報告"
 
@@ -3098,7 +3101,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:462
+#: src/components/note/NoteCard.tsx:420
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -3685,7 +3688,7 @@ msgstr "検証"
 msgid "Validation failed"
 msgstr "検証に失敗しました"
 
-#: src/components/note/NoteCard.tsx:434
+#: src/components/note/NoteCard.tsx:568
 msgid "View"
 msgstr "表示"
 
