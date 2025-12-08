@@ -90,10 +90,10 @@ function MfmRendererComponent({
     }
   }, [processedText, plain, nestLimit]);
 
-  // State for fetched custom emojis
-  const [fetchedEmojis, setFetchedEmojis] = useState<Record<string, string>>({});
-  const hasFetchedRef = useRef(false);
-  const lastEmojiNamesRef = useRef<string>("");
+  // State for fetched custom emojis - use ref to avoid triggering re-renders
+  const fetchedEmojisRef = useRef<Record<string, string>>({});
+  const [fetchedEmojisVersion, setFetchedEmojisVersion] = useState(0);
+  const pendingFetchRef = useRef<Set<string>>(new Set());
 
   // Extract custom emoji names from AST
   const emojiNames = useMemo(() => {
@@ -112,37 +112,47 @@ function MfmRendererComponent({
     return names;
   }, [nodes]);
 
-  // Fetch custom emoji URLs only once per unique set of emoji names
+  // Fetch custom emoji URLs - uses refs to prevent re-render loops
   useEffect(() => {
     const missingEmojis = emojiNames.filter(
-      (name) => !customEmojis[name] && !customEmojis[`:${name}:`] && !fetchedEmojis[name],
+      (name) =>
+        !customEmojis[name] &&
+        !customEmojis[`:${name}:`] &&
+        !fetchedEmojisRef.current[name] &&
+        !pendingFetchRef.current.has(name),
     );
     if (missingEmojis.length === 0) return;
 
-    // Create a stable key from emoji names to prevent duplicate fetches
-    const emojiKey = missingEmojis.sort().join(",");
-    if (emojiKey === lastEmojiNamesRef.current) return;
-    lastEmojiNamesRef.current = emojiKey;
-
-    // Only fetch once
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    // Mark as pending to prevent duplicate fetches
+    for (const name of missingEmojis) {
+      pendingFetchRef.current.add(name);
+    }
 
     lookupEmojis(missingEmojis).then((emojiMap) => {
-      const newEmojis: Record<string, string> = {};
+      let hasNewEmojis = false;
       for (const [name, url] of emojiMap) {
-        newEmojis[name] = url;
+        if (!fetchedEmojisRef.current[name]) {
+          fetchedEmojisRef.current[name] = url;
+          hasNewEmojis = true;
+        }
+        pendingFetchRef.current.delete(name);
       }
-      if (Object.keys(newEmojis).length > 0) {
-        setFetchedEmojis(newEmojis);
+      // Also remove any emojis that weren't found from pending
+      for (const name of missingEmojis) {
+        pendingFetchRef.current.delete(name);
+      }
+      // Trigger a single re-render if we got new emojis
+      if (hasNewEmojis) {
+        setFetchedEmojisVersion((v) => v + 1);
       }
     });
-  }, [emojiNames, customEmojis, fetchedEmojis]);
+  }, [emojiNames, customEmojis]);
 
-  // Merge provided and fetched emojis
+  // Merge provided and fetched emojis - fetchedEmojisVersion triggers re-computation
   const mergedEmojis = useMemo(() => {
-    return { ...fetchedEmojis, ...customEmojis };
-  }, [customEmojis, fetchedEmojis]);
+    return { ...fetchedEmojisRef.current, ...customEmojis };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customEmojis, fetchedEmojisVersion]);
 
   // Render a single MFM node
   const renderNode = (node: MfmNode, index: number): ReactNode => {
