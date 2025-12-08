@@ -180,9 +180,22 @@ export function Timeline({ type = "local" }: TimelineProps) {
       )}
 
       {/* Notes List */}
+      {/* DEBUGGING: Using simple div instead of NoteCard to isolate freeze */}
+      {notes.map((note) => (
+        <div
+          key={note.id}
+          className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mb-4"
+          onClick={() => console.log("clicked note", note.id)}
+        >
+          <div className="font-semibold">{note.user?.username || "Unknown"}</div>
+          <div className="text-gray-600 dark:text-gray-400">{note.text?.slice(0, 100) || "No text"}</div>
+        </div>
+      ))}
+      {/* Original NoteCard - temporarily disabled
       {notes.map((note) => (
         <NoteCard key={note.id} note={note} onDelete={() => handleNoteDelete(note.id)} />
       ))}
+      */}
 
       {/* Loading More Indicator - Show spinner when loading additional notes */}
       {loading && notes.length > 0 && (
