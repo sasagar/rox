@@ -111,7 +111,8 @@ app.get("/remote", async (c: Context) => {
 
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  // Check role-based permission with fallback to legacy isAdmin flag
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -245,10 +246,10 @@ app.post("/upload", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Check admin permission
+  // Check admin permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -320,10 +321,10 @@ app.post("/create", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Check admin permission
+  // Check admin permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -392,9 +393,10 @@ app.patch("/:id", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -449,9 +451,10 @@ app.delete("/:id", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -489,9 +492,10 @@ app.post("/adopt", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -661,9 +665,10 @@ app.post("/import", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
