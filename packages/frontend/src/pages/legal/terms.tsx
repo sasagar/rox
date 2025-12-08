@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 import { ExternalLink, FileText } from "lucide-react";
+import { SpaLink } from "../../components/ui/SpaLink";
 
 export default function TermsOfServicePage() {
   const { instanceInfo, isLoading, error } = useInstanceInfo();
@@ -227,18 +228,13 @@ export default function TermsOfServicePage() {
               </h2>
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
-                  For questions about these terms, please contact the instance administrator
-                  {instanceInfo?.maintainerEmail && (
-                    <>
-                      {" "}at{" "}
-                      <a
-                        href={`mailto:${instanceInfo.maintainerEmail}`}
-                        className="text-primary-600 dark:text-primary-400 hover:underline"
-                      >
-                        {instanceInfo.maintainerEmail}
-                      </a>
-                    </>
-                  )}.
+                  For questions about these terms, please{" "}
+                  <SpaLink
+                    to="/contact"
+                    className="text-primary-600 dark:text-primary-400 hover:underline"
+                  >
+                    contact us through our inquiry form
+                  </SpaLink>.
                 </Trans>
               </p>
             </section>

@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 import { ExternalLink, Shield } from "lucide-react";
+import { SpaLink } from "../../components/ui/SpaLink";
 
 export default function PrivacyPolicyPage() {
   const { instanceInfo, isLoading, error } = useInstanceInfo();
@@ -200,8 +201,13 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p className="text-(--text-secondary) leading-relaxed mt-3">
                 <Trans>
-                  To exercise these rights, contact the instance administrator or use the settings
-                  in your account.
+                  To exercise these rights, use the settings in your account or{" "}
+                  <SpaLink
+                    to="/contact"
+                    className="text-primary-600 dark:text-primary-400 hover:underline"
+                  >
+                    contact us
+                  </SpaLink>.
                 </Trans>
               </p>
             </section>
@@ -278,19 +284,13 @@ export default function PrivacyPolicyPage() {
               </h2>
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
-                  For privacy-related questions or to exercise your rights, please contact the
-                  instance administrator
-                  {instanceInfo?.maintainerEmail && (
-                    <>
-                      {" "}at{" "}
-                      <a
-                        href={`mailto:${instanceInfo.maintainerEmail}`}
-                        className="text-primary-600 dark:text-primary-400 hover:underline"
-                      >
-                        {instanceInfo.maintainerEmail}
-                      </a>
-                    </>
-                  )}.
+                  For privacy-related questions or to exercise your rights, please{" "}
+                  <SpaLink
+                    to="/contact"
+                    className="text-primary-600 dark:text-primary-400 hover:underline"
+                  >
+                    contact us through our inquiry form
+                  </SpaLink>.
                 </Trans>
               </p>
             </section>

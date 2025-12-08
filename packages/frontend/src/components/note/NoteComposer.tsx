@@ -1060,7 +1060,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
                     {/* Schedule picker dropdown */}
                     {showSchedulePicker && (
-                      <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                      <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60">
                         <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             <Trans>Schedule post</Trans>

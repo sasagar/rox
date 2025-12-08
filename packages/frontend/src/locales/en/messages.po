@@ -73,19 +73,19 @@ msgstr "{assetType} removed"
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType} uploaded successfully"
 
-#: src/pages/legal/privacy.tsx:107
+#: src/pages/legal/privacy.tsx:108
 msgid "<0>Account information:</0> Username, email address, and password (securely hashed)"
 msgstr "<0>Account information:</0> Username, email address, and password (securely hashed)"
 
-#: src/pages/legal/privacy.tsx:119
+#: src/pages/legal/privacy.tsx:120
 msgid "<0>Content:</0> Posts, media uploads, and interactions (likes, shares, follows)"
 msgstr "<0>Content:</0> Posts, media uploads, and interactions (likes, shares, follows)"
 
-#: src/pages/legal/privacy.tsx:113
+#: src/pages/legal/privacy.tsx:114
 msgid "<0>Profile information:</0> Display name, bio, avatar, and any other information you choose to provide"
 msgstr "<0>Profile information:</0> Display name, bio, avatar, and any other information you choose to provide"
 
-#: src/pages/legal/privacy.tsx:125
+#: src/pages/legal/privacy.tsx:126
 msgid "<0>Technical data:</0> IP address, browser type, and access logs for security purposes"
 msgstr "<0>Technical data:</0> IP address, browser type, and access logs for security purposes"
 
@@ -93,31 +93,31 @@ msgstr "<0>Technical data:</0> IP address, browser type, and access logs for sec
 msgid "1 Day"
 msgstr "1 Day"
 
-#: src/pages/legal/terms.tsx:105
+#: src/pages/legal/terms.tsx:106
 msgid "1. Acceptance of Terms"
 msgstr "1. Acceptance of Terms"
 
-#: src/pages/legal/privacy.tsx:98
+#: src/pages/legal/privacy.tsx:99
 msgid "1. Information We Collect"
 msgstr "1. Information We Collect"
 
-#: src/pages/legal/privacy.tsx:264
+#: src/pages/legal/privacy.tsx:270
 msgid "10. Changes to This Policy"
 msgstr "10. Changes to This Policy"
 
-#: src/pages/legal/terms.tsx:226
+#: src/pages/legal/terms.tsx:227
 msgid "10. Contact"
 msgstr "10. Contact"
 
-#: src/pages/legal/privacy.tsx:277
+#: src/pages/legal/privacy.tsx:283
 msgid "11. Contact"
 msgstr "11. Contact"
 
-#: src/pages/legal/privacy.tsx:135
+#: src/pages/legal/privacy.tsx:136
 msgid "2. How We Use Your Information"
 msgstr "2. How We Use Your Information"
 
-#: src/pages/legal/terms.tsx:117
+#: src/pages/legal/terms.tsx:118
 msgid "2. User Accounts"
 msgstr "2. User Accounts"
 
@@ -125,11 +125,11 @@ msgstr "2. User Accounts"
 msgid "3-20 characters, letters, numbers, and underscores only"
 msgstr "3-20 characters, letters, numbers, and underscores only"
 
-#: src/pages/legal/terms.tsx:131
+#: src/pages/legal/terms.tsx:132
 msgid "3. Acceptable Use"
 msgstr "3. Acceptable Use"
 
-#: src/pages/legal/privacy.tsx:152
+#: src/pages/legal/privacy.tsx:153
 msgid "3. Federation and Data Sharing"
 msgstr "3. Federation and Data Sharing"
 
@@ -137,27 +137,27 @@ msgstr "3. Federation and Data Sharing"
 msgid "30 Days"
 msgstr "30 Days"
 
-#: src/pages/legal/terms.tsx:148
+#: src/pages/legal/terms.tsx:149
 msgid "4. Content Ownership"
 msgstr "4. Content Ownership"
 
-#: src/pages/legal/privacy.tsx:175
+#: src/pages/legal/privacy.tsx:176
 msgid "4. Data Retention"
 msgstr "4. Data Retention"
 
-#: src/pages/legal/terms.tsx:161
+#: src/pages/legal/terms.tsx:162
 msgid "5. Moderation"
 msgstr "5. Moderation"
 
-#: src/pages/legal/privacy.tsx:189
+#: src/pages/legal/privacy.tsx:190
 msgid "5. Your Rights"
 msgstr "5. Your Rights"
 
-#: src/pages/legal/privacy.tsx:211
+#: src/pages/legal/privacy.tsx:217
 msgid "6. Cookies and Local Storage"
 msgstr "6. Cookies and Local Storage"
 
-#: src/pages/legal/terms.tsx:174
+#: src/pages/legal/terms.tsx:175
 msgid "6. Federation"
 msgstr "6. Federation"
 
@@ -165,27 +165,27 @@ msgstr "6. Federation"
 msgid "7 Days"
 msgstr "7 Days"
 
-#: src/pages/legal/privacy.tsx:224
+#: src/pages/legal/privacy.tsx:230
 msgid "7. Security"
 msgstr "7. Security"
 
-#: src/pages/legal/terms.tsx:187
+#: src/pages/legal/terms.tsx:188
 msgid "7. Service Availability"
 msgstr "7. Service Availability"
 
-#: src/pages/legal/terms.tsx:200
+#: src/pages/legal/terms.tsx:201
 msgid "8. Limitation of Liability"
 msgstr "8. Limitation of Liability"
 
-#: src/pages/legal/privacy.tsx:238
+#: src/pages/legal/privacy.tsx:244
 msgid "8. Third-Party Services"
 msgstr "8. Third-Party Services"
 
-#: src/pages/legal/terms.tsx:213
+#: src/pages/legal/terms.tsx:214
 msgid "9. Changes to Terms"
 msgstr "9. Changes to Terms"
 
-#: src/pages/legal/privacy.tsx:251
+#: src/pages/legal/privacy.tsx:257
 msgid "9. Children's Privacy"
 msgstr "9. Children's Privacy"
 
@@ -197,7 +197,7 @@ msgstr "About This Instance"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
-#: src/pages/legal/privacy.tsx:195
+#: src/pages/legal/privacy.tsx:196
 msgid "Access your personal data"
 msgstr "Access your personal data"
 
@@ -410,7 +410,7 @@ msgstr "Are you sure you want to remove this instance from the cache?"
 msgid "Assets"
 msgstr "Assets"
 
-#: src/pages/legal/terms.tsx:142
+#: src/pages/legal/terms.tsx:143
 msgid "Attempt to gain unauthorized access to systems"
 msgstr "Attempt to gain unauthorized access to systems"
 
@@ -555,7 +555,7 @@ msgstr "Bulk Import"
 msgid "Bulk Import Emojis"
 msgstr "Bulk Import Emojis"
 
-#: src/pages/legal/terms.tsx:108
+#: src/pages/legal/terms.tsx:109
 msgid "By accessing or using {instanceName}, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use this service."
 msgstr "By accessing or using {instanceName}, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use this service."
 
@@ -658,7 +658,7 @@ msgstr "Color"
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
-#: src/pages/legal/privacy.tsx:146
+#: src/pages/legal/privacy.tsx:147
 msgid "Comply with legal obligations"
 msgstr "Comply with legal obligations"
 
@@ -711,7 +711,7 @@ msgstr "Conversation thread"
 msgid "Copy code"
 msgstr "Copy code"
 
-#: src/pages/legal/privacy.tsx:196
+#: src/pages/legal/privacy.tsx:197
 msgid "Correct inaccurate data"
 msgstr "Correct inaccurate data"
 
@@ -873,7 +873,7 @@ msgstr "Delete User"
 msgid "Delete warning"
 msgstr "Delete warning"
 
-#: src/pages/legal/privacy.tsx:197
+#: src/pages/legal/privacy.tsx:198
 msgid "Delete your account and associated data"
 msgstr "Delete your account and associated data"
 
@@ -930,11 +930,11 @@ msgstr "Display Name"
 msgid "Display Settings"
 msgstr "Display Settings"
 
-#: src/pages/legal/privacy.tsx:143
+#: src/pages/legal/privacy.tsx:144
 msgid "Display your content to other users"
 msgstr "Display your content to other users"
 
-#: src/pages/legal/terms.tsx:140
+#: src/pages/legal/terms.tsx:141
 msgid "Distribute spam, malware, or phishing content"
 msgstr "Distribute spam, malware, or phishing content"
 
@@ -1071,7 +1071,7 @@ msgstr "Enable Registration"
 msgid "Enable to receive notifications in the background."
 msgstr "Enable to receive notifications in the background."
 
-#: src/pages/legal/privacy.tsx:145
+#: src/pages/legal/privacy.tsx:146
 msgid "Ensure security and prevent abuse"
 msgstr "Ensure security and prevent abuse"
 
@@ -1146,7 +1146,7 @@ msgstr "Expires In"
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
-#: src/pages/legal/privacy.tsx:198
+#: src/pages/legal/privacy.tsx:199
 msgid "Export your data in a portable format"
 msgstr "Export your data in a portable format"
 
@@ -1253,8 +1253,8 @@ msgstr "Failed to issue warning"
 msgid "Failed to load files"
 msgstr "Failed to load files"
 
-#: src/pages/legal/privacy.tsx:41
-#: src/pages/legal/terms.tsx:48
+#: src/pages/legal/privacy.tsx:42
+#: src/pages/legal/terms.tsx:49
 msgid "Failed to load instance information"
 msgstr "Failed to load instance information"
 
@@ -1489,15 +1489,21 @@ msgstr "Following..."
 msgid "Font Size"
 msgstr "Font Size"
 
-#. placeholder {0}: instanceInfo?.maintainerEmail && ( <> {" "}at{" "} <a href={`mailto:${instanceInfo.maintainerEmail}`} className="text-primary-600 dark:text-primary-400 hover:underline" > {instanceInfo.maintainerEmail} </a> </> )
-#: src/pages/legal/privacy.tsx:280
-msgid "For privacy-related questions or to exercise your rights, please contact the instance administrator{0}."
-msgstr "For privacy-related questions or to exercise your rights, please contact the instance administrator{0}."
+#: src/pages/legal/privacy.tsx:286
+msgid "For privacy-related questions or to exercise your rights, please <0>contact us through our inquiry form</0>."
+msgstr "For privacy-related questions or to exercise your rights, please <0>contact us through our inquiry form</0>."
 
-#. placeholder {0}: instanceInfo?.maintainerEmail && ( <> {" "}at{" "} <a href={`mailto:${instanceInfo.maintainerEmail}`} className="text-primary-600 dark:text-primary-400 hover:underline" > {instanceInfo.maintainerEmail} </a> </> )
+#: src/pages/legal/privacy.tsx:280
+#~ msgid "For privacy-related questions or to exercise your rights, please contact the instance administrator{0}."
+#~ msgstr "For privacy-related questions or to exercise your rights, please contact the instance administrator{0}."
+
+#: src/pages/legal/terms.tsx:230
+msgid "For questions about these terms, please <0>contact us through our inquiry form</0>."
+msgstr "For questions about these terms, please <0>contact us through our inquiry form</0>."
+
 #: src/pages/legal/terms.tsx:229
-msgid "For questions about these terms, please contact the instance administrator{0}."
-msgstr "For questions about these terms, please contact the instance administrator{0}."
+#~ msgid "For questions about these terms, please contact the instance administrator{0}."
+#~ msgstr "For questions about these terms, please contact the instance administrator{0}."
 
 #: src/pages/search.tsx:455
 msgid "Found on remote server"
@@ -1519,7 +1525,7 @@ msgstr "Global"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
-#: src/pages/legal/terms.tsx:138
+#: src/pages/legal/terms.tsx:139
 msgid "Harass, abuse, or threaten other users"
 msgstr "Harass, abuse, or threaten other users"
 
@@ -1586,7 +1592,7 @@ msgstr "Image must be less than 2MB"
 msgid "Image must be less than 5MB"
 msgstr "Image must be less than 5MB"
 
-#: src/pages/legal/terms.tsx:139
+#: src/pages/legal/terms.tsx:140
 msgid "Impersonate others or spread misinformation"
 msgstr "Impersonate others or spread misinformation"
 
@@ -1613,7 +1619,7 @@ msgstr "Initiate Migration"
 msgid "Instance"
 msgstr "Instance"
 
-#: src/pages/legal/terms.tsx:164
+#: src/pages/legal/terms.tsx:165
 msgid "Instance administrators and moderators reserve the right to remove content, suspend accounts, or take other actions to maintain a safe community. Moderation decisions are made at the discretion of the moderation team."
 msgstr "Instance administrators and moderators reserve the right to remove content, suspend accounts, or take other actions to maintain a safe community. Moderation decisions are made at the discretion of the moderation team."
 
@@ -1762,7 +1768,7 @@ msgstr "Last fetched"
 
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/pages/legal/privacy.tsx:300
-#: src/pages/legal/terms.tsx:248
+#: src/pages/legal/terms.tsx:244
 msgid "Last updated: {0}"
 msgstr "Last updated: {0}"
 
@@ -2239,11 +2245,11 @@ msgstr "Notifications"
 msgid "Notifications are blocked"
 msgstr "Notifications are blocked"
 
-#: src/pages/legal/privacy.tsx:199
+#: src/pages/legal/privacy.tsx:200
 msgid "Object to certain data processing"
 msgstr "Object to certain data processing"
 
-#: src/pages/legal/privacy.tsx:166
+#: src/pages/legal/privacy.tsx:167
 msgid "Once data is federated, other servers have their own copies and we cannot guarantee its removal from all locations."
 msgstr "Once data is federated, other servers have their own copies and we cannot guarantee its removal from all locations."
 
@@ -2392,7 +2398,7 @@ msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 msgid "Post"
 msgstr "Post"
 
-#: src/pages/legal/terms.tsx:137
+#: src/pages/legal/terms.tsx:138
 msgid "Post illegal content or engage in illegal activities"
 msgstr "Post illegal content or engage in illegal activities"
 
@@ -2439,8 +2445,8 @@ msgid "Privacy First"
 msgstr "Privacy First"
 
 #: src/components/LandingPage.tsx:302
-#: src/pages/legal/privacy.tsx:55
-#: src/pages/legal/privacy.tsx:92
+#: src/pages/legal/privacy.tsx:56
+#: src/pages/legal/privacy.tsx:93
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
@@ -2448,7 +2454,7 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/pages/legal/privacy.tsx:142
+#: src/pages/legal/privacy.tsx:143
 msgid "Process your account registration and authentication"
 msgstr "Process your account registration and authentication"
 
@@ -2469,7 +2475,7 @@ msgstr "Profile information (username, display name, bio)"
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
-#: src/pages/legal/privacy.tsx:141
+#: src/pages/legal/privacy.tsx:142
 msgid "Provide and maintain the service"
 msgstr "Provide and maintain the service"
 
@@ -2486,11 +2492,11 @@ msgstr "Public"
 msgid "Public (show on profiles)"
 msgstr "Public (show on profiles)"
 
-#: src/pages/legal/privacy.tsx:163
+#: src/pages/legal/privacy.tsx:164
 msgid "Public follow/follower relationships"
 msgstr "Public follow/follower relationships"
 
-#: src/pages/legal/privacy.tsx:162
+#: src/pages/legal/privacy.tsx:163
 msgid "Public posts and media"
 msgstr "Public posts and media"
 
@@ -3050,7 +3056,7 @@ msgstr "Send a test notification to verify your setup."
 msgid "Send Delete activity to remote followers"
 msgstr "Send Delete activity to remote followers"
 
-#: src/pages/legal/privacy.tsx:144
+#: src/pages/legal/privacy.tsx:145
 msgid "Send service-related notifications"
 msgstr "Send service-related notifications"
 
@@ -3269,11 +3275,11 @@ msgid "Terms"
 msgstr "Terms"
 
 #: src/components/LandingPage.tsx:287
-#: src/pages/legal/terms.tsx:62
+#: src/pages/legal/terms.tsx:63
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
-#: src/pages/legal/terms.tsx:99
+#: src/pages/legal/terms.tsx:100
 msgid "Terms of Service Agreement"
 msgstr "Terms of Service Agreement"
 
@@ -3330,11 +3336,11 @@ msgstr "This color represents your server's brand identity. It will be used for 
 msgid "This inquiry has been closed. Please create a new inquiry if you need further assistance."
 msgstr "This inquiry has been closed. Please create a new inquiry if you need further assistance."
 
-#: src/pages/legal/privacy.tsx:70
+#: src/pages/legal/privacy.tsx:71
 msgid "This instance has a dedicated Privacy Policy page:"
 msgstr "This instance has a dedicated Privacy Policy page:"
 
-#: src/pages/legal/terms.tsx:77
+#: src/pages/legal/terms.tsx:78
 msgid "This instance has a dedicated Terms of Service page:"
 msgstr "This instance has a dedicated Terms of Service page:"
 
@@ -3342,11 +3348,11 @@ msgstr "This instance has a dedicated Terms of Service page:"
 msgid "This instance is not accepting new registrations at this time."
 msgstr "This instance is not accepting new registrations at this time."
 
-#: src/pages/legal/privacy.tsx:155
+#: src/pages/legal/privacy.tsx:156
 msgid "This instance participates in the ActivityPub federation network. When you make content public, it may be shared with other federated servers. This includes:"
 msgstr "This instance participates in the ActivityPub federation network. When you make content public, it may be shared with other federated servers. This includes:"
 
-#: src/pages/legal/terms.tsx:177
+#: src/pages/legal/terms.tsx:178
 msgid "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 msgstr "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 
@@ -3362,11 +3368,11 @@ msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that c
 msgid "This passkey is already registered"
 msgstr "This passkey is already registered"
 
-#: src/pages/legal/privacy.tsx:254
+#: src/pages/legal/privacy.tsx:260
 msgid "This service is not intended for children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us."
 msgstr "This service is not intended for children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us."
 
-#: src/pages/legal/terms.tsx:203
+#: src/pages/legal/terms.tsx:204
 msgid "This service is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to data loss, service interruptions, or user-generated content."
 msgstr "This service is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to data loss, service interruptions, or user-generated content."
 
@@ -3388,8 +3394,12 @@ msgid "Tip: To find users on other servers, enter their full address like @user@
 msgstr "Tip: To find users on other servers, enter their full address like @user@example.com"
 
 #: src/pages/legal/privacy.tsx:202
-msgid "To exercise these rights, contact the instance administrator or use the settings in your account."
-msgstr "To exercise these rights, contact the instance administrator or use the settings in your account."
+#~ msgid "To exercise these rights, contact the instance administrator or use the settings in your account."
+#~ msgstr "To exercise these rights, contact the instance administrator or use the settings in your account."
+
+#: src/pages/legal/privacy.tsx:203
+msgid "To exercise these rights, use the settings in your account or <0>contact us</0>."
+msgstr "To exercise these rights, use the settings in your account or <0>contact us</0>."
 
 #: src/pages/admin/queue.tsx:335
 msgid "Top Servers by Delivery"
@@ -3707,7 +3717,7 @@ msgstr "View Policy"
 msgid "View Terms"
 msgstr "View Terms"
 
-#: src/pages/legal/terms.tsx:141
+#: src/pages/legal/terms.tsx:142
 msgid "Violate intellectual property rights"
 msgstr "Violate intellectual property rights"
 
@@ -3736,35 +3746,35 @@ msgstr "Warning Reason (required)"
 msgid "Warnings ({0})"
 msgstr "Warnings ({0})"
 
-#: src/pages/legal/privacy.tsx:227
+#: src/pages/legal/privacy.tsx:233
 msgid "We implement appropriate security measures to protect your data, including encrypted connections (HTTPS), secure password hashing, and access controls. However, no system is completely secure, and we cannot guarantee absolute security."
 msgstr "We implement appropriate security measures to protect your data, including encrypted connections (HTTPS), secure password hashing, and access controls. However, no system is completely secure, and we cannot guarantee absolute security."
 
-#: src/pages/legal/terms.tsx:216
+#: src/pages/legal/terms.tsx:217
 msgid "We may update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms. Major changes will be communicated to users when possible."
 msgstr "We may update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms. Major changes will be communicated to users when possible."
 
-#: src/pages/legal/privacy.tsx:267
+#: src/pages/legal/privacy.tsx:273
 msgid "We may update this privacy policy from time to time. We will notify users of significant changes when possible. Your continued use of the service after changes constitutes acceptance of the updated policy."
 msgstr "We may update this privacy policy from time to time. We will notify users of significant changes when possible. Your continued use of the service after changes constitutes acceptance of the updated policy."
 
-#: src/pages/legal/privacy.tsx:241
+#: src/pages/legal/privacy.tsx:247
 msgid "We may use third-party services for hosting, email delivery, or other infrastructure needs. These services have their own privacy policies. We do not sell your personal data to third parties."
 msgstr "We may use third-party services for hosting, email delivery, or other infrastructure needs. These services have their own privacy policies. We do not sell your personal data to third parties."
 
-#: src/pages/legal/privacy.tsx:178
+#: src/pages/legal/privacy.tsx:179
 msgid "We retain your data for as long as your account is active. When you delete your account, we will remove your data from our servers, though federated copies on other servers may persist. Access logs are typically retained for security purposes for a limited period."
 msgstr "We retain your data for as long as your account is active. When you delete your account, we will remove your data from our servers, though federated copies on other servers may persist. Access logs are typically retained for security purposes for a limited period."
 
-#: src/pages/legal/terms.tsx:190
+#: src/pages/legal/terms.tsx:191
 msgid "We strive to maintain service availability but do not guarantee uninterrupted access. The service may be modified, suspended, or discontinued at any time without notice."
 msgstr "We strive to maintain service availability but do not guarantee uninterrupted access. The service may be modified, suspended, or discontinued at any time without notice."
 
-#: src/pages/legal/privacy.tsx:138
+#: src/pages/legal/privacy.tsx:139
 msgid "We use collected information to:"
 msgstr "We use collected information to:"
 
-#: src/pages/legal/privacy.tsx:214
+#: src/pages/legal/privacy.tsx:220
 msgid "We use essential cookies and local storage to maintain your session and store preferences. These are necessary for the service to function and cannot be disabled without affecting functionality."
 msgstr "We use essential cookies and local storage to maintain your session and store preferences. These are necessary for the service to function and cannot be disabled without affecting functionality."
 
@@ -3776,7 +3786,7 @@ msgstr "We will respond as soon as possible."
 msgid "We'll use this to respond to your inquiry"
 msgstr "We'll use this to respond to your inquiry"
 
-#: src/pages/legal/privacy.tsx:101
+#: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "When you use {instanceName}, we collect the following types of information:"
 
@@ -3798,11 +3808,11 @@ msgstr "Will be posted at {0}"
 msgid "With Errors"
 msgstr "With Errors"
 
-#: src/pages/legal/terms.tsx:134
+#: src/pages/legal/terms.tsx:135
 msgid "You agree not to use this service to:"
 msgstr "You agree not to use this service to:"
 
-#: src/pages/legal/terms.tsx:120
+#: src/pages/legal/terms.tsx:121
 msgid "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must be at least 13 years old to use this service. You agree to provide accurate information when creating your account."
 msgstr "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must be at least 13 years old to use this service. You agree to provide accurate information when creating your account."
 
@@ -3845,7 +3855,7 @@ msgstr "You have an unsaved draft"
 msgid "You have reached your invitation limit"
 msgstr "You have reached your invitation limit"
 
-#: src/pages/legal/privacy.tsx:192
+#: src/pages/legal/privacy.tsx:193
 msgid "You have the right to:"
 msgstr "You have the right to:"
 
@@ -3861,7 +3871,7 @@ msgstr "You haven't submitted any inquiries yet."
 msgid "You received a warning from the moderators"
 msgstr "You received a warning from the moderators"
 
-#: src/pages/legal/terms.tsx:151
+#: src/pages/legal/terms.tsx:152
 msgid "You retain ownership of content you create and post. By posting content, you grant this instance a license to store, display, and distribute your content as part of the service's normal operation, including federation with other ActivityPub servers."
 msgstr "You retain ownership of content you create and post. By posting content, you grant this instance a license to store, display, and distribute your content as part of the service's normal operation, including federation with other ActivityPub servers."
 
@@ -3914,7 +3924,7 @@ msgstr "Your inquiry has been submitted successfully!"
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"
 
-#: src/pages/legal/privacy.tsx:161
+#: src/pages/legal/privacy.tsx:162
 msgid "Your public profile information"
 msgstr "Your public profile information"
 
