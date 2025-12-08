@@ -15,8 +15,10 @@ import {
   PanelLeftClose,
   PanelLeft,
   LogOut,
+  PenSquare,
 } from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
+import { openComposeModalAtom } from "../../lib/atoms/compose";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
@@ -33,6 +35,7 @@ import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 export function Sidebar() {
   const currentUser = useAtomValue(currentUserAtom);
   const logout = useSetAtom(logoutAtom);
+  const openComposeModal = useSetAtom(openComposeModalAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedAtom);
@@ -127,6 +130,11 @@ export function Sidebar() {
     setIsMobileMenuOpen(false);
   };
 
+  const handlePostClick = () => {
+    setIsMobileMenuOpen(false);
+    openComposeModal();
+  };
+
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
@@ -153,6 +161,18 @@ export function Sidebar() {
             </span>
           </SpaLink>
         </SpaLink>
+      </div>
+
+      {/* Post Button */}
+      <div className="p-3">
+        <button
+          type="button"
+          onClick={handlePostClick}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors"
+        >
+          <PenSquare className="w-5 h-5" />
+          <span className="font-medium"><Trans>Post</Trans></span>
+        </button>
       </div>
 
       {/* Navigation */}
@@ -267,8 +287,23 @@ export function Sidebar() {
         )}
       </div>
 
+      {/* Post Button */}
+      <div className={isCollapsed ? "p-2" : "p-4"}>
+        <button
+          type="button"
+          onClick={handlePostClick}
+          className={`w-full flex items-center rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors ${
+            isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"
+          }`}
+          title={isCollapsed ? "Post" : undefined}
+        >
+          <PenSquare className="w-5 h-5" />
+          {!isCollapsed && <span className="font-medium"><Trans>Post</Trans></span>}
+        </button>
+      </div>
+
       {/* Navigation */}
-      <nav className={`flex-1 ${isCollapsed ? "p-2" : "p-4"} space-y-2 overflow-y-auto`}>
+      <nav className={`flex-1 ${isCollapsed ? "p-2" : "p-4 pt-0"} space-y-2 overflow-y-auto`}>
         {navItems.map((item) => (
           <SpaLink
             key={item.key}
