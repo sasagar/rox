@@ -22,6 +22,7 @@ import {
   MoveHandler,
 } from "./handlers/index.js";
 import { logger } from "../../../lib/logger.js";
+import { recordInboxActivity } from "../../../lib/metrics.js";
 
 /**
  * InboxService - Activity dispatcher
@@ -114,7 +115,12 @@ export class InboxService {
       baseUrl: this.baseUrl,
     };
 
-    return handler.handle(activity, context);
+    const result = await handler.handle(activity, context);
+
+    // Record metrics for inbox activity
+    recordInboxActivity(activity.type, result.success);
+
+    return result;
   }
 }
 

@@ -10,6 +10,7 @@
 import { Redis } from "ioredis";
 import type { ICacheService, CacheSetOptions } from "../../interfaces/ICacheService.js";
 import { logger } from "../../lib/logger.js";
+import { recordCacheOperation } from "../../lib/metrics.js";
 
 /**
  * Default TTL values in seconds
@@ -111,8 +112,10 @@ export class DragonflyCacheAdapter implements ICacheService {
     try {
       const value = await this.redis.get(key);
       if (value === null) {
+        recordCacheOperation("get", false);
         return null;
       }
+      recordCacheOperation("get", true);
       return JSON.parse(value) as T;
     } catch (error) {
       logger.debug({ err: error, key }, "Cache get error");
@@ -135,6 +138,7 @@ export class DragonflyCacheAdapter implements ICacheService {
       } else {
         await this.redis.set(key, serialized);
       }
+      recordCacheOperation("set");
     } catch (error) {
       logger.debug({ err: error, key }, "Cache set error");
     }
@@ -150,6 +154,7 @@ export class DragonflyCacheAdapter implements ICacheService {
 
     try {
       await this.redis.del(key);
+      recordCacheOperation("delete");
     } catch (error) {
       logger.debug({ err: error, key }, "Cache delete error");
     }

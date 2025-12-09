@@ -9,6 +9,7 @@
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 import { logger } from "../../lib/logger.js";
+import { recordActivityDelivery } from "../../lib/metrics.js";
 
 /**
  * Delivery timeout in milliseconds (30 seconds)
@@ -50,6 +51,9 @@ export class ActivityDeliveryService {
     senderKeyId: string,
     senderPrivateKey: string,
   ): Promise<boolean> {
+    const startTime = Date.now();
+    const activityType = activity.type || "Unknown";
+
     try {
       const body = JSON.stringify(activity);
 
@@ -87,18 +91,26 @@ export class ActivityDeliveryService {
 
       if (!response.ok) {
         logger.error({ inboxUrl, status: response.status, statusText: response.statusText }, "Failed to deliver activity");
+        const duration = (Date.now() - startTime) / 1000;
+        recordActivityDelivery(activityType, false, duration);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       logger.debug({ inboxUrl, activityType: activity.type }, "Activity delivered");
+      const duration = (Date.now() - startTime) / 1000;
+      recordActivityDelivery(activityType, true, duration);
       return true;
     } catch (error) {
+      const duration = (Date.now() - startTime) / 1000;
+
       if (error instanceof Error && error.name === "AbortError") {
         logger.error({ inboxUrl, timeoutMs: DELIVERY_TIMEOUT }, "Timeout delivering activity");
+        recordActivityDelivery(activityType, false, duration);
         throw new Error(`Delivery timeout after ${DELIVERY_TIMEOUT}ms`);
       }
 
       logger.error({ err: error, inboxUrl }, "Error delivering activity");
+      recordActivityDelivery(activityType, false, duration);
       throw error; // Re-throw for queue retry logic
     }
   }
