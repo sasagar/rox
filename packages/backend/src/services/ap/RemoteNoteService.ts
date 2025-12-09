@@ -10,6 +10,7 @@
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
+import type { IDriveFileRepository } from "../../interfaces/repositories/IDriveFileRepository.js";
 import type { Note } from "shared";
 import { generateId } from "shared";
 import { RemoteActorService } from "./RemoteActorService.js";
@@ -58,6 +59,7 @@ export class RemoteNoteService {
     private userRepository: IUserRepository,
     private remoteActorService?: RemoteActorService,
     private customEmojiRepository?: ICustomEmojiRepository,
+    private driveFileRepository?: IDriveFileRepository,
   ) {}
 
   /**
@@ -101,8 +103,8 @@ export class RemoteNoteService {
     // Determine visibility from to/cc fields
     const visibility = this.determineVisibility(noteObject.to, noteObject.cc);
 
-    // Extract mentions (user IDs)
-    const mentions = this.extractMentions(noteObject.tag);
+    // Extract mentions (user IDs) - resolve mentioned user URIs to local user IDs
+    const mentions = await this.extractMentions(noteObject.tag, actorService);
 
     // Extract hashtags
     const tags = this.extractHashtags(noteObject.tag);
@@ -125,6 +127,9 @@ export class RemoteNoteService {
       });
     }
 
+    // Process attachments (images, videos, etc.)
+    const fileIds = await this.processAttachments(noteObject.attachment, author.id);
+
     // Find reply target
     let replyId: string | null = null;
     if (noteObject.inReplyTo) {
@@ -141,8 +146,8 @@ export class RemoteNoteService {
       visibility,
       localOnly: false, // Remote notes are never local-only
       replyId,
-      renoteId: null, // TODO: Handle Announce activities separately
-      fileIds: [], // TODO: Handle attachments
+      renoteId: null, // Announce activities are handled separately by AnnounceHandler
+      fileIds,
       mentions,
       emojis,
       tags,
@@ -227,20 +232,32 @@ export class RemoteNoteService {
    * Extract mention user IDs from tags
    *
    * Resolves mentioned users and returns their local IDs.
+   * For each Mention tag, attempts to resolve the user URI to a local user record.
    *
    * @param tags - ActivityPub tags array
+   * @param actorService - RemoteActorService for resolving user URIs
    * @returns Array of user IDs
    */
-  private extractMentions(tags?: Array<{ type: string; name?: string; href?: string }>): string[] {
+  private async extractMentions(
+    tags: Array<{ type: string; name?: string; href?: string }> | undefined,
+    actorService: RemoteActorService,
+  ): Promise<string[]> {
     if (!tags) return [];
 
     const mentions: string[] = [];
 
     for (const tag of tags) {
       if (tag.type === "Mention" && tag.href) {
-        // TODO: Resolve mentioned user URI to local user ID
-        // For now, we'll skip this and handle it later
-        // mentions.push(userId);
+        try {
+          // Resolve mentioned user URI to local user record
+          const mentionedUser = await actorService.resolveActor(tag.href);
+          if (mentionedUser) {
+            mentions.push(mentionedUser.id);
+          }
+        } catch (error) {
+          // Don't fail note processing if mention resolution fails
+          logger.debug({ err: error, href: tag.href }, "Failed to resolve mentioned user");
+        }
       }
     }
 
@@ -364,5 +381,80 @@ export class RemoteNoteService {
         logger.warn({ err: error, emojiName, host }, "Failed to save remote emoji");
       }
     }
+  }
+
+  /**
+   * Process attachments from ActivityPub note
+   *
+   * Creates drive file entries for remote attachments.
+   * Remote files are not downloaded; only metadata is stored with the original URL.
+   *
+   * @param attachments - ActivityPub attachment array
+   * @param userId - ID of the user who authored the note
+   * @returns Array of created file IDs
+   */
+  private async processAttachments(
+    attachments: APNote["attachment"],
+    userId: string,
+  ): Promise<string[]> {
+    if (!attachments || attachments.length === 0 || !this.driveFileRepository) {
+      return [];
+    }
+
+    const fileIds: string[] = [];
+
+    for (const attachment of attachments) {
+      // Only process Document type attachments (images, videos, audio, etc.)
+      if (attachment.type !== "Document" && attachment.type !== "Image" && attachment.type !== "Audio" && attachment.type !== "Video") {
+        continue;
+      }
+
+      if (!attachment.url || !attachment.mediaType) {
+        continue;
+      }
+
+      try {
+        const fileId = generateId();
+
+        // Extract filename from URL or use a default
+        let filename = attachment.name || "attachment";
+        try {
+          const urlPath = new URL(attachment.url).pathname;
+          const urlFilename = urlPath.split("/").pop();
+          if (urlFilename) {
+            filename = urlFilename;
+          }
+        } catch {
+          // Keep default filename
+        }
+
+        // Create drive file entry for remote attachment
+        // Remote files use their original URL directly (no local storage)
+        await this.driveFileRepository.create({
+          id: fileId,
+          userId,
+          folderId: null,
+          name: filename,
+          type: attachment.mediaType,
+          size: 0, // Unknown for remote files
+          md5: `remote:${attachment.url}`, // Use URL as unique identifier for remote files
+          url: attachment.url, // Direct link to remote file
+          thumbnailUrl: null,
+          blurhash: null,
+          comment: attachment.name || null,
+          isSensitive: false,
+          storageKey: `remote:${attachment.url}`, // Mark as remote file
+          source: "system", // Remote files are system-imported
+        });
+
+        fileIds.push(fileId);
+        logger.debug({ fileId, url: attachment.url, type: attachment.mediaType }, "Saved remote attachment");
+      } catch (error) {
+        // Don't fail note processing if attachment saving fails
+        logger.warn({ err: error, url: attachment.url }, "Failed to save remote attachment");
+      }
+    }
+
+    return fileIds;
   }
 }
