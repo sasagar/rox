@@ -4,7 +4,11 @@
  * Generates and plays notification sounds using Web Audio API
  */
 
-import type { NotificationSound } from "../types/uiSettings";
+import type {
+  NotificationSound,
+  NotificationSoundType,
+  NotificationSoundsByType,
+} from "../types/uiSettings";
 
 let audioContext: AudioContext | null = null;
 
@@ -138,4 +142,78 @@ export function testNotificationSound(
     audioContext.resume();
   }
   playNotificationSound(soundType, volumePercent);
+}
+
+/**
+ * Play a success/post sound (ascending chime)
+ */
+function playPostSuccessSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.25;
+
+  // Three ascending tones for success feel
+  const notes = [
+    { freq: 523, delay: 0 }, // C5
+    { freq: 659, delay: 80 }, // E5
+    { freq: 784, delay: 160 }, // G5
+  ];
+
+  notes.forEach(({ freq, delay }) => {
+    setTimeout(() => {
+      playTone(ctx, freq, 0.12, vol, "sine");
+    }, delay);
+  });
+}
+
+/**
+ * Play sound when a note is successfully posted
+ *
+ * @param soundType - Sound type from user settings
+ * @param volumePercent - Volume percentage (0-100)
+ */
+export function playPostSound(soundType: NotificationSound, volumePercent: number = 50): void {
+  if (soundType === "none" || volumePercent === 0) {
+    return;
+  }
+
+  // Check if we can play audio
+  if (typeof window === "undefined" || !window.AudioContext) {
+    return;
+  }
+
+  const volume = volumePercent / 100;
+
+  try {
+    playPostSuccessSound(volume);
+  } catch (error) {
+    console.error("Failed to play post sound:", error);
+  }
+}
+
+/**
+ * Play notification sound for a specific notification type
+ *
+ * Uses per-type settings if available, otherwise falls back to default settings.
+ *
+ * @param notificationType - The type of notification (follow, mention, reply, etc.)
+ * @param soundsByType - Per-type sound settings (optional)
+ * @param defaultSound - Default sound type to use if no per-type setting
+ * @param defaultVolume - Default volume to use if no per-type setting
+ */
+export function playNotificationSoundForType(
+  notificationType: NotificationSoundType,
+  soundsByType: NotificationSoundsByType | undefined,
+  defaultSound: NotificationSound,
+  defaultVolume: number,
+): void {
+  // Check for per-type settings first
+  const typeSettings = soundsByType?.[notificationType];
+
+  if (typeSettings) {
+    // Use per-type settings
+    playNotificationSound(typeSettings.sound, typeSettings.volume);
+  } else {
+    // Fall back to default settings
+    playNotificationSound(defaultSound, defaultVolume);
+  }
 }

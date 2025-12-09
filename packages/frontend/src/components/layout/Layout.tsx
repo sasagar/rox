@@ -5,6 +5,7 @@ import { currentUserAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Sidebar } from "./Sidebar";
 import { MobileAppBar } from "./MobileAppBar";
+import { ComposeModal } from "../note/ComposeModal";
 import { useUISettings } from "../../lib/hooks/useUISettings";
 
 /**
@@ -67,6 +68,9 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
 
       {/* Mobile Bottom Navigation Bar */}
       {shouldShowSidebar && <MobileAppBar />}
+
+      {/* Compose Modal (for mobile post button) */}
+      {shouldShowSidebar && <ComposeModal />}
     </div>
   );
 }

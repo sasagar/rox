@@ -50,17 +50,18 @@ export interface NoteFile {
  */
 export interface Note extends Omit<
   NoteWithRelations,
-  "createdAt" | "updatedAt" | "user" | "files" | "text" | "cw"
+  "createdAt" | "updatedAt" | "user" | "files" | "text" | "cw" | "repliesCount" | "renoteCount"
 > {
   user: NoteUser;
   text?: string;
   cw?: string;
   renote?: Note;
+  reply?: Note; // The note this is a reply to (hydrated by API)
   files?: NoteFile[];
   createdAt: string;
   updatedAt: string;
 
-  // Interaction counts
+  // Interaction counts (optional for backwards compatibility)
   repliesCount?: number;
   renoteCount?: number;
   reactions?: Record<string, number>;

@@ -7,6 +7,7 @@
  */
 
 import { Trans } from "@lingui/react/macro";
+import { useMemo } from "react";
 import {
   UserPlus,
   AtSign,
@@ -18,6 +19,7 @@ import {
   Quote,
 } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
+import { MfmRenderer } from "../mfm/MfmRenderer";
 import type { Notification, NotificationType } from "../../lib/types/notification";
 
 interface NotificationItemProps {
@@ -53,46 +55,74 @@ function getNotificationIcon(type: NotificationType) {
 }
 
 /**
+ * Render notifier name with MFM support for custom emojis
+ */
+function NotifierName({ notification }: { notification: Notification }) {
+  const notifierName = notification.notifier?.name || notification.notifier?.username || "Someone";
+  const profileEmojis = notification.notifier?.profileEmojis;
+
+  // Build emoji map from profile emojis
+  const emojiMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (profileEmojis) {
+      for (const emoji of profileEmojis) {
+        map[`:${emoji.name}:`] = emoji.url;
+      }
+    }
+    return map;
+  }, [profileEmojis]);
+
+  // If no custom emojis, render plain text
+  if (!profileEmojis || profileEmojis.length === 0) {
+    return <strong>{notifierName}</strong>;
+  }
+
+  return (
+    <strong className="inline">
+      <MfmRenderer text={notifierName} customEmojis={emojiMap} />
+    </strong>
+  );
+}
+
+/**
  * Get notification message based on type
  */
 function NotificationMessage({ notification }: { notification: Notification }) {
-  const notifierName = notification.notifier?.name || notification.notifier?.username || "Someone";
-
   switch (notification.type) {
     case "follow":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>followed you</Trans>
+          <NotifierName notification={notification} /> <Trans>followed you</Trans>
         </span>
       );
     case "mention":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>mentioned you</Trans>
+          <NotifierName notification={notification} /> <Trans>mentioned you</Trans>
         </span>
       );
     case "reply":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>replied to your note</Trans>
+          <NotifierName notification={notification} /> <Trans>replied to your note</Trans>
         </span>
       );
     case "reaction":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>reacted with</Trans> {notification.reaction}
+          <NotifierName notification={notification} /> <Trans>reacted with</Trans> {notification.reaction}
         </span>
       );
     case "renote":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>renoted your note</Trans>
+          <NotifierName notification={notification} /> <Trans>renoted your note</Trans>
         </span>
       );
     case "quote":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>quoted your note</Trans>
+          <NotifierName notification={notification} /> <Trans>quoted your note</Trans>
         </span>
       );
     case "warning":
@@ -104,7 +134,7 @@ function NotificationMessage({ notification }: { notification: Notification }) {
     case "follow_request_accepted":
       return (
         <span>
-          <strong>{notifierName}</strong> <Trans>accepted your follow request</Trans>
+          <NotifierName notification={notification} /> <Trans>accepted your follow request</Trans>
         </span>
       );
     default:

@@ -60,3 +60,17 @@ export const updateUISettingAtom = atom(null, (get, set, update: Partial<UISetti
  * App custom CSS atom (derived from UI settings)
  */
 export const appCustomCssAtom = atom((get) => get(uiSettingsAtom).appCustomCss || "");
+
+/**
+ * Notification sound type atom (derived from UI settings)
+ */
+export const notificationSoundAtom = atom(
+  (get) => get(uiSettingsAtom).notificationSound || defaultUISettings.notificationSound,
+);
+
+/**
+ * Notification volume atom (derived from UI settings)
+ */
+export const notificationVolumeAtom = atom(
+  (get) => get(uiSettingsAtom).notificationVolume ?? defaultUISettings.notificationVolume,
+);

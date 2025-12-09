@@ -22,6 +22,20 @@
       "when": 1765178771585,
       "tag": "0002_mixed_winter_soldier",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765215799774,
+      "tag": "0003_slippery_famine",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765232426495,
+      "tag": "0004_curved_doctor_octopus",
+      "breakpoints": true
     }
   ]
 }

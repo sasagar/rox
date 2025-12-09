@@ -153,6 +153,18 @@ function NoteCardComponent({
     );
   }, [note.renote?.user?.profileEmojis]);
 
+  // Convert reply user's profileEmojis to emoji map
+  const replyUserProfileEmojiMap = useMemo(() => {
+    if (!note.reply?.user?.profileEmojis || note.reply.user.profileEmojis.length === 0) return {};
+    return note.reply.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.reply?.user?.profileEmojis]);
+
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
     if (note.reactions) {
@@ -285,7 +297,11 @@ function NoteCardComponent({
         {/* User Info */}
         <div className="mb-3 flex items-start gap-3">
           <SpaLink
-            to={`/${note.user.username}`}
+            to={
+              note.user.host
+                ? `/@${note.user.username}@${note.user.host}`
+                : `/${note.user.username}`
+            }
             className="shrink-0"
             aria-label={`View profile of ${note.user.name || note.user.username}`}
           >
@@ -443,7 +459,7 @@ function NoteCardComponent({
                     aria-label={`View image ${index + 1} of ${note.files?.length ?? 0}${file.comment ? `: ${file.comment}` : ""}`}
                   >
                     <img
-                      src={file.thumbnailUrl || file.url}
+                      src={getProxiedImageUrl(file.thumbnailUrl || file.url) || ""}
                       alt={
                         file.comment ||
                         `Image ${index + 1} from ${note.user.name || note.user.username}'s post`
@@ -459,7 +475,7 @@ function NoteCardComponent({
             {/* Image Modal */}
             {showImageModal && note.files && note.files.length > 0 && (
               <ImageModal
-                images={note.files.map((file) => file.url)}
+                images={note.files.map((file) => getProxiedImageUrl(file.url) || file.url)}
                 initialIndex={selectedImageIndex}
                 onClose={() => setShowImageModal(false)}
                 alt={`${note.user.name || note.user.username}'s post`}
@@ -470,7 +486,7 @@ function NoteCardComponent({
             {note.renote && (
               <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <SpaLink to={`/${note.renote.user.username}`} className="shrink-0">
+                  <SpaLink to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`} className="shrink-0">
                     <Avatar
                       src={note.renote.user.avatarUrl}
                       alt={note.renote.user.name || note.renote.user.username}
@@ -478,7 +494,7 @@ function NoteCardComponent({
                     />
                   </SpaLink>
                   <SpaLink
-                    to={`/${note.renote.user.username}`}
+                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
@@ -488,10 +504,10 @@ function NoteCardComponent({
                     )}
                   </SpaLink>
                   <SpaLink
-                    to={`/${note.renote.user.username}`}
+                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
                     className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                   >
-                    @{note.renote.user.username}
+                    @{note.renote.user.username}{note.renote.user.host ? `@${note.renote.user.host}` : ""}
                   </SpaLink>
                 </div>
                 {note.renote.text && (
@@ -499,6 +515,58 @@ function NoteCardComponent({
                     <MfmRenderer text={note.renote.text} />
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Reply Source - Speech bubble style showing the note being replied to */}
+            {note.reply && (
+              <div className="mb-3">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 p-3">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                    <MessageCircle className="h-3 w-3" />
+                    <Trans>In reply to</Trans>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <SpaLink
+                      to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/${note.reply.user.username}`}
+                      className="shrink-0"
+                    >
+                      <Avatar
+                        src={note.reply.user.avatarUrl}
+                        alt={note.reply.user.name || note.reply.user.username}
+                        size="sm"
+                      />
+                    </SpaLink>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <SpaLink
+                          to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/${note.reply.user.username}`}
+                          className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
+                        >
+                          {note.reply.user.name ? (
+                            <MfmRenderer text={note.reply.user.name} plain customEmojis={replyUserProfileEmojiMap} />
+                          ) : (
+                            note.reply.user.username
+                          )}
+                        </SpaLink>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          @{note.reply.user.username}{note.reply.user.host ? `@${note.reply.user.host}` : ""}
+                        </span>
+                      </div>
+                      {note.reply.text && (
+                        <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap wrap-break-word line-clamp-3">
+                          <MfmRenderer text={note.reply.text} plain />
+                        </div>
+                      )}
+                    </div>
+                    <SpaLink
+                      to={`/notes/${note.reply.id}`}
+                      className="text-xs text-primary-500 hover:text-primary-600 hover:underline shrink-0"
+                    >
+                      <Trans>View</Trans>
+                    </SpaLink>
+                  </div>
+                </div>
               </div>
             )}
           </>

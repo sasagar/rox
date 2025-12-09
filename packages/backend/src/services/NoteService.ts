@@ -202,27 +202,42 @@ export class NoteService {
       deletedAt: null,
       deletedById: null,
       deletionReason: null,
+      // repliesCount and renoteCount use database defaults (0)
     });
 
-    // Deliver Create activity to followers (async, non-blocking)
-    const author = await this.userRepository.findById(userId);
-    if (author && !author.host && !localOnly && visibility === "public") {
-      // Fire and forget - don't await to avoid blocking the response
-      this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-        logger.error({ err: error, noteId }, "Failed to deliver Create activity");
+    // Increment reply count on parent note (async, non-blocking)
+    if (replyId) {
+      this.noteRepository.incrementRepliesCount(replyId).catch((error) => {
+        logger.error({ err: error, replyId }, "Failed to increment replies count");
       });
     }
 
-    // Deliver Announce activity to remote note author (async, non-blocking)
-    if (renoteTarget && author && !author.host && !localOnly && visibility === "public") {
-      const renoteAuthor = await this.userRepository.findById(renoteTarget.userId);
-      if (renoteAuthor && renoteAuthor.host && renoteAuthor.inbox) {
-        // Only deliver if renote target is a remote user with inbox
+    // Increment renote count on target note (async, non-blocking)
+    if (renoteId) {
+      this.noteRepository.incrementRenoteCount(renoteId).catch((error) => {
+        logger.error({ err: error, renoteId }, "Failed to increment renote count");
+      });
+    }
+
+    // Determine if this is a pure renote (no text, no CW, no reply, no files)
+    // Pure renotes get Announce activity, quote renotes get Create activity
+    const isPureRenote = renoteTarget && !text && !cw && !replyId && fileIds.length === 0;
+
+    // Deliver ActivityPub activity to followers (async, non-blocking)
+    const author = await this.userRepository.findById(userId);
+    if (author && !author.host && !localOnly && visibility === "public") {
+      if (isPureRenote && renoteTarget) {
+        // Pure renote: send Announce activity to all followers
         this.deliveryService
-          .deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor)
+          .deliverAnnounceActivity(note.id, renoteTarget, author)
           .catch((error) => {
             logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
           });
+      } else {
+        // Regular note or quote renote: send Create activity
+        this.deliveryService.deliverCreateNote(note, author).catch((error) => {
+          logger.error({ err: error, noteId }, "Failed to deliver Create activity");
+        });
       }
     }
 
@@ -268,6 +283,65 @@ export class NoteService {
     return await this.noteRepository.findById(noteId);
   }
 
+
+  /**
+   * Hydrate renote information for a list of notes
+   * Fetches the renoted notes and their users for notes that have renoteId
+   */
+  private async hydrateRenotes(notesList: Note[]): Promise<Note[]> {
+    // Collect unique renote IDs and reply IDs
+    const renoteIds = [...new Set(notesList.filter((n) => n.renoteId).map((n) => n.renoteId!))];
+    const replyIds = [...new Set(notesList.filter((n) => n.replyId).map((n) => n.replyId!))];
+    const allIds = [...new Set([...renoteIds, ...replyIds])];
+
+    if (allIds.length === 0) {
+      return notesList;
+    }
+
+    // Fetch all referenced notes in a single batch
+    const referencedNotes = await Promise.all(allIds.map((id) => this.noteRepository.findById(id)));
+
+    // Create a map for quick lookup
+    const noteMap = new Map<string, Note>();
+    for (const note of referencedNotes) {
+      if (note) {
+        // Fetch user info for the referenced note
+        const user = await this.userRepository.findById(note.userId);
+        if (user) {
+          noteMap.set(note.id, {
+            ...note,
+            user: {
+              id: user.id,
+              username: user.username,
+              name: user.displayName || user.username,
+              displayName: user.displayName,
+              avatarUrl: user.avatarUrl,
+              host: user.host,
+              profileEmojis: user.profileEmojis,
+            },
+          } as Note);
+        } else {
+          noteMap.set(note.id, note);
+        }
+      }
+    }
+
+    // Attach renote and reply data to notes
+    return notesList.map((note) => {
+      const result = { ...note } as Note & { renote?: Note; reply?: Note };
+
+      if (note.renoteId && noteMap.has(note.renoteId)) {
+        result.renote = noteMap.get(note.renoteId);
+      }
+
+      if (note.replyId && noteMap.has(note.replyId)) {
+        result.reply = noteMap.get(note.replyId);
+      }
+
+      return result as Note;
+    });
+  }
+
   /**
    * Delete a note
    *
@@ -296,6 +370,20 @@ export class NoteService {
 
     // Get author info before deletion for ActivityPub delivery
     const author = await this.userRepository.findById(userId);
+
+    // Decrement reply count on parent note (async, non-blocking)
+    if (note.replyId) {
+      this.noteRepository.decrementRepliesCount(note.replyId).catch((error) => {
+        logger.error({ err: error, replyId: note.replyId }, "Failed to decrement replies count");
+      });
+    }
+
+    // Decrement renote count on target note (async, non-blocking)
+    if (note.renoteId) {
+      this.noteRepository.decrementRenoteCount(note.renoteId).catch((error) => {
+        logger.error({ err: error, renoteId: note.renoteId }, "Failed to decrement renote count");
+      });
+    }
 
     // Delete the note from local database
     await this.noteRepository.delete(noteId);
@@ -346,12 +434,15 @@ export class NoteService {
       untilId: options.untilId,
     });
 
+    // Hydrate renote information
+    const hydratedNotes = await this.hydrateRenotes(notes);
+
     // Cache first page results
     if (isFirstPage && this.cacheService?.isAvailable()) {
-      await this.cacheService.set(cacheKey, notes, { ttl: CacheTTL.SHORT });
+      await this.cacheService.set(cacheKey, hydratedNotes, { ttl: CacheTTL.SHORT });
     }
 
-    return notes;
+    return hydratedNotes;
   }
 
   /**
@@ -380,12 +471,15 @@ export class NoteService {
     // 自分の投稿も含める
     const userIds = [userId, ...followingUserIds];
 
-    return await this.noteRepository.getTimeline({
+    const notes = await this.noteRepository.getTimeline({
       userIds,
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
     });
+
+    // Hydrate renote information
+    return await this.hydrateRenotes(notes);
   }
 
   /**
@@ -418,12 +512,15 @@ export class NoteService {
         .map((f: { followeeId: string }) => f.followeeId);
     }
 
-    return await this.noteRepository.getSocialTimeline({
+    const notes = await this.noteRepository.getSocialTimeline({
       userIds: remoteUserIds,
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
     });
+
+    // Hydrate renote information
+    return await this.hydrateRenotes(notes);
   }
 
   /**
@@ -462,12 +559,15 @@ export class NoteService {
       untilId: options.untilId,
     });
 
+    // Hydrate renote information
+    const hydratedNotes = await this.hydrateRenotes(notes);
+
     // Cache first page results
     if (isFirstPage && this.cacheService?.isAvailable()) {
-      await this.cacheService.set(cacheKey, notes, { ttl: CacheTTL.SHORT });
+      await this.cacheService.set(cacheKey, hydratedNotes, { ttl: CacheTTL.SHORT });
     }
 
-    return notes;
+    return hydratedNotes;
   }
 
   /**
@@ -489,11 +589,14 @@ export class NoteService {
   async getUserTimeline(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
     const limit = this.normalizeLimit(options.limit);
 
-    return await this.noteRepository.findByUserId(userId, {
+    const notes = await this.noteRepository.findByUserId(userId, {
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
     });
+
+    // Hydrate renote information
+    return await this.hydrateRenotes(notes);
   }
 
   /**
@@ -718,7 +821,7 @@ export class NoteService {
 
     // Create note with user data for WebSocket push (frontend expects note.user)
     // Include both 'name' and 'displayName' for frontend compatibility
-    const noteWithUser = {
+    const noteWithUser: Record<string, unknown> = {
       ...note,
       user: {
         id: author.id,
@@ -731,6 +834,50 @@ export class NoteService {
       },
     };
 
+    // Hydrate reply information if this is a reply
+    if (note.replyId) {
+      const replyNote = await this.noteRepository.findById(note.replyId);
+      if (replyNote) {
+        const replyUser = await this.userRepository.findById(replyNote.userId);
+        if (replyUser) {
+          noteWithUser.reply = {
+            ...replyNote,
+            user: {
+              id: replyUser.id,
+              username: replyUser.username,
+              name: replyUser.displayName || replyUser.username,
+              displayName: replyUser.displayName,
+              avatarUrl: replyUser.avatarUrl,
+              host: replyUser.host,
+              profileEmojis: replyUser.profileEmojis,
+            },
+          };
+        }
+      }
+    }
+
+    // Hydrate renote information if this is a renote/quote
+    if (note.renoteId) {
+      const renoteNote = await this.noteRepository.findById(note.renoteId);
+      if (renoteNote) {
+        const renoteUser = await this.userRepository.findById(renoteNote.userId);
+        if (renoteUser) {
+          noteWithUser.renote = {
+            ...renoteNote,
+            user: {
+              id: renoteUser.id,
+              username: renoteUser.username,
+              name: renoteUser.displayName || renoteUser.username,
+              displayName: renoteUser.displayName,
+              avatarUrl: renoteUser.avatarUrl,
+              host: renoteUser.host,
+              profileEmojis: renoteUser.profileEmojis,
+            },
+          };
+        }
+      }
+    }
+
     // Push to local timeline (all local public notes)
     streamService.pushToLocalTimeline(noteWithUser);
 
@@ -739,16 +886,13 @@ export class NoteService {
     const followers = await this.followRepository.findByFolloweeId(authorId, 10000);
     const followerIds = followers.map((f) => f.followerId);
 
-    if (followerIds.length > 0) {
-      // Push to home timelines of followers
-      streamService.pushToHomeTimelines(followerIds, noteWithUser);
+    // Push to home timeline of the author themselves and their followers
+    // The author should see their own notes in their home timeline
+    const homeTimelineUserIds = [authorId, ...followerIds];
+    streamService.pushToHomeTimelines(homeTimelineUserIds, noteWithUser);
 
-      // Push to social timelines of followers (for followed remote user notes)
-      // For local users, social timeline = local + followed remote users
-      // Since this is a local user's note, it's already in local timeline
-      // So we only need to push to social timeline for remote followers
-      // But since we're filtering to local users only (author.host check above),
-      // we don't need to push to social timeline separately
-    }
+    // Push to social timelines (author + followers)
+    // Social timeline = home timeline + local timeline for local users
+    streamService.pushToSocialTimelines(homeTimelineUserIds, noteWithUser);
   }
 }

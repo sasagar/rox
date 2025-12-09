@@ -30,6 +30,7 @@ import type {
   ContentWidth,
   Theme,
   NotificationSound,
+  NotificationSoundType,
 } from "../../lib/types/uiSettings";
 import {
   fontSizeLabels,
@@ -37,6 +38,7 @@ import {
   contentWidthLabels,
   themeLabels,
   notificationSoundLabels,
+  notificationTypeLabels,
   defaultUISettings,
 } from "../../lib/types/uiSettings";
 import { testNotificationSound } from "../../lib/utils/notificationSound";
@@ -100,6 +102,7 @@ export function UISettingsSection() {
   const [appCustomCss, setAppCustomCss] = useState(uiSettings.appCustomCss || "");
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showPerTypeSettings, setShowPerTypeSettings] = useState(false);
 
   // Sync local state with atom on mount
   useEffect(() => {
@@ -116,12 +119,60 @@ export function UISettingsSection() {
       localSettings.theme !== uiSettings.theme ||
       localSettings.notificationSound !== uiSettings.notificationSound ||
       localSettings.notificationVolume !== uiSettings.notificationVolume ||
+      JSON.stringify(localSettings.notificationSoundsByType) !==
+        JSON.stringify(uiSettings.notificationSoundsByType) ||
       appCustomCss !== (uiSettings.appCustomCss || "");
     setHasChanges(changed);
   }, [localSettings, appCustomCss, uiSettings]);
 
   const handleSettingChange = <K extends keyof UISettings>(key: K, value: UISettings[K]) => {
     setLocalSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  /**
+   * Update per-notification-type sound setting
+   */
+  const handlePerTypeSoundChange = (
+    notifType: NotificationSoundType,
+    sound: NotificationSound,
+    volume: number,
+  ) => {
+    setLocalSettings((prev) => {
+      const current = prev.notificationSoundsByType || {};
+      // If setting matches default, remove the override
+      const defaultSound = prev.notificationSound || defaultUISettings.notificationSound;
+      const defaultVolume = prev.notificationVolume ?? defaultUISettings.notificationVolume;
+
+      if (sound === defaultSound && volume === defaultVolume) {
+        const { [notifType]: _, ...rest } = current;
+        return {
+          ...prev,
+          notificationSoundsByType: Object.keys(rest).length > 0 ? rest : undefined,
+        };
+      }
+
+      return {
+        ...prev,
+        notificationSoundsByType: {
+          ...current,
+          [notifType]: { sound, volume },
+        },
+      };
+    });
+  };
+
+  /**
+   * Clear per-type override (use default)
+   */
+  const handleClearPerTypeOverride = (notifType: NotificationSoundType) => {
+    setLocalSettings((prev) => {
+      const current = prev.notificationSoundsByType || {};
+      const { [notifType]: _, ...rest } = current;
+      return {
+        ...prev,
+        notificationSoundsByType: Object.keys(rest).length > 0 ? rest : undefined,
+      };
+    });
   };
 
   const handleSave = async () => {
@@ -293,6 +344,112 @@ export function UISettingsSection() {
               >
                 <Trans>Test</Trans>
               </button>
+            </div>
+          )}
+
+          {/* Per-type notification sound settings toggle */}
+          <button
+            type="button"
+            onClick={() => setShowPerTypeSettings(!showPerTypeSettings)}
+            className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            {showPerTypeSettings ? (
+              <Trans>Hide per-type settings</Trans>
+            ) : (
+              <Trans>Customize sounds per notification type</Trans>
+            )}
+          </button>
+
+          {/* Per-type notification sound settings */}
+          {showPerTypeSettings && (
+            <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                <Trans>
+                  Override the default sound for specific notification types. Leave as default to use
+                  the settings above.
+                </Trans>
+              </p>
+              {(
+                ["follow", "mention", "reply", "reaction", "renote", "quote"] as NotificationSoundType[]
+              ).map((notifType) => {
+                const typeSettings = localSettings.notificationSoundsByType?.[notifType];
+                const isOverridden = !!typeSettings;
+                const currentSound =
+                  typeSettings?.sound ||
+                  localSettings.notificationSound ||
+                  defaultUISettings.notificationSound;
+                const currentVolume =
+                  typeSettings?.volume ??
+                  localSettings.notificationVolume ??
+                  defaultUISettings.notificationVolume;
+
+                return (
+                  <div
+                    key={notifType}
+                    className="flex flex-wrap items-center gap-2 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0"
+                  >
+                    <span className="w-20 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {notificationTypeLabels[notifType]}
+                    </span>
+                    <select
+                      value={currentSound}
+                      onChange={(e) =>
+                        handlePerTypeSoundChange(
+                          notifType,
+                          e.target.value as NotificationSound,
+                          currentVolume,
+                        )
+                      }
+                      disabled={isSaving}
+                      className="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    >
+                      {notificationSoundOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    {currentSound !== "none" && (
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={currentVolume}
+                        onChange={(e) =>
+                          handlePerTypeSoundChange(
+                            notifType,
+                            currentSound,
+                            parseInt(e.target.value, 10),
+                          )
+                        }
+                        disabled={isSaving}
+                        className="w-20 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                      />
+                    )}
+                    {currentSound !== "none" && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400 w-8">
+                        {currentVolume}%
+                      </span>
+                    )}
+                    {isOverridden && (
+                      <button
+                        type="button"
+                        onClick={() => handleClearPerTypeOverride(notifType)}
+                        disabled={isSaving}
+                        className="px-2 py-0.5 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        title={t`Use default`}
+                      >
+                        <Trans>Reset</Trans>
+                      </button>
+                    )}
+                    {isOverridden && (
+                      <span className="text-xs text-primary-500">
+                        <Trans>Custom</Trans>
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

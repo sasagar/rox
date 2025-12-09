@@ -151,7 +151,13 @@ export class RemoteNoteService {
       deletedAt: null,
       deletedById: null,
       deletionReason: null,
+      // Counters use database defaults
     });
+
+    // Increment reply count on parent note if this is a reply
+    if (replyId) {
+      await this.noteRepository.incrementRepliesCount(replyId);
+    }
 
     logger.debug({ noteUri: noteObject.id, author: `${author.username}@${author.host}` }, "Remote note created");
 

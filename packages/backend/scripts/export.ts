@@ -123,7 +123,7 @@ async function exportFromDatabase(db: Database): Promise<ExportData> {
       tableRecordCounts[name] = records.length;
       totalRecords += records.length;
       console.log(`   ${name}: ${records.length} records`);
-    } catch (error) {
+    } catch {
       // Table might not exist
       console.log(`   ${name}: 0 records (table may not exist)`);
       tables[name] = [];

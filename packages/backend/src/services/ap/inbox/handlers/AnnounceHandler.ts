@@ -80,7 +80,11 @@ export class AnnounceHandler extends BaseHandler {
         deletedAt: null,
         deletedById: null,
         deletionReason: null,
+        // Counters use database defaults
       });
+
+      // Increment renote count on target note
+      await noteRepository.incrementRenoteCount(targetNote.id);
 
       this.log(
         "✅",

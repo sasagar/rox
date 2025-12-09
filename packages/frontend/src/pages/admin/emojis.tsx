@@ -14,6 +14,7 @@ import { t } from "@lingui/core/macro";
 import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload, Download, Globe, Archive } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -621,7 +622,7 @@ export default function AdminEmojisPage() {
                     </label>
                     {editingEmoji ? (
                       <div className="flex items-center gap-2 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                        <img src={url} alt="" className="w-6 h-6 object-contain" />
+                        <img src={getProxiedImageUrl(url) || ""} alt="" className="w-6 h-6 object-contain" />
                         <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
                           {url}
                         </span>
@@ -645,7 +646,7 @@ export default function AdminEmojisPage() {
                             </>
                           ) : selectedFile ? (
                             <>
-                              <img src={url} alt="" className="w-6 h-6 object-contain" />
+                              <img src={getProxiedImageUrl(url) || ""} alt="" className="w-6 h-6 object-contain" />
                               <span className="text-sm text-green-600">{selectedFile.name}</span>
                             </>
                           ) : (
@@ -737,7 +738,7 @@ export default function AdminEmojisPage() {
                     </p>
                     <div className="flex items-center gap-3">
                       <img
-                        src={url}
+                        src={getProxiedImageUrl(url) || ""}
                         alt={`:${name}:`}
                         className="w-8 h-8 object-contain"
                         onError={(e) => {
@@ -833,7 +834,7 @@ export default function AdminEmojisPage() {
                                 className="flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative"
                               >
                                 <img
-                                  src={emoji.url}
+                                  src={getProxiedImageUrl(emoji.url) || ""}
                                   alt={`:${emoji.name}:`}
                                   className="w-10 h-10 object-contain mb-2"
                                 />
@@ -940,7 +941,7 @@ export default function AdminEmojisPage() {
                             className="flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative"
                           >
                             <img
-                              src={emoji.url}
+                              src={getProxiedImageUrl(emoji.url) || ""}
                               alt={`:${emoji.name}:`}
                               className="w-10 h-10 object-contain mb-2"
                             />

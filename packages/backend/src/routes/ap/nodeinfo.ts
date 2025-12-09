@@ -63,9 +63,10 @@ app.get("/nodeinfo/2.1", async (c) => {
 
   // Get instance settings
   const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
-  const [metadata, registration] = await Promise.all([
+  const [metadata, registration, theme] = await Promise.all([
     instanceSettingsService.getInstanceMetadata(),
     instanceSettingsService.getRegistrationSettings(),
+    instanceSettingsService.getThemeSettings(),
   ]);
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
@@ -119,6 +120,7 @@ app.get("/nodeinfo/2.1", async (c) => {
       tosUrl: metadata.tosUrl || null,
       privacyPolicyUrl: metadata.privacyPolicyUrl || null,
       iconUrl: metadata.iconUrl || null,
+      themeColor: theme.primaryColor || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });
@@ -139,9 +141,10 @@ app.get("/nodeinfo/2.0", async (c) => {
 
   // Get instance settings
   const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
-  const [metadata, registration] = await Promise.all([
+  const [metadata, registration, theme] = await Promise.all([
     instanceSettingsService.getInstanceMetadata(),
     instanceSettingsService.getRegistrationSettings(),
+    instanceSettingsService.getThemeSettings(),
   ]);
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
@@ -190,6 +193,7 @@ app.get("/nodeinfo/2.0", async (c) => {
       tosUrl: metadata.tosUrl || null,
       privacyPolicyUrl: metadata.privacyPolicyUrl || null,
       iconUrl: metadata.iconUrl || null,
+      themeColor: theme.primaryColor || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });

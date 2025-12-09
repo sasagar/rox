@@ -113,18 +113,16 @@ function generateColorPalette(hex: string): string {
 }
 
 /**
- * Get initial color mode based on settings and system preference
+ * Get initial color mode based on settings
+ * NOTE: System preference detection is deferred to useEffect to avoid hydration mismatch
  */
 function getInitialColorMode(darkModeSetting: ThemeSettings["darkMode"]): ColorMode {
   if (darkModeSetting === "light" || darkModeSetting === "dark") {
     return darkModeSetting;
   }
 
-  // System preference
-  if (typeof window !== "undefined") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-
+  // For "system" mode, always return "light" during SSR/initial render
+  // The actual system preference will be detected in useEffect after hydration
   return "light";
 }
 
@@ -150,11 +148,17 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
     getInitialColorMode(themeSettings.darkMode),
   );
 
-  // Listen for system color scheme changes
+  // Detect system color scheme on mount and listen for changes
+  // This runs after hydration to avoid SSR mismatch
   useEffect(() => {
     if (themeSettings.darkMode !== "system") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    // Set initial system preference after mount
+    setColorMode(mediaQuery.matches ? "dark" : "light");
+
+    // Listen for changes
     const handler = (e: MediaQueryListEvent) => {
       setColorMode(e.matches ? "dark" : "light");
     };

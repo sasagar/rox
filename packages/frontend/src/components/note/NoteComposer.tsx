@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -18,6 +18,7 @@ import {
   Trash2,
   HardDrive,
   Clock,
+  AtSign,
 } from "lucide-react";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -29,13 +30,17 @@ import { ProgressBar } from "../ui/ProgressBar";
 import { Spinner } from "../ui/Spinner";
 import { InlineError } from "../ui/ErrorMessage";
 import { EmojiPicker } from "../ui/EmojiPicker";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { notificationSoundAtom, notificationVolumeAtom } from "../../lib/atoms/uiSettings";
 import { notesApi } from "../../lib/api/notes";
+import { playPostSound } from "../../lib/utils/notificationSound";
 import type { NoteVisibility } from "../../lib/api/notes";
 import { uploadFile, type DriveFile } from "../../lib/api/drive";
 import { useDraft } from "../../hooks/useDraft";
+import { useMentionSuggestions } from "../../hooks/useMentionSuggestions";
+import { useEmojiSuggestions } from "../../hooks/useEmojiSuggestions";
 import { scheduledNotesApi } from "../../lib/api/scheduled-notes";
 import { DrivePickerDialog } from "../drive/DrivePickerDialog";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
@@ -71,6 +76,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
+  const notificationSound = useAtomValue(notificationSoundAtom);
+  const notificationVolume = useAtomValue(notificationVolumeAtom);
   const [text, setText] = useState("");
   const [cw, setCw] = useState("");
   const [showCw, setShowCw] = useState(false);
@@ -107,6 +114,30 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   // Scheduled post state
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [showSchedulePicker, setShowSchedulePicker] = useState(false);
+
+  // Mention suggestions
+  const {
+    suggestions: mentionSuggestions,
+    isLoading: isMentionLoading,
+    selectedIndex: mentionSelectedIndex,
+    showSuggestions: showMentionSuggestions,
+    handleTextChange: handleMentionTextChange,
+    handleKeyDown: handleMentionKeyDown,
+    selectSuggestion: selectMentionSuggestion,
+    closeSuggestions: closeMentionSuggestions,
+  } = useMentionSuggestions();
+
+  // Emoji suggestions
+  const {
+    suggestions: emojiSuggestions,
+    isLoading: isEmojiLoading,
+    selectedIndex: emojiSelectedIndex,
+    showSuggestions: showEmojiSuggestions,
+    handleTextChange: handleEmojiTextChange,
+    handleKeyDown: handleEmojiKeyDown,
+    selectSuggestion: selectEmojiSuggestion,
+    closeSuggestions: closeEmojiSuggestions,
+  } = useEmojiSuggestions();
 
   // Load draft on mount (only if not replying)
   useEffect(() => {
@@ -210,13 +241,109 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const remainingChars = maxLength - text.length;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    const cursorPosition = e.target.selectionStart;
+    setText(newText);
     // Auto-resize textarea
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
+    // Trigger mention detection
+    handleMentionTextChange(newText, cursorPosition);
+    // Trigger emoji detection
+    handleEmojiTextChange(newText, cursorPosition);
   };
+
+  // Handle keyboard events for suggestions (mentions and emojis)
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Check if mention suggestions should handle this event
+      if (handleMentionKeyDown(e)) {
+        e.preventDefault();
+        // If Enter or Tab was pressed, select the current suggestion
+        if (e.key === "Enter" || e.key === "Tab") {
+          const suggestion = mentionSuggestions[mentionSelectedIndex];
+          if (suggestion) {
+            const newText = selectMentionSuggestion(suggestion);
+            setText(newText);
+            // Update cursor position after the inserted mention
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus();
+              }
+            }, 0);
+          }
+        }
+        return;
+      }
+
+      // Check if emoji suggestions should handle this event
+      if (handleEmojiKeyDown(e)) {
+        e.preventDefault();
+        // If Enter or Tab was pressed, select the current suggestion
+        if (e.key === "Enter" || e.key === "Tab") {
+          const suggestion = emojiSuggestions[emojiSelectedIndex];
+          if (suggestion) {
+            const newText = selectEmojiSuggestion(suggestion);
+            setText(newText);
+            // Update cursor position after the inserted emoji
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus();
+              }
+            }, 0);
+          }
+        }
+      }
+    },
+    [
+      handleMentionKeyDown,
+      mentionSuggestions,
+      mentionSelectedIndex,
+      selectMentionSuggestion,
+      handleEmojiKeyDown,
+      emojiSuggestions,
+      emojiSelectedIndex,
+      selectEmojiSuggestion,
+    ],
+  );
+
+  // Handle clicking on a mention suggestion
+  const handleMentionClick = useCallback(
+    (index: number) => {
+      const suggestion = mentionSuggestions[index];
+      if (suggestion) {
+        const newText = selectMentionSuggestion(suggestion);
+        setText(newText);
+        // Focus back on textarea
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+          }
+        }, 0);
+      }
+    },
+    [mentionSuggestions, selectMentionSuggestion],
+  );
+
+  // Handle clicking on an emoji suggestion
+  const handleEmojiClick = useCallback(
+    (index: number) => {
+      const suggestion = emojiSuggestions[index];
+      if (suggestion) {
+        const newText = selectEmojiSuggestion(suggestion);
+        setText(newText);
+        // Focus back on textarea
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+          }
+        }, 0);
+      }
+    },
+    [emojiSuggestions, selectEmojiSuggestion],
+  );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -358,6 +485,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           fileIds: fileIds.length > 0 ? fileIds : undefined,
           replyId,
         });
+
+        // Play success sound
+        playPostSound(notificationSound, notificationVolume);
 
         addToast({
           type: "success",
@@ -508,37 +638,154 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 ref={textareaRef}
                 value={text}
                 onChange={handleTextChange}
+                onKeyDown={handleKeyDown}
+                onBlur={() => {
+                  // Delay closing to allow click on suggestions
+                  setTimeout(() => {
+                    closeMentionSuggestions();
+                    closeEmojiSuggestions();
+                  }, 150);
+                }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pb-6 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pr-16 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSubmitting}
               />
-              {/* Character counter progress bar - attached to bottom of textarea */}
-              <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-b-md overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-150 ${
+              {/* Character counter - fixed position in textarea corner */}
+              <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                <span
+                  className={`text-xs font-medium tabular-nums transition-colors ${
                     remainingChars < 0
-                      ? "bg-red-500"
+                      ? "text-red-500"
                       : remainingChars < 100
-                        ? "bg-orange-500"
-                        : "bg-primary-500"
-                  }`}
-                  style={{ width: `${Math.min((text.length / maxLength) * 100, 100)}%` }}
-                />
-              </div>
-              {/* Character count text - shown when approaching limit */}
-              {(text.length > maxLength - 200 || remainingChars < 0) && (
-                <div
-                  className={`absolute bottom-2 right-2 text-xs font-medium px-1.5 py-0.5 rounded ${
-                    remainingChars < 0
-                      ? "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
-                      : remainingChars < 100
-                        ? "bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-gray-400 dark:text-gray-500"
                   }`}
                 >
                   {remainingChars}
+                </span>
+                {/* Small circular indicator */}
+                <svg className="w-4 h-4 -rotate-90" viewBox="0 0 16 16">
+                  <circle
+                    cx="8"
+                    cy="8"
+                    r="6"
+                    fill="none"
+                    strokeWidth="2"
+                    className="text-gray-200 dark:text-gray-600"
+                    stroke="currentColor"
+                  />
+                  <circle
+                    cx="8"
+                    cy="8"
+                    r="6"
+                    fill="none"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray={`${Math.min(Math.max((text.length / maxLength) * 37.7, 0), 37.7)} 37.7`}
+                    className={`transition-all duration-150 ${
+                      remainingChars < 0
+                        ? "text-red-500"
+                        : remainingChars < 100
+                          ? "text-yellow-500"
+                          : "text-green-500"
+                    }`}
+                    stroke="currentColor"
+                  />
+                </svg>
+              </div>
+
+              {/* Mention suggestions popup */}
+              {showMentionSuggestions && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                  {isMentionLoading ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <Trans>Loading...</Trans>
+                    </div>
+                  ) : mentionSuggestions.length === 0 ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                      <Trans>No users found</Trans>
+                    </div>
+                  ) : (
+                    mentionSuggestions.map((suggestion, index) => (
+                      <div
+                        key={suggestion.user.id}
+                        onClick={() => handleMentionClick(index)}
+                        onMouseDown={(e) => e.preventDefault()} // Prevent blur
+                        className={`flex items-center gap-2 px-3 py-2 cursor-pointer ${
+                          index === mentionSelectedIndex
+                            ? "bg-primary-50 dark:bg-primary-900/30"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                        }`}
+                        role="option"
+                        aria-selected={index === mentionSelectedIndex}
+                      >
+                        <Avatar
+                          src={suggestion.user.avatarUrl}
+                          alt={suggestion.user.name || suggestion.user.username}
+                          fallback={suggestion.user.username.slice(0, 2).toUpperCase()}
+                          size="sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {suggestion.label}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {suggestion.value}
+                          </div>
+                        </div>
+                        <AtSign className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* Emoji suggestions popup */}
+              {showEmojiSuggestions && !showMentionSuggestions && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                  {isEmojiLoading ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <Trans>Loading...</Trans>
+                    </div>
+                  ) : emojiSuggestions.length === 0 ? (
+                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                      <Trans>No emojis found</Trans>
+                    </div>
+                  ) : (
+                    emojiSuggestions.map((suggestion, index) => (
+                      <div
+                        key={`${suggestion.name}-${index}`}
+                        onClick={() => handleEmojiClick(index)}
+                        onMouseDown={(e) => e.preventDefault()} // Prevent blur
+                        className={`flex items-center gap-2 px-3 py-2 cursor-pointer ${
+                          index === emojiSelectedIndex
+                            ? "bg-primary-50 dark:bg-primary-900/30"
+                            : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                        }`}
+                        role="option"
+                        aria-selected={index === emojiSelectedIndex}
+                      >
+                        {suggestion.isCustom && suggestion.url ? (
+                          <img
+                            src={getProxiedImageUrl(suggestion.url) || suggestion.url}
+                            alt={suggestion.name}
+                            className="w-6 h-6 object-contain"
+                          />
+                        ) : (
+                          <span className="text-2xl leading-none">{suggestion.emoji}</span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            :{suggestion.name}:
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -829,7 +1076,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
                     {/* Schedule picker dropdown */}
                     {showSchedulePicker && (
-                      <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                      <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60">
                         <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             <Trans>Schedule post</Trans>

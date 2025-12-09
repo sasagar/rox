@@ -14,6 +14,9 @@ export interface Note extends Timestamps {
   emojis: string[]; // JSON array of emoji names
   tags: string[]; // JSON array of hashtags
   uri: string | null; // ActivityPub URI for remote notes
+  // Counters for replies and renotes
+  repliesCount: number;
+  renoteCount: number;
   // Soft delete fields for moderation
   isDeleted: boolean;
   deletedAt: Date | null;

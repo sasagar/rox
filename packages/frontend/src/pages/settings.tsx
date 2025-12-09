@@ -19,6 +19,18 @@ import { PushNotificationSection } from "../components/settings/PushNotification
 import { StorageSection } from "../components/settings/StorageSection";
 import { ProfileImageSection } from "../components/settings/ProfileImageSection";
 import { PasskeySection } from "../components/settings/PasskeySection";
+import { AccountDeletionSection } from "../components/settings/AccountDeletionSection";
+import { DataExportSection } from "../components/settings/DataExportSection";
+import {
+  User,
+  Shield,
+  Bell,
+  HardDrive,
+  Settings,
+  UserCog,
+} from "lucide-react";
+
+type SettingsTab = "profile" | "security" | "notifications" | "storage" | "account" | "advanced";
 
 /**
  * Settings page
@@ -37,6 +49,7 @@ export default function SettingsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
 
   // Restore user session on mount
   useEffect(() => {
@@ -137,6 +150,15 @@ export default function SettingsPage() {
     );
   }
 
+  const TABS: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
+    { id: "profile", label: t`Profile`, icon: <User className="w-4 h-4" /> },
+    { id: "security", label: t`Security`, icon: <Shield className="w-4 h-4" /> },
+    { id: "notifications", label: t`Notifications`, icon: <Bell className="w-4 h-4" /> },
+    { id: "storage", label: t`Storage`, icon: <HardDrive className="w-4 h-4" /> },
+    { id: "account", label: t`Account`, icon: <UserCog className="w-4 h-4" /> },
+    { id: "advanced", label: t`Advanced`, icon: <Settings className="w-4 h-4" /> },
+  ];
+
   return (
     <Layout>
       <div className="mb-4 sm:mb-6">
@@ -144,211 +166,254 @@ export default function SettingsPage() {
           <Trans>Settings</Trans>
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          <Trans>Manage your profile information</Trans>
+          <Trans>Manage your account settings</Trans>
         </p>
       </div>
 
-      {/* Profile Images Section */}
-      <ProfileImageSection />
+      {/* Tab Navigation */}
+      <div className="border-b border-(--border-color) mb-6 overflow-x-auto">
+        <nav className="flex gap-1 min-w-max">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "border-primary-600 text-primary-600"
+                  : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
 
-      <Card className="mt-6">
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Display Name */}
-            <div>
-              <label
-                htmlFor="displayName"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                <Trans>Display Name</Trans>
-              </label>
-              <input
-                type="text"
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={currentUser.username}
-                maxLength={50}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                disabled={isSubmitting}
-              />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                <Trans>Your public display name (max 50 characters)</Trans>
+      {/* Profile Tab */}
+      {activeTab === "profile" && (
+        <>
+          {/* Profile Images Section */}
+          <ProfileImageSection />
+
+          <Card className="mt-6">
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Display Name */}
+                <div>
+                  <label
+                    htmlFor="displayName"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
+                    <Trans>Display Name</Trans>
+                  </label>
+                  <input
+                    type="text"
+                    id="displayName"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={currentUser.username}
+                    maxLength={50}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    disabled={isSubmitting}
+                  />
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <Trans>Your public display name (max 50 characters)</Trans>
+                  </p>
+                </div>
+
+                {/* Bio */}
+                <div>
+                  <label
+                    htmlFor="bio"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
+                    <Trans>Bio</Trans>
+                  </label>
+                  <textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder={t`Tell us about yourself...`}
+                    maxLength={500}
+                    rows={4}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                    disabled={isSubmitting}
+                  />
+                  <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <span>
+                      <Trans>Your bio (max 500 characters)</Trans>
+                    </span>
+                    <span className={bio.length > 450 ? "text-orange-600 font-medium" : ""}>
+                      {bio.length}/500
+                    </span>
+                  </div>
+                </div>
+
+                {/* Username (read-only) */}
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
+                    <Trans>Username</Trans>
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    value={currentUser.username}
+                    readOnly
+                    disabled
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                  />
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <Trans>Username cannot be changed</Trans>
+                  </p>
+                </div>
+
+                {/* Custom CSS */}
+                <div>
+                  <label
+                    htmlFor="customCss"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
+                    <Trans>Custom CSS</Trans>
+                  </label>
+                  <textarea
+                    id="customCss"
+                    value={customCss}
+                    onChange={(e) => setCustomCss(e.target.value)}
+                    placeholder="/* Custom CSS */\n.profile-header {\n  background: #333;\n}"
+                    maxLength={10240}
+                    rows={6}
+                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                    disabled={isSubmitting}
+                  />
+                  <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <span>
+                      <Trans>Custom CSS for your profile page (max 10KB)</Trans>
+                    </span>
+                    <span className={customCss.length > 9000 ? "text-orange-600 font-medium" : ""}>
+                      {customCss.length.toLocaleString()}/10,240
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    <Trans>
+                      Note: Custom CSS is sanitized and some properties may be restricted for security.
+                    </Trans>
+                  </p>
+                </div>
+
+                {/* Error message */}
+                {error && <InlineError message={error} />}
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-3 pt-4">
+                  <Button type="submit" variant="primary" isDisabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <Spinner size="xs" variant="white" />
+                        <span>
+                          <Trans>Saving...</Trans>
+                        </span>
+                      </div>
+                    ) : (
+                      <Trans>Save Changes</Trans>
+                    )}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onPress={() => {
+                      window.location.href = `/${currentUser.username}`;
+                    }}
+                    isDisabled={isSubmitting}
+                  >
+                    <Trans>Cancel</Trans>
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* Security Tab */}
+      {activeTab === "security" && (
+        <PasskeySection />
+      )}
+
+      {/* Notifications Tab */}
+      {activeTab === "notifications" && (
+        <PushNotificationSection />
+      )}
+
+      {/* Storage Tab */}
+      {activeTab === "storage" && (
+        <StorageSection />
+      )}
+
+      {/* Account Tab */}
+      {activeTab === "account" && (
+        <>
+          {/* Logout Section */}
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                <Trans>Session</Trans>
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <Trans>Sign out of your account on this device.</Trans>
               </p>
-            </div>
-
-            {/* Bio */}
-            <div>
-              <label
-                htmlFor="bio"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              <Button
+                variant="danger"
+                onPress={handleLogout}
+                isDisabled={isLoggingOut}
               >
-                <Trans>Bio</Trans>
-              </label>
-              <textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder={t`Tell us about yourself...`}
-                maxLength={500}
-                rows={4}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
-                disabled={isSubmitting}
-              />
-              <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>
-                  <Trans>Your bio (max 500 characters)</Trans>
-                </span>
-                <span className={bio.length > 450 ? "text-orange-600 font-medium" : ""}>
-                  {bio.length}/500
-                </span>
-              </div>
-            </div>
-
-            {/* Username (read-only) */}
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                <Trans>Username</Trans>
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={currentUser.username}
-                readOnly
-                disabled
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-              />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                <Trans>Username cannot be changed</Trans>
-              </p>
-            </div>
-
-            {/* Custom CSS */}
-            <div>
-              <label
-                htmlFor="customCss"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                <Trans>Custom CSS</Trans>
-              </label>
-              <textarea
-                id="customCss"
-                value={customCss}
-                onChange={(e) => setCustomCss(e.target.value)}
-                placeholder="/* Custom CSS */\n.profile-header {\n  background: #333;\n}"
-                maxLength={10240}
-                rows={6}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
-                disabled={isSubmitting}
-              />
-              <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>
-                  <Trans>Custom CSS for your profile page (max 10KB)</Trans>
-                </span>
-                <span className={customCss.length > 9000 ? "text-orange-600 font-medium" : ""}>
-                  {customCss.length.toLocaleString()}/10,240
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                <Trans>
-                  Note: Custom CSS is sanitized and some properties may be restricted for security.
-                </Trans>
-              </p>
-            </div>
-
-            {/* Error message */}
-            {error && <InlineError message={error} />}
-
-            {/* Action buttons */}
-            <div className="flex items-center gap-3 pt-4">
-              <Button type="submit" variant="primary" isDisabled={isSubmitting}>
-                {isSubmitting ? (
+                {isLoggingOut ? (
                   <div className="flex items-center gap-2">
                     <Spinner size="xs" variant="white" />
                     <span>
-                      <Trans>Saving...</Trans>
+                      <Trans>Logging out...</Trans>
                     </span>
                   </div>
                 ) : (
-                  <Trans>Save Changes</Trans>
+                  <Trans>Logout</Trans>
                 )}
               </Button>
+            </CardContent>
+          </Card>
 
-              <Button
-                type="button"
-                variant="secondary"
-                onPress={() => {
-                  window.location.href = `/${currentUser.username}`;
-                }}
-                isDisabled={isSubmitting}
-              >
-                <Trans>Cancel</Trans>
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          {/* Account Migration Section */}
+          <div className="mt-6">
+            <AccountMigrationSection />
+          </div>
 
-      {/* UI Settings Section */}
-      <div className="mt-6">
-        <UISettingsSection />
-      </div>
+          {/* Data Export Section */}
+          <div className="mt-6">
+            <DataExportSection />
+          </div>
 
-      {/* Storage Section */}
-      <div className="mt-6">
-        <StorageSection />
-      </div>
+          {/* Account Deletion Section */}
+          <div className="mt-6">
+            <AccountDeletionSection />
+          </div>
+        </>
+      )}
 
-      {/* Push Notifications Section */}
-      <div className="mt-6">
-        <PushNotificationSection />
-      </div>
+      {/* Advanced Tab */}
+      {activeTab === "advanced" && (
+        <>
+          {/* UI Settings Section */}
+          <UISettingsSection />
 
-      {/* Passkey Section */}
-      <div className="mt-6">
-        <PasskeySection />
-      </div>
-
-      {/* Invitation Codes Section - only shown if user has permission */}
-      <div className="mt-6">
-        <InvitationCodeSection />
-      </div>
-
-      {/* Account Migration Section */}
-      <div className="mt-6">
-        <AccountMigrationSection />
-      </div>
-
-      {/* Logout Section */}
-      <Card className="mt-6">
-        <CardContent className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            <Trans>Session</Trans>
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            <Trans>Sign out of your account on this device.</Trans>
-          </p>
-          <Button
-            variant="danger"
-            onPress={handleLogout}
-            isDisabled={isLoggingOut}
-          >
-            {isLoggingOut ? (
-              <div className="flex items-center gap-2">
-                <Spinner size="xs" variant="white" />
-                <span>
-                  <Trans>Logging out...</Trans>
-                </span>
-              </div>
-            ) : (
-              <Trans>Logout</Trans>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+          {/* Invitation Codes Section - only shown if user has permission */}
+          <div className="mt-6">
+            <InvitationCodeSection />
+          </div>
+        </>
+      )}
     </Layout>
   );
 }

@@ -162,4 +162,26 @@ export const usersApi = {
   async deleteBanner(): Promise<{ success: boolean }> {
     return apiClient.delete<{ success: boolean }>("/api/users/@me/banner");
   },
+
+  /**
+   * Search users by username or display name
+   *
+   * @param query - Search query (min 1 character)
+   * @param options - Search options
+   * @returns List of matching users
+   */
+  async search(
+    query: string,
+    options?: {
+      limit?: number;
+      offset?: number;
+      localOnly?: boolean;
+    },
+  ): Promise<User[]> {
+    const params = new URLSearchParams({ q: query });
+    if (options?.limit) params.append("limit", options.limit.toString());
+    if (options?.offset) params.append("offset", options.offset.toString());
+    if (options?.localOnly) params.append("localOnly", "true");
+    return apiClient.get<User[]>(`/api/users/search?${params.toString()}`);
+  },
 };

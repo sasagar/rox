@@ -32,6 +32,7 @@ const DEFAULT_POLICIES: RolePolicies = {
   canManageReports: false,
   canDeleteNotes: false,
   canSuspendUsers: false,
+  canManageContacts: false,
   canManageRoles: false,
   canManageInstanceSettings: false,
   canManageInstanceBlocks: false,
@@ -55,6 +56,7 @@ function mergePolicies(...policies: RolePolicies[]): RolePolicies {
     if (policy.canManageReports) merged.canManageReports = true;
     if (policy.canDeleteNotes) merged.canDeleteNotes = true;
     if (policy.canSuspendUsers) merged.canSuspendUsers = true;
+    if (policy.canManageContacts) merged.canManageContacts = true;
     if (policy.canManageRoles) merged.canManageRoles = true;
     if (policy.canManageInstanceSettings) merged.canManageInstanceSettings = true;
     if (policy.canManageInstanceBlocks) merged.canManageInstanceBlocks = true;
@@ -241,6 +243,14 @@ export class RoleService {
   }
 
   /**
+   * Check if user can manage contact inquiries
+   */
+  async canManageContacts(userId: string): Promise<boolean> {
+    const policies = await this.getEffectivePolicies(userId);
+    return !!policies.canManageContacts;
+  }
+
+  /**
    * Get user's invite limit (-1 = unlimited, 0 = cannot invite)
    */
   async getInviteLimit(userId: string): Promise<number> {
@@ -326,6 +336,7 @@ export class RoleService {
         canManageReports: true,
         canDeleteNotes: true,
         canSuspendUsers: true,
+        canManageContacts: true,
         canManageRoles: true,
         canManageInstanceSettings: true,
         canManageInstanceBlocks: true,
@@ -363,6 +374,7 @@ export class RoleService {
         canManageReports: true,
         canDeleteNotes: true,
         canSuspendUsers: true,
+        canManageContacts: true,
         canManageRoles: false,
         canManageInstanceSettings: false,
         canManageInstanceBlocks: false,

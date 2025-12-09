@@ -206,10 +206,20 @@ function disconnectTimelineWS(timelineType: TimelineType, force = false) {
 }
 
 /**
+ * Options for useTimelineStream hook
+ */
+export interface UseTimelineStreamOptions {
+  /** Whether to enable the stream (default: true) */
+  enabled?: boolean;
+  /** Callback when a new note is received */
+  onNewNote?: (note: Note) => void;
+}
+
+/**
  * Hook to subscribe to real-time timeline updates
  *
  * @param timelineType - Type of timeline to subscribe to
- * @param enabled - Whether to enable the stream (default: true)
+ * @param options - Stream options
  *
  * @example
  * ```tsx
@@ -218,9 +228,19 @@ function disconnectTimelineWS(timelineType: TimelineType, force = false) {
  *
  * // For local timeline (no auth required)
  * const { connected } = useTimelineStream("local");
+ *
+ * // With new note callback
+ * const { connected } = useTimelineStream("home", {
+ *   onNewNote: (note) => playSound(),
+ * });
  * ```
  */
-export function useTimelineStream(timelineType: TimelineType, enabled = true) {
+export function useTimelineStream(
+  timelineType: TimelineType,
+  options: UseTimelineStreamOptions | boolean = true,
+) {
+  // Support legacy boolean argument for backwards compatibility
+  const { enabled = true, onNewNote } = typeof options === "boolean" ? { enabled: options } : options;
   const setNotes = useSetAtom(timelineNotesAtom);
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
@@ -234,6 +254,7 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
   // Refs to store stable references to latest values
   const tokenRef = useRef(token);
   const setNotesRef = useRef(setNotes);
+  const onNewNoteRef = useRef(onNewNote);
   const isInitializedRef = useRef(false);
 
   // Keep refs up to date
@@ -244,6 +265,10 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
   useEffect(() => {
     setNotesRef.current = setNotes;
   }, [setNotes]);
+
+  useEffect(() => {
+    onNewNoteRef.current = onNewNote;
+  }, [onNewNote]);
 
   // Subscribe to connection state changes
   useEffect(() => {
@@ -271,6 +296,8 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
         if (prev.some((n) => n.id === note.id)) {
           return prev;
         }
+        // Call onNewNote callback for sound notification etc.
+        onNewNoteRef.current?.(note);
         return [note, ...prev];
       });
     };

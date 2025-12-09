@@ -257,6 +257,7 @@ export function requirePermission(permission: keyof RolePolicies) {
           "canDeleteNotes",
           "canSuspendUsers",
           "canInvite",
+          "canManageCustomEmojis",
         ].includes(permission)
       ) {
         return await next();

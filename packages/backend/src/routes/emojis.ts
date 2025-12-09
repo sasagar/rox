@@ -13,6 +13,7 @@ import { generateId } from "shared";
 import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import { logger } from "../lib/logger.js";
+import { optionalAuth } from "../middleware/auth.js";
 
 /** Allowed emoji file types */
 const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"];
@@ -21,6 +22,11 @@ const ALLOWED_MIME_TYPES = ["image/png", "image/gif", "image/webp", "image/apng"
 const MAX_EMOJI_SIZE = 256 * 1024;
 
 const app = new Hono();
+
+// Apply optional authentication to all routes
+// This allows public endpoints to work without auth,
+// while authenticated endpoints can access c.get("user")
+app.use("*", optionalAuth());
 
 /**
  * List All Local Emojis
@@ -79,6 +85,75 @@ app.get("/categories", async (c: Context) => {
   const categories = await customEmojiRepository.listCategories();
 
   return c.json({ categories });
+});
+
+/**
+ * List Remote Emojis (Admin)
+ *
+ * GET /api/emojis/remote
+ *
+ * Returns all remote custom emojis saved from incoming reactions.
+ * These can be adopted as local emojis.
+ *
+ * Query params:
+ * - host: Filter by remote host
+ * - search: Search by name
+ * - limit: Max results (default: 100)
+ * - offset: Pagination offset
+ *
+ * NOTE: This route must be defined BEFORE /:id to avoid "remote" being matched as an ID
+ */
+app.get("/remote", async (c: Context) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const roleService = c.get("roleService");
+  const policies = await roleService.getEffectivePolicies(user.id);
+  // Check role-based permission with fallback to legacy isAdmin flag
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
+  }
+
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+
+  const host = c.req.query("host");
+  const search = c.req.query("search");
+  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
+  const offset = parseInt(c.req.query("offset") || "0", 10);
+
+  // Get all remote emojis (host is NOT null)
+  // We need to use list with a special query to get remote emojis
+  const emojis = await customEmojiRepository.list({
+    host: host || undefined, // If host specified, filter by it
+    search: search || undefined,
+    limit,
+    offset,
+    includeSensitive: true,
+  });
+
+  // Filter to only remote emojis (host is not null)
+  const remoteEmojis = host ? emojis : emojis.filter((e) => e.host !== null);
+
+  // Get unique hosts for filtering UI
+  const hosts = [...new Set(remoteEmojis.map((e) => e.host).filter(Boolean))] as string[];
+
+  const response = remoteEmojis.map((emoji) => ({
+    id: emoji.id,
+    name: emoji.name,
+    host: emoji.host,
+    url: emoji.publicUrl || emoji.url,
+    category: emoji.category,
+    isSensitive: emoji.isSensitive,
+    createdAt: emoji.createdAt,
+  }));
+
+  return c.json({
+    emojis: response,
+    hosts,
+    total: remoteEmojis.length,
+  });
 });
 
 /**
@@ -171,10 +246,10 @@ app.post("/upload", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Check admin permission
+  // Check admin permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -246,10 +321,10 @@ app.post("/create", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Check admin permission
+  // Check admin permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -318,9 +393,10 @@ app.patch("/:id", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -375,9 +451,10 @@ app.delete("/:id", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -394,72 +471,6 @@ app.delete("/:id", async (c: Context) => {
 });
 
 // === Remote Emoji Management (Admin) ===
-
-/**
- * List Remote Emojis (Admin)
- *
- * GET /api/emojis/remote
- *
- * Returns all remote custom emojis saved from incoming reactions.
- * These can be adopted as local emojis.
- *
- * Query params:
- * - host: Filter by remote host
- * - search: Search by name
- * - limit: Max results (default: 100)
- * - offset: Pagination offset
- */
-app.get("/remote", async (c: Context) => {
-  const user = c.get("user");
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const roleService = c.get("roleService");
-  const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
-    return c.json({ error: "Forbidden: Admin permission required" }, 403);
-  }
-
-  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
-
-  const host = c.req.query("host");
-  const search = c.req.query("search");
-  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
-  const offset = parseInt(c.req.query("offset") || "0", 10);
-
-  // Get all remote emojis (host is NOT null)
-  // We need to use list with a special query to get remote emojis
-  const emojis = await customEmojiRepository.list({
-    host: host || undefined, // If host specified, filter by it
-    search: search || undefined,
-    limit,
-    offset,
-    includeSensitive: true,
-  });
-
-  // Filter to only remote emojis (host is not null)
-  const remoteEmojis = host ? emojis : emojis.filter((e) => e.host !== null);
-
-  // Get unique hosts for filtering UI
-  const hosts = [...new Set(remoteEmojis.map((e) => e.host).filter(Boolean))] as string[];
-
-  const response = remoteEmojis.map((emoji) => ({
-    id: emoji.id,
-    name: emoji.name,
-    host: emoji.host,
-    url: emoji.publicUrl || emoji.url,
-    category: emoji.category,
-    isSensitive: emoji.isSensitive,
-    createdAt: emoji.createdAt,
-  }));
-
-  return c.json({
-    emojis: response,
-    hosts,
-    total: remoteEmojis.length,
-  });
-});
 
 /**
  * Adopt Remote Emoji as Local (Admin)
@@ -481,9 +492,10 @@ app.post("/adopt", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 
@@ -653,9 +665,10 @@ app.post("/import", async (c: Context) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  // Check role-based permission with fallback to legacy isAdmin flag
   const roleService = c.get("roleService");
   const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
     return c.json({ error: "Forbidden: Admin permission required" }, 403);
   }
 

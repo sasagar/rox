@@ -3,6 +3,7 @@ import type { Database } from "../../db/index.js";
 import { notes, users } from "../../db/schema/pg.js";
 import type {
   INoteRepository,
+  NoteCreateInput,
   TimelineOptions,
 } from "../../interfaces/repositories/INoteRepository.js";
 import type { Note } from "shared";
@@ -10,7 +11,7 @@ import type { Note } from "shared";
 export class PostgresNoteRepository implements INoteRepository {
   constructor(private db: Database) {}
 
-  async create(note: Omit<Note, "createdAt" | "updatedAt">): Promise<Note> {
+  async create(note: NoteCreateInput): Promise<Note> {
     const now = new Date();
     const [result] = await this.db
       .insert(notes)
@@ -437,6 +438,35 @@ export class PostgresNoteRepository implements INoteRepository {
       .where(and(eq(notes.userId, userId), eq(notes.isDeleted, false)));
 
     return result?.count ?? 0;
+  }
+
+
+  async incrementRepliesCount(noteId: string): Promise<void> {
+    await this.db
+      .update(notes)
+      .set({ repliesCount: sql`${notes.repliesCount} + 1` })
+      .where(eq(notes.id, noteId));
+  }
+
+  async decrementRepliesCount(noteId: string): Promise<void> {
+    await this.db
+      .update(notes)
+      .set({ repliesCount: sql`GREATEST(${notes.repliesCount} - 1, 0)` })
+      .where(eq(notes.id, noteId));
+  }
+
+  async incrementRenoteCount(noteId: string): Promise<void> {
+    await this.db
+      .update(notes)
+      .set({ renoteCount: sql`${notes.renoteCount} + 1` })
+      .where(eq(notes.id, noteId));
+  }
+
+  async decrementRenoteCount(noteId: string): Promise<void> {
+    await this.db
+      .update(notes)
+      .set({ renoteCount: sql`GREATEST(${notes.renoteCount} - 1, 0)` })
+      .where(eq(notes.id, noteId));
   }
 
   async softDelete(id: string, deletedById: string, reason?: string): Promise<Note | null> {

@@ -48,6 +48,7 @@ describe("AnnounceHandler", () => {
         }),
       ),
       create: mock(() => Promise.resolve({ id: "renote-456" })),
+      incrementRenoteCount: mock(() => Promise.resolve()),
     };
 
     mockRemoteNoteService = {

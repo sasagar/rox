@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2025.12.0-rc.3",
+  "version": "2025.12.0-rc.4",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/bun": "latest",

@@ -282,40 +282,36 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                       </dd>
                     </div>
                   )}
-                  {instanceInfo.tosUrl && (
-                    <div>
-                      <dt className="text-(--text-muted) mb-1">
-                        <Trans>Terms of Service</Trans>
-                      </dt>
-                      <dd>
-                        <a
-                          href={instanceInfo.tosUrl}
-                          className="text-primary-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Trans>View Terms</Trans>
-                        </a>
-                      </dd>
-                    </div>
-                  )}
-                  {instanceInfo.privacyPolicyUrl && (
-                    <div>
-                      <dt className="text-(--text-muted) mb-1">
-                        <Trans>Privacy Policy</Trans>
-                      </dt>
-                      <dd>
-                        <a
-                          href={instanceInfo.privacyPolicyUrl}
-                          className="text-primary-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Trans>View Policy</Trans>
-                        </a>
-                      </dd>
-                    </div>
-                  )}
+                  <div>
+                    <dt className="text-(--text-muted) mb-1">
+                      <Trans>Terms of Service</Trans>
+                    </dt>
+                    <dd>
+                      <a
+                        href={instanceInfo.tosUrl || "/legal/terms"}
+                        className="text-primary-600 hover:underline"
+                        target={instanceInfo.tosUrl ? "_blank" : undefined}
+                        rel={instanceInfo.tosUrl ? "noopener noreferrer" : undefined}
+                      >
+                        <Trans>View Terms</Trans>
+                      </a>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-(--text-muted) mb-1">
+                      <Trans>Privacy Policy</Trans>
+                    </dt>
+                    <dd>
+                      <a
+                        href={instanceInfo.privacyPolicyUrl || "/legal/privacy"}
+                        className="text-primary-600 hover:underline"
+                        target={instanceInfo.privacyPolicyUrl ? "_blank" : undefined}
+                        rel={instanceInfo.privacyPolicyUrl ? "noopener noreferrer" : undefined}
+                      >
+                        <Trans>View Policy</Trans>
+                      </a>
+                    </dd>
+                  </div>
                 </dl>
               </div>
             )}
@@ -339,26 +335,22 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
               </a>
             </p>
             <div className="flex gap-6 text-sm text-(--text-muted)">
-              {instanceInfo?.tosUrl && (
-                <a
-                  href={instanceInfo.tosUrl}
-                  className="hover:text-(--text-primary)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Trans>Terms</Trans>
-                </a>
-              )}
-              {instanceInfo?.privacyPolicyUrl && (
-                <a
-                  href={instanceInfo.privacyPolicyUrl}
-                  className="hover:text-(--text-primary)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Trans>Privacy</Trans>
-                </a>
-              )}
+              <a
+                href={instanceInfo?.tosUrl || "/legal/terms"}
+                className="hover:text-(--text-primary)"
+                target={instanceInfo?.tosUrl ? "_blank" : undefined}
+                rel={instanceInfo?.tosUrl ? "noopener noreferrer" : undefined}
+              >
+                <Trans>Terms</Trans>
+              </a>
+              <a
+                href={instanceInfo?.privacyPolicyUrl || "/legal/privacy"}
+                className="hover:text-(--text-primary)"
+                target={instanceInfo?.privacyPolicyUrl ? "_blank" : undefined}
+                rel={instanceInfo?.privacyPolicyUrl ? "noopener noreferrer" : undefined}
+              >
+                <Trans>Privacy</Trans>
+              </a>
             </div>
           </div>
         </div>

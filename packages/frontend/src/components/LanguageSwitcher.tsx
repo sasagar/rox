@@ -72,7 +72,7 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 right-0 bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden min-w-[120px] z-50">
+        <div className="absolute top-full mt-2 right-0 bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden min-w-[120px] z-50">
           {Object.entries(locales).map(([locale, label]) => (
             <button
               key={locale}

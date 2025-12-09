@@ -5,14 +5,19 @@ import { ToastContainer } from "../components/ui/Toast";
 
 /**
  * Blocking script to apply UI settings from localStorage before React hydration.
- * This prevents flash of unstyled content (FOUC) for theme, font size, primary color, etc.
+ *
+ * IMPORTANT: This script MUST NOT modify any DOM elements that React hydrates (html, head, body).
+ * Instead, it injects <style> tags into <head> which doesn't cause hydration mismatches.
+ *
+ * Theme (dark/light) class and CSS custom properties on <html> are handled by
+ * ThemeProvider.tsx and UiSettingsProvider.tsx after hydration completes.
+ * This causes a brief flash but avoids React Hydration Error #418.
  */
 const uiSettingsScript = `
 (function() {
   try {
     var settings = JSON.parse(localStorage.getItem('rox-ui-settings') || '{}');
     var instanceTheme = JSON.parse(localStorage.getItem('rox-instance-theme') || '{}');
-    var html = document.documentElement;
 
     // Font size mapping
     var fontSizes = { small: '12px', medium: '14px', large: '16px', xlarge: '18px' };
@@ -21,23 +26,17 @@ const uiSettingsScript = `
     // Content width mapping
     var contentWidths = { narrow: '600px', normal: '800px', wide: '1000px' };
 
-    // Apply CSS custom properties
-    html.style.setProperty('--rox-font-size', fontSizes[settings.fontSize] || '14px');
-    html.style.setProperty('--rox-line-height', lineHeights[settings.lineHeight] || '1.6');
-    html.style.setProperty('--rox-content-width', contentWidths[settings.contentWidth] || '800px');
+    // Build CSS for UI settings (inject via <style> tag, not html.style)
+    var cssVars = ':root {' +
+      '--rox-font-size: ' + (fontSizes[settings.fontSize] || '14px') + ';' +
+      '--rox-line-height: ' + (lineHeights[settings.lineHeight] || '1.6') + ';' +
+      '--rox-content-width: ' + (contentWidths[settings.contentWidth] || '800px') + ';' +
+    '}';
 
-    // Apply theme (light/dark/system)
-    var theme = settings.theme || 'system';
-    if (theme === 'dark') {
-      html.classList.add('dark');
-    } else if (theme === 'light') {
-      html.classList.remove('dark');
-    } else {
-      // System preference
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        html.classList.add('dark');
-      }
-    }
+    var uiStyle = document.createElement('style');
+    uiStyle.id = 'rox-ui-settings-vars';
+    uiStyle.textContent = cssVars;
+    document.head.appendChild(uiStyle);
 
     // Apply primary color from cached instance theme
     var primaryColor = instanceTheme.primaryColor;

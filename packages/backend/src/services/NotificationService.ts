@@ -15,6 +15,14 @@ import type { WebPushService } from "./WebPushService.js";
 import { logger } from "../lib/logger.js";
 
 /**
+ * Profile emoji for MFM rendering
+ */
+export interface ProfileEmoji {
+  name: string;
+  url: string;
+}
+
+/**
  * Notification with populated user data
  */
 export interface NotificationWithUser extends Notification {
@@ -24,6 +32,7 @@ export interface NotificationWithUser extends Notification {
     host: string | null;
     name: string | null;
     avatarUrl: string | null;
+    profileEmojis?: ProfileEmoji[] | null;
   } | null;
 }
 
@@ -311,6 +320,7 @@ export class NotificationService {
             host: u.host,
             name: u.displayName,
             avatarUrl: u.avatarUrl,
+            profileEmojis: u.profileEmojis,
           },
         ]),
     );
@@ -418,6 +428,7 @@ export class NotificationService {
             host: user.host,
             name: user.displayName,
             avatarUrl: user.avatarUrl,
+            profileEmojis: user.profileEmojis,
           };
           notifierName = user.displayName || user.username;
         }

@@ -7,7 +7,7 @@
  */
 
 // Service Worker version - bump this to force cache refresh
-const SW_VERSION = "2.2.0";
+const SW_VERSION = "2.3.0";
 
 // Cache names
 const CACHE_NAME = `rox-cache-v${SW_VERSION}`;

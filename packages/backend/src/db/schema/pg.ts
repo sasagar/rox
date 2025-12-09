@@ -77,6 +77,9 @@ export interface RolePolicies {
   canDeleteNotes?: boolean;
   canSuspendUsers?: boolean;
 
+  // Contact/inquiry management
+  canManageContacts?: boolean;
+
   // Instance management (admin only)
   canManageRoles?: boolean;
   canManageInstanceSettings?: boolean;
@@ -257,6 +260,9 @@ export const notes = pgTable(
     emojis: jsonb("emojis").$type<string[]>().notNull().default([]),
     tags: jsonb("tags").$type<string[]>().notNull().default([]),
     uri: text("uri"), // ActivityPub URI for remote notes
+    // Counters for replies and renotes
+    repliesCount: integer("replies_count").notNull().default(0),
+    renoteCount: integer("renote_count").notNull().default(0),
     // Soft delete fields for moderation
     isDeleted: boolean("is_deleted").notNull().default(false),
     deletedAt: timestamp("deleted_at"),
@@ -281,7 +287,7 @@ export const notes = pgTable(
     // Index for soft delete queries
     isDeletedIdx: index("note_is_deleted_idx").on(table.isDeleted),
   }),
-);
+);;
 
 /**
  * File source type
@@ -725,6 +731,78 @@ export const scheduledNotes = pgTable(
   }),
 );
 
+/**
+ * Contact thread status
+ */
+export type ContactThreadStatus = "open" | "in_progress" | "resolved" | "closed";
+
+/**
+ * Contact message sender type
+ */
+export type ContactSenderType = "user" | "admin" | "moderator";
+
+// Contact threads table (one per inquiry)
+export const contactThreads = pgTable(
+  "contact_threads",
+  {
+    id: text("id").primaryKey(),
+    // User who created the inquiry (null for anonymous/guest inquiries)
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    // Subject/title of the inquiry
+    subject: text("subject").notNull(),
+    // Category for organization (general, bug, feature, abuse, account, etc.)
+    category: text("category").notNull().default("general"),
+    // Current status
+    status: text("status").notNull().default("open").$type<ContactThreadStatus>(),
+    // Email for non-logged-in users or notification purposes
+    email: text("email"),
+    // Assigned staff member (for internal tracking, not shown to user)
+    assignedToId: text("assigned_to_id").references(() => users.id, { onDelete: "set null" }),
+    // Priority level (1 = low, 2 = normal, 3 = high, 4 = urgent)
+    priority: integer("priority").notNull().default(2),
+    // Internal notes (only visible to staff)
+    internalNotes: text("internal_notes"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    // When the thread was resolved/closed
+    closedAt: timestamp("closed_at"),
+  },
+  (table) => ({
+    userIdIdx: index("contact_thread_user_id_idx").on(table.userId),
+    statusIdx: index("contact_thread_status_idx").on(table.status),
+    categoryIdx: index("contact_thread_category_idx").on(table.category),
+    createdAtIdx: index("contact_thread_created_at_idx").on(table.createdAt),
+    assignedToIdx: index("contact_thread_assigned_to_idx").on(table.assignedToId),
+  }),
+);
+
+// Contact messages table (messages within a thread)
+export const contactMessages = pgTable(
+  "contact_messages",
+  {
+    id: text("id").primaryKey(),
+    threadId: text("thread_id")
+      .notNull()
+      .references(() => contactThreads.id, { onDelete: "cascade" }),
+    // Who sent the message (user ID for users, staff ID for staff)
+    senderId: text("sender_id").references(() => users.id, { onDelete: "set null" }),
+    // Type of sender (for display purposes - staff shown as "admin" or "moderator")
+    senderType: text("sender_type").notNull().$type<ContactSenderType>(),
+    // Message content
+    content: text("content").notNull(),
+    // Whether this message has been read by the recipient
+    isRead: boolean("is_read").notNull().default(false),
+    // Attached file IDs (for screenshots, etc.)
+    attachmentIds: jsonb("attachment_ids").$type<string[]>().notNull().default([]),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    threadIdIdx: index("contact_message_thread_id_idx").on(table.threadId),
+    senderIdIdx: index("contact_message_sender_id_idx").on(table.senderId),
+    createdAtIdx: index("contact_message_created_at_idx").on(table.createdAt),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -766,3 +844,7 @@ export type RemoteInstance = typeof remoteInstances.$inferSelect;
 export type NewRemoteInstance = typeof remoteInstances.$inferInsert;
 export type ScheduledNote = typeof scheduledNotes.$inferSelect;
 export type NewScheduledNote = typeof scheduledNotes.$inferInsert;
+export type ContactThread = typeof contactThreads.$inferSelect;
+export type NewContactThread = typeof contactThreads.$inferInsert;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type NewContactMessage = typeof contactMessages.$inferInsert;

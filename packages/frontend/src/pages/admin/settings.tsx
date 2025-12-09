@@ -70,7 +70,7 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets">("instance");
+  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets" | "legal">("instance");
   const [assets, setAssets] = useState<{
     icon: string | null;
     darkIcon: string | null;
@@ -323,6 +323,16 @@ export default function AdminSettingsPage() {
           >
             <Trans>Assets</Trans>
           </button>
+          <button
+            onClick={() => setActiveTab("legal")}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "legal"
+                ? "border-primary-600 text-primary-600"
+                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
+            }`}
+          >
+            <Trans>Legal</Trans>
+          </button>
         </nav>
       </div>
 
@@ -452,45 +462,6 @@ export default function AdminSettingsPage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2">
-                  <Trans>Terms of Service URL</Trans>
-                </label>
-                <input
-                  type="url"
-                  value={settings.instance.tosUrl || ""}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      instance: { ...settings.instance, tosUrl: e.target.value || null },
-                    })
-                  }
-                  placeholder="https://..."
-                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  disabled={isSaving}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-(--text-primary) mb-2">
-                  <Trans>Privacy Policy URL</Trans>
-                </label>
-                <input
-                  type="url"
-                  value={settings.instance.privacyPolicyUrl || ""}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null },
-                    })
-                  }
-                  placeholder="https://..."
-                  className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  disabled={isSaving}
-                />
-              </div>
-            </div>
-
             <div className="pt-4">
               <Button variant="primary" onPress={handleSaveInstance} isDisabled={isSaving}>
                 {isSaving ? (
@@ -605,9 +576,14 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-(--text-primary) mb-3">
+              <label className="block text-sm font-medium text-(--text-primary) mb-1">
                 <Trans>Primary Color</Trans>
               </label>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>
+                  This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers.
+                </Trans>
+              </p>
 
               {/* Color Presets */}
               <div className="flex flex-wrap gap-2 mb-4">
@@ -848,6 +824,103 @@ export default function AdminSettingsPage() {
               onDelete={() => handleAssetDelete("pwaIcon512")}
               previewClassName="w-16 h-16 rounded-lg"
             />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Legal Settings */}
+      {activeTab === "legal" && settings && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Trans>Legal Documents</Trans>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-(--text-muted)">
+              <Trans>Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration.</Trans>
+            </p>
+
+            <div>
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Terms of Service URL</Trans>
+              </label>
+              <input
+                type="url"
+                value={settings.instance.tosUrl || ""}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, tosUrl: e.target.value || null },
+                  })
+                }
+                placeholder="https://example.com/terms"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <p className="mt-1 text-sm text-(--text-muted)">
+                <Trans>Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms</Trans>
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Privacy Policy URL</Trans>
+              </label>
+              <input
+                type="url"
+                value={settings.instance.privacyPolicyUrl || ""}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, privacyPolicyUrl: e.target.value || null },
+                  })
+                }
+                placeholder="https://example.com/privacy"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <p className="mt-1 text-sm text-(--text-muted)">
+                <Trans>Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy</Trans>
+              </p>
+            </div>
+
+            <div className="border-t border-(--border-color) pt-4 mt-4">
+              <h4 className="text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Default Legal Pages</Trans>
+              </h4>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>If no custom URLs are set, visitors will see the default legal pages:</Trans>
+              </p>
+              <div className="flex gap-4">
+                <a
+                  href="/legal/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline"
+                >
+                  <Trans>View Default Terms</Trans>
+                </a>
+                <a
+                  href="/legal/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline"
+                >
+                  <Trans>View Default Privacy Policy</Trans>
+                </a>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button variant="primary" onPress={handleSaveInstance} isDisabled={isSaving}>
+                {isSaving ? (
+                  <Spinner size="xs" variant="white" />
+                ) : (
+                  <Trans>Save Legal Settings</Trans>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

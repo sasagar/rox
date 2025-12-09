@@ -59,6 +59,8 @@ describe("ReactionService", () => {
     emojis: [],
     tags: [],
     uri: null,
+    repliesCount: 0,
+    renoteCount: 0,
     isDeleted: false,
     deletedAt: null,
     deletedById: null,

@@ -288,28 +288,44 @@ export class ActivityPubDeliveryService {
   }
 
   /**
-   * Deliver Announce activity (boost/renote) to target note author
+   * Deliver Announce activity (boost/renote) to all followers
+   *
+   * Following ActivityPub spec, Announce activities are sent to all followers,
+   * plus the target note's author if they're remote (so they can increment their renote count).
    */
-  async deliverAnnounceActivity(
-    noteId: string,
-    targetNote: Note,
-    actor: User,
-    targetNoteAuthor: User,
-  ): Promise<void> {
+  async deliverAnnounceActivity(noteId: string, targetNote: Note, actor: User): Promise<void> {
     if (actor.host) return;
-    if (!targetNoteAuthor.host || !targetNoteAuthor.inbox) return;
 
+    const remoteFollowers = await this.getRemoteFollowers(actor.id);
+
+    // Get target note author to include in delivery (if remote and not already a follower)
+    const targetNoteAuthor = await this.userRepository.findById(targetNote.userId);
+
+    // Get all inbox URLs from followers
+    const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
+
+    // Add target note author's inbox if they're remote
+    if (targetNoteAuthor?.host && targetNoteAuthor.inbox) {
+      const authorInbox = targetNoteAuthor.sharedInbox || targetNoteAuthor.inbox;
+      inboxUrls.add(authorInbox);
+    }
+
+    if (inboxUrls.size === 0) {
+      logger.debug({ noteId }, "No inboxes to deliver Announce activity to");
+      return;
+    }
+
+    // Build the target note URI
     const targetNoteUri =
-      targetNote.uri || `https://${targetNoteAuthor.host}/notes/${targetNote.id}`;
+      targetNote.uri ||
+      (targetNoteAuthor?.host
+        ? `https://${targetNoteAuthor.host}/notes/${targetNote.id}`
+        : `${process.env.URL || "http://localhost:3000"}/notes/${targetNote.id}`);
+
     const activity = this.builder.announce(noteId, targetNoteUri, actor);
 
-    await this.enqueueDelivery({
-      activity,
-      inboxUrl: targetNoteAuthor.inbox,
-      actor,
-    });
-
-    logger.debug({ noteId, inboxUrl: targetNoteAuthor.inbox }, "Enqueued Announce activity");
+    await this.deliverToInboxes(activity, inboxUrls, actor);
+    logger.debug({ noteId, inboxCount: inboxUrls.size }, "Enqueued Announce activity");
   }
 
   /**

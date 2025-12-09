@@ -7,11 +7,20 @@ export interface TimelineOptions {
   userIds?: string[];
 }
 
+/**
+ * Input type for creating a note.
+ * repliesCount and renoteCount are optional as they have database defaults.
+ */
+export type NoteCreateInput = Omit<Note, "createdAt" | "updatedAt" | "repliesCount" | "renoteCount"> & {
+  repliesCount?: number;
+  renoteCount?: number;
+};
+
 export interface INoteRepository {
   /**
    * ノートを作成
    */
-  create(note: Omit<Note, "createdAt" | "updatedAt">): Promise<Note>;
+  create(note: NoteCreateInput): Promise<Note>;
 
   /**
    * IDでノートを取得
@@ -106,4 +115,28 @@ export interface INoteRepository {
    * @param userId ユーザーID
    */
   countByUserId(userId: string): Promise<number>;
+
+  /**
+   * リプライ数をインクリメント
+   * @param noteId 対象のノートID
+   */
+  incrementRepliesCount(noteId: string): Promise<void>;
+
+  /**
+   * リプライ数をデクリメント
+   * @param noteId 対象のノートID
+   */
+  decrementRepliesCount(noteId: string): Promise<void>;
+
+  /**
+   * リノート数をインクリメント
+   * @param noteId 対象のノートID
+   */
+  incrementRenoteCount(noteId: string): Promise<void>;
+
+  /**
+   * リノート数をデクリメント
+   * @param noteId 対象のノートID
+   */
+  decrementRenoteCount(noteId: string): Promise<void>;
 }

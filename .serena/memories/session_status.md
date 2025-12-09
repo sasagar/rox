@@ -1,10 +1,35 @@
-# Session Status - 2025-12-03
+# Session Status - 2025-12-09
 
 ## Current Status
 
 ### Recently Completed Features
 
-#### UI Improvements (Latest)
+#### Production Bug Fixes (Latest - 2025-12-09)
+- **Media Proxy for External Images**: External images from remote servers now load through `/api/proxy` to bypass hotlink protection
+  - Files: `NoteCard.tsx`, `EmojiPicker.tsx`, `admin/emojis.tsx`
+  - Utility: `src/lib/utils/imageProxy.ts` - `getProxiedImageUrl()`
+
+- **canManageCustomEmojis Permission Fix**: Added legacy `isAdmin` fallback for role permission check
+  - File: `src/components/ui/EmojiPicker.tsx:80`
+
+- **optionalAuth Middleware for Emojis Route**: Fixed 401/403 errors on `/api/emojis/remote`
+  - File: `src/routes/emojis.ts`
+
+#### OAuth 2.0 Implementation (2025-12-08)
+- **Full OAuth 2.0 with PKCE support**: Complete OAuth flow for MiAuth compatibility
+  - Authorization endpoint: `/oauth/authorize`
+  - Token endpoint: `/oauth/token`
+  - Token revocation: `/oauth/revoke`
+  - Token introspection: `/oauth/introspect`
+  - Files: `src/routes/oauth.ts`, `src/services/OAuthService.ts`
+  - Database: `oauthApps`, `oauthAuthorizationCodes`, `oauthAccessTokens` tables
+
+- **MiAuth Compatibility Layer**: Legacy Misskey authentication support
+  - Session-based flow: `/miauth/:sessionId`
+  - Check endpoint: `/api/miauth/:sessionId/check`
+  - Files: `src/routes/miauth.ts`, `src/services/MiAuthService.ts`
+
+#### UI Improvements
 - **Collapsible Sidebar**: Desktop sidebar can collapse to icon-only mode
   - Uses favicon when collapsed, full logo when expanded
   - Persists state to localStorage via Jotai atom
@@ -62,8 +87,13 @@ cd packages/frontend
 bun run dev  # Runs on port 3001
 ```
 
+## Known Issues / In Progress
+- **React Hydration Error #418**: May be related to old cached builds. Hard refresh may not help; try clearing cache completely or rebuilding.
+- **WebSocket 1006 errors**: Connection closing before established. Nginx config appears correct; may resolve after hydration error is fixed.
+
 ## Potential Next Steps
 1. Web Push notifications (service worker)
 2. Image optimization improvements
 3. Server onboarding wizard
 4. Performance optimizations
+5. Investigate remaining hydration error after deployment

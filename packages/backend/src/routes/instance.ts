@@ -226,7 +226,9 @@ app.get("/manifest.json", async (c: Context) => {
 
   return c.json(manifest, 200, {
     "Content-Type": "application/manifest+json",
-    "Cache-Control": "public, max-age=3600",
+    // Short cache time to allow icon updates to propagate faster
+    // Note: PWA icons may still be cached at browser/OS level after installation
+    "Cache-Control": "public, max-age=300",
   });
 });
 

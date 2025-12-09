@@ -18,6 +18,14 @@ export type NotificationType =
   | "quote";
 
 /**
+ * Profile emoji for MFM rendering in notifications
+ */
+export interface ProfileEmoji {
+  name: string;
+  url: string;
+}
+
+/**
  * Notification data structure
  */
 export interface Notification {
@@ -37,6 +45,7 @@ export interface Notification {
     host: string | null;
     name: string | null;
     avatarUrl: string | null;
+    profileEmojis?: ProfileEmoji[] | null;
   } | null;
 }
 

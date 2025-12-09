@@ -1,17 +1,125 @@
-# Rox
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="Rox Logo" width="120" height="120" />
+</p>
 
-A lightweight ActivityPub server & client with Misskey API compatibility.
+<h1 align="center">Rox</h1>
 
-**Languages**: English | [日本語](./README.ja.md)
+<p align="center">
+  <strong>A lightweight ActivityPub server & client with Misskey API compatibility</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Love-Rox/rox/actions/workflows/ci.yml">
+    <img src="https://github.com/Love-Rox/rox/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
+  <a href="https://github.com/Love-Rox/rox/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Love-Rox/rox?color=blue" alt="License" />
+  </a>
+  <a href="https://github.com/Love-Rox/rox/releases">
+    <img src="https://img.shields.io/github/v/release/Love-Rox/rox?include_prereleases&color=green" alt="Release" />
+  </a>
+  <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/tests-342%2B-brightgreen" alt="Tests" />
+</p>
+
+<p align="center">
+  <a href="https://activitypub.rocks/">
+    <img src="https://img.shields.io/badge/ActivityPub-Federated-purple?logo=activitypub" alt="ActivityPub" />
+  </a>
+  <img src="https://img.shields.io/badge/Misskey_API-Compatible-86b300?logo=misskey" alt="Misskey Compatible" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Supported-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white" alt="Docker" />
+</p>
+
+<p align="center">
+  <b>Languages</b>: English | <a href="./README.ja.md">日本語</a>
+</p>
+
+---
+
+## Highlights
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zap.svg" width="48" height="48" alt="Fast" /><br />
+      <b>Lightning Fast</b><br />
+      <sub>Built with Bun runtime<br />for maximum performance</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="48" height="48" alt="Flexible" /><br />
+      <b>Infrastructure Agnostic</b><br />
+      <sub>Run on VPS, Docker,<br />or edge environments</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/globe.svg" width="48" height="48" alt="Federated" /><br />
+      <b>Fully Federated</b><br />
+      <sub>Connect with Mastodon,<br />Misskey, and more</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="48" height="48" alt="Secure" /><br />
+      <b>Secure by Design</b><br />
+      <sub>Passkey, OAuth,<br />role-based permissions</sub>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
-- **Lightweight & High Performance**: Built with Bun runtime and modern web standards
-- **Infrastructure Agnostic**: Run on traditional VPS (Docker) or edge environments (Cloudflare Workers/D1)
-- **Misskey API Compatible**: Seamless migration for existing Misskey users
-- **Multi-Database Support**: PostgreSQL, MySQL, SQLite/D1
-- **Flexible Storage**: Local filesystem or S3-compatible storage (AWS S3, Cloudflare R2, MinIO)
-- **Multiple Auth Methods**: Password, Passkey (WebAuthn), and OAuth (GitHub, Google, Discord, Mastodon)
+- **Lightweight & High Performance** - Built with Bun runtime and modern web standards
+- **Infrastructure Agnostic** - Run on traditional VPS (Docker) or edge environments (Cloudflare Workers/D1)
+- **Misskey API Compatible** - Seamless migration for existing Misskey users
+- **Multi-Database Support** - PostgreSQL, MySQL, SQLite/D1
+- **Flexible Storage** - Local filesystem or S3-compatible storage (AWS S3, Cloudflare R2, MinIO)
+- **Multiple Auth Methods** - Password, Passkey (WebAuthn), and OAuth (GitHub, Google, Discord, Mastodon)
+- **Full ActivityPub Support** - Federation with Mastodon, Misskey, GoToSocial, and more
+- **Role-Based Permissions** - Misskey-style policy system with granular access control
+- **Internationalization** - English and Japanese support out of the box
+
+## Screenshots
+
+<details>
+<summary>Click to view screenshots</summary>
+
+> Coming soon
+
+</details>
+
+## Quick Start
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) >= 1.0.0
+- [Docker](https://www.docker.com/) and Docker Compose (for local development)
+- PostgreSQL >= 14 (or MySQL >= 8.0, or SQLite)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Love-Rox/rox.git
+cd rox
+
+# Install dependencies
+bun install
+
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# Start development services (PostgreSQL + Dragonfly)
+docker compose up -d
+
+# Run database migrations
+bun run db:generate
+bun run db:migrate
+
+# Start development servers
+bun run dev
+```
+
+The backend API will be available at `http://localhost:3000` and the frontend at `http://localhost:3001`.
 
 ## Project Structure
 
@@ -26,92 +134,58 @@ rox/
 └── scripts/       # Build and deployment scripts
 ```
 
-## Prerequisites
+## Technology Stack
 
-- [Bun](https://bun.sh/) >= 1.0.0
-- [Docker](https://www.docker.com/) and Docker Compose (for local development)
-- PostgreSQL >= 14 (or MySQL >= 8.0, or SQLite)
+### Backend (Hono Rox)
 
-## Quick Start
+| Category | Technology | Purpose |
+|----------|-----------|---------|
+| Runtime | **Bun** | Fast JavaScript runtime, package manager, test runner |
+| Language | **TypeScript** | Type safety and development efficiency |
+| Framework | **Hono** | Ultra-lightweight web framework |
+| ORM | **Drizzle ORM** | TypeScript-first ORM |
+| Queue | **Dragonfly / BullMQ** | Async job processing |
+| Code Quality | **oxc** | Linting and formatting |
 
-### 1. Clone the repository
+### Frontend (Waku Rox)
 
-```bash
-git clone https://github.com/Love-rox/rox.git
-cd rox
-```
-
-### 2. Install dependencies
-
-```bash
-bun install
-```
-
-### 3. Setup environment variables
-
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### 4. Start development services
-
-```bash
-# Start PostgreSQL and Dragonfly
-docker compose up -d
-
-# Wait for services to be healthy
-docker compose ps
-```
-
-### 5. Run database migrations
-
-```bash
-bun run db:generate
-bun run db:migrate
-```
-
-### 6. Start development servers
-
-```bash
-# Start both backend and frontend
-bun run dev
-
-# Or start individually
-bun run backend:dev
-bun run frontend:dev
-```
-
-The backend API will be available at `http://localhost:3000` and the frontend at `http://localhost:3001`.
+| Category | Technology | Purpose |
+|----------|-----------|---------|
+| Framework | **Waku** | React Server Components framework |
+| State Management | **Jotai** | Atomic state management |
+| UI Components | **React Aria** | Accessible headless UI |
+| Styling | **Tailwind CSS v4** | Utility-first CSS with OKLCH color space |
+| Internationalization | **Lingui** | 3kb optimized i18n |
 
 ## Development
 
 ### Available Scripts
 
-- `bun run dev` - Start all development servers
-- `bun run build` - Build all packages
-- `bun run test` - Run tests
-- `bun run lint` - Lint code with oxlint
-- `bun run format` - Format code with oxlint
-- `bun run typecheck` - Type check all packages
-- `bun run db:generate` - Generate database migrations
-- `bun run db:migrate` - Run database migrations
-- `bun run db:studio` - Open Drizzle Studio
-- `bun run db:backup` - Backup database (PostgreSQL native format)
-- `bun run db:restore` - Restore database from backup
-- `bun run db:export` - Export database to JSON (cross-database migration)
-- `bun run db:import` - Import database from JSON
+| Script | Description |
+|--------|-------------|
+| `bun run dev` | Start all development servers |
+| `bun run build` | Build all packages |
+| `bun run test` | Run tests |
+| `bun run lint` | Lint code with oxlint |
+| `bun run format` | Format code with oxlint |
+| `bun run typecheck` | Type check all packages |
+| `bun run db:generate` | Generate database migrations |
+| `bun run db:migrate` | Run database migrations |
+| `bun run db:studio` | Open Drizzle Studio |
 
-### Database Management
+### Database Configuration
 
-#### PostgreSQL (Default)
+<details>
+<summary><b>PostgreSQL (Default)</b></summary>
 
 ```bash
 DB_TYPE=postgres
 DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 ```
+</details>
 
-#### MySQL
+<details>
+<summary><b>MySQL</b></summary>
 
 ```bash
 # Start MySQL service
@@ -120,24 +194,30 @@ docker compose --profile mysql up -d
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
 ```
+</details>
 
-#### SQLite (Local Development)
+<details>
+<summary><b>SQLite</b></summary>
 
 ```bash
 DB_TYPE=sqlite
 DATABASE_URL=sqlite://./rox.db
 ```
+</details>
 
 ### Storage Configuration
 
-#### Local Storage (Development)
+<details>
+<summary><b>Local Storage (Development)</b></summary>
 
 ```bash
 STORAGE_TYPE=local
 LOCAL_STORAGE_PATH=./uploads
 ```
+</details>
 
-#### S3-Compatible Storage
+<details>
+<summary><b>S3-Compatible Storage</b></summary>
 
 ```bash
 STORAGE_TYPE=s3
@@ -147,144 +227,114 @@ S3_ACCESS_KEY=your-access-key
 S3_SECRET_KEY=your-secret-key
 S3_REGION=auto
 ```
+</details>
 
-### OAuth Configuration (Optional)
+### OAuth Configuration
 
-Configure external OAuth providers to allow users to sign in with their existing accounts:
+<details>
+<summary><b>GitHub, Google, Discord, Mastodon</b></summary>
 
 #### GitHub
-
 ```bash
-# Create OAuth app at: https://github.com/settings/developers
 GITHUB_CLIENT_ID=your-client-id
 GITHUB_CLIENT_SECRET=your-client-secret
 GITHUB_REDIRECT_URI=https://your-domain.com/api/auth/oauth/github/callback
 ```
 
 #### Google
-
 ```bash
-# Create credentials at: https://console.cloud.google.com/apis/credentials
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REDIRECT_URI=https://your-domain.com/api/auth/oauth/google/callback
 ```
 
 #### Discord
-
 ```bash
-# Create application at: https://discord.com/developers/applications
 DISCORD_CLIENT_ID=your-client-id
 DISCORD_CLIENT_SECRET=your-client-secret
 DISCORD_REDIRECT_URI=https://your-domain.com/api/auth/oauth/discord/callback
 ```
 
 #### Mastodon
-
 ```bash
-# Register app in your Mastodon instance: Settings > Development > New Application
 MASTODON_CLIENT_ID=your-client-id
 MASTODON_CLIENT_SECRET=your-client-secret
 MASTODON_INSTANCE_URL=https://mastodon.social
 MASTODON_REDIRECT_URI=https://your-domain.com/api/auth/oauth/mastodon/callback
 ```
+</details>
 
 ## Architecture
 
 Rox uses the **Repository Pattern** and **Adapter Pattern** to decouple business logic from infrastructure concerns:
 
-- **Repository Pattern**: Database operations are abstracted through interfaces (`INoteRepository`, `IUserRepository`, etc.)
-- **Adapter Pattern**: Storage operations use adapters (`LocalStorageAdapter`, `S3StorageAdapter`)
-- **Dependency Injection**: Implementations are injected via Hono Context based on environment variables
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Hono Routes                            │
+├─────────────────────────────────────────────────────────────┤
+│                    Business Services                         │
+├─────────────────────────────────────────────────────────────┤
+│          Repository Interfaces │ Adapter Interfaces          │
+├────────────────────────────────┼────────────────────────────┤
+│  PostgreSQL │ MySQL │ SQLite   │  Local │ S3 │ R2           │
+└────────────────────────────────┴────────────────────────────┘
+```
+
+- **Repository Pattern**: Database operations are abstracted through interfaces
+- **Adapter Pattern**: Storage operations use adapters for different backends
+- **Dependency Injection**: Implementations are injected via Hono Context
 
 See [Implementation Guide](./docs/implementation/README.md) for detailed architectural documentation.
 
-## Technology Stack
+## Implementation Status
 
-### Backend
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 0 | ✅ Complete | Foundation (Database, Storage, DI) |
+| Phase 1 | ✅ Complete | Misskey-Compatible API |
+| Phase 2 | ✅ Complete | Frontend (Waku Client) |
+| Phase 3 | ✅ Complete | ActivityPub Federation |
+| Phase 4 | ✅ Complete | Refactoring & Optimization |
+| Phase 5 | ✅ Complete | Administration & Security |
+| Phase 6 | ✅ Complete | Production Readiness |
+| Phase 7 | 🚧 Planned | Plugin System |
 
-| Category | Technology | Version | Purpose |
-|----------|-----------|---------|---------|
-| Runtime | Bun | 1.1.45+ | Fast JavaScript runtime, package manager, test runner |
-| Language | TypeScript | 5.x | Type safety and development efficiency |
-| Framework | Hono | 4.10.6 | Ultra-lightweight web framework |
-| ORM | Drizzle ORM | 0.36.4 | TypeScript-first ORM |
-| Queue | Dragonfly / BullMQ | - | Async job processing |
-| Code Quality | oxc | Latest | Linting and formatting |
+<details>
+<summary><b>View detailed implementation status</b></summary>
 
-### Frontend (✅ Implemented)
+### Phase 2: Frontend
+- ✅ Waku + Jotai setup
+- ✅ Tailwind CSS v4 with OKLCH colors
+- ✅ React Aria Components
+- ✅ Lingui i18n (English/Japanese)
+- ✅ Authentication (Passkey + Password + OAuth)
+- ✅ Timeline with infinite scroll
+- ✅ Note Composer (text, images, CW, visibility)
+- ✅ User interactions (reply, reaction, follow)
+- ✅ File uploads (drag & drop, preview)
+- ✅ User profile pages
+- ✅ Image modal (zoom, pan, gallery)
+- ✅ Full accessibility support
 
-| Category | Technology | Version | Purpose |
-|----------|-----------|---------|---------|
-| Framework | Waku | 0.27.1 | React Server Components framework |
-| State Management | Jotai | 2.15.1 | Atomic state management |
-| UI Components | React Aria Components | 1.6.3 | Accessible headless UI |
-| Styling | Tailwind CSS v4 | 4.1.17 | Utility-first CSS with OKLCH color space |
-| Internationalization | Lingui | 5.6.0 | 3kb optimized i18n (en/ja) |
-| Authentication | Passkey + Password + OAuth | Custom | WebAuthn, traditional auth, OAuth2 |
+### Phase 3: ActivityPub
+- ✅ WebFinger (RFC 7033)
+- ✅ Actor documents (Person, JSON-LD)
+- ✅ HTTP Signatures (RSA-SHA256, hs2019)
+- ✅ Inbox (11 activity types)
+- ✅ Outbox & Collections
+- ✅ Activity delivery queue
+- ✅ Shared inbox support
+- ✅ Federation tested with Mastodon, Misskey, GoToSocial
 
-## Implementation Phases
+### Phase 5: Administration
+- ✅ Role-based permission system
+- ✅ User management API
+- ✅ Instance block management
+- ✅ Invite-only registration
+- ✅ User report system
+- ✅ Instance settings management
 
-- **Phase 0**: Foundation (Database, Storage, DI) ✅ **Complete**
-- **Phase 1**: Misskey-Compatible API ✅ **Complete**
-- **Phase 2**: Frontend (Waku Client) ✅ **Complete**
-  - ✅ Waku + Jotai setup
-  - ✅ Tailwind CSS v4 with OKLCH colors
-  - ✅ React Aria Components (Button, TextField, Dialog, Form, Avatar, Card)
-  - ✅ Lingui i18n (English/Japanese - 87 messages)
-  - ✅ Authentication (Passkey + Password + OAuth)
-  - ✅ Timeline (display, infinite scroll pagination)
-  - ✅ Note Composer (text, images, CW, visibility, reply, renote)
-  - ✅ User interactions (reply, reaction, follow/unfollow)
-  - ✅ File uploads (multiple images, drag & drop, preview)
-  - ✅ User profile pages (bio, stats, posts, follow button)
-  - ✅ Image modal (zoom, pan, gallery navigation)
-  - ✅ Accessibility (keyboard navigation, focus management, ARIA labels, screen reader support)
-- **Phase 3**: ActivityPub Federation ✅ **Complete**
-  - ✅ WebFinger (RFC 7033 compliant)
-  - ✅ Actor documents (Person, JSON-LD)
-  - ✅ HTTP Signatures (RSA-SHA256, hs2019)
-  - ✅ Inbox (11 activity types: Follow, Undo Follow, Create, Like, Undo Like, Announce, Undo Announce, Delete, Accept, Update Person, Update Note)
-  - ✅ Outbox & Collections (followers/following)
-  - ✅ Activity delivery queue (BullMQ + Dragonfly)
-  - ✅ Shared inbox support (50-90% delivery reduction)
-  - ✅ Per-server rate limiting
-  - ✅ Activity deduplication
-  - ✅ Delivery metrics & monitoring
-  - ✅ Federation tested with Mastodon, Misskey, GoToSocial
-- **Phase 4**: Refactoring & Optimization ✅ **Complete**
-  - ✅ Code refactoring (inbox handlers split into 11 dedicated handlers)
-  - ✅ Redis caching (user profiles via CacheService)
-  - ✅ Image optimization (WebP conversion via ImageProcessor)
-  - ✅ Test coverage improvement (342 unit tests)
-- **Phase 5**: Administration & Security ✅ **Complete**
-  - ✅ Admin role and permissions (`requireAdmin` middleware)
-  - ✅ Instance block management (API + federation enforcement)
-  - ✅ User suspension/moderation (API + auth enforcement)
-  - ✅ Rate limiting (middleware implemented)
-  - ✅ Invite-only registration system (DB settings + env var fallback)
-  - ✅ Invitation code management API (create, list, delete, expiry, multi-use)
-  - ✅ User report system (8 report reasons)
-  - ✅ Moderation tools (report management, note deletion)
-  - ✅ **Role-based permission system** (Misskey-style policies)
-    - Role CRUD API (`/api/admin/roles`)
-    - Role assignment/unassignment
-    - Permission-based middleware (`requirePermission`, `requireAdminRole`, `requireModeratorRole`)
-    - Effective policy merging from multiple roles
-    - Per-role invite limits and rate limit factors
-  - ✅ **Instance settings management via API** (`/api/admin/settings`)
-    - Registration settings (enabled, invite-only, approval required)
-    - Instance metadata (name, description, maintainer email, icons, ToS, privacy policy)
-- **Phase 6**: Production Readiness ✅ **Complete**
-  - ✅ Input validation (Zod schemas)
-  - ✅ Health checks and metrics endpoints
-  - ✅ Deployment documentation (Docker & Bare Metal)
-  - ✅ CI/CD workflow (GitHub Actions)
-  - ✅ 342 unit tests
-- **Phase 7**: Plugin System (Planned)
-  - Plugin architecture design
-  - Extension points
-  - Plugin marketplace
+</details>
 
 ## Contributing
 
@@ -299,13 +349,20 @@ Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUT
 
 ## License
 
-MIT
+[MIT](./LICENSE)
 
 ## Links
 
-- [Contributing Guidelines](./CONTRIBUTING.md)
-- [Project Specification](./docs/project/v1.md) (Japanese)
-- [Implementation Guide](./docs/implementation/README.md)
-- [Testing Guide](./docs/development/testing.md)
-- [Deployment Guide](./docs/deployment/README.md)
-- [API Documentation](./docs/api/) (Coming soon)
+| Resource | Description |
+|----------|-------------|
+| [Contributing Guidelines](./CONTRIBUTING.md) | How to contribute |
+| [Project Specification](./docs/project/v1.md) | Original spec (Japanese) |
+| [Implementation Guide](./docs/implementation/README.md) | Architecture details |
+| [Testing Guide](./docs/development/testing.md) | Testing documentation |
+| [Deployment Guide](./docs/deployment/README.md) | Production deployment |
+
+---
+
+<p align="center">
+  Made with ❤️ by the Rox community
+</p>

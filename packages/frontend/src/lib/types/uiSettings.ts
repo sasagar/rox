@@ -10,6 +10,30 @@ export type ContentWidth = "narrow" | "normal" | "wide";
 export type Theme = "light" | "dark" | "system";
 export type NotificationSound = "none" | "default" | "soft" | "bell";
 
+/**
+ * Notification types that can have individual sound settings
+ */
+export type NotificationSoundType =
+  | "follow"
+  | "mention"
+  | "reply"
+  | "reaction"
+  | "renote"
+  | "quote";
+
+/**
+ * Per-notification-type sound settings
+ */
+export interface NotificationSoundSettings {
+  sound: NotificationSound;
+  volume: number; // 0-100
+}
+
+/**
+ * Map of notification type to sound settings
+ */
+export type NotificationSoundsByType = Partial<Record<NotificationSoundType, NotificationSoundSettings>>;
+
 export interface UISettings {
   fontSize?: FontSize;
   lineHeight?: LineHeight;
@@ -18,13 +42,16 @@ export interface UISettings {
   appCustomCss?: string;
   notificationSound?: NotificationSound;
   notificationVolume?: number; // 0-100
+  /** Per-notification-type sound settings (overrides default) */
+  notificationSoundsByType?: NotificationSoundsByType;
 }
 
 /**
  * Default UI settings
  */
-export const defaultUISettings: Required<Omit<UISettings, "appCustomCss">> & {
+export const defaultUISettings: Required<Omit<UISettings, "appCustomCss" | "notificationSoundsByType">> & {
   appCustomCss: string;
+  notificationSoundsByType: NotificationSoundsByType | undefined;
 } = {
   fontSize: "medium",
   lineHeight: "normal",
@@ -33,6 +60,7 @@ export const defaultUISettings: Required<Omit<UISettings, "appCustomCss">> & {
   appCustomCss: "",
   notificationSound: "default",
   notificationVolume: 50,
+  notificationSoundsByType: undefined,
 };
 
 /**
@@ -90,4 +118,16 @@ export const notificationSoundLabels: Record<NotificationSound, string> = {
   default: "Default",
   soft: "Soft",
   bell: "Bell",
+};
+
+/**
+ * Labels for notification types (for display)
+ */
+export const notificationTypeLabels: Record<NotificationSoundType, string> = {
+  follow: "Follow",
+  mention: "Mention",
+  reply: "Reply",
+  reaction: "Reaction",
+  renote: "Renote",
+  quote: "Quote",
 };

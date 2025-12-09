@@ -25,6 +25,7 @@ import {
   fetchEmojisAtom,
   type CustomEmoji,
 } from "../../lib/atoms/customEmoji";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 /**
  * Emoji categories with their emojis
@@ -929,7 +930,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                             aria-label={`Select :${emoji.name}:`}
                           >
                             <img
-                              src={emoji.url}
+                              src={getProxiedImageUrl(emoji.url) || ""}
                               alt={`:${emoji.name}:`}
                               className="w-6 h-6 object-contain"
                               loading="lazy"
