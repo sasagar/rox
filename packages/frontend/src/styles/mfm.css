@@ -243,3 +243,40 @@
     animation: none !important;
   }
 }
+
+/* ========================================
+   KaTeX Math Rendering
+   ======================================== */
+
+/* Inline math styling */
+.katex-inline {
+  display: inline;
+}
+
+.katex-inline .katex {
+  font-size: 1em;
+}
+
+/* Block math styling */
+.katex-block {
+  display: block;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.katex-block .katex {
+  font-size: 1.1em;
+}
+
+/* Ensure KaTeX inherits text color in dark mode */
+.dark .katex {
+  color: inherit;
+}
+
+/* Limit math formula width for mobile */
+@media (max-width: 640px) {
+  .katex-block {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

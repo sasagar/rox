@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./mfm.css";
+@import "katex/dist/katex.min.css";
 
 @theme {
   /* Primary color palette - dynamically set by ThemeProvider */

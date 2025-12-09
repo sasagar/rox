@@ -19,6 +19,7 @@
 import { useMemo, useState, useEffect, useRef, memo, type ReactNode } from "react";
 import * as mfm from "mfm-js";
 import type { MfmNode } from "mfm-js";
+import katex from "katex";
 import { lookupEmojis } from "../../lib/atoms/customEmoji";
 import { containsHtml, htmlToMfm } from "../../lib/utils/htmlToText";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
@@ -314,20 +315,50 @@ function MfmRendererComponent({
         );
 
       case "mathInline":
-        // TODO: Integrate KaTeX for math rendering
-        return (
-          <code key={index} className="px-1 bg-(--bg-tertiary) rounded">
-            {node.props.formula}
-          </code>
-        );
+        try {
+          const inlineHtml = katex.renderToString(node.props.formula, {
+            throwOnError: false,
+            displayMode: false,
+            strict: false,
+          });
+          return (
+            <span
+              key={index}
+              className="katex-inline"
+              dangerouslySetInnerHTML={{ __html: inlineHtml }}
+            />
+          );
+        } catch {
+          // Fallback to code display if KaTeX fails
+          return (
+            <code key={index} className="px-1 bg-(--bg-tertiary) rounded">
+              {node.props.formula}
+            </code>
+          );
+        }
 
       case "mathBlock":
-        // TODO: Integrate KaTeX for math rendering
-        return (
-          <pre key={index} className="p-3 rounded-lg bg-(--bg-tertiary) my-2 overflow-x-auto">
-            <code>{node.props.formula}</code>
-          </pre>
-        );
+        try {
+          const blockHtml = katex.renderToString(node.props.formula, {
+            throwOnError: false,
+            displayMode: true,
+            strict: false,
+          });
+          return (
+            <div
+              key={index}
+              className="katex-block my-2 overflow-x-auto"
+              dangerouslySetInnerHTML={{ __html: blockHtml }}
+            />
+          );
+        } catch {
+          // Fallback to code display if KaTeX fails
+          return (
+            <pre key={index} className="p-3 rounded-lg bg-(--bg-tertiary) my-2 overflow-x-auto">
+              <code>{node.props.formula}</code>
+            </pre>
+          );
+        }
 
       case "search":
         const query = node.props.query;
