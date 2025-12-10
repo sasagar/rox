@@ -131,8 +131,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta name="apple-mobile-web-app-title" content="Rox" />
 
-      {/* Apple Touch Icon */}
-      <link rel="apple-touch-icon" href="/favicon.png" />
+      {/* Apple Touch Icon - uses dynamic endpoint that redirects to configured PWA icon */}
+      <link rel="apple-touch-icon" href="/api/instance/apple-touch-icon.png" />
 
       {/* Favicon */}
       <link rel="icon" type="image/png" href="/favicon.png" />

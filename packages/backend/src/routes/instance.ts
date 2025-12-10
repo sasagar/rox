@@ -233,4 +233,24 @@ app.get("/manifest.json", async (c: Context) => {
   });
 });
 
+/**
+ * Get Apple Touch Icon
+ *
+ * GET /api/instance/apple-touch-icon.png
+ *
+ * Redirects to the configured PWA 192x192 icon, instance icon, or default favicon.
+ * This allows iOS "Add to Home Screen" to use the dynamically configured icon.
+ */
+app.get("/apple-touch-icon.png", async (c: Context) => {
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
+  const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
+
+  const metadata = await instanceSettingsService.getInstanceMetadata();
+
+  // Priority: PWA 192x192 icon > Instance icon > Default favicon
+  const iconUrl = metadata.pwaIcon192Url || metadata.iconUrl || "/favicon.png";
+
+  return c.redirect(iconUrl, 302);
+});
+
 export default app;
