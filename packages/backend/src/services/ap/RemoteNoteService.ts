@@ -169,8 +169,16 @@ export class RemoteNoteService {
       await this.noteRepository.incrementRepliesCount(replyId);
     }
 
-    logger.debug(
-      { noteUri: noteObject.id, author: `${author.username}@${author.host}`, visibility, mentionCount: mentions.length },
+    logger.info(
+      {
+        noteUri: noteObject.id,
+        noteId: note.id,
+        author: `${author.username}@${author.host}`,
+        visibility,
+        mentionCount: mentions.length,
+        mentions,
+        toField: noteObject.to,
+      },
       "Remote note created",
     );
 
@@ -278,6 +286,8 @@ export class RemoteNoteService {
     if (dmRecipients) {
       const recipientArray = Array.isArray(dmRecipients) ? dmRecipients : [dmRecipients];
 
+      logger.info({ dmRecipients: recipientArray }, "Processing DM recipients from 'to' array");
+
       for (const recipientUri of recipientArray) {
         // Skip ActivityStreams public/followers URIs
         if (
@@ -285,22 +295,30 @@ export class RemoteNoteService {
           recipientUri.includes("as:Public") ||
           recipientUri.endsWith("/followers")
         ) {
+          logger.debug({ recipientUri }, "Skipping special URI");
           continue;
         }
 
         try {
+          logger.info({ recipientUri }, "Resolving DM recipient");
           const recipientUser = await actorService.resolveActor(recipientUri);
+          logger.info(
+            { recipientUri, resolvedUserId: recipientUser?.id, resolvedUsername: recipientUser?.username, resolvedHost: recipientUser?.host },
+            "Resolved DM recipient",
+          );
           if (recipientUser && !seen.has(recipientUser.id)) {
             mentions.push(recipientUser.id);
             seen.add(recipientUser.id);
-            logger.debug(
+            logger.info(
               { recipientUri, userId: recipientUser.id },
               "Added DM recipient to mentions from 'to' array",
             );
+          } else if (recipientUser && seen.has(recipientUser.id)) {
+            logger.debug({ recipientUri, userId: recipientUser.id }, "DM recipient already in mentions");
           }
         } catch (error) {
           // Don't fail note processing if recipient resolution fails
-          logger.debug({ err: error, recipientUri }, "Failed to resolve DM recipient");
+          logger.warn({ err: error, recipientUri }, "Failed to resolve DM recipient");
         }
       }
     }
