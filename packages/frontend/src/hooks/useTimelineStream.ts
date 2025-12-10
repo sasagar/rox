@@ -117,7 +117,6 @@ function connectTimelineWS(
   connection.socket = socket;
 
   socket.onopen = () => {
-    console.log(`Timeline WebSocket connected: ${timelineType}`);
     // Start ping interval to keep connection alive
     connection.pingInterval = setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
@@ -158,7 +157,6 @@ function connectTimelineWS(
   };
 
   socket.onclose = (event) => {
-    console.log(`Timeline WebSocket closed: ${timelineType} (code: ${event.code})`);
     notifyConnectionChange(timelineType, false);
     connection.socket = null;
 

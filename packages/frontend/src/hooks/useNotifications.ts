@@ -83,7 +83,6 @@ function connectWSSingleton(
   wsSocket = socket;
 
   socket.onopen = () => {
-    console.log("Notifications WebSocket connected (singleton)");
     // Start ping interval to keep connection alive
     wsPingInterval = setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
@@ -141,7 +140,6 @@ function connectWSSingleton(
   };
 
   socket.onclose = (event) => {
-    console.log(`Notifications WebSocket closed (code: ${event.code})`);
     setWsConnected(false);
     wsSocket = null;
 
