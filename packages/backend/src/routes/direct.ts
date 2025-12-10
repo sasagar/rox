@@ -9,6 +9,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { requireAuth } from "../middleware/auth.js";
+import { logger } from "../lib/logger.js";
 
 const direct = new Hono();
 
@@ -35,6 +36,20 @@ direct.get("/conversations", requireAuth(), async (c: Context) => {
 
   try {
     const conversations = await noteRepository.getConversationPartners(user.id, limit);
+
+    // Debug log to trace partner_id resolution
+    logger.info(
+      {
+        userId: user.id,
+        conversationCount: conversations.length,
+        conversations: conversations.map((c: { partnerId: string; partnerUsername: string; lastNoteText: string | null }) => ({
+          partnerId: c.partnerId,
+          partnerUsername: c.partnerUsername,
+          lastNoteText: c.lastNoteText?.substring(0, 30),
+        })),
+      },
+      "DM conversations fetched",
+    );
 
     return c.json(conversations);
   } catch (error) {

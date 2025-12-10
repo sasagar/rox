@@ -7,6 +7,7 @@ import type {
   TimelineOptions,
 } from "../../interfaces/repositories/INoteRepository.js";
 import type { Note } from "shared";
+import { logger } from "../../lib/logger.js";
 
 export class PostgresNoteRepository implements INoteRepository {
   constructor(private db: Database) {}
@@ -706,6 +707,42 @@ export class PostgresNoteRepository implements INoteRepository {
       lastNoteCreatedAt: Date;
     }>
   > {
+    // Debug: First query to see raw DM data
+    const debugResult = await this.db.execute(sql`
+      SELECT
+        n.id as note_id,
+        n.text as note_text,
+        n.user_id,
+        n.mentions,
+        n.visibility,
+        jsonb_array_length(n.mentions::jsonb) as mentions_length,
+        CASE WHEN n.user_id = ${userId} THEN 'sent' ELSE 'received' END as direction
+      FROM notes n
+      WHERE n.visibility = 'specified'
+        AND n.is_deleted = false
+        AND (
+          n.user_id = ${userId}
+          OR n.mentions::jsonb @> ${JSON.stringify([userId])}::jsonb
+        )
+      ORDER BY n.created_at DESC
+      LIMIT 10
+    `);
+
+    logger.info(
+      {
+        userId,
+        rawDMs: (debugResult.rows as any[]).map((r) => ({
+          noteId: r.note_id,
+          text: r.note_text?.substring(0, 20),
+          senderId: r.user_id,
+          mentions: r.mentions,
+          mentionsLength: r.mentions_length,
+          direction: r.direction,
+        })),
+      },
+      "Raw DM data for debugging",
+    );
+
     // Use raw SQL for this complex query with DISTINCT ON
     // For DMs:
     // - When I send: user_id = me, mentions contains recipient(s) -> partner is first mention
