@@ -39,6 +39,9 @@ bun.lockb
 !.vscode/settings.json
 .idea
 .DS_Store
+
+# AI assistant directories
+.claude/
 *.suo
 *.ntvs*
 *.njsproj
