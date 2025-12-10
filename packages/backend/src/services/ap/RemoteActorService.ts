@@ -264,55 +264,119 @@ export class RemoteActorService {
       return updated;
     }
 
-    // Create new user record
-    const user = await this.userRepository.create({
-      id: generateId(),
-      username: actor.preferredUsername,
-      email: `${actor.preferredUsername}@${host}`, // Placeholder (not used for remote users)
-      passwordHash: "", // Not used for remote users
-      displayName: actor.name || actor.preferredUsername,
-      host, // Non-null host indicates remote user
-      avatarUrl: extractImageUrl(actor.icon),
-      bannerUrl: extractImageUrl(actor.image),
-      bio: actor.summary || null,
-      isAdmin: false,
-      isSuspended: false,
-      isDeleted: false,
-      deletedAt: null,
-      publicKey: actor.publicKey?.publicKeyPem || null,
-      privateKey: null, // Remote users don't have private keys
-      inbox: actor.inbox,
-      outbox: actor.outbox || null,
-      followersUrl: actor.followers || null,
-      followingUrl: actor.following || null,
-      uri: actorUri,
-      sharedInbox: actor.endpoints?.sharedInbox || null,
-      customCss: null, // Remote users don't have custom CSS
-      uiSettings: null, // Remote users don't have UI settings
-      profileEmojis, // Custom emojis from actor tags
-      // Account migration fields
-      alsoKnownAs: actor.alsoKnownAs || [],
-      movedTo: actor.movedTo || null,
-      movedAt: null,
-      // Storage quota (null for remote users - not applicable)
-      storageQuotaMb: null,
-      // Fetch status (initialized as no failures)
-      goneDetectedAt: null,
-      fetchFailureCount: 0,
-      lastFetchAttemptAt: null,
-      lastFetchError: null,
-    });
-
-    logger.debug({ username: actor.preferredUsername, host }, "Created remote user");
-
-    // Update L1 cache
-    if (this.cacheService?.isAvailable()) {
-      this.cacheService.set(cacheKey, user, { ttl: CacheTTL.LONG }).catch((err) => {
-        logger.debug({ err }, "Failed to update L1 cache");
+    // Check if a user with the same username/host already exists (race condition protection)
+    // The database has a unique constraint on (username, host), but we check by URI above.
+    // A user may have been created by a concurrent request with a different URI or no URI yet.
+    const existingByUsernameHost = await this.userRepository.findByUsername(actor.preferredUsername, host);
+    if (existingByUsernameHost) {
+      // Update the existing user with the new data (including URI if not set)
+      const updated = await this.userRepository.update(existingByUsernameHost.id, {
+        displayName: actor.name || actor.preferredUsername,
+        avatarUrl: extractImageUrl(actor.icon),
+        bannerUrl: extractImageUrl(actor.image),
+        bio: actor.summary || null,
+        publicKey: actor.publicKey?.publicKeyPem || null,
+        inbox: actor.inbox,
+        outbox: actor.outbox || null,
+        followersUrl: actor.followers || null,
+        followingUrl: actor.following || null,
+        sharedInbox: actor.endpoints?.sharedInbox || null,
+        uri: actorUri, // Set/update the URI
+        profileEmojis,
+        alsoKnownAs: actor.alsoKnownAs || [],
+        movedTo: actor.movedTo || null,
       });
+
+      logger.debug(
+        { username: actor.preferredUsername, host },
+        "Found existing user by username/host, updated instead of creating",
+      );
+
+      // Update L1 cache
+      if (this.cacheService?.isAvailable()) {
+        this.cacheService.set(cacheKey, updated, { ttl: CacheTTL.LONG }).catch((err) => {
+          logger.debug({ err }, "Failed to update L1 cache");
+        });
+      }
+
+      return updated;
     }
 
-    return user;
+    // Create new user record (with fallback for race condition)
+    try {
+      const user = await this.userRepository.create({
+        id: generateId(),
+        username: actor.preferredUsername,
+        email: `${actor.preferredUsername}@${host}`, // Placeholder (not used for remote users)
+        passwordHash: "", // Not used for remote users
+        displayName: actor.name || actor.preferredUsername,
+        host, // Non-null host indicates remote user
+        avatarUrl: extractImageUrl(actor.icon),
+        bannerUrl: extractImageUrl(actor.image),
+        bio: actor.summary || null,
+        isAdmin: false,
+        isSuspended: false,
+        isDeleted: false,
+        deletedAt: null,
+        publicKey: actor.publicKey?.publicKeyPem || null,
+        privateKey: null, // Remote users don't have private keys
+        inbox: actor.inbox,
+        outbox: actor.outbox || null,
+        followersUrl: actor.followers || null,
+        followingUrl: actor.following || null,
+        uri: actorUri,
+        sharedInbox: actor.endpoints?.sharedInbox || null,
+        customCss: null, // Remote users don't have custom CSS
+        uiSettings: null, // Remote users don't have UI settings
+        profileEmojis, // Custom emojis from actor tags
+        // Account migration fields
+        alsoKnownAs: actor.alsoKnownAs || [],
+        movedTo: actor.movedTo || null,
+        movedAt: null,
+        // Storage quota (null for remote users - not applicable)
+        storageQuotaMb: null,
+        // Fetch status (initialized as no failures)
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: null,
+        lastFetchError: null,
+      });
+
+      logger.debug({ username: actor.preferredUsername, host }, "Created remote user");
+
+      // Update L1 cache
+      if (this.cacheService?.isAvailable()) {
+        this.cacheService.set(cacheKey, user, { ttl: CacheTTL.LONG }).catch((err) => {
+          logger.debug({ err }, "Failed to update L1 cache");
+        });
+      }
+
+      return user;
+    } catch (error) {
+      // Handle duplicate key constraint violation (race condition)
+      // Another concurrent request may have created this user between our check and create
+      if (error instanceof Error && error.message.includes("unique constraint")) {
+        logger.debug(
+          { username: actor.preferredUsername, host },
+          "Duplicate key on create, fetching existing user",
+        );
+
+        // Fetch the user that was created by the other request
+        const raceWinner = await this.userRepository.findByUsername(actor.preferredUsername, host);
+        if (raceWinner) {
+          // Update L1 cache with the existing user
+          if (this.cacheService?.isAvailable()) {
+            this.cacheService.set(cacheKey, raceWinner, { ttl: CacheTTL.LONG }).catch((err) => {
+              logger.debug({ err }, "Failed to update L1 cache");
+            });
+          }
+          return raceWinner;
+        }
+      }
+
+      // Re-throw if it's not a duplicate key error or we couldn't find the user
+      throw error;
+    }
   }
 
   /**
