@@ -58,6 +58,25 @@ jobs:
           echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
           echo "Previous tag: $PREV_TAG"
 
+      - name: Extract package versions
+        id: pkg_versions
+        run: |
+          # Extract versions from package.json files
+          ROOT_VERSION=$(jq -r '.version' package.json)
+          BACKEND_VERSION=$(jq -r '.version' packages/backend/package.json)
+          FRONTEND_VERSION=$(jq -r '.version' packages/frontend/package.json)
+          SHARED_VERSION=$(jq -r '.version' packages/shared/package.json)
+
+          echo "root_version=$ROOT_VERSION" >> $GITHUB_OUTPUT
+          echo "backend_version=$BACKEND_VERSION" >> $GITHUB_OUTPUT
+          echo "frontend_version=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+          echo "shared_version=$SHARED_VERSION" >> $GITHUB_OUTPUT
+
+          echo "Root version: $ROOT_VERSION"
+          echo "Backend version: $BACKEND_VERSION"
+          echo "Frontend version: $FRONTEND_VERSION"
+          echo "Shared version: $SHARED_VERSION"
+
       - name: Generate changelog from commits
         id: changelog
         run: |
@@ -75,6 +94,15 @@ jobs:
 
           # Create changelog sections based on conventional commits
           {
+            echo "## Version Information"
+            echo ""
+            echo "| Component | Version |"
+            echo "|-----------|---------|"
+            echo "| **Rox (Project)** | \`${{ steps.pkg_versions.outputs.root_version }}\` |"
+            echo "| Hono Rox (Backend) | \`${{ steps.pkg_versions.outputs.backend_version }}\` |"
+            echo "| Waku Rox (Frontend) | \`${{ steps.pkg_versions.outputs.frontend_version }}\` |"
+            echo "| Shared | \`${{ steps.pkg_versions.outputs.shared_version }}\` |"
+            echo ""
             echo "## What's Changed"
             echo ""
 
