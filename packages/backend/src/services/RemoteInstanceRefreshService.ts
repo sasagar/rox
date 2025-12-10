@@ -1,5 +1,6 @@
 import type { IRemoteInstanceRepository } from "../interfaces/repositories/IRemoteInstanceRepository.js";
 import { logger } from "../lib/logger.js";
+import { fetchInstanceIcon } from "../lib/instance-icon.js";
 
 /**
  * NodeInfo 2.0/2.1 response structure
@@ -230,8 +231,8 @@ export class RemoteInstanceRefreshService {
         return false;
       }
 
-      // Try to fetch favicon/icon
-      const iconUrl = await this.fetchFavicon(host);
+      // Try to fetch icon using software-specific APIs, then fall back to favicon
+      const iconUrl = await fetchInstanceIcon(host, nodeInfo.software.name);
 
       await this.remoteInstanceRepository.upsert({
         host,
@@ -307,35 +308,6 @@ export class RemoteInstanceRefreshService {
       logger.debug({ err: error, host }, "Failed to fetch nodeinfo");
       return null;
     }
-  }
-
-  /**
-   * Try to fetch favicon from the remote server
-   */
-  private async fetchFavicon(host: string): Promise<string | null> {
-    // Try common favicon paths
-    const faviconPaths = ["/favicon.ico", "/favicon.png", "/apple-touch-icon.png"];
-
-    for (const path of faviconPaths) {
-      try {
-        const url = `https://${host}${path}`;
-        const response = await fetch(url, {
-          method: "HEAD",
-          signal: AbortSignal.timeout(5000),
-        });
-
-        if (response.ok) {
-          const contentType = response.headers.get("content-type");
-          if (contentType?.startsWith("image/")) {
-            return url;
-          }
-        }
-      } catch {
-        // Ignore errors, try next path
-      }
-    }
-
-    return null;
   }
 
   /**
