@@ -369,12 +369,34 @@ export class ActivityPubDeliveryService {
    * @param recipientIds - User IDs of the DM recipients
    */
   async deliverDirectMessage(note: Note, author: User, recipientIds: string[]): Promise<void> {
-    if (author.host || note.localOnly) return;
-    if (recipientIds.length === 0) return;
+    logger.debug(
+      { noteId: note.id, recipientIds, authorHost: author.host, localOnly: note.localOnly },
+      "deliverDirectMessage called",
+    );
+
+    if (author.host || note.localOnly) {
+      logger.debug({ noteId: note.id }, "Skipping DM delivery: author is remote or note is local-only");
+      return;
+    }
+    if (recipientIds.length === 0) {
+      logger.debug({ noteId: note.id }, "Skipping DM delivery: no recipient IDs");
+      return;
+    }
 
     // Fetch all recipients
     const recipients = await Promise.all(
       recipientIds.map((id) => this.userRepository.findById(id)),
+    );
+
+    // Log recipient details for debugging
+    logger.debug(
+      {
+        noteId: note.id,
+        recipients: recipients.map((r) =>
+          r ? { id: r.id, username: r.username, host: r.host, inbox: r.inbox, uri: r.uri } : null,
+        ),
+      },
+      "Fetched DM recipients",
     );
 
     // Filter to remote users only
@@ -390,6 +412,16 @@ export class ActivityPubDeliveryService {
     // Build activity with direct message addressing
     const activity = this.builder.createDirectMessage(note, author, remoteRecipients);
     const inboxUrls = this.getUniqueInboxUrls(remoteRecipients);
+
+    logger.info(
+      {
+        noteId: note.id,
+        inboxUrls: Array.from(inboxUrls),
+        recipientUris: remoteRecipients.map((r) => r.uri),
+        activityTo: (activity.object as { to?: string[] })?.to,
+      },
+      "Delivering Direct Message activity",
+    );
 
     await this.deliverToInboxes(activity, inboxUrls, author);
     logger.debug(
