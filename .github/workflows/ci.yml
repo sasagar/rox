@@ -80,20 +80,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js (for native module compatibility)
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install dependencies with npm (for Node.js native modules)
-        run: npm install
-        working-directory: packages/backend
-
-      - name: Install root dependencies
-        run: npm install
+      - name: Install dependencies
+        run: bun install
 
       - name: Run SQLite integration tests
-        run: npx vitest run src/tests/node/sqlite-repositories.vitest.ts
+        run: bunx vitest run src/tests/node/sqlite-repositories.vitest.ts
         working-directory: packages/backend
         env:
           DB_TYPE: sqlite
