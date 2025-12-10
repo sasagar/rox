@@ -94,7 +94,7 @@ jobs:
         run: bun install
 
       - name: Run SQLite integration tests
-        run: bunx vitest run src/tests/node/sqlite-repositories.vitest.ts
+        run: bunx vitest run src/tests/node/sqlite-repositories.test.ts
         working-directory: packages/backend
         env:
           DB_TYPE: sqlite

@@ -13,52 +13,53 @@ import type {
 import type { User } from "../../../../shared/src/types/user.js";
 
 describe("UserRepository", () => {
-  // Mock user data
+  // Mock user data (matches actual User type from shared/types/user.ts)
   const mockLocalUser: User = {
     id: "user1",
     username: "testuser",
     email: "test@example.com",
+    passwordHash: "hashed_password",
     displayName: "Test User",
     bio: "Hello, I am a test user",
     host: null,
     uri: null,
-    url: null,
     avatarUrl: null,
     bannerUrl: null,
-    followersCount: 10,
-    followingCount: 5,
-    notesCount: 100,
     isAdmin: false,
-    isModerator: false,
     isDeleted: false,
-    isSilenced: false,
+    deletedAt: null,
     isSuspended: false,
-    isBot: false,
-    isIndexable: true,
     publicKey: null,
     privateKey: null,
     inbox: null,
     outbox: null,
+    followersUrl: null,
+    followingUrl: null,
     sharedInbox: null,
-    featured: null,
+    customCss: null,
+    uiSettings: null,
+    alsoKnownAs: null,
+    movedTo: null,
+    movedAt: null,
+    profileEmojis: null,
+    storageQuotaMb: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    lastFetchedAt: null,
   };
 
   const mockRemoteUser: User = {
     ...mockLocalUser,
     id: "user2",
     username: "remoteuser",
-    email: null,
+    email: "remote@example.com",
     displayName: "Remote User",
     host: "remote.example",
     uri: "https://remote.example/users/remoteuser",
-    url: "https://remote.example/@remoteuser",
     inbox: "https://remote.example/users/remoteuser/inbox",
     outbox: "https://remote.example/users/remoteuser/outbox",
+    followersUrl: "https://remote.example/users/remoteuser/followers",
+    followingUrl: "https://remote.example/users/remoteuser/following",
     publicKey: "-----BEGIN PUBLIC KEY-----...",
-    lastFetchedAt: new Date(),
   };
 
   const mockAdminUser: User = {
@@ -68,31 +69,6 @@ describe("UserRepository", () => {
     email: "admin@example.com",
     displayName: "Administrator",
     isAdmin: true,
-  };
-
-  const mockModeratorUser: User = {
-    ...mockLocalUser,
-    id: "mod1",
-    username: "moderator",
-    email: "mod@example.com",
-    displayName: "Moderator",
-    isModerator: true,
-  };
-
-  const mockSuspendedUser: User = {
-    ...mockLocalUser,
-    id: "user3",
-    username: "suspended",
-    email: "suspended@example.com",
-    isSuspended: true,
-  };
-
-  const mockDeletedUser: User = {
-    ...mockLocalUser,
-    id: "user4",
-    username: "deleted",
-    email: "deleted@example.com",
-    isDeleted: true,
   };
 
   let mockRepo: IUserRepository;
@@ -108,7 +84,7 @@ describe("UserRepository", () => {
         } as User)
       ),
       findById: mock(async (id: string) => {
-        const users = [mockLocalUser, mockRemoteUser, mockAdminUser, mockModeratorUser];
+        const users = [mockLocalUser, mockRemoteUser, mockAdminUser];
         return Promise.resolve(users.find((u) => u.id === id) || null);
       }),
       findAll: mock(async () => Promise.resolve([mockLocalUser, mockRemoteUser])),
@@ -147,34 +123,35 @@ describe("UserRepository", () => {
 
   describe("create", () => {
     test("should create a local user", async () => {
-      const input = {
+      const input: Omit<User, "createdAt" | "updatedAt"> = {
         id: "new-user-id",
         username: "newuser",
         email: "new@example.com",
+        passwordHash: "hashed_password",
         displayName: "New User",
         host: null,
         uri: null,
-        url: null,
         avatarUrl: null,
         bannerUrl: null,
         bio: null,
-        followersCount: 0,
-        followingCount: 0,
-        notesCount: 0,
         isAdmin: false,
-        isModerator: false,
         isDeleted: false,
-        isSilenced: false,
+        deletedAt: null,
         isSuspended: false,
-        isBot: false,
-        isIndexable: true,
         publicKey: null,
         privateKey: null,
         inbox: null,
         outbox: null,
+        followersUrl: null,
+        followingUrl: null,
         sharedInbox: null,
-        featured: null,
-        lastFetchedAt: null,
+        customCss: null,
+        uiSettings: null,
+        alsoKnownAs: null,
+        movedTo: null,
+        movedAt: null,
+        profileEmojis: null,
+        storageQuotaMb: null,
       };
 
       const result = await mockRepo.create(input);
@@ -187,34 +164,35 @@ describe("UserRepository", () => {
     });
 
     test("should create a remote user with ActivityPub fields", async () => {
-      const input = {
+      const input: Omit<User, "createdAt" | "updatedAt"> = {
         id: "remote-new-id",
         username: "remoteactor",
-        email: null,
+        email: "remote@server.com",
+        passwordHash: "",
         displayName: "Remote Actor",
         host: "remote.server",
         uri: "https://remote.server/users/remoteactor",
-        url: "https://remote.server/@remoteactor",
         avatarUrl: "https://remote.server/avatar.png",
         bannerUrl: null,
         bio: "Remote bio",
-        followersCount: 0,
-        followingCount: 0,
-        notesCount: 0,
         isAdmin: false,
-        isModerator: false,
         isDeleted: false,
-        isSilenced: false,
+        deletedAt: null,
         isSuspended: false,
-        isBot: false,
-        isIndexable: true,
         publicKey: "-----BEGIN PUBLIC KEY-----...",
         privateKey: null,
         inbox: "https://remote.server/users/remoteactor/inbox",
         outbox: "https://remote.server/users/remoteactor/outbox",
+        followersUrl: "https://remote.server/users/remoteactor/followers",
+        followingUrl: "https://remote.server/users/remoteactor/following",
         sharedInbox: "https://remote.server/inbox",
-        featured: null,
-        lastFetchedAt: new Date(),
+        customCss: null,
+        uiSettings: null,
+        alsoKnownAs: null,
+        movedTo: null,
+        movedAt: null,
+        profileEmojis: null,
+        storageQuotaMb: null,
       };
 
       const result = await mockRepo.create(input);
@@ -225,7 +203,7 @@ describe("UserRepository", () => {
     });
 
     test("should create an admin user", async () => {
-      const input = {
+      const input: Omit<User, "createdAt" | "updatedAt"> = {
         ...mockLocalUser,
         id: "new-admin-id",
         username: "newadmin",
@@ -284,7 +262,7 @@ describe("UserRepository", () => {
     test("should filter by local users only", async () => {
       mockRepo.findAll = mock(async (options) => {
         if (options?.localOnly) {
-          return Promise.resolve([mockLocalUser, mockAdminUser, mockModeratorUser]);
+          return Promise.resolve([mockLocalUser, mockAdminUser]);
         }
         return Promise.resolve([mockLocalUser, mockRemoteUser, mockAdminUser]);
       });
@@ -389,28 +367,10 @@ describe("UserRepository", () => {
       expect(result.avatarUrl).toBe("https://example.com/avatar.png");
     });
 
-    test("should update moderator status", async () => {
-      const result = await mockRepo.update("user1", { isModerator: true });
-
-      expect(result.isModerator).toBe(true);
-    });
-
     test("should suspend user", async () => {
       const result = await mockRepo.update("user1", { isSuspended: true });
 
       expect(result.isSuspended).toBe(true);
-    });
-
-    test("should silence user", async () => {
-      const result = await mockRepo.update("user1", { isSilenced: true });
-
-      expect(result.isSilenced).toBe(true);
-    });
-
-    test("should update follower counts", async () => {
-      const result = await mockRepo.update("user1", { followersCount: 100 });
-
-      expect(result.followersCount).toBe(100);
     });
   });
 

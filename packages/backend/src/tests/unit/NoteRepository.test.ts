@@ -9,7 +9,7 @@ import type { INoteRepository, NoteCreateInput, TimelineOptions } from "../../in
 import type { Note } from "../../../../shared/src/types/note.js";
 
 describe("NoteRepository", () => {
-  // Mock note data
+  // Mock note data (matches actual Note type from shared/types/note.ts)
   const mockNote: Note = {
     id: "note1",
     userId: "user1",
@@ -17,32 +17,21 @@ describe("NoteRepository", () => {
     visibility: "public",
     localOnly: false,
     uri: null,
-    url: null,
     replyId: null,
     renoteId: null,
     fileIds: [],
     cw: null,
     mentions: [],
+    emojis: [],
     repliesCount: 0,
     renoteCount: 0,
-    reactionsCount: 0,
-    reactions: {},
     tags: [],
-    pollId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    editedAt: null,
     isDeleted: false,
     deletedAt: null,
     deletedById: null,
     deletionReason: null,
-    user: {
-      id: "user1",
-      username: "testuser",
-      displayName: "Test User",
-      host: null,
-      avatarUrl: null,
-    },
   };
 
   const mockNoteWithReply: Note = {
@@ -63,11 +52,6 @@ describe("NoteRepository", () => {
     ...mockNote,
     id: "note4",
     uri: "https://remote.example/notes/123",
-    url: "https://remote.example/notes/123",
-    user: {
-      ...mockNote.user!,
-      host: "remote.example",
-    },
   };
 
   const mockDeletedNote: Note = {
@@ -84,7 +68,7 @@ describe("NoteRepository", () => {
   beforeEach(() => {
     mockRepo = {
       create: mock(async (note: NoteCreateInput) =>
-        Promise.resolve({ ...mockNote, ...note, id: "new-note-id" })
+        Promise.resolve({ ...mockNote, ...note, id: note.id || "new-note-id" })
       ),
       findById: mock(async (id: string) =>
         id === "note1" ? Promise.resolve(mockNote) : Promise.resolve(null)
@@ -123,6 +107,18 @@ describe("NoteRepository", () => {
         text: "New note content",
         visibility: "public",
         localOnly: false,
+        uri: null,
+        cw: null,
+        replyId: null,
+        renoteId: null,
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -140,7 +136,18 @@ describe("NoteRepository", () => {
         text: "Note with files",
         visibility: "public",
         localOnly: false,
+        uri: null,
+        cw: null,
+        replyId: null,
+        renoteId: null,
         fileIds: ["file1", "file2"],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -155,7 +162,18 @@ describe("NoteRepository", () => {
         text: "This is a reply",
         visibility: "public",
         localOnly: false,
+        uri: null,
+        cw: null,
         replyId: "note1",
+        renoteId: null,
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -170,7 +188,18 @@ describe("NoteRepository", () => {
         text: null,
         visibility: "public",
         localOnly: false,
+        uri: null,
+        cw: null,
+        replyId: null,
         renoteId: "note1",
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -185,7 +214,18 @@ describe("NoteRepository", () => {
         text: "Sensitive content",
         visibility: "public",
         localOnly: false,
+        uri: null,
         cw: "Content warning",
+        replyId: null,
+        renoteId: null,
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -200,6 +240,18 @@ describe("NoteRepository", () => {
         text: "Local only content",
         visibility: "public",
         localOnly: true,
+        uri: null,
+        cw: null,
+        replyId: null,
+        renoteId: null,
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -214,6 +266,18 @@ describe("NoteRepository", () => {
         text: "Followers only",
         visibility: "followers",
         localOnly: false,
+        uri: null,
+        cw: null,
+        replyId: null,
+        renoteId: null,
+        fileIds: [],
+        mentions: [],
+        emojis: [],
+        tags: [],
+        isDeleted: false,
+        deletedAt: null,
+        deletedById: null,
+        deletionReason: null,
       };
 
       const result = await mockRepo.create(input);
@@ -244,7 +308,6 @@ describe("NoteRepository", () => {
 
       expect(result).not.toBeNull();
       expect(result!.uri).toBe("https://remote.example/notes/123");
-      expect(result!.user!.host).toBe("remote.example");
     });
 
     test("should return null for non-existent URI", async () => {
@@ -362,7 +425,7 @@ describe("NoteRepository", () => {
         const result = await mockRepo.findReplies("note1", { limit: 20 });
 
         expect(Array.isArray(result)).toBe(true);
-        expect(result[0].replyId).toBe("note1");
+        expect(result[0]?.replyId).toBe("note1");
       });
     });
 
@@ -371,7 +434,7 @@ describe("NoteRepository", () => {
         const result = await mockRepo.findRenotes("note1", { limit: 20 });
 
         expect(Array.isArray(result)).toBe(true);
-        expect(result[0].renoteId).toBe("note1");
+        expect(result[0]?.renoteId).toBe("note1");
       });
     });
   });
@@ -388,17 +451,6 @@ describe("NoteRepository", () => {
       const result = await mockRepo.update("note1", { cw: "New CW" });
 
       expect(result.cw).toBe("New CW");
-    });
-
-    test("should set editedAt on update", async () => {
-      const editedAt = new Date();
-      mockRepo.update = mock(async (id, data) =>
-        Promise.resolve({ ...mockNote, ...data, id, editedAt })
-      );
-
-      const result = await mockRepo.update("note1", { text: "Edited" });
-
-      expect(result.editedAt).toBeDefined();
     });
   });
 
@@ -463,7 +515,7 @@ describe("NoteRepository", () => {
         const result = await mockRepo.findDeletedNotes();
 
         expect(Array.isArray(result)).toBe(true);
-        expect(result[0].isDeleted).toBe(true);
+        expect(result[0]?.isDeleted).toBe(true);
       });
 
       test("should filter by deletedById", async () => {
