@@ -59,11 +59,18 @@ notes.post(
     const body = await c.req.json();
 
     try {
+      // Map "direct" to "specified" for Misskey compatibility
+      // Frontend uses "direct" for better UX, but backend uses "specified" per ActivityPub convention
+      let visibility = body.visibility ?? "public";
+      if (visibility === "direct") {
+        visibility = "specified";
+      }
+
       const note = await noteService.create({
         userId: user.id,
         text: body.text ?? null,
         cw: body.cw ?? null,
-        visibility: body.visibility ?? "public",
+        visibility,
         localOnly: body.localOnly ?? false,
         replyId: body.replyId ?? null,
         renoteId: body.renoteId ?? null,

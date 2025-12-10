@@ -91,11 +91,17 @@ scheduledNotes.post(
     }
 
     try {
+      // Map "direct" to "specified" for Misskey compatibility
+      let visibility = body.visibility ?? "public";
+      if (visibility === "direct") {
+        visibility = "specified";
+      }
+
       const scheduled = await getScheduledNoteService(c).create({
         userId: user.id,
         text: body.text ?? null,
         cw: body.cw ?? null,
-        visibility: body.visibility ?? "public",
+        visibility,
         localOnly: body.localOnly ?? false,
         replyId: body.replyId ?? null,
         renoteId: body.renoteId ?? null,
@@ -202,10 +208,16 @@ scheduledNotes.post(
     }
 
     try {
+      // Map "direct" to "specified" for Misskey compatibility
+      let visibility = body.visibility;
+      if (visibility === "direct") {
+        visibility = "specified";
+      }
+
       const updated = await getScheduledNoteService(c).update(body.id, user.id, {
         text: body.text,
         cw: body.cw,
-        visibility: body.visibility,
+        visibility,
         localOnly: body.localOnly,
         replyId: body.replyId,
         renoteId: body.renoteId,
