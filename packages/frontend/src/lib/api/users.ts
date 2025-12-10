@@ -182,6 +182,7 @@ export const usersApi = {
     if (options?.limit) params.append("limit", options.limit.toString());
     if (options?.offset) params.append("offset", options.offset.toString());
     if (options?.localOnly) params.append("localOnly", "true");
-    return apiClient.get<User[]>(`/api/users/search?${params.toString()}`);
+    const response = await apiClient.get<{ users: User[] }>(`/api/users/search?${params.toString()}`);
+    return response.users;
   },
 };
