@@ -247,6 +247,17 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
           customEmojiRepository,
         );
 
+        // Configure HTTP Signature for authenticated requests
+        // Some servers (e.g., secure Misskey instances) require signed requests
+        const instanceActor = await userRepository.findByUsername("alice", null);
+        const baseUrl = process.env.URL || "http://localhost:3000";
+        if (instanceActor?.privateKey) {
+          remoteLikesService.setSignatureConfig({
+            keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
+            privateKey: instanceActor.privateKey,
+          });
+        }
+
         const remoteResult = await remoteLikesService.fetchRemoteLikes(noteId);
 
         // Always get local reactions and merge with remote

@@ -8,7 +8,7 @@
  * @module services/ap/RemoteLikesService
  */
 
-import { RemoteFetchService } from "./RemoteFetchService.js";
+import { RemoteFetchService, type SignatureConfig } from "./RemoteFetchService.js";
 import type { IReactionRepository } from "../../interfaces/repositories/IReactionRepository.js";
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
@@ -131,13 +131,28 @@ export class RemoteLikesService {
    */
   private static readonly MAX_FAILURES = 5;
 
+  /**
+   * HTTP Signature configuration for authenticated fetches
+   */
+  private signatureConfig?: SignatureConfig;
+
   constructor(
     private reactionRepository: IReactionRepository,
     private noteRepository: INoteRepository,
     private userRepository: IUserRepository,
     private customEmojiRepository?: ICustomEmojiRepository,
+    signatureConfig?: SignatureConfig,
   ) {
     this.fetchService = new RemoteFetchService();
+    this.signatureConfig = signatureConfig;
+  }
+
+  /**
+   * Set signature configuration for authenticated fetches
+   * This should be called with the instance actor's key for signed requests
+   */
+  setSignatureConfig(config: SignatureConfig): void {
+    this.signatureConfig = config;
   }
 
   /**
@@ -249,10 +264,13 @@ export class RemoteLikesService {
     }
 
     // Fetch the note object from remote server to get likes collection URL
+    // Use HTTP Signature if configured (required by some secure servers)
     const noteResult = await this.fetchService.fetchActivityPubObject<{
       likes?: string | APCollection;
       reactions?: string | APCollection;
-    }>(note.uri);
+    }>(note.uri, {
+      signature: this.signatureConfig,
+    });
 
     if (!noteResult.success || !noteResult.data) {
       this.recordFailure(host);
@@ -277,8 +295,10 @@ export class RemoteLikesService {
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
     }
 
-    // Fetch likes collection
-    const likesResult = await this.fetchService.fetchActivityPubObject<APCollection>(likesUrl);
+    // Fetch likes collection (also with signature for secure servers)
+    const likesResult = await this.fetchService.fetchActivityPubObject<APCollection>(likesUrl, {
+      signature: this.signatureConfig,
+    });
     if (!likesResult.success || !likesResult.data) {
       logger.warn({ likesUrl, err: likesResult.error }, "Failed to fetch likes collection");
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
