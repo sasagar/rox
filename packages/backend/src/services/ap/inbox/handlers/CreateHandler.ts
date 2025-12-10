@@ -39,7 +39,17 @@ export class CreateHandler extends BaseHandler {
         return this.success(`Unsupported object type: ${objectType}`);
       }
 
-      this.log("📥", `Create: Receiving ${objectType} from ${activity.actor}`);
+      // Log incoming activity details for debugging DMs
+      const apObject = object as {
+        type?: string;
+        to?: string | string[];
+        cc?: string | string[];
+        id?: string;
+      };
+      this.log(
+        "📥",
+        `Create: Receiving ${objectType} from ${activity.actor} | to: ${JSON.stringify(apObject.to)} | cc: ${JSON.stringify(apObject.cc)}`,
+      );
 
       // Process the note using injected service
       const remoteNoteService = this.getRemoteNoteService(c);
@@ -48,7 +58,10 @@ export class CreateHandler extends BaseHandler {
         object as Parameters<typeof remoteNoteService.processNote>[0],
       );
 
-      this.log("✅", `Note created: ${note.id} (URI: ${note.uri})`);
+      this.log(
+        "✅",
+        `Note created: ${note.id} (URI: ${note.uri}) | visibility: ${note.visibility} | mentions: ${JSON.stringify(note.mentions)}`,
+      );
 
       // Push to social timelines of local users who follow this remote user
       if (note.visibility === "public") {
