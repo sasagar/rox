@@ -70,11 +70,11 @@ msgstr "{0} uploaded by you"
 msgid "{0} used (Unlimited)"
 msgstr "{0} used (Unlimited)"
 
-#: src/pages/admin/settings.tsx:239
+#: src/pages/admin/settings.tsx:240
 msgid "{assetType} removed"
 msgstr "{assetType} removed"
 
-#: src/pages/admin/settings.tsx:221
+#: src/pages/admin/settings.tsx:222
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType} uploaded successfully"
 
@@ -214,7 +214,7 @@ msgstr "About This Instance"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
-#: src/pages/403.tsx:12
+#: src/pages/403.tsx:14
 msgid "Access Denied"
 msgstr "Access Denied"
 
@@ -321,7 +321,7 @@ msgstr "Admin Account"
 msgid "Admin Role"
 msgstr "Admin Role"
 
-#: src/pages/admin/settings.tsx:273
+#: src/pages/admin/settings.tsx:274
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
@@ -397,7 +397,7 @@ msgstr "All Types"
 msgid "All your notes and their visibility settings"
 msgstr "All your notes and their visibility settings"
 
-#: src/pages/admin/settings.tsx:505
+#: src/pages/admin/settings.tsx:506
 msgid "Allow new users to register accounts"
 msgstr "Allow new users to register accounts"
 
@@ -439,7 +439,7 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
-#: src/pages/admin/settings.tsx:324
+#: src/pages/admin/settings.tsx:325
 msgid "Assets"
 msgstr "Assets"
 
@@ -509,7 +509,7 @@ msgstr "Banner removed"
 msgid "Banner updated successfully"
 msgstr "Banner updated successfully"
 
-#: src/pages/admin/settings.tsx:425
+#: src/pages/admin/settings.tsx:426
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -568,7 +568,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/user/UserProfile.tsx:424
+#: src/components/user/UserProfile.tsx:474
 msgid "Bot"
 msgstr "Bot"
 
@@ -576,11 +576,11 @@ msgstr "Bot"
 msgid "Brief description of your inquiry"
 msgstr "Brief description of your inquiry"
 
-#: src/pages/admin/settings.tsx:461
+#: src/pages/admin/settings.tsx:462
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
 
-#: src/pages/admin/settings.tsx:798
+#: src/pages/admin/settings.tsx:799
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 
@@ -716,11 +716,11 @@ msgstr "Complete Setup"
 msgid "Comply with legal obligations"
 msgstr "Comply with legal obligations"
 
-#: src/pages/admin/settings.tsx:841
+#: src/pages/admin/settings.tsx:842
 msgid "Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration."
 msgstr "Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration."
 
-#: src/pages/admin/settings.tsx:276
+#: src/pages/admin/settings.tsx:277
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
 
@@ -856,11 +856,11 @@ msgstr "Customize sounds per notification type"
 msgid "Danger Zone"
 msgstr "Danger Zone"
 
-#: src/pages/admin/settings.tsx:703
+#: src/pages/admin/settings.tsx:704
 msgid "Dark"
 msgstr "Dark"
 
-#: src/pages/admin/settings.tsx:775
+#: src/pages/admin/settings.tsx:776
 msgid "Dark Mode Icon"
 msgstr "Dark Mode Icon"
 
@@ -880,17 +880,21 @@ msgstr "Default"
 msgid "Default (auto-assign to new users)"
 msgstr "Default (auto-assign to new users)"
 
-#: src/pages/admin/settings.tsx:646
+#: src/pages/admin/settings.tsx:647
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
 
-#: src/pages/admin/settings.tsx:890
+#: src/pages/admin/settings.tsx:916
 msgid "Default Legal Pages"
 msgstr "Default Legal Pages"
 
 #: src/pages/admin/roles.tsx:345
 msgid "Default Roles"
 msgstr "Default Roles"
+
+#: src/pages/admin/settings.tsx:910
+msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
+msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:862
@@ -968,7 +972,7 @@ msgid "Describe the reason for this warning..."
 msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:370
+#: src/pages/admin/settings.tsx:371
 #: src/pages/onboarding.tsx:330
 msgid "Description"
 msgstr "Description"
@@ -1057,7 +1061,7 @@ msgstr "Edit"
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
-#: src/components/user/UserProfile.tsx:373
+#: src/components/user/UserProfile.tsx:423
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -1133,7 +1137,7 @@ msgstr "Empty folder"
 msgid "Enable"
 msgstr "Enable"
 
-#: src/pages/admin/settings.tsx:502
+#: src/pages/admin/settings.tsx:503
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
@@ -1153,11 +1157,11 @@ msgstr "Enabled"
 msgid "Ensure security and prevent abuse"
 msgstr "Ensure security and prevent abuse"
 
-#: src/pages/admin/settings.tsx:884
+#: src/pages/admin/settings.tsx:885
 msgid "Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy"
 msgstr "Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy"
 
-#: src/pages/admin/settings.tsx:862
+#: src/pages/admin/settings.tsx:863
 msgid "Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms"
 msgstr "Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms"
 
@@ -1193,7 +1197,7 @@ msgstr "Enter your password"
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:306
+#: src/components/user/UserProfile.tsx:356
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -1493,11 +1497,11 @@ msgstr "Failures"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "Fast and efficient with minimal resource usage"
 
-#: src/pages/admin/settings.tsx:797
+#: src/pages/admin/settings.tsx:798
 msgid "Favicon"
 msgstr "Favicon"
 
-#: src/pages/admin/settings.tsx:445
+#: src/pages/admin/settings.tsx:446
 msgid "Favicon URL"
 msgstr "Favicon URL"
 
@@ -1550,7 +1554,7 @@ msgstr "First detected"
 msgid "Folder name"
 msgstr "Folder name"
 
-#: src/components/user/UserProfile.tsx:396
+#: src/components/user/UserProfile.tsx:446
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:520
@@ -1564,12 +1568,12 @@ msgid "followed you"
 msgstr "followed you"
 
 #: src/components/note/NoteComposer.tsx:539
-#: src/components/user/UserProfile.tsx:459
+#: src/components/user/UserProfile.tsx:509
 msgid "Followers"
 msgstr "Followers"
 
-#: src/components/user/UserProfile.tsx:394
-#: src/components/user/UserProfile.tsx:467
+#: src/components/user/UserProfile.tsx:444
+#: src/components/user/UserProfile.tsx:517
 #: src/pages/search.tsx:513
 #: src/pages/search.tsx:597
 msgid "Following"
@@ -1583,7 +1587,7 @@ msgstr "Following and follower relationships"
 #~ msgid "Following successfully"
 #~ msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:389
+#: src/components/user/UserProfile.tsx:439
 msgid "Following..."
 msgstr "Following..."
 
@@ -1624,10 +1628,12 @@ msgid "Global"
 msgstr "Global"
 
 #: src/components/ErrorPage.tsx:88
+#: src/components/user/UserProfile.tsx:340
 msgid "Go Back"
 msgstr "Go Back"
 
 #: src/components/ErrorPage.tsx:106
+#: src/components/user/UserProfile.tsx:343
 msgid "Go Home"
 msgstr "Go Home"
 
@@ -1639,7 +1645,7 @@ msgstr "Go to login"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
-#: src/pages/410.tsx:13
+#: src/pages/410.tsx:15
 msgid "Gone"
 msgstr "Gone"
 
@@ -1655,7 +1661,7 @@ msgstr "Harass, abuse, or threaten other users"
 msgid "Have a question or need help? We're here to assist you."
 msgstr "Have a question or need help? We're here to assist you."
 
-#: src/pages/admin/settings.tsx:787
+#: src/pages/admin/settings.tsx:788
 msgid "Header image for your instance (max 5MB)"
 msgstr "Header image for your instance (max 5MB)"
 
@@ -1668,7 +1674,7 @@ msgstr "Healthy"
 msgid "Hide per-type settings"
 msgstr "Hide per-type settings"
 
-#: src/pages/admin/settings.tsx:820
+#: src/pages/admin/settings.tsx:821
 msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 
@@ -1686,19 +1692,19 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:776
+#: src/pages/admin/settings.tsx:777
 msgid "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
 msgstr "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
 
-#: src/pages/admin/settings.tsx:809
+#: src/pages/admin/settings.tsx:810
 msgid "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
 msgstr "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
 
-#: src/pages/admin/settings.tsx:407
+#: src/pages/admin/settings.tsx:408
 msgid "Icon URL"
 msgstr "Icon URL"
 
-#: src/pages/admin/settings.tsx:893
+#: src/pages/admin/settings.tsx:919
 msgid "If no custom URLs are set, visitors will see the default legal pages:"
 msgstr "If no custom URLs are set, visitors will see the default legal pages:"
 
@@ -1741,7 +1747,7 @@ msgstr "In reply to"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/pages/admin/settings.tsx:294
+#: src/pages/admin/settings.tsx:295
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "Instance"
@@ -1750,7 +1756,7 @@ msgstr "Instance"
 msgid "Instance administrators and moderators reserve the right to remove content, suspend accounts, or take other actions to maintain a safe community. Moderation decisions are made at the discretion of the moderation team."
 msgstr "Instance administrators and moderators reserve the right to remove content, suspend accounts, or take other actions to maintain a safe community. Moderation decisions are made at the discretion of the moderation team."
 
-#: src/pages/admin/settings.tsx:786
+#: src/pages/admin/settings.tsx:787
 msgid "Instance Banner"
 msgstr "Instance Banner"
 
@@ -1779,15 +1785,15 @@ msgstr "Instance Domain"
 msgid "Instance Hostname"
 msgstr "Instance Hostname"
 
-#: src/pages/admin/settings.tsx:764
+#: src/pages/admin/settings.tsx:765
 msgid "Instance Icon"
 msgstr "Instance Icon"
 
-#: src/pages/admin/settings.tsx:346
+#: src/pages/admin/settings.tsx:347
 msgid "Instance Information"
 msgstr "Instance Information"
 
-#: src/pages/admin/settings.tsx:352
+#: src/pages/admin/settings.tsx:353
 #: src/pages/onboarding.tsx:322
 msgid "Instance Name"
 msgstr "Instance Name"
@@ -1808,7 +1814,7 @@ msgstr "Instance removed from cache"
 msgid "Instance Settings"
 msgstr "Instance Settings"
 
-#: src/pages/admin/settings.tsx:146
+#: src/pages/admin/settings.tsx:147
 msgid "Instance settings saved"
 msgstr "Instance settings saved"
 
@@ -1869,7 +1875,7 @@ msgid "Invite only"
 msgstr "Invite only"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:525
+#: src/pages/admin/settings.tsx:526
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "Invite Only"
@@ -1925,19 +1931,25 @@ msgstr "Leave empty for a permanent warning"
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/pages/admin/settings.tsx:334
+#: src/pages/admin/settings.tsx:335
 msgid "Legal"
 msgstr "Legal"
 
-#: src/pages/admin/settings.tsx:836
+#: src/pages/admin/settings.tsx:837
 msgid "Legal Documents"
 msgstr "Legal Documents"
 
 #: src/pages/admin/emojis.tsx:708
+#: src/pages/legal/licenses.tsx:168
 msgid "License"
 msgstr "License"
 
-#: src/pages/admin/settings.tsx:684
+#: src/components/LandingPage.tsx:355
+#: src/components/layout/Layout.tsx:93
+msgid "Licenses"
+msgstr "Licenses"
+
+#: src/pages/admin/settings.tsx:685
 msgid "Light"
 msgstr "Light"
 
@@ -1951,7 +1963,7 @@ msgstr "Line Height"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/UserProfile.tsx:518
+#: src/components/user/UserProfile.tsx:568
 msgid "Load more"
 msgstr "Load more"
 
@@ -1966,7 +1978,7 @@ msgstr "Loading posts..."
 #: src/components/drive/DrivePickerDialog.tsx:483
 #: src/components/note/NoteComposer.tsx:705
 #: src/components/note/NoteComposer.tsx:752
-#: src/components/user/UserProfile.tsx:514
+#: src/components/user/UserProfile.tsx:564
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -2016,7 +2028,7 @@ msgstr "Looking up remote user..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "Lowercase letters, numbers, and underscores only"
 
-#: src/pages/admin/settings.tsx:388
+#: src/pages/admin/settings.tsx:389
 #: src/pages/onboarding.tsx:337
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
@@ -2172,7 +2184,7 @@ msgstr "Never"
 msgid "New"
 msgstr "New"
 
-#: src/pages/admin/settings.tsx:551
+#: src/pages/admin/settings.tsx:552
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
 
@@ -2286,7 +2298,7 @@ msgstr "No passkeys registered yet"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/user/UserProfile.tsx:494
+#: src/components/user/UserProfile.tsx:544
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -2428,6 +2440,10 @@ msgstr "Only visible to staff"
 msgid "Open Registration"
 msgstr "Open Registration"
 
+#: src/pages/legal/licenses.tsx:85
+msgid "Open Source Licenses"
+msgstr "Open Source Licenses"
+
 #: src/pages/onboarding.tsx:294
 #: src/pages/signup.tsx:197
 msgid "Optional"
@@ -2449,7 +2465,11 @@ msgstr "Override the default sound for specific notification types. Leave as def
 msgid "Overview"
 msgstr "Overview"
 
-#: src/pages/404.tsx:12
+#: src/pages/legal/licenses.tsx:162
+msgid "Package"
+msgstr "Package"
+
+#: src/pages/404.tsx:14
 msgid "Page Not Found"
 msgstr "Page Not Found"
 
@@ -2587,8 +2607,8 @@ msgstr "Post illegal content or engage in illegal activities"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:451
-#: src/components/user/UserProfile.tsx:477
+#: src/components/user/UserProfile.tsx:501
+#: src/components/user/UserProfile.tsx:527
 #: src/pages/admin/federation.tsx:403
 msgid "Posts"
 msgstr "Posts"
@@ -2604,7 +2624,7 @@ msgstr "Powered by Rox - Lightweight ActivityPub Server"
 #: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
-#: src/pages/admin/settings.tsx:715
+#: src/pages/admin/settings.tsx:716
 msgid "Preview"
 msgstr "Preview"
 
@@ -2613,15 +2633,16 @@ msgstr "Preview"
 msgid "Previous"
 msgstr "Previous"
 
-#: src/pages/admin/settings.tsx:722
+#: src/pages/admin/settings.tsx:723
 msgid "Primary Button"
 msgstr "Primary Button"
 
-#: src/pages/admin/settings.tsx:580
+#: src/pages/admin/settings.tsx:581
 msgid "Primary Color"
 msgstr "Primary Color"
 
 #: src/components/LandingPage.tsx:352
+#: src/components/layout/Layout.tsx:90
 msgid "Privacy"
 msgstr "Privacy"
 
@@ -2635,7 +2656,7 @@ msgstr "Privacy First"
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: src/pages/admin/settings.tsx:868
+#: src/pages/admin/settings.tsx:869
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
@@ -2703,11 +2724,11 @@ msgstr "Push notifications disabled"
 msgid "Push notifications enabled"
 msgstr "Push notifications enabled"
 
-#: src/pages/admin/settings.tsx:808
+#: src/pages/admin/settings.tsx:809
 msgid "PWA Icon (192x192)"
 msgstr "PWA Icon (192x192)"
 
-#: src/pages/admin/settings.tsx:819
+#: src/pages/admin/settings.tsx:820
 msgid "PWA Icon (512x512)"
 msgstr "PWA Icon (512x512)"
 
@@ -2755,6 +2776,10 @@ msgstr "Reaction added"
 #: src/pages/mod/users.tsx:409
 msgid "Read"
 msgstr "Read"
+
+#: src/pages/legal/licenses.tsx:134
+msgid "Read Full License"
+msgstr "Read Full License"
 
 #: src/components/report/ReportDialog.tsx:126
 #: src/pages/admin/emojis.tsx:1097
@@ -2811,7 +2836,8 @@ msgstr "Refresh"
 msgid "Refresh List"
 msgstr "Refresh List"
 
-#: src/components/ui/RefreshButton.tsx:14
+#: src/pages/500.tsx:25
+#: src/pages/503.tsx:28
 msgid "Refresh page"
 msgstr "Refresh page"
 
@@ -2827,7 +2853,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/pages/admin/settings.tsx:304
+#: src/pages/admin/settings.tsx:305
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "Registration"
@@ -2841,12 +2867,12 @@ msgstr "Registration Closed"
 msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
-#: src/pages/admin/settings.tsx:483
+#: src/pages/admin/settings.tsx:484
 #: src/pages/onboarding.tsx:350
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
-#: src/pages/admin/settings.tsx:165
+#: src/pages/admin/settings.tsx:166
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
@@ -3014,15 +3040,19 @@ msgstr "Reports"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
+#: src/pages/legal/licenses.tsx:171
+msgid "Repository"
+msgstr "Repository"
+
 #: src/pages/onboarding.tsx:389
 msgid "Require admin approval"
 msgstr "Require admin approval"
 
-#: src/pages/admin/settings.tsx:528
+#: src/pages/admin/settings.tsx:529
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
 
-#: src/pages/admin/settings.tsx:548
+#: src/pages/admin/settings.tsx:549
 msgid "Require Approval"
 msgstr "Require Approval"
 
@@ -3127,6 +3157,18 @@ msgstr "Roles"
 msgid "Root"
 msgstr "Root"
 
+#: src/pages/legal/licenses.tsx:151
+msgid "Rox is built upon many excellent open source projects. Below are the key dependencies and their respective licenses."
+msgstr "Rox is built upon many excellent open source projects. Below are the key dependencies and their respective licenses."
+
+#: src/pages/legal/licenses.tsx:88
+msgid "Rox is open source software licensed under the AGPL-3.0 license."
+msgstr "Rox is open source software licensed under the AGPL-3.0 license."
+
+#: src/pages/legal/licenses.tsx:97
+msgid "Rox License"
+msgstr "Rox License"
+
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
 msgid "Save"
@@ -3141,11 +3183,11 @@ msgstr "Save Changes"
 msgid "Save draft"
 msgstr "Save draft"
 
-#: src/pages/admin/settings.tsx:470
+#: src/pages/admin/settings.tsx:471
 msgid "Save Instance Settings"
 msgstr "Save Instance Settings"
 
-#: src/pages/admin/settings.tsx:920
+#: src/pages/admin/settings.tsx:954
 msgid "Save Legal Settings"
 msgstr "Save Legal Settings"
 
@@ -3153,7 +3195,7 @@ msgstr "Save Legal Settings"
 msgid "Save Notes"
 msgstr "Save Notes"
 
-#: src/pages/admin/settings.tsx:561
+#: src/pages/admin/settings.tsx:562
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
@@ -3161,7 +3203,7 @@ msgstr "Save Registration Settings"
 msgid "Save Settings"
 msgstr "Save Settings"
 
-#: src/pages/admin/settings.tsx:741
+#: src/pages/admin/settings.tsx:742
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
@@ -3224,7 +3266,7 @@ msgstr "Search users..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "Search users... (e.g., alice or alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:731
+#: src/pages/admin/settings.tsx:732
 msgid "Secondary"
 msgstr "Secondary"
 
@@ -3278,11 +3320,11 @@ msgstr "Sensitive content (NSFW)"
 msgid "Server"
 msgstr "Server"
 
-#: src/pages/admin/settings.tsx:754
+#: src/pages/admin/settings.tsx:755
 msgid "Server Assets"
 msgstr "Server Assets"
 
-#: src/pages/500.tsx:13
+#: src/pages/500.tsx:14
 msgid "Server Error"
 msgstr "Server Error"
 
@@ -3294,7 +3336,7 @@ msgstr "Server Metrics"
 msgid "Server Setup"
 msgstr "Server Setup"
 
-#: src/pages/503.tsx:13
+#: src/pages/503.tsx:14
 msgid "Service Unavailable"
 msgstr "Service Unavailable"
 
@@ -3386,9 +3428,13 @@ msgstr "Social"
 msgid "Software"
 msgstr "Software"
 
-#: src/pages/500.tsx:15
+#: src/pages/500.tsx:16
 msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
 msgstr "Something went wrong on our end. Please try again later or contact support if the problem persists."
+
+#: src/pages/admin/settings.tsx:891
+msgid "Source Code URL (AGPL-3.0 Compliance)"
+msgstr "Source Code URL (AGPL-3.0 Compliance)"
 
 #: src/pages/mod/instances.tsx:371
 msgid "spam.example.com"
@@ -3477,7 +3523,7 @@ msgstr "Suspended"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/pages/admin/settings.tsx:665
+#: src/pages/admin/settings.tsx:666
 msgid "System"
 msgstr "System"
 
@@ -3503,6 +3549,7 @@ msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
 #: src/components/LandingPage.tsx:344
+#: src/components/layout/Layout.tsx:82
 msgid "Terms"
 msgstr "Terms"
 
@@ -3515,7 +3562,7 @@ msgstr "Terms of Service"
 msgid "Terms of Service Agreement"
 msgstr "Terms of Service Agreement"
 
-#: src/pages/admin/settings.tsx:846
+#: src/pages/admin/settings.tsx:847
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
@@ -3531,6 +3578,10 @@ msgstr "Test notification"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
+#: src/pages/legal/licenses.tsx:222
+msgid "Thank you to all the open source maintainers who make projects like this possible."
+msgstr "Thank you to all the open source maintainers who make projects like this possible."
+
 #: src/components/settings/DataExportSection.tsx:101
 msgid "The export includes:"
 msgstr "The export includes:"
@@ -3539,30 +3590,38 @@ msgstr "The export includes:"
 msgid "The job queue system is not currently configured or running."
 msgstr "The job queue system is not currently configured or running."
 
-#: src/pages/404.tsx:13
+#: src/pages/404.tsx:15
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "The page you're looking for doesn't exist or has been moved."
 
-#: src/pages/503.tsx:15
+#: src/pages/503.tsx:16
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 
+#: src/components/user/UserProfile.tsx:325
+msgid "The user @{username} doesn't exist or may have been deleted."
+msgstr "The user @{username} doesn't exist or may have been deleted."
+
 #: src/components/settings/UISettingsSection.tsx:300
-#: src/pages/admin/settings.tsx:314
+#: src/pages/admin/settings.tsx:315
 msgid "Theme"
 msgstr "Theme"
 
-#: src/pages/admin/settings.tsx:574
+#: src/pages/admin/settings.tsx:575
 msgid "Theme Settings"
 msgstr "Theme Settings"
 
-#: src/pages/admin/settings.tsx:184
+#: src/pages/admin/settings.tsx:185
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
 #: src/pages/admin/gone-users.tsx:199
 msgid "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
 msgstr "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
+
+#: src/pages/legal/licenses.tsx:146
+msgid "Third-Party Dependencies"
+msgstr "Third-Party Dependencies"
 
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
@@ -3572,11 +3631,11 @@ msgstr "This account was migrated to:"
 msgid "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
 msgstr "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
 
-#: src/pages/admin/settings.tsx:583
+#: src/pages/admin/settings.tsx:584
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 
-#: src/pages/410.tsx:14
+#: src/pages/410.tsx:16
 msgid "This content has been permanently deleted and is no longer available."
 msgstr "This content has been permanently deleted and is no longer available."
 
@@ -3612,6 +3671,10 @@ msgstr "This is a preview of how text will appear with your selected settings. A
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 
+#: src/pages/legal/licenses.tsx:211
+msgid "This list shows major dependencies. For a complete list, see the package.json files in the source code repository."
+msgstr "This list shows major dependencies. For a complete list, see the package.json files in the source code repository."
+
 #: src/components/settings/PasskeySection.tsx:117
 msgid "This passkey is already registered"
 msgstr "This passkey is already registered"
@@ -3628,11 +3691,15 @@ msgstr "This service is not intended for children under 13 years of age. We do n
 msgid "This service is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to data loss, service interruptions, or user-generated content."
 msgstr "This service is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to data loss, service interruptions, or user-generated content."
 
+#: src/pages/legal/licenses.tsx:108
+msgid "This software is licensed under the GNU Affero General Public License version 3.0. This means you are free to use, modify, and distribute this software, but any modifications must also be released under the same license, and if you run a modified version as a network service, you must make the source code available to users."
+msgstr "This software is licensed under the GNU Affero General Public License version 3.0. This means you are free to use, modify, and distribute this software, but any modifications must also be released under the same license, and if you run a modified version as a network service, you must make the source code available to users."
+
 #: src/pages/admin/contacts.tsx:432
 msgid "This thread is closed."
 msgstr "This thread is closed."
 
-#: src/components/user/UserProfile.tsx:500
+#: src/components/user/UserProfile.tsx:550
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -3754,6 +3821,10 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
+#: src/pages/admin/settings.tsx:894
+msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
+msgstr "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
+
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:589
 msgid "Unfollow"
@@ -3763,7 +3834,7 @@ msgstr "Unfollow"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:387
+#: src/components/user/UserProfile.tsx:437
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
@@ -3812,7 +3883,7 @@ msgstr "Upload Banner"
 msgid "Upload files to see them here"
 msgstr "Upload files to see them here"
 
-#: src/pages/admin/settings.tsx:759
+#: src/pages/admin/settings.tsx:760
 msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
 msgstr "Upload images for your instance branding. Files are automatically converted to WebP format."
 
@@ -3840,7 +3911,7 @@ msgstr "Use default"
 msgid "Used"
 msgstr "Used"
 
-#: src/pages/admin/settings.tsx:765
+#: src/pages/admin/settings.tsx:766
 msgid "Used for push notifications and instance branding (max 2MB)"
 msgstr "Used for push notifications and instance branding (max 2MB)"
 
@@ -3869,10 +3940,14 @@ msgstr "User List"
 msgid "User Moderation"
 msgstr "User Moderation"
 
-#: src/components/user/UserProfile.tsx:307
+#: src/components/user/UserProfile.tsx:357
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "User not found"
+
+#: src/components/user/UserProfile.tsx:320
+msgid "User Not Found"
+msgstr "User Not Found"
 
 #: src/pages/admin/reports.tsx:353
 #: src/pages/mod/reports.tsx:330
@@ -3925,7 +4000,7 @@ msgstr "Username must be at least 3 characters"
 msgid "Users"
 msgstr "Users"
 
-#: src/pages/admin/settings.tsx:708
+#: src/pages/admin/settings.tsx:709
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 
@@ -3950,6 +4025,10 @@ msgstr "Validate"
 msgid "Validation failed"
 msgstr "Validation failed"
 
+#: src/pages/legal/licenses.tsx:165
+msgid "Version"
+msgstr "Version"
+
 #: src/components/note/NoteCard.tsx:566
 msgid "View"
 msgstr "View"
@@ -3966,17 +4045,25 @@ msgstr "View all notifications"
 msgid "View and restore deleted notes"
 msgstr "View and restore deleted notes"
 
-#: src/pages/admin/settings.tsx:910
+#: src/pages/admin/settings.tsx:936
 msgid "View Default Privacy Policy"
 msgstr "View Default Privacy Policy"
 
-#: src/pages/admin/settings.tsx:902
+#: src/pages/admin/settings.tsx:928
 msgid "View Default Terms"
 msgstr "View Default Terms"
+
+#: src/pages/admin/settings.tsx:944
+msgid "View Open Source Licenses"
+msgstr "View Open Source Licenses"
 
 #: src/components/LandingPage.tsx:311
 msgid "View Policy"
 msgstr "View Policy"
+
+#: src/pages/legal/licenses.tsx:124
+msgid "View Source Code"
+msgstr "View Source Code"
 
 #: src/components/LandingPage.tsx:296
 msgid "View Terms"
@@ -4112,7 +4199,7 @@ msgstr "You can download a copy of your personal data at any time. This includes
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "You can submit an inquiry without an account. To track your inquiry history, please log in."
 
-#: src/pages/403.tsx:13
+#: src/pages/403.tsx:15
 msgid "You don't have permission to access this page or resource."
 msgstr "You don't have permission to access this page or resource."
 
@@ -4136,7 +4223,7 @@ msgstr "You have reached your invitation limit"
 msgid "You have the right to:"
 msgstr "You have the right to:"
 
-#: src/components/user/UserProfile.tsx:498
+#: src/components/user/UserProfile.tsx:548
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
@@ -4161,7 +4248,7 @@ msgstr "You will receive notifications even when the browser is closed."
 msgid "You're all caught up!"
 msgstr "You're all caught up!"
 
-#: src/components/user/UserProfile.tsx:527
+#: src/components/user/UserProfile.tsx:577
 msgid "You've reached the end"
 msgstr "You've reached the end"
 

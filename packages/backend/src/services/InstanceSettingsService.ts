@@ -36,6 +36,7 @@ export interface InstanceMetadata {
   pwaIcon512Url: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
+  sourceCodeUrl: string | null;
 }
 
 /**
@@ -70,6 +71,7 @@ const DEFAULT_METADATA: InstanceMetadata = {
   pwaIcon512Url: null,
   tosUrl: null,
   privacyPolicyUrl: null,
+  sourceCodeUrl: "https://github.com/Love-Rox/rox",
 };
 
 /**
@@ -457,6 +459,28 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get Source Code URL (AGPL-3.0 compliance)
+   */
+  async getSourceCodeUrl(): Promise<string | null> {
+    return this.getCachedValue<string | null>(
+      "instance.sourceCodeUrl",
+      DEFAULT_METADATA.sourceCodeUrl,
+    );
+  }
+
+  /**
+   * Set Source Code URL (AGPL-3.0 compliance)
+   */
+  async setSourceCodeUrl(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.sourceCodeUrl");
+    } else {
+      await this.settingsRepository.set("instance.sourceCodeUrl", url, updatedById);
+    }
+    await this.invalidateCache("instance.sourceCodeUrl");
+  }
+
+  /**
    * Get all instance metadata
    */
   async getInstanceMetadata(): Promise<InstanceMetadata> {
@@ -482,6 +506,7 @@ export class InstanceSettingsService {
       "instance.pwaIcon512Url",
       "instance.tosUrl",
       "instance.privacyPolicyUrl",
+      "instance.sourceCodeUrl",
     ];
     const values = await this.settingsRepository.getMany(keys);
 
@@ -504,6 +529,9 @@ export class InstanceSettingsService {
       privacyPolicyUrl:
         (values.get("instance.privacyPolicyUrl") as string | null) ??
         DEFAULT_METADATA.privacyPolicyUrl,
+      sourceCodeUrl:
+        (values.get("instance.sourceCodeUrl") as string | null) ??
+        DEFAULT_METADATA.sourceCodeUrl,
     };
 
     // Cache the result
@@ -560,6 +588,9 @@ export class InstanceSettingsService {
     }
     if (metadata.privacyPolicyUrl !== undefined) {
       await this.setPrivacyPolicyUrl(metadata.privacyPolicyUrl, updatedById);
+    }
+    if (metadata.sourceCodeUrl !== undefined) {
+      await this.setSourceCodeUrl(metadata.sourceCodeUrl, updatedById);
     }
   }
 
@@ -660,6 +691,7 @@ export class InstanceSettingsService {
     faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
+    sourceCodeUrl: string | null;
     registrationEnabled: boolean;
     inviteOnly: boolean;
     approvalRequired: boolean;

@@ -44,6 +44,7 @@ export interface InstanceInfo {
   faviconUrl: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
+  sourceCodeUrl: string | null;
   registration: RegistrationSettings;
   theme: ThemeSettings;
   software: SoftwareInfo;

@@ -6,7 +6,7 @@ import { Trans } from "@lingui/react/macro";
 import { usersApi, type User } from "../../lib/api/users";
 import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { apiClient, ApiError } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Flag } from "lucide-react";
 import { Button } from "../ui/Button";
@@ -101,6 +101,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [loading, setLoading] = useState(true);
   const [notesLoading, setNotesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -138,11 +139,17 @@ export function UserProfile({ username, host }: UserProfileProps) {
       try {
         setLoading(true);
         setError(null);
+        setIsNotFound(false);
         const userData = await usersApi.getByUsername(username, host);
         setUser(userData);
         setIsFollowing(userData.isFollowed ?? false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load user");
+        // Check if it's a 404 error
+        if (err instanceof ApiError && err.statusCode === 404) {
+          setIsNotFound(true);
+        } else {
+          setError(err instanceof Error ? err.message : "Failed to load user");
+        }
       } finally {
         setLoading(false);
       }
@@ -298,7 +305,50 @@ export function UserProfile({ username, host }: UserProfileProps) {
     );
   }
 
-  // Error state
+  // 404 Not Found state - user doesn't exist
+  if (isNotFound) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          {/* Status Code */}
+          <div className="mb-6">
+            <span className="text-8xl md:text-9xl font-bold text-primary-500/20">404</span>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl font-bold text-(--text-primary) mb-4 text-center">
+            <Trans>User Not Found</Trans>
+          </h1>
+
+          {/* Description */}
+          <p className="text-lg text-(--text-secondary) mb-8 text-center max-w-md">
+            <Trans>The user @{username} doesn't exist or may have been deleted.</Trans>
+          </p>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              variant="secondary"
+              onPress={() => {
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  router.push("/");
+                }
+              }}
+            >
+              <Trans>Go Back</Trans>
+            </Button>
+            <Button variant="primary" onPress={() => router.push("/")}>
+              <Trans>Go Home</Trans>
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Error state (other errors)
   if (error || !user) {
     return (
       <Layout>

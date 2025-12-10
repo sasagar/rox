@@ -1,6 +1,40 @@
 # VPS Docker Deployment Guide
 
-This guide covers deploying Rox on a VPS (Virtual Private Server) using Docker Compose with automatic HTTPS via Caddy.
+This guide covers deploying Rox on a VPS (Virtual Private Server) using Docker Compose with Nginx as the reverse proxy.
+
+## Architecture
+
+```
+                    ┌─────────────┐
+        Internet    │   Nginx     │ :80
+            ↓       │ (proxy)     │
+                    └──────┬──────┘
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+    ┌─────┴─────┐   ┌─────┴─────┐          │
+    │  Backend  │   │ Frontend  │          │
+    │  (Hono)   │   │  (Waku)   │          │
+    │   :3000   │   │   :3001   │          │
+    └─────┬─────┘   └───────────┘          │
+          │                                 │
+    ┌─────┴──────────────┬─────────────────┐
+    │                    │                 │
+┌───┴───────┐   ┌───────┴─────┐   ┌───────┴──────┐
+│ PostgreSQL│   │ Dragonfly   │   │   Uploads    │
+│   :5432   │   │   :6379     │   │   Volume     │
+└───────────┘   └─────────────┘   └──────────────┘
+```
+
+## Services
+
+| Service | Purpose | Port |
+|---------|---------|------|
+| rox-backend | Hono API server | 3000 |
+| rox-frontend | Waku SSR server | 3001 |
+| nginx | Reverse proxy with content negotiation | 80 |
+| postgres | PostgreSQL database | 5432 |
+| dragonfly | Redis-compatible cache/queue | 6379 |
 
 ## Prerequisites
 
@@ -8,6 +42,16 @@ This guide covers deploying Rox on a VPS (Virtual Private Server) using Docker C
 - Docker Engine 24.0+ and Docker Compose v2
 - A domain name pointing to your server's IP
 - Ports 80 and 443 available
+
+## SSL Termination Options
+
+This Docker Compose setup exposes port 80 only. For HTTPS, choose one of:
+
+1. **Cloudflare Proxy** (recommended) - Free SSL, DDoS protection
+2. **Traefik** - Add Traefik container with Let's Encrypt
+3. **External Nginx** - Install nginx on host with certbot
+
+For a standalone HTTPS configuration, see [nginx.conf.example](./nginx.conf.example).
 
 ## Configuration Variables
 
@@ -25,7 +69,7 @@ export ROX_DOMAIN="rox.example.com"
 # Generate a secure database password (or set your own)
 export ROX_DB_PASSWORD=$(openssl rand -base64 32)
 
-# Your email address (for SSL certificate notifications)
+# Your email address (for notifications)
 export ROX_ADMIN_EMAIL="admin@example.com"
 
 # ============================================
@@ -50,7 +94,6 @@ cat > docker/.env.production << EOF
 ROX_DOMAIN=${ROX_DOMAIN}
 ROX_URL=https://${ROX_DOMAIN}
 POSTGRES_PASSWORD=${ROX_DB_PASSWORD}
-ACME_EMAIL=${ROX_ADMIN_EMAIL}
 ENABLE_REGISTRATION=true
 EOF
 
@@ -59,7 +102,7 @@ docker compose -f docker/docker-compose.prod.yml up -d
 
 # 4. Verify
 docker compose -f docker/docker-compose.prod.yml ps
-curl https://${ROX_DOMAIN}/health
+curl http://localhost/health
 ```
 
 ## Detailed Setup
@@ -90,7 +133,6 @@ docker compose version
 # UFW (Ubuntu)
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
-sudo ufw allow 443/udp  # HTTP/3
 sudo ufw enable
 ```
 
@@ -115,7 +157,6 @@ cat > docker/.env.production << EOF
 ROX_DOMAIN=${ROX_DOMAIN}
 ROX_URL=https://${ROX_DOMAIN}
 POSTGRES_PASSWORD=${ROX_DB_PASSWORD}
-ACME_EMAIL=${ROX_ADMIN_EMAIL}
 
 # Enable registration for initial setup
 ENABLE_REGISTRATION=true
@@ -143,8 +184,8 @@ docker compose -f docker/docker-compose.prod.yml ps
 ### 5. Verify Deployment
 
 ```bash
-# Health check
-curl -s https://${ROX_DOMAIN}/health | jq
+# Health check (local)
+curl -s http://localhost/health | jq
 
 # Expected response:
 # {
@@ -154,7 +195,7 @@ curl -s https://${ROX_DOMAIN}/health | jq
 # }
 
 # Detailed health check
-curl -s https://${ROX_DOMAIN}/health/ready | jq
+curl -s http://localhost/health/ready | jq
 
 # Expected response:
 # {
@@ -189,39 +230,33 @@ After creating your admin account, disable registration:
 sed -i 's/ENABLE_REGISTRATION=true/ENABLE_REGISTRATION=false/' docker/.env.production
 
 # Restart to apply
-docker compose -f docker/docker-compose.prod.yml restart rox
+docker compose -f docker/docker-compose.prod.yml restart rox-backend
 ```
 
-## Architecture
+## Nginx Configuration
 
-```
-                    ┌─────────────┐
-        Internet    │   Caddy     │ :80/:443
-            ↓       │   (HTTPS)   │
-                    └──────┬──────┘
-                           │
-                    ┌──────┴──────┐
-                    │     Rox     │ :3000
-                    │   Backend   │
-                    └──────┬──────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-    ┌─────┴─────┐   ┌─────┴─────┐   ┌──────┴──────┐
-    │ PostgreSQL│   │ Dragonfly │   │   Uploads   │
-    │   :5432   │   │   :6379   │   │   Volume    │
-    └───────────┘   └───────────┘   └─────────────┘
-```
+The Docker Compose setup includes Nginx with:
+
+- **Trailing slash redirect**: `/timeline/` → `/timeline`
+- **Content negotiation**: `/notes/` routes to backend for ActivityPub requests, frontend for browsers
+- **SSE support**: Long timeout for `/api/notifications/stream`
+- **WebSocket support**: Upgrade headers for `/ws/`
+- **Rate limiting**: API endpoints, auth endpoints, and inbox
+
+Configuration files:
+- `docker/nginx/nginx.conf` - Main Nginx configuration
+- `docker/nginx/conf.d/default.conf` - Site-specific configuration
 
 ## Resource Requirements
 
 | Service | CPU | Memory | Storage |
 |---------|-----|--------|---------|
-| Rox | 0.5-2 cores | 256MB-1GB | - |
+| rox-backend | 0.5-2 cores | 256MB-1GB | - |
+| rox-frontend | 0.25-1 core | 128MB-512MB | - |
 | PostgreSQL | 0.25-1 core | 128MB-512MB | 10GB+ |
 | Dragonfly | 0.25-1 core | 64MB-512MB | 1GB |
-| Caddy | 0.5 core | 128MB | 100MB |
-| **Total** | **2-4 cores** | **1-2.5GB** | **12GB+** |
+| Nginx | 0.5 core | 128MB | 100MB |
+| **Total** | **2-4 cores** | **1.5-3GB** | **12GB+** |
 
 Recommended minimum VPS: 2 vCPU, 2GB RAM, 40GB SSD
 
@@ -234,7 +269,9 @@ Recommended minimum VPS: 2 vCPU, 2GB RAM, 40GB SSD
 docker compose -f docker/docker-compose.prod.yml logs -f
 
 # Specific service
-docker compose -f docker/docker-compose.prod.yml logs -f rox
+docker compose -f docker/docker-compose.prod.yml logs -f rox-backend
+docker compose -f docker/docker-compose.prod.yml logs -f rox-frontend
+docker compose -f docker/docker-compose.prod.yml logs -f nginx
 docker compose -f docker/docker-compose.prod.yml logs -f postgres
 ```
 
@@ -245,7 +282,8 @@ docker compose -f docker/docker-compose.prod.yml logs -f postgres
 docker compose -f docker/docker-compose.prod.yml restart
 
 # Restart specific service
-docker compose -f docker/docker-compose.prod.yml restart rox
+docker compose -f docker/docker-compose.prod.yml restart rox-backend
+docker compose -f docker/docker-compose.prod.yml restart nginx
 ```
 
 ### Update Deployment
@@ -305,7 +343,7 @@ Available metrics:
 Docker automatically monitors service health. View status:
 
 ```bash
-docker inspect --format='{{json .State.Health}}' rox-api | jq
+docker inspect --format='{{json .State.Health}}' rox-backend | jq
 ```
 
 ## S3/R2 Storage Configuration
@@ -362,8 +400,13 @@ docker stats
 # Check disk space
 df -h
 
-# Check Caddy certificate status
-docker exec rox-caddy caddy list-certificates
+# Check nginx config syntax
+docker exec rox-nginx nginx -t
+
+# Test trailing slash redirect
+curl -I http://localhost/timeline/
+# Should return: HTTP/1.1 301 Moved Permanently
+# Location: http://localhost/timeline
 ```
 
 ## Security Checklist
@@ -372,6 +415,6 @@ docker exec rox-caddy caddy list-certificates
 - [ ] Registration disabled after admin account created
 - [ ] Firewall configured (only 80, 443 open)
 - [ ] Regular backups scheduled
-- [ ] SSL certificate verified (Caddy auto-manages)
+- [ ] SSL configured (Cloudflare, Traefik, or external nginx)
 - [ ] Server updates enabled
 - [ ] Configuration values saved securely

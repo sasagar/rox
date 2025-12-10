@@ -26,6 +26,7 @@ export type InstanceSettingKey =
   | "instance.pwaIcon512Url"
   | "instance.tosUrl"
   | "instance.privacyPolicyUrl"
+  | "instance.sourceCodeUrl"
   | "theme.primaryColor"
   | "theme.darkMode"
   | "onboarding.completed";

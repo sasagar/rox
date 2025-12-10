@@ -643,7 +643,7 @@ function NoteCardComponent({
                       <img
                         src={getProxiedImageUrl(customEmojiUrl) || ""}
                         alt={emoji}
-                        className="w-6 h-6 object-contain"
+                        className="h-6 max-w-16 object-contain"
                         loading="lazy"
                       />
                     ) : (

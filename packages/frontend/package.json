@@ -1,6 +1,7 @@
 {
   "name": "waku_rox",
-  "version": "0.1.0-rc.7",
+  "version": "0.1.0-rc.8",
+  "license": "AGPL-3.0-only",
   "private": true,
   "type": "module",
   "scripts": {

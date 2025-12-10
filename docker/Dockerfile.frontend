@@ -1,0 +1,71 @@
+# Rox Frontend Dockerfile
+# Multi-stage build for optimized production image
+
+# ============================================
+# Stage 1: Build
+# ============================================
+FROM oven/bun:1.1-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock ./
+COPY packages/frontend/package.json ./packages/frontend/
+COPY packages/shared/package.json ./packages/shared/
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
+# Copy source code
+COPY packages/frontend ./packages/frontend
+COPY packages/shared ./packages/shared
+COPY tsconfig.json ./
+
+# Build shared package
+WORKDIR /app/packages/shared
+RUN bun run build
+
+# Build frontend (Waku)
+WORKDIR /app/packages/frontend
+RUN bun run build
+
+# ============================================
+# Stage 2: Production
+# ============================================
+FROM oven/bun:1.1-alpine AS production
+
+# Install security updates
+RUN apk update && apk upgrade && \
+    rm -rf /var/cache/apk/*
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S rox && \
+    adduser -S -D -H -u 1001 -s /sbin/nologin -G rox rox
+
+WORKDIR /app
+
+# Copy built files and dependencies
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/frontend/dist ./packages/frontend/dist
+COPY --from=builder /app/packages/frontend/package.json ./packages/frontend/
+COPY --from=builder /app/packages/frontend/start.ts ./packages/frontend/
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/package.json ./
+
+# Set ownership
+RUN chown -R rox:rox /app
+
+# Switch to non-root user
+USER rox
+
+# Expose port
+EXPOSE 3001
+
+# Set environment defaults
+ENV NODE_ENV=production \
+    FRONTEND_PORT=3001
+
+# Run the application
+WORKDIR /app/packages/frontend
+CMD ["bun", "run", "start"]

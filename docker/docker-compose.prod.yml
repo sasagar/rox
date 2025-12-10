@@ -6,20 +6,24 @@
 #   3. Run: docker compose -f docker/docker-compose.prod.yml up -d
 #
 # Services:
-#   - rox: Backend API server
+#   - rox-backend: Backend API server (Hono)
+#   - rox-frontend: Frontend server (Waku)
+#   - nginx: Reverse proxy with content negotiation
 #   - postgres: PostgreSQL database
 #   - dragonfly: Redis-compatible cache/queue
-#   - caddy: Reverse proxy with automatic HTTPS
+#
+# Note: SSL termination should be handled externally (Cloudflare, Traefik, etc.)
+#       or by adding Let's Encrypt configuration to nginx.
 
 services:
   # ============================================
-  # Rox Backend
+  # Rox Backend (Hono)
   # ============================================
-  rox:
+  rox-backend:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
-    container_name: rox-api
+      dockerfile: docker/Dockerfile.backend
+    container_name: rox-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -62,6 +66,66 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Rox Frontend (Waku)
+  # ============================================
+  rox-frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: rox-frontend
+    restart: unless-stopped
+    depends_on:
+      rox-backend:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - FRONTEND_PORT=3001
+    networks:
+      - rox-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Nginx Reverse Proxy
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: rox-nginx
+    restart: unless-stopped
+    depends_on:
+      - rox-backend
+      - rox-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - rox-uploads:/app/uploads:ro
+    networks:
+      - rox-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
     logging:
       driver: json-file
       options:
@@ -138,39 +202,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # ============================================
-  # Caddy Reverse Proxy (Automatic HTTPS)
-  # ============================================
-  caddy:
-    image: caddy:2-alpine
-    container_name: rox-caddy
-    restart: unless-stopped
-    depends_on:
-      - rox
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"  # HTTP/3
-    environment:
-      - ROX_DOMAIN=${ROX_DOMAIN:-rox.example.com}
-      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
-    volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    networks:
-      - rox-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 128M
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 # ============================================
 # Volumes
 # ============================================
@@ -181,10 +212,6 @@ volumes:
     name: rox-dragonfly-data
   rox-uploads:
     name: rox-uploads
-  caddy-data:
-    name: rox-caddy-data
-  caddy-config:
-    name: rox-caddy-config
 
 # ============================================
 # Networks

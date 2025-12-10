@@ -40,6 +40,7 @@ interface AdminSettings {
     faviconUrl: string | null;
     tosUrl: string | null;
     privacyPolicyUrl: string | null;
+    sourceCodeUrl: string | null;
   };
   theme: {
     primaryColor: string;
@@ -887,12 +888,37 @@ export default function AdminSettingsPage() {
 
             <div className="border-t border-(--border-color) pt-4 mt-4">
               <h4 className="text-sm font-medium text-(--text-primary) mb-2">
+                <Trans>Source Code URL (AGPL-3.0 Compliance)</Trans>
+              </h4>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork.</Trans>
+              </p>
+              <input
+                type="url"
+                value={settings.instance.sourceCodeUrl || ""}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    instance: { ...settings.instance, sourceCodeUrl: e.target.value || null },
+                  })
+                }
+                placeholder="https://github.com/Love-Rox/rox"
+                className="w-full rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={isSaving}
+              />
+              <p className="mt-1 text-sm text-(--text-muted)">
+                <Trans>Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version.</Trans>
+              </p>
+            </div>
+
+            <div className="border-t border-(--border-color) pt-4 mt-4">
+              <h4 className="text-sm font-medium text-(--text-primary) mb-2">
                 <Trans>Default Legal Pages</Trans>
               </h4>
               <p className="text-sm text-(--text-muted) mb-3">
                 <Trans>If no custom URLs are set, visitors will see the default legal pages:</Trans>
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <a
                   href="/legal/terms"
                   target="_blank"
@@ -908,6 +934,14 @@ export default function AdminSettingsPage() {
                   className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline"
                 >
                   <Trans>View Default Privacy Policy</Trans>
+                </a>
+                <a
+                  href="/legal/licenses"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline"
+                >
+                  <Trans>View Open Source Licenses</Trans>
                 </a>
               </div>
             </div>

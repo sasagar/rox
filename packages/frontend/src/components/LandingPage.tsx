@@ -351,6 +351,9 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
               >
                 <Trans>Privacy</Trans>
               </a>
+              <a href="/legal/licenses" className="hover:text-(--text-primary)">
+                <Trans>Licenses</Trans>
+              </a>
             </div>
           </div>
         </div>

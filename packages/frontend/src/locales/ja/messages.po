@@ -70,11 +70,11 @@ msgstr "{0} ファイルをアップロード済み"
 msgid "{0} used (Unlimited)"
 msgstr "{0} 使用中（無制限）"
 
-#: src/pages/admin/settings.tsx:239
+#: src/pages/admin/settings.tsx:240
 msgid "{assetType} removed"
 msgstr "{assetType}を削除しました"
 
-#: src/pages/admin/settings.tsx:221
+#: src/pages/admin/settings.tsx:222
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType}をアップロードしました"
 
@@ -214,7 +214,7 @@ msgstr "このインスタンスについて"
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
 
-#: src/pages/403.tsx:12
+#: src/pages/403.tsx:14
 msgid "Access Denied"
 msgstr "アクセスが拒否されました"
 
@@ -321,7 +321,7 @@ msgstr "管理者アカウント"
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:273
+#: src/pages/admin/settings.tsx:274
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -397,7 +397,7 @@ msgstr "すべてのタイプ"
 msgid "All your notes and their visibility settings"
 msgstr "すべての投稿と公開設定"
 
-#: src/pages/admin/settings.tsx:505
+#: src/pages/admin/settings.tsx:506
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -439,7 +439,7 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
-#: src/pages/admin/settings.tsx:324
+#: src/pages/admin/settings.tsx:325
 msgid "Assets"
 msgstr "素材"
 
@@ -509,7 +509,7 @@ msgstr "バナーを削除しました"
 msgid "Banner updated successfully"
 msgstr "バナーを更新しました"
 
-#: src/pages/admin/settings.tsx:425
+#: src/pages/admin/settings.tsx:426
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -568,7 +568,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:424
+#: src/components/user/UserProfile.tsx:474
 msgid "Bot"
 msgstr "Bot"
 
@@ -576,11 +576,11 @@ msgstr "Bot"
 msgid "Brief description of your inquiry"
 msgstr "お問い合わせの簡単な説明"
 
-#: src/pages/admin/settings.tsx:461
+#: src/pages/admin/settings.tsx:462
 msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 
-#: src/pages/admin/settings.tsx:798
+#: src/pages/admin/settings.tsx:799
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大512KB）"
 
@@ -716,11 +716,11 @@ msgstr "セットアップを完了"
 msgid "Comply with legal obligations"
 msgstr "法的義務への準拠"
 
-#: src/pages/admin/settings.tsx:841
+#: src/pages/admin/settings.tsx:842
 msgid "Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration."
 msgstr "利用規約とプライバシーポリシーページへのリンクを設定します。これらのリンクはサイトのフッターと登録時に表示されます。"
 
-#: src/pages/admin/settings.tsx:276
+#: src/pages/admin/settings.tsx:277
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -856,11 +856,11 @@ msgstr "通知タイプごとにサウンドをカスタマイズ"
 msgid "Danger Zone"
 msgstr "危険な設定"
 
-#: src/pages/admin/settings.tsx:703
+#: src/pages/admin/settings.tsx:704
 msgid "Dark"
 msgstr "ダーク"
 
-#: src/pages/admin/settings.tsx:775
+#: src/pages/admin/settings.tsx:776
 msgid "Dark Mode Icon"
 msgstr "ダークモードアイコン"
 
@@ -880,17 +880,21 @@ msgstr "デフォルト"
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:646
+#: src/pages/admin/settings.tsx:647
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
-#: src/pages/admin/settings.tsx:890
+#: src/pages/admin/settings.tsx:916
 msgid "Default Legal Pages"
 msgstr "デフォルトの法的文書ページ"
 
 #: src/pages/admin/roles.tsx:345
 msgid "Default Roles"
 msgstr "デフォルトロール数"
+
+#: src/pages/admin/settings.tsx:910
+msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
+msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:862
@@ -968,7 +972,7 @@ msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
-#: src/pages/admin/settings.tsx:370
+#: src/pages/admin/settings.tsx:371
 #: src/pages/onboarding.tsx:330
 msgid "Description"
 msgstr "説明"
@@ -1057,7 +1061,7 @@ msgstr "編集"
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
-#: src/components/user/UserProfile.tsx:373
+#: src/components/user/UserProfile.tsx:423
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -1133,7 +1137,7 @@ msgstr "空のフォルダ"
 msgid "Enable"
 msgstr "有効にする"
 
-#: src/pages/admin/settings.tsx:502
+#: src/pages/admin/settings.tsx:503
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
@@ -1153,11 +1157,11 @@ msgstr "有効"
 msgid "Ensure security and prevent abuse"
 msgstr "セキュリティの確保と不正使用の防止"
 
-#: src/pages/admin/settings.tsx:884
+#: src/pages/admin/settings.tsx:885
 msgid "Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy"
 msgstr "プライバシーポリシーページのURLを入力するか、空欄のままにして /legal/privacy のデフォルトテンプレートを使用"
 
-#: src/pages/admin/settings.tsx:862
+#: src/pages/admin/settings.tsx:863
 msgid "Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms"
 msgstr "利用規約ページのURLを入力するか、空欄のままにして /legal/terms のデフォルトテンプレートを使用"
 
@@ -1193,7 +1197,7 @@ msgstr "パスワードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:306
+#: src/components/user/UserProfile.tsx:356
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -1493,11 +1497,11 @@ msgstr "失敗回数"
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
 
-#: src/pages/admin/settings.tsx:797
+#: src/pages/admin/settings.tsx:798
 msgid "Favicon"
 msgstr "ファビコン"
 
-#: src/pages/admin/settings.tsx:445
+#: src/pages/admin/settings.tsx:446
 msgid "Favicon URL"
 msgstr "ファビコンURL"
 
@@ -1550,7 +1554,7 @@ msgstr "初回検知"
 msgid "Folder name"
 msgstr "フォルダ名"
 
-#: src/components/user/UserProfile.tsx:396
+#: src/components/user/UserProfile.tsx:446
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:520
@@ -1564,12 +1568,12 @@ msgid "followed you"
 msgstr "があなたをフォローしました"
 
 #: src/components/note/NoteComposer.tsx:539
-#: src/components/user/UserProfile.tsx:459
+#: src/components/user/UserProfile.tsx:509
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/user/UserProfile.tsx:394
-#: src/components/user/UserProfile.tsx:467
+#: src/components/user/UserProfile.tsx:444
+#: src/components/user/UserProfile.tsx:517
 #: src/pages/search.tsx:513
 #: src/pages/search.tsx:597
 msgid "Following"
@@ -1583,7 +1587,7 @@ msgstr "フォローとフォロワーの関係"
 #~ msgid "Following successfully"
 #~ msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:389
+#: src/components/user/UserProfile.tsx:439
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -1624,10 +1628,12 @@ msgid "Global"
 msgstr "グローバル"
 
 #: src/components/ErrorPage.tsx:88
+#: src/components/user/UserProfile.tsx:340
 msgid "Go Back"
 msgstr "戻る"
 
 #: src/components/ErrorPage.tsx:106
+#: src/components/user/UserProfile.tsx:343
 msgid "Go Home"
 msgstr "ホームへ"
 
@@ -1639,7 +1645,7 @@ msgstr "ログインへ"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
-#: src/pages/410.tsx:13
+#: src/pages/410.tsx:15
 msgid "Gone"
 msgstr "削除済み"
 
@@ -1655,7 +1661,7 @@ msgstr "他のユーザーへの嫌がらせ、虐待、脅迫"
 msgid "Have a question or need help? We're here to assist you."
 msgstr "ご質問やサポートが必要ですか？お気軽にお問い合わせください。"
 
-#: src/pages/admin/settings.tsx:787
+#: src/pages/admin/settings.tsx:788
 msgid "Header image for your instance (max 5MB)"
 msgstr "インスタンスのヘッダー画像（最大5MB）"
 
@@ -1668,7 +1674,7 @@ msgstr "正常"
 msgid "Hide per-type settings"
 msgstr "タイプ別設定を非表示"
 
-#: src/pages/admin/settings.tsx:820
+#: src/pages/admin/settings.tsx:821
 msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピクセル（最大2MB）。未設定の場合はインスタンスアイコンを使用します。"
 
@@ -1686,19 +1692,19 @@ msgstr "https://example.com/users/username"
 msgid "https://newserver.com/users/newusername"
 msgstr "https://newserver.com/users/newusername"
 
-#: src/pages/admin/settings.tsx:776
+#: src/pages/admin/settings.tsx:777
 msgid "Icon for dark mode. Falls back to standard icon if not set (max 2MB)"
 msgstr "ダークモード用アイコン。未設定の場合は標準アイコンを使用します（最大2MB）"
 
-#: src/pages/admin/settings.tsx:809
+#: src/pages/admin/settings.tsx:810
 msgid "Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set."
 msgstr "PWAアプリ用アイコン、192x192ピクセル（最大1MB）。未設定の場合はインスタンスアイコンを使用します。"
 
-#: src/pages/admin/settings.tsx:407
+#: src/pages/admin/settings.tsx:408
 msgid "Icon URL"
 msgstr "アイコンURL"
 
-#: src/pages/admin/settings.tsx:893
+#: src/pages/admin/settings.tsx:919
 msgid "If no custom URLs are set, visitors will see the default legal pages:"
 msgstr "カスタムURLが設定されていない場合、訪問者にはデフォルトの法的文書ページが表示されます："
 
@@ -1741,7 +1747,7 @@ msgstr "返信元"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/pages/admin/settings.tsx:294
+#: src/pages/admin/settings.tsx:295
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "インスタンス"
@@ -1750,7 +1756,7 @@ msgstr "インスタンス"
 msgid "Instance administrators and moderators reserve the right to remove content, suspend accounts, or take other actions to maintain a safe community. Moderation decisions are made at the discretion of the moderation team."
 msgstr "インスタンス管理者とモデレーターは、安全なコミュニティを維持するために、コンテンツの削除、アカウントの停止、その他の措置を講じる権利を保持します。モデレーションの決定は、モデレーションチームの裁量により行われます。"
 
-#: src/pages/admin/settings.tsx:786
+#: src/pages/admin/settings.tsx:787
 msgid "Instance Banner"
 msgstr "インスタンスバナー"
 
@@ -1779,15 +1785,15 @@ msgstr "インスタンスドメイン"
 msgid "Instance Hostname"
 msgstr "インスタンスのホスト名"
 
-#: src/pages/admin/settings.tsx:764
+#: src/pages/admin/settings.tsx:765
 msgid "Instance Icon"
 msgstr "インスタンスアイコン"
 
-#: src/pages/admin/settings.tsx:346
+#: src/pages/admin/settings.tsx:347
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:352
+#: src/pages/admin/settings.tsx:353
 #: src/pages/onboarding.tsx:322
 msgid "Instance Name"
 msgstr "インスタンス名"
@@ -1808,7 +1814,7 @@ msgstr "インスタンスをキャッシュから削除しました"
 msgid "Instance Settings"
 msgstr "インスタンス設定"
 
-#: src/pages/admin/settings.tsx:146
+#: src/pages/admin/settings.tsx:147
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
 
@@ -1869,7 +1875,7 @@ msgid "Invite only"
 msgstr "招待制"
 
 #: src/components/LandingPage.tsx:93
-#: src/pages/admin/settings.tsx:525
+#: src/pages/admin/settings.tsx:526
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -1925,19 +1931,25 @@ msgstr "永続的な警告の場合は空のままにしてください"
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/pages/admin/settings.tsx:334
+#: src/pages/admin/settings.tsx:335
 msgid "Legal"
 msgstr "法的文書"
 
-#: src/pages/admin/settings.tsx:836
+#: src/pages/admin/settings.tsx:837
 msgid "Legal Documents"
 msgstr "法的文書"
 
 #: src/pages/admin/emojis.tsx:708
+#: src/pages/legal/licenses.tsx:168
 msgid "License"
 msgstr "ライセンス"
 
-#: src/pages/admin/settings.tsx:684
+#: src/components/LandingPage.tsx:355
+#: src/components/layout/Layout.tsx:93
+msgid "Licenses"
+msgstr "ライセンス"
+
+#: src/pages/admin/settings.tsx:685
 msgid "Light"
 msgstr "ライト"
 
@@ -1951,7 +1963,7 @@ msgstr "行の高さ"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/UserProfile.tsx:518
+#: src/components/user/UserProfile.tsx:568
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -1966,7 +1978,7 @@ msgstr "投稿を読み込み中..."
 #: src/components/drive/DrivePickerDialog.tsx:483
 #: src/components/note/NoteComposer.tsx:705
 #: src/components/note/NoteComposer.tsx:752
-#: src/components/user/UserProfile.tsx:514
+#: src/components/user/UserProfile.tsx:564
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -2016,7 +2028,7 @@ msgstr "リモートユーザーを検索中..."
 msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/settings.tsx:388
+#: src/pages/admin/settings.tsx:389
 #: src/pages/onboarding.tsx:337
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
@@ -2172,7 +2184,7 @@ msgstr "無期限"
 msgid "New"
 msgstr "新規"
 
-#: src/pages/admin/settings.tsx:551
+#: src/pages/admin/settings.tsx:552
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
@@ -2286,7 +2298,7 @@ msgstr "パスキーはまだ登録されていません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:494
+#: src/components/user/UserProfile.tsx:544
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -2428,6 +2440,10 @@ msgstr "スタッフのみ閲覧可能"
 msgid "Open Registration"
 msgstr "登録受付中"
 
+#: src/pages/legal/licenses.tsx:85
+msgid "Open Source Licenses"
+msgstr "オープンソースライセンス"
+
 #: src/pages/onboarding.tsx:294
 #: src/pages/signup.tsx:197
 msgid "Optional"
@@ -2449,7 +2465,11 @@ msgstr "特定の通知タイプのデフォルトサウンドを上書きしま
 msgid "Overview"
 msgstr "概要"
 
-#: src/pages/404.tsx:12
+#: src/pages/legal/licenses.tsx:162
+msgid "Package"
+msgstr "パッケージ"
+
+#: src/pages/404.tsx:14
 msgid "Page Not Found"
 msgstr "ページが見つかりません"
 
@@ -2587,8 +2607,8 @@ msgstr "違法なコンテンツの投稿や違法行為への関与"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:451
-#: src/components/user/UserProfile.tsx:477
+#: src/components/user/UserProfile.tsx:501
+#: src/components/user/UserProfile.tsx:527
 #: src/pages/admin/federation.tsx:403
 msgid "Posts"
 msgstr "投稿"
@@ -2604,7 +2624,7 @@ msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 #: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
-#: src/pages/admin/settings.tsx:715
+#: src/pages/admin/settings.tsx:716
 msgid "Preview"
 msgstr "プレビュー"
 
@@ -2613,15 +2633,16 @@ msgstr "プレビュー"
 msgid "Previous"
 msgstr "前へ"
 
-#: src/pages/admin/settings.tsx:722
+#: src/pages/admin/settings.tsx:723
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:580
+#: src/pages/admin/settings.tsx:581
 msgid "Primary Color"
 msgstr "テーマカラー"
 
 #: src/components/LandingPage.tsx:352
+#: src/components/layout/Layout.tsx:90
 msgid "Privacy"
 msgstr "プライバシー"
 
@@ -2635,7 +2656,7 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:868
+#: src/pages/admin/settings.tsx:869
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
@@ -2703,11 +2724,11 @@ msgstr "プッシュ通知が無効"
 msgid "Push notifications enabled"
 msgstr "プッシュ通知が有効"
 
-#: src/pages/admin/settings.tsx:808
+#: src/pages/admin/settings.tsx:809
 msgid "PWA Icon (192x192)"
 msgstr "PWAアイコン (192x192)"
 
-#: src/pages/admin/settings.tsx:819
+#: src/pages/admin/settings.tsx:820
 msgid "PWA Icon (512x512)"
 msgstr "PWAアイコン (512x512)"
 
@@ -2755,6 +2776,10 @@ msgstr "リアクションを追加しました"
 #: src/pages/mod/users.tsx:409
 msgid "Read"
 msgstr "既読"
+
+#: src/pages/legal/licenses.tsx:134
+msgid "Read Full License"
+msgstr "ライセンス全文を読む"
 
 #: src/components/report/ReportDialog.tsx:126
 #: src/pages/admin/emojis.tsx:1097
@@ -2811,7 +2836,8 @@ msgstr "更新"
 msgid "Refresh List"
 msgstr "リストを更新"
 
-#: src/components/ui/RefreshButton.tsx:14
+#: src/pages/500.tsx:25
+#: src/pages/503.tsx:28
 msgid "Refresh page"
 msgstr "ページを更新"
 
@@ -2827,7 +2853,7 @@ msgstr "登録済みデバイス"
 msgid "Registering..."
 msgstr "登録中..."
 
-#: src/pages/admin/settings.tsx:304
+#: src/pages/admin/settings.tsx:305
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "登録"
@@ -2841,12 +2867,12 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:483
+#: src/pages/admin/settings.tsx:484
 #: src/pages/onboarding.tsx:350
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:165
+#: src/pages/admin/settings.tsx:166
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
@@ -3014,15 +3040,19 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
+#: src/pages/legal/licenses.tsx:171
+msgid "Repository"
+msgstr "リポジトリ"
+
 #: src/pages/onboarding.tsx:389
 msgid "Require admin approval"
 msgstr "管理者の承認を必要とする"
 
-#: src/pages/admin/settings.tsx:528
+#: src/pages/admin/settings.tsx:529
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:548
+#: src/pages/admin/settings.tsx:549
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -3127,6 +3157,18 @@ msgstr "ロール"
 msgid "Root"
 msgstr "ルート"
 
+#: src/pages/legal/licenses.tsx:151
+msgid "Rox is built upon many excellent open source projects. Below are the key dependencies and their respective licenses."
+msgstr "Roxは多くの優れたオープンソースプロジェクトを基盤としています。以下は主要な依存関係とそれぞれのライセンスです。"
+
+#: src/pages/legal/licenses.tsx:88
+msgid "Rox is open source software licensed under the AGPL-3.0 license."
+msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープンソースソフトウェアです。"
+
+#: src/pages/legal/licenses.tsx:97
+msgid "Rox License"
+msgstr "Roxライセンス"
+
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
 msgid "Save"
@@ -3141,11 +3183,11 @@ msgstr "変更を保存"
 msgid "Save draft"
 msgstr "下書きを保存"
 
-#: src/pages/admin/settings.tsx:470
+#: src/pages/admin/settings.tsx:471
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:920
+#: src/pages/admin/settings.tsx:954
 msgid "Save Legal Settings"
 msgstr "法的設定を保存"
 
@@ -3153,7 +3195,7 @@ msgstr "法的設定を保存"
 msgid "Save Notes"
 msgstr "メモを保存"
 
-#: src/pages/admin/settings.tsx:561
+#: src/pages/admin/settings.tsx:562
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
@@ -3161,7 +3203,7 @@ msgstr "登録設定を保存"
 msgid "Save Settings"
 msgstr "設定を保存"
 
-#: src/pages/admin/settings.tsx:741
+#: src/pages/admin/settings.tsx:742
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -3224,7 +3266,7 @@ msgstr "ユーザーを検索..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
-#: src/pages/admin/settings.tsx:731
+#: src/pages/admin/settings.tsx:732
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -3278,11 +3320,11 @@ msgstr "センシティブなコンテンツ（NSFW）"
 msgid "Server"
 msgstr "サーバー"
 
-#: src/pages/admin/settings.tsx:754
+#: src/pages/admin/settings.tsx:755
 msgid "Server Assets"
 msgstr "サーバー素材"
 
-#: src/pages/500.tsx:13
+#: src/pages/500.tsx:14
 msgid "Server Error"
 msgstr "サーバーエラー"
 
@@ -3294,7 +3336,7 @@ msgstr "サーバーメトリクス"
 msgid "Server Setup"
 msgstr "サーバーセットアップ"
 
-#: src/pages/503.tsx:13
+#: src/pages/503.tsx:14
 msgid "Service Unavailable"
 msgstr "サービス利用不可"
 
@@ -3386,9 +3428,13 @@ msgstr "ソーシャル"
 msgid "Software"
 msgstr "ソフトウェア"
 
-#: src/pages/500.tsx:15
+#: src/pages/500.tsx:16
 msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
 msgstr "サーバー側で問題が発生しました。しばらくしてから再度お試しいただくか、問題が続く場合はサポートにお問い合わせください。"
+
+#: src/pages/admin/settings.tsx:891
+msgid "Source Code URL (AGPL-3.0 Compliance)"
+msgstr "ソースコードURL（AGPL-3.0準拠）"
 
 #: src/pages/mod/instances.tsx:371
 msgid "spam.example.com"
@@ -3477,7 +3523,7 @@ msgstr "停止中"
 msgid "Synced"
 msgstr "同期済み"
 
-#: src/pages/admin/settings.tsx:665
+#: src/pages/admin/settings.tsx:666
 msgid "System"
 msgstr "システム"
 
@@ -3503,6 +3549,7 @@ msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
 
 #: src/components/LandingPage.tsx:344
+#: src/components/layout/Layout.tsx:82
 msgid "Terms"
 msgstr "利用規約"
 
@@ -3515,7 +3562,7 @@ msgstr "利用規約"
 msgid "Terms of Service Agreement"
 msgstr "利用規約同意"
 
-#: src/pages/admin/settings.tsx:846
+#: src/pages/admin/settings.tsx:847
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -3531,6 +3578,10 @@ msgstr "テスト通知"
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
+#: src/pages/legal/licenses.tsx:222
+msgid "Thank you to all the open source maintainers who make projects like this possible."
+msgstr "このようなプロジェクトを可能にしてくれるすべてのオープンソースメンテナーに感謝します。"
+
 #: src/components/settings/DataExportSection.tsx:101
 msgid "The export includes:"
 msgstr "エクスポート内容："
@@ -3539,30 +3590,38 @@ msgstr "エクスポート内容："
 msgid "The job queue system is not currently configured or running."
 msgstr "ジョブキューシステムは現在設定されていないか、実行されていません。"
 
-#: src/pages/404.tsx:13
+#: src/pages/404.tsx:15
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "お探しのページは存在しないか、移動されました。"
 
-#: src/pages/503.tsx:15
+#: src/pages/503.tsx:16
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "メンテナンスまたは高負荷のため、サーバーは一時的に利用できません。数分後に再度お試しください。"
 
+#: src/components/user/UserProfile.tsx:325
+msgid "The user @{username} doesn't exist or may have been deleted."
+msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
+
 #: src/components/settings/UISettingsSection.tsx:300
-#: src/pages/admin/settings.tsx:314
+#: src/pages/admin/settings.tsx:315
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:574
+#: src/pages/admin/settings.tsx:575
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:184
+#: src/pages/admin/settings.tsx:185
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
 #: src/pages/admin/gone-users.tsx:199
 msgid "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
 msgstr "これらは、プロファイル取得時にサーバーがエラー（410 Goneなど）を返したリモートユーザーです。削除済みとしてマークするか、失敗ステータスをクリアして再取得を試みることができます。"
+
+#: src/pages/legal/licenses.tsx:146
+msgid "Third-Party Dependencies"
+msgstr "サードパーティ依存関係"
 
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
@@ -3572,11 +3631,11 @@ msgstr "このアカウントは以下に引っ越しました:"
 msgid "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
 msgstr "この操作は取り消せません。アカウントが完全に削除され、すべてのデータがサーバーから削除されます。"
 
-#: src/pages/admin/settings.tsx:583
+#: src/pages/admin/settings.tsx:584
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "この色はサーバーのブランドカラーです。ボタン、リンク、UIのアクセントカラーとして使用され、連合先のサーバーにも共有されます。"
 
-#: src/pages/410.tsx:14
+#: src/pages/410.tsx:16
 msgid "This content has been permanently deleted and is no longer available."
 msgstr "このコンテンツは完全に削除されており、利用できません。"
 
@@ -3612,6 +3671,10 @@ msgstr "これは選択した設定でのテキスト表示のプレビューで
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
 
+#: src/pages/legal/licenses.tsx:211
+msgid "This list shows major dependencies. For a complete list, see the package.json files in the source code repository."
+msgstr "このリストは主要な依存関係を示しています。完全なリストについては、ソースコードリポジトリ内のpackage.jsonファイルをご覧ください。"
+
 #: src/components/settings/PasskeySection.tsx:117
 msgid "This passkey is already registered"
 msgstr "このパスキーは既に登録されています"
@@ -3628,11 +3691,15 @@ msgstr "このサービスは13歳未満のお子様を対象としていませ�
 msgid "This service is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to data loss, service interruptions, or user-generated content."
 msgstr "本サービスは「現状のまま」で提供され、いかなる種類の保証も行いません。データの損失、サービスの中断、ユーザー生成コンテンツを含む、サービス利用に起因する損害について、私たちは責任を負いません。"
 
+#: src/pages/legal/licenses.tsx:108
+msgid "This software is licensed under the GNU Affero General Public License version 3.0. This means you are free to use, modify, and distribute this software, but any modifications must also be released under the same license, and if you run a modified version as a network service, you must make the source code available to users."
+msgstr "このソフトウェアはGNU Affero General Public License version 3.0の下でライセンスされています。これにより、このソフトウェアを自由に使用、改変、配布できますが、改変版も同じライセンスの下で公開する必要があり、改変版をネットワークサービスとして運用する場合は、ユーザーにソースコードを利用可能にする必要があります。"
+
 #: src/pages/admin/contacts.tsx:432
 msgid "This thread is closed."
 msgstr "このスレッドは終了しました。"
 
-#: src/components/user/UserProfile.tsx:500
+#: src/components/user/UserProfile.tsx:550
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -3754,6 +3821,10 @@ msgstr "ブロック解除"
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
+#: src/pages/admin/settings.tsx:894
+msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
+msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
+
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:589
 msgid "Unfollow"
@@ -3763,7 +3834,7 @@ msgstr "フォロー解除"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:387
+#: src/components/user/UserProfile.tsx:437
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -3812,7 +3883,7 @@ msgstr "バナーをアップロード"
 msgid "Upload files to see them here"
 msgstr "ファイルをアップロードするとここに表示されます"
 
-#: src/pages/admin/settings.tsx:759
+#: src/pages/admin/settings.tsx:760
 msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
 msgstr "インスタンスのブランディング用画像をアップロードしてください。ファイルは自動的にWebP形式に変換されます。"
 
@@ -3840,7 +3911,7 @@ msgstr "デフォルトを使用"
 msgid "Used"
 msgstr "使用済み"
 
-#: src/pages/admin/settings.tsx:765
+#: src/pages/admin/settings.tsx:766
 msgid "Used for push notifications and instance branding (max 2MB)"
 msgstr "プッシュ通知やインスタンスのブランディングに使用（最大2MB）"
 
@@ -3869,9 +3940,13 @@ msgstr "ユーザー一覧"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/user/UserProfile.tsx:307
+#: src/components/user/UserProfile.tsx:357
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
+msgstr "ユーザーが見つかりません"
+
+#: src/components/user/UserProfile.tsx:320
+msgid "User Not Found"
 msgstr "ユーザーが見つかりません"
 
 #: src/pages/admin/reports.tsx:353
@@ -3925,7 +4000,7 @@ msgstr "ユーザー名は3文字以上必要です"
 msgid "Users"
 msgstr "ユーザー"
 
-#: src/pages/admin/settings.tsx:708
+#: src/pages/admin/settings.tsx:709
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
@@ -3950,6 +4025,10 @@ msgstr "検証"
 msgid "Validation failed"
 msgstr "検証に失敗しました"
 
+#: src/pages/legal/licenses.tsx:165
+msgid "Version"
+msgstr "バージョン"
+
 #: src/components/note/NoteCard.tsx:566
 msgid "View"
 msgstr "表示"
@@ -3966,17 +4045,25 @@ msgstr "すべての通知を見る"
 msgid "View and restore deleted notes"
 msgstr "削除されたノートを表示・復元"
 
-#: src/pages/admin/settings.tsx:910
+#: src/pages/admin/settings.tsx:936
 msgid "View Default Privacy Policy"
 msgstr "デフォルトのプライバシーポリシーを表示"
 
-#: src/pages/admin/settings.tsx:902
+#: src/pages/admin/settings.tsx:928
 msgid "View Default Terms"
 msgstr "デフォルトの利用規約を表示"
+
+#: src/pages/admin/settings.tsx:944
+msgid "View Open Source Licenses"
+msgstr "オープンソースライセンスを表示"
 
 #: src/components/LandingPage.tsx:311
 msgid "View Policy"
 msgstr "ポリシーを見る"
+
+#: src/pages/legal/licenses.tsx:124
+msgid "View Source Code"
+msgstr "ソースコードを表示"
 
 #: src/components/LandingPage.tsx:296
 msgid "View Terms"
@@ -4112,7 +4199,7 @@ msgstr "いつでも個人データのコピーをダウンロードできます
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "アカウントがなくてもお問い合わせを送信できます。お問い合わせ履歴を追跡するには、ログインしてください。"
 
-#: src/pages/403.tsx:13
+#: src/pages/403.tsx:15
 msgid "You don't have permission to access this page or resource."
 msgstr "このページまたはリソースにアクセスする権限がありません。"
 
@@ -4136,7 +4223,7 @@ msgstr "招待コードの作成上限に達しました"
 msgid "You have the right to:"
 msgstr "以下の権利があります："
 
-#: src/components/user/UserProfile.tsx:498
+#: src/components/user/UserProfile.tsx:548
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
@@ -4161,7 +4248,7 @@ msgstr "ブラウザを閉じていても通知を受け取ることができま
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
-#: src/components/user/UserProfile.tsx:527
+#: src/components/user/UserProfile.tsx:577
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
