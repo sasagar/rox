@@ -46,6 +46,15 @@ function FollowUserCard({
   const handle = user.host ? `@${user.username}@${user.host}` : `@${user.username}`;
   const profileUrl = user.host ? `/@${user.username}@${user.host}` : `/@${user.username}`;
 
+  // Convert profileEmojis array to emoji map for MfmRenderer
+  const customEmojis = user.profileEmojis?.reduce(
+    (acc, emoji) => {
+      acc[emoji.name] = emoji.url;
+      return acc;
+    },
+    {} as Record<string, string>,
+  ) ?? {};
+
   return (
     <SpaLink
       to={profileUrl}
@@ -60,7 +69,7 @@ function FollowUserCard({
       />
       <div className="flex-1 min-w-0">
         <p className="font-medium text-(--text-primary) truncate">
-          <MfmRenderer text={displayName} />
+          <MfmRenderer text={displayName} customEmojis={customEmojis} />
         </p>
         <p className="text-sm text-(--text-muted) truncate">{handle}</p>
       </div>
