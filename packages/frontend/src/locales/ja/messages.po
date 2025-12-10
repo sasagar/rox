@@ -1596,6 +1596,10 @@ msgstr "ログインへ"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
+#: src/pages/410.tsx:15
+msgid "Gone"
+msgstr "削除済み"
+
 #: src/pages/legal/terms.tsx:139
 msgid "Harass, abuse, or threaten other users"
 msgstr "他のユーザーへの嫌がらせ、虐待、脅迫"
@@ -3499,6 +3503,10 @@ msgstr "この操作は取り消せません。アカウントが完全に削除
 #: src/pages/admin/settings.tsx:583
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "この色はサーバーのブランドカラーです。ボタン、リンク、UIのアクセントカラーとして使用され、連合先のサーバーにも共有されます。"
+
+#: src/pages/410.tsx:16
+msgid "This content has been permanently deleted and is no longer available."
+msgstr "このコンテンツは完全に削除されており、利用できません。"
 
 #: src/components/pages/ContactThreadPageClient.tsx:299
 msgid "This inquiry has been closed. Please create a new inquiry if you need further assistance."

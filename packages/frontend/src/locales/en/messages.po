@@ -1596,6 +1596,10 @@ msgstr "Go to login"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
+#: src/pages/410.tsx:15
+msgid "Gone"
+msgstr "Gone"
+
 #: src/pages/legal/terms.tsx:139
 msgid "Harass, abuse, or threaten other users"
 msgstr "Harass, abuse, or threaten other users"
@@ -3499,6 +3503,10 @@ msgstr "This action cannot be undone. This will permanently delete your account 
 #: src/pages/admin/settings.tsx:583
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
+
+#: src/pages/410.tsx:16
+msgid "This content has been permanently deleted and is no longer available."
+msgstr "This content has been permanently deleted and is no longer available."
 
 #: src/components/pages/ContactThreadPageClient.tsx:299
 msgid "This inquiry has been closed. Please create a new inquiry if you need further assistance."

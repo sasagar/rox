@@ -52,6 +52,25 @@ note.get("/notes/:id", async (c: Context) => {
     return c.notFound();
   }
 
+  const baseUrl = process.env.URL || "http://localhost:3000";
+
+  // 410 Gone if note is deleted (ActivityPub spec compliance)
+  if (noteData.isDeleted) {
+    // Return a Tombstone object for deleted notes
+    return c.json(
+      {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        id: noteData.uri || `${baseUrl}/notes/${noteData.id}`,
+        type: "Tombstone",
+        deleted: noteData.deletedAt?.toISOString(),
+      },
+      410,
+      {
+        "Content-Type": "application/activity+json; charset=utf-8",
+      },
+    );
+  }
+
   // Get note author
   const userRepository = c.get("userRepository");
   const author = await userRepository.findById(noteData.userId);
@@ -60,8 +79,6 @@ note.get("/notes/:id", async (c: Context) => {
     logger.error({ userId: noteData.userId }, "Note author not found");
     return c.notFound();
   }
-
-  const baseUrl = process.env.URL || "http://localhost:3000";
 
   // Construct author URI
   const authorUri = author.host
