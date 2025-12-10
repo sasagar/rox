@@ -12,6 +12,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Mail, Loader2, PenSquare } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
 import { Avatar } from "../../components/ui/Avatar";
+import { MfmRenderer } from "../../components/mfm/MfmRenderer";
 import { useConversations } from "../../hooks/useDirectMessages";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { openComposeModalAtom } from "../../lib/atoms/compose";
@@ -46,6 +47,15 @@ function ConversationItem({ conversation }: { conversation: ConversationPartner 
     ? `@${conversation.partnerUsername}@${conversation.partnerHost}`
     : `@${conversation.partnerUsername}`;
 
+  // Convert profileEmojis array to emoji map for MfmRenderer
+  const customEmojis = conversation.partnerProfileEmojis?.reduce(
+    (acc, emoji) => {
+      acc[emoji.name] = emoji.url;
+      return acc;
+    },
+    {} as Record<string, string>,
+  ) ?? {};
+
   return (
     <a
       href={`/messages/${conversation.partnerId}`}
@@ -61,7 +71,7 @@ function ConversationItem({ conversation }: { conversation: ConversationPartner 
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1 min-w-0">
             <span className="font-medium text-(--text-primary) truncate">
-              {displayName}
+              <MfmRenderer text={displayName} customEmojis={customEmojis} />
             </span>
             <span className="text-sm text-(--text-muted) truncate">
               {handle}

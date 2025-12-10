@@ -700,6 +700,7 @@ export class PostgresNoteRepository implements INoteRepository {
       partnerDisplayName: string | null;
       partnerAvatarUrl: string | null;
       partnerHost: string | null;
+      partnerProfileEmojis: Array<{ name: string; url: string }> | null;
       lastNoteId: string;
       lastNoteText: string | null;
       lastNoteCreatedAt: Date;
@@ -742,6 +743,7 @@ export class PostgresNoteRepository implements INoteRepository {
         u.display_name as partner_display_name,
         u.avatar_url as partner_avatar_url,
         u.host as partner_host,
+        u.profile_emojis as partner_profile_emojis,
         l.note_id as last_note_id,
         l.note_text as last_note_text,
         l.created_at as last_note_created_at
@@ -757,6 +759,7 @@ export class PostgresNoteRepository implements INoteRepository {
       partnerDisplayName: row.partner_display_name,
       partnerAvatarUrl: row.partner_avatar_url,
       partnerHost: row.partner_host,
+      partnerProfileEmojis: row.partner_profile_emojis,
       lastNoteId: row.last_note_id,
       lastNoteText: row.last_note_text,
       lastNoteCreatedAt: new Date(row.last_note_created_at),

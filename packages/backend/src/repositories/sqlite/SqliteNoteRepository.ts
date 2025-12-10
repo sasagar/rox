@@ -460,6 +460,7 @@ export class SqliteNoteRepository implements INoteRepository {
       partnerDisplayName: string | null;
       partnerAvatarUrl: string | null;
       partnerHost: string | null;
+      partnerProfileEmojis: Array<{ name: string; url: string }> | null;
       lastNoteId: string;
       lastNoteText: string | null;
       lastNoteCreatedAt: Date;

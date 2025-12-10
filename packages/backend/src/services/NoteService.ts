@@ -185,6 +185,14 @@ export class NoteService {
     const extractedMentions = this.extractMentions(text || "");
     const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
 
+    // Debug log for DM mentions
+    if (visibility === "specified") {
+      logger.info(
+        { visibleUserIds, mentions, mentionsLength: mentions.length },
+        "DM mentions array being saved",
+      );
+    }
+
     // ハッシュタグ抽出（簡易実装、Phase 1.1で拡張予定）
     const tags = this.extractHashtags(text || "");
 
