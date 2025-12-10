@@ -72,7 +72,7 @@ function ToastItem({ toast }: { toast: ToastType }) {
       <span className="flex-1 text-sm">{toast.message}</span>
       <button
         onClick={() => removeToast(toast.id)}
-        className={`${styles.closeButton} font-bold text-lg leading-none`}
+        className={`${styles.closeButton} font-bold text-lg leading-none cursor-pointer`}
         aria-label="Close"
       >
         ×

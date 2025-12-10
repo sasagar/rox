@@ -20,6 +20,8 @@ export interface ComposeModalState {
   replyId?: string;
   /** Optional initial text (for reply mentions) */
   initialText?: string;
+  /** Optional initial visibility (for DM mode) */
+  initialVisibility?: "public" | "home" | "followers" | "specified";
 }
 
 /**
@@ -29,6 +31,7 @@ export const composeModalAtom = atom<ComposeModalState>({
   isOpen: false,
   replyId: undefined,
   initialText: undefined,
+  initialVisibility: undefined,
 });
 
 /**
@@ -36,11 +39,20 @@ export const composeModalAtom = atom<ComposeModalState>({
  */
 export const openComposeModalAtom = atom(
   null,
-  (_get, set, payload?: { replyId?: string; initialText?: string }) => {
+  (
+    _get,
+    set,
+    payload?: {
+      replyId?: string;
+      initialText?: string;
+      initialVisibility?: "public" | "home" | "followers" | "specified";
+    }
+  ) => {
     set(composeModalAtom, {
       isOpen: true,
       replyId: payload?.replyId,
       initialText: payload?.initialText,
+      initialVisibility: payload?.initialVisibility,
     });
   }
 );
@@ -53,5 +65,6 @@ export const closeComposeModalAtom = atom(null, (_get, set) => {
     isOpen: false,
     replyId: undefined,
     initialText: undefined,
+    initialVisibility: undefined,
   });
 });

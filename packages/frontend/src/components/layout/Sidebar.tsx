@@ -182,7 +182,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={handlePostClick}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors cursor-pointer"
         >
           <PenSquare className="w-5 h-5" />
           <span className="font-medium"><Trans>Post</Trans></span>
@@ -241,7 +241,7 @@ export function Sidebar() {
           type="button"
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">
@@ -292,7 +292,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="p-1.5 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            className="p-1.5 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors cursor-pointer"
             aria-label="Collapse sidebar"
             title="Collapse sidebar"
           >
@@ -306,7 +306,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={handlePostClick}
-          className={`w-full flex items-center rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors ${
+          className={`w-full flex items-center rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors cursor-pointer ${
             isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"
           }`}
           title={isCollapsed ? "Post" : undefined}
@@ -383,7 +383,7 @@ export function Sidebar() {
           type="button"
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className={`flex items-center rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 ${
+          className={`flex items-center rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 cursor-pointer ${
             isCollapsed ? "justify-center p-2 w-full" : "gap-3 px-3 py-2 w-full"
           }`}
           title={isCollapsed ? "Logout" : undefined}
@@ -403,7 +403,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={toggleCollapsed}
-            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors cursor-pointer"
             aria-label="Expand sidebar"
             title="Expand sidebar"
           >
@@ -421,7 +421,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(true)}
-          className="p-2 -ml-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+          className="p-2 -ml-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors cursor-pointer"
           aria-label="Open menu"
         >
           <Menu className="w-6 h-6" />
@@ -475,7 +475,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors cursor-pointer"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />

@@ -68,7 +68,7 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
                     {title}
                   </Heading>
                   <button
-                    className="rounded-md p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="rounded-md p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
                     onClick={() => {
                       close();
                       onClose?.();

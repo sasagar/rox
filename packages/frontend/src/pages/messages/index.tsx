@@ -8,12 +8,13 @@
 
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Mail, Loader2, PenSquare } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
 import { Avatar } from "../../components/ui/Avatar";
 import { useConversations } from "../../hooks/useDirectMessages";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { openComposeModalAtom } from "../../lib/atoms/compose";
 import { apiClient } from "../../lib/api/client";
 import type { ConversationPartner } from "../../lib/api/direct";
 
@@ -48,7 +49,7 @@ function ConversationItem({ conversation }: { conversation: ConversationPartner 
   return (
     <a
       href={`/messages/${conversation.partnerId}`}
-      className="flex items-center gap-3 p-4 hover:bg-(--bg-secondary) transition-colors"
+      className="flex items-center gap-3 p-4 hover:bg-(--bg-secondary) transition-colors cursor-pointer"
     >
       <Avatar
         src={conversation.partnerAvatarUrl}
@@ -82,6 +83,7 @@ export default function MessagesPage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
+  const openComposeModal = useSetAtom(openComposeModalAtom);
 
   const { conversations, loading, fetchConversations } = useConversations();
 
@@ -139,13 +141,14 @@ export default function MessagesPage() {
                 <Trans>Messages</Trans>
               </h1>
             </div>
-            <a
-              href="/"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+            <button
+              type="button"
+              onClick={() => openComposeModal({ initialVisibility: "specified" })}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors cursor-pointer"
             >
               <PenSquare className="w-4 h-4" />
               <span className="hidden sm:inline"><Trans>New Message</Trans></span>
-            </a>
+            </button>
           </div>
           <p className="mt-2 text-sm text-(--text-muted)">
             <Trans>Your direct message conversations</Trans>

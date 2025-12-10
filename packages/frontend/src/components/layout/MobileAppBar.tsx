@@ -91,7 +91,7 @@ export function MobileAppBar() {
             <button
               key={item.key}
               onClick={handlePostClick}
-              className="flex flex-col items-center justify-center flex-1 h-full py-1 transition-colors text-primary-600 dark:text-primary-400"
+              className="flex flex-col items-center justify-center flex-1 h-full py-1 transition-colors text-primary-600 dark:text-primary-400 cursor-pointer"
               aria-label={item.label}
             >
               <span className="p-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30">

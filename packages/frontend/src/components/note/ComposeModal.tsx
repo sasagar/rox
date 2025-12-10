@@ -80,11 +80,15 @@ export function ComposeModal() {
             id="compose-modal-title"
             className="text-lg font-semibold text-(--text-primary)"
           >
-            <Trans>New Note</Trans>
+            {modalState.initialVisibility === "specified" ? (
+              <Trans>New Message</Trans>
+            ) : (
+              <Trans>New Note</Trans>
+            )}
           </h2>
           <button
             onClick={() => closeModal()}
-            className="p-2 -mr-2 rounded-full text-(--text-muted) hover:bg-(--hover-bg) hover:text-(--text-secondary) transition-colors"
+            className="p-2 -mr-2 rounded-full text-(--text-muted) hover:bg-(--hover-bg) hover:text-(--text-secondary) transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -97,6 +101,7 @@ export function ComposeModal() {
             onNoteCreated={handleNoteCreated}
             replyId={modalState.replyId}
             replyTo={modalState.initialText}
+            initialVisibility={modalState.initialVisibility}
           />
         </div>
       </div>
