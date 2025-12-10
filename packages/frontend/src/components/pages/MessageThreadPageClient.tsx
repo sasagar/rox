@@ -109,9 +109,11 @@ function MessageBubble({
  */
 function MessageComposer({
   partnerId,
+  currentUser,
   onMessageSent,
 }: {
   partnerId: string;
+  currentUser: { id: string; username: string; name?: string | null; avatarUrl?: string | null };
   onMessageSent: (message: Note) => void;
 }) {
   const token = useAtomValue(tokenAtom);
@@ -135,7 +137,18 @@ function MessageComposer({
         visibleUserIds: [partnerId],
       });
       setText("");
-      onMessageSent(newNote);
+      // Add current user info for optimistic UI update
+      const noteWithUser: Note = {
+        ...newNote,
+        user: {
+          id: currentUser.id,
+          username: currentUser.username,
+          name: currentUser.name || currentUser.username,
+          avatarUrl: currentUser.avatarUrl || undefined,
+          host: undefined,
+        },
+      };
+      onMessageSent(noteWithUser);
       // Auto-resize textarea
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
@@ -215,7 +228,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
   const [partner, setPartner] = useState<User | null>(null);
   const [partnerError, setPartnerError] = useState<string | null>(null);
 
-  const { messages, loading, hasMore, fetchThread, loadMore, addMessage } =
+  const { messages, loading, hasMore, fetchThread, loadMore, addMessage, fetchNewMessages } =
     useDirectMessageThread(partnerId);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -269,6 +282,18 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
       fetchThread();
     }
   }, [isLoading, currentUser, partner, fetchThread]);
+
+  // Poll for new messages every 5 seconds
+  useEffect(() => {
+    if (!isLoading && currentUser && partner && messages.length > 0) {
+      const intervalId = setInterval(() => {
+        fetchNewMessages();
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+    return undefined;
+  }, [isLoading, currentUser, partner, messages.length, fetchNewMessages]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -407,7 +432,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
         </div>
 
         {/* Composer */}
-        <MessageComposer partnerId={partnerId} onMessageSent={handleMessageSent} />
+        <MessageComposer partnerId={partnerId} currentUser={currentUser} onMessageSent={handleMessageSent} />
       </div>
     </Layout>
   );

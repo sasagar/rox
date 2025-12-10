@@ -188,6 +188,35 @@ export function useDirectMessageThread(partnerId: string | null) {
     setMessages((prev) => [message, ...prev]);
   }, []);
 
+  /**
+   * Fetch new messages since the latest one (for polling)
+   */
+  const fetchNewMessages = useCallback(async () => {
+    if (!isAuthenticated || !partnerId || messages.length === 0) return;
+
+    const latestMessage = messages[0]; // messages are sorted newest first
+    if (!latestMessage) return;
+
+    try {
+      const newMessages = await directApi.getThread(partnerId, {
+        sinceId: latestMessage.id,
+        limit: 50,
+      });
+
+      if (newMessages.length > 0) {
+        // Prepend new messages (they come sorted newest first)
+        setMessages((prev) => {
+          // Filter out any duplicates (in case optimistic update already added it)
+          const existingIds = new Set(prev.map((m) => m.id));
+          const uniqueNewMessages = newMessages.filter((m) => !existingIds.has(m.id));
+          return [...uniqueNewMessages, ...prev];
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch new DM messages:", error);
+    }
+  }, [isAuthenticated, partnerId, messages]);
+
   return {
     messages,
     loading,
@@ -196,5 +225,6 @@ export function useDirectMessageThread(partnerId: string | null) {
     loadMore,
     refresh,
     addMessage,
+    fetchNewMessages,
   };
 }
