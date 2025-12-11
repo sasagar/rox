@@ -253,4 +253,23 @@ export class PostgresUserRepository implements IUserRepository {
 
     return (result as User) ?? null;
   }
+
+  /**
+   * Count user registrations within a time period
+   * Used for Mastodon API instance activity statistics
+   */
+  async countRegistrationsInPeriod(startDate: Date, endDate: Date): Promise<number> {
+    const result = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(users)
+      .where(
+        and(
+          isNull(users.host), // Local users only
+          sql`${users.createdAt} >= ${startDate}`,
+          sql`${users.createdAt} < ${endDate}`,
+        ),
+      );
+
+    return result[0]?.count ?? 0;
+  }
 }

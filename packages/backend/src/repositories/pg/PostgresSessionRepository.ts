@@ -1,4 +1,4 @@
-import { eq, lt } from "drizzle-orm";
+import { eq, lt, and, sql } from "drizzle-orm";
 import type { Database } from "../../db/index.js";
 import { sessions } from "../../db/schema/pg.js";
 import type { ISessionRepository } from "../../interfaces/repositories/ISessionRepository.js";
@@ -83,5 +83,23 @@ export class PostgresSessionRepository implements ISessionRepository {
       .returning({ id: sessions.id });
 
     return result.length;
+  }
+
+  /**
+   * Count active sessions (unique users with logins) within a time period
+   * Used for Mastodon API instance activity statistics
+   */
+  async countActiveInPeriod(startDate: Date, endDate: Date): Promise<number> {
+    const result = await this.db
+      .select({ count: sql<number>`count(distinct ${sessions.userId})::int` })
+      .from(sessions)
+      .where(
+        and(
+          sql`${sessions.createdAt} >= ${startDate}`,
+          sql`${sessions.createdAt} < ${endDate}`,
+        ),
+      );
+
+    return result[0]?.count ?? 0;
   }
 }

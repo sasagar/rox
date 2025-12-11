@@ -811,4 +811,34 @@ export class PostgresNoteRepository implements INoteRepository {
       lastNoteCreatedAt: new Date(row.last_note_created_at),
     }));
   }
+
+  /**
+   * Count notes created within a time period
+   * Used for Mastodon API instance activity statistics
+   */
+  async countInPeriod(startDate: Date, endDate: Date, localOnly = true): Promise<number> {
+    const conditions = [
+      sql`${notes.createdAt} >= ${startDate}`,
+      sql`${notes.createdAt} < ${endDate}`,
+      isNull(notes.deletedAt),
+    ];
+
+    if (localOnly) {
+      // Join with users to filter local notes
+      const result = await this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(notes)
+        .innerJoin(users, eq(notes.userId, users.id))
+        .where(and(...conditions, isNull(users.host)));
+
+      return result[0]?.count ?? 0;
+    }
+
+    const result = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(notes)
+      .where(and(...conditions));
+
+    return result[0]?.count ?? 0;
+  }
 }

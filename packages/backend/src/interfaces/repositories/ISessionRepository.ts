@@ -45,4 +45,14 @@ export interface ISessionRepository {
    * 期限切れセッションを削除
    */
   deleteExpired(): Promise<number>;
+
+  /**
+   * Count active sessions (logins) within a time period
+   * Used for Mastodon API instance activity statistics
+   *
+   * @param startDate - Start of the period (inclusive)
+   * @param endDate - End of the period (exclusive)
+   * @returns Number of unique users with active sessions in the period
+   */
+  countActiveInPeriod?(startDate: Date, endDate: Date): Promise<number>;
 }

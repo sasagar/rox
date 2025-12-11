@@ -189,4 +189,15 @@ export interface INoteRepository {
       lastNoteCreatedAt: Date;
     }>
   >;
+
+  /**
+   * Count notes created within a time period
+   * Used for Mastodon API instance activity statistics
+   *
+   * @param startDate - Start of the period (inclusive)
+   * @param endDate - End of the period (exclusive)
+   * @param localOnly - Count only local notes (default: true)
+   * @returns Number of notes created in the period
+   */
+  countInPeriod?(startDate: Date, endDate: Date, localOnly?: boolean): Promise<number>;
 }
