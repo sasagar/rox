@@ -58,6 +58,9 @@ export function extractReactionFromLike(activity: any, actorUri?: string): Extra
       const emojiName = customEmojiMatch[1];
       const emojiHost = extractHostFromUri(actorUri);
 
+      // Build reaction string with host for remote emojis
+      const reactionWithHost = emojiHost ? `:${emojiName}@${emojiHost}:` : misskeyReaction;
+
       // Look for the emoji in the tag array
       if (Array.isArray(activity.tag)) {
         const emojiTag = activity.tag.find(
@@ -67,7 +70,7 @@ export function extractReactionFromLike(activity: any, actorUri?: string): Extra
 
         if (emojiTag?.icon?.url) {
           return {
-            reaction: misskeyReaction,
+            reaction: reactionWithHost,
             customEmojiUrl: emojiTag.icon.url,
             emojiName,
             emojiHost,
@@ -76,7 +79,7 @@ export function extractReactionFromLike(activity: any, actorUri?: string): Extra
       }
 
       // Custom emoji without URL (fallback)
-      return { reaction: misskeyReaction, emojiName, emojiHost };
+      return { reaction: reactionWithHost, emojiName, emojiHost };
     }
 
     // Unicode emoji from Misskey

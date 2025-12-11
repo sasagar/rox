@@ -1141,69 +1141,99 @@ export default function AdminEmojisPage() {
                           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                             {categoryName}
                           </h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            {categoryEmojis.map((emoji) => {
-                              const isSelected = selectedEmojis.has(emoji.id);
-                              return (
-                                <div
-                                  key={emoji.id}
-                                  onClick={isBulkMode ? () => toggleEmojiSelection(emoji.id) : undefined}
-                                  className={`flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative transition-all ${
-                                    isBulkMode
-                                      ? `cursor-pointer ${
-                                          isSelected
-                                            ? "ring-2 ring-primary-500 bg-primary-50 dark:bg-primary-900/30"
-                                            : "hover:ring-2 hover:ring-primary-300"
-                                        }`
-                                      : ""
-                                  }`}
-                                >
-                                  {/* Selection checkbox in bulk mode */}
-                                  {isBulkMode && (
-                                    <div className="absolute top-1 left-1">
-                                      {isSelected ? (
-                                        <CheckSquare className="w-5 h-5 text-primary-500" />
-                                      ) : (
-                                        <Square className="w-5 h-5 text-gray-400" />
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="text-left text-gray-500 dark:text-gray-400 bg-(--bg-tertiary)">
+                                <tr>
+                                  {isBulkMode && <th className="px-3 py-2 w-10"></th>}
+                                  <th className="px-3 py-2 w-16"><Trans>Image</Trans></th>
+                                  <th className="px-3 py-2"><Trans>Name</Trans></th>
+                                  <th className="px-3 py-2 hidden sm:table-cell"><Trans>Aliases</Trans></th>
+                                  <th className="px-3 py-2 hidden md:table-cell"><Trans>License</Trans></th>
+                                  <th className="px-3 py-2 w-16 text-center"><Trans>NSFW</Trans></th>
+                                  {!isBulkMode && <th className="px-3 py-2 w-20 text-right"><Trans>Actions</Trans></th>}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {categoryEmojis.map((emoji) => {
+                                  const isSelected = selectedEmojis.has(emoji.id);
+                                  return (
+                                    <tr
+                                      key={emoji.id}
+                                      onClick={isBulkMode ? () => toggleEmojiSelection(emoji.id) : undefined}
+                                      className={`border-t border-(--border-color) transition-colors ${
+                                        isBulkMode
+                                          ? `cursor-pointer ${
+                                              isSelected
+                                                ? "bg-primary-50 dark:bg-primary-900/30"
+                                                : "hover:bg-(--bg-secondary)"
+                                            }`
+                                          : "hover:bg-(--bg-secondary)"
+                                      }`}
+                                    >
+                                      {isBulkMode && (
+                                        <td className="px-3 py-2">
+                                          {isSelected ? (
+                                            <CheckSquare className="w-5 h-5 text-primary-500" />
+                                          ) : (
+                                            <Square className="w-5 h-5 text-gray-400" />
+                                          )}
+                                        </td>
                                       )}
-                                    </div>
-                                  )}
-                                  <img
-                                    src={getProxiedImageUrl(emoji.url) || ""}
-                                    alt={`:${emoji.name}:`}
-                                    className="w-10 h-10 object-contain mb-2"
-                                  />
-                                  <span
-                                    className="text-xs text-center truncate w-full"
-                                    title={`:${emoji.name}:`}
-                                  >
-                                    :{emoji.name}:
-                                  </span>
-                                  {emoji.isSensitive && (
-                                    <span className="text-xs text-orange-500 mt-1">NSFW</span>
-                                  )}
-                                  {/* Action buttons (hidden in bulk mode) */}
-                                  {!isBulkMode && (
-                                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        onClick={() => handleEditEmoji(emoji)}
-                                        className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-gray-100 dark:hover:bg-gray-600"
-                                        title={t`Edit`}
-                                      >
-                                        <Edit2 className="w-3 h-3" />
-                                      </button>
-                                      <button
-                                        onClick={() => handleDeleteEmoji(emoji)}
-                                        className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500"
-                                        title={t`Delete`}
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
+                                      <td className="px-3 py-2">
+                                        <img
+                                          src={getProxiedImageUrl(emoji.url) || ""}
+                                          alt={`:${emoji.name}:`}
+                                          className="w-8 h-8 object-contain"
+                                        />
+                                      </td>
+                                      <td className="px-3 py-2 font-mono text-xs">
+                                        :{emoji.name}:
+                                      </td>
+                                      <td className="px-3 py-2 hidden sm:table-cell text-gray-500 dark:text-gray-400 text-xs">
+                                        {emoji.aliases.length > 0 ? emoji.aliases.join(", ") : "-"}
+                                      </td>
+                                      <td className="px-3 py-2 hidden md:table-cell text-gray-500 dark:text-gray-400 text-xs">
+                                        {emoji.license || "-"}
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        {emoji.isSensitive && (
+                                          <span className="text-xs text-orange-500 bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded">
+                                            NSFW
+                                          </span>
+                                        )}
+                                      </td>
+                                      {!isBulkMode && (
+                                        <td className="px-3 py-2 text-right">
+                                          <div className="flex gap-1 justify-end">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditEmoji(emoji);
+                                              }}
+                                              className="p-1.5 hover:bg-(--bg-tertiary) rounded"
+                                              title={t`Edit`}
+                                            >
+                                              <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteEmoji(emoji);
+                                              }}
+                                              className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded text-red-500"
+                                              title={t`Delete`}
+                                            >
+                                              <Trash2 className="w-4 h-4" />
+                                            </button>
+                                          </div>
+                                        </td>
+                                      )}
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       ))}
@@ -1293,44 +1323,56 @@ export default function AdminEmojisPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                      {remoteEmojis
-                        .filter((emoji) => !filterHost || emoji.host === filterHost)
-                        .map((emoji) => (
-                          <div
-                            key={emoji.id}
-                            className="flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative"
-                          >
-                            <img
-                              src={getProxiedImageUrl(emoji.url) || ""}
-                              alt={`:${emoji.name}:`}
-                              className="w-10 h-10 object-contain mb-2"
-                            />
-                            <span
-                              className="text-xs text-center truncate w-full"
-                              title={`:${emoji.name}:`}
-                            >
-                              :{emoji.name}:
-                            </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500 truncate w-full text-center">
-                              @{emoji.host}
-                            </span>
-                            {/* Adopt button */}
-                            <button
-                              onClick={() => handleAdoptEmoji(emoji)}
-                              disabled={adoptingEmoji === emoji.id}
-                              className="mt-2 px-2 py-1 text-xs bg-primary-500 hover:bg-primary-600 text-white rounded flex items-center gap-1 disabled:opacity-50"
-                              title={t`Adopt as local emoji`}
-                            >
-                              {adoptingEmoji === emoji.id ? (
-                                <Spinner size="xs" />
-                              ) : (
-                                <Download className="w-3 h-3" />
-                              )}
-                              <Trans>Adopt</Trans>
-                            </button>
-                          </div>
-                        ))}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="text-left text-gray-500 dark:text-gray-400 bg-(--bg-tertiary)">
+                          <tr>
+                            <th className="px-3 py-2 w-16"><Trans>Image</Trans></th>
+                            <th className="px-3 py-2"><Trans>Name</Trans></th>
+                            <th className="px-3 py-2"><Trans>Host</Trans></th>
+                            <th className="px-3 py-2 w-24 text-right"><Trans>Actions</Trans></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {remoteEmojis
+                            .filter((emoji) => !filterHost || emoji.host === filterHost)
+                            .map((emoji) => (
+                              <tr
+                                key={emoji.id}
+                                className="border-t border-(--border-color) hover:bg-(--bg-secondary) transition-colors"
+                              >
+                                <td className="px-3 py-2">
+                                  <img
+                                    src={getProxiedImageUrl(emoji.url) || ""}
+                                    alt={`:${emoji.name}:`}
+                                    className="w-8 h-8 object-contain"
+                                  />
+                                </td>
+                                <td className="px-3 py-2 font-mono text-xs">
+                                  :{emoji.name}:
+                                </td>
+                                <td className="px-3 py-2 text-gray-500 dark:text-gray-400 text-xs">
+                                  {emoji.host}
+                                </td>
+                                <td className="px-3 py-2 text-right">
+                                  <button
+                                    onClick={() => handleAdoptEmoji(emoji)}
+                                    disabled={adoptingEmoji === emoji.id}
+                                    className="px-2 py-1 text-xs bg-primary-500 hover:bg-primary-600 text-white rounded inline-flex items-center gap-1 disabled:opacity-50"
+                                    title={t`Adopt as local emoji`}
+                                  >
+                                    {adoptingEmoji === emoji.id ? (
+                                      <Spinner size="xs" />
+                                    ) : (
+                                      <Download className="w-3 h-3" />
+                                    )}
+                                    <Trans>Adopt</Trans>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
                     </div>
 
                     {/* Stats */}

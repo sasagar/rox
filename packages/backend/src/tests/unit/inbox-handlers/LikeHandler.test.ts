@@ -124,7 +124,8 @@ describe("LikeHandler", () => {
     await handler.handle(activity, mockContext);
 
     const createCall = mockReactionRepository.create.mock.calls[0];
-    expect(createCall[0].reaction).toBe(":awesome:");
+    // Remote emoji reactions include host for accurate lookup
+    expect(createCall[0].reaction).toBe(":awesome@remote.example.com:");
     expect(createCall[0].customEmojiUrl).toBe("https://remote.example.com/emoji/awesome.png");
   });
 

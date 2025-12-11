@@ -165,12 +165,30 @@ app.get("/remote", async (c: Context) => {
 });
 
 /**
+ * Parse emoji name that may include host (name@host format)
+ */
+function parseEmojiNameWithHost(nameWithHost: string): { name: string; host: string | null } {
+  const atIndex = nameWithHost.lastIndexOf("@");
+  if (atIndex > 0) {
+    return {
+      name: nameWithHost.slice(0, atIndex),
+      host: nameWithHost.slice(atIndex + 1),
+    };
+  }
+  return { name: nameWithHost, host: null };
+}
+
+/**
  * Get Emojis by Names
  *
  * POST /api/emojis/lookup
  *
  * Bulk lookup emojis by name for efficient fetching.
  * Used by MFM renderer to resolve custom emoji URLs.
+ *
+ * Supports both formats:
+ * - Simple name: "emoji_name" (searches local first, then any host)
+ * - Name with host: "emoji_name@remote.host" (searches specific host)
  *
  * Body: { names: string[] }
  */
@@ -186,22 +204,46 @@ app.post("/lookup", async (c: Context) => {
   // Limit to 100 names per request
   const names = body.names.slice(0, 100);
 
-  // First, try to find local emojis
-  const localEmojiMap = await customEmojiRepository.findManyByNames(names, null);
+  // Separate names with and without host
+  const simpleNames: string[] = [];
+  const namesWithHost: Array<{ original: string; name: string; host: string }> = [];
 
-  // Transform to simple name -> URL mapping
-  const response: Record<string, string> = {};
-  for (const [name, emoji] of localEmojiMap) {
-    response[name] = emoji.publicUrl || emoji.url;
+  for (const n of names) {
+    const parsed = parseEmojiNameWithHost(n);
+    if (parsed.host) {
+      namesWithHost.push({ original: n, name: parsed.name, host: parsed.host });
+    } else {
+      simpleNames.push(n);
+    }
   }
 
-  // Find names not found locally and search in remote emojis (single batch query)
-  const missingNames = names.filter((name) => !response[name]);
+  const response: Record<string, string> = {};
 
-  if (missingNames.length > 0) {
-    const remoteEmojiMap = await customEmojiRepository.findManyByNamesAnyHost(missingNames);
-    for (const [name, emoji] of remoteEmojiMap) {
+  // Handle names with specific host - lookup by name+host
+  for (const { original, name, host } of namesWithHost) {
+    const emoji = await customEmojiRepository.findByName(name, host);
+    if (emoji) {
+      response[original] = emoji.publicUrl || emoji.url;
+    }
+  }
+
+  // Handle simple names (no host specified)
+  if (simpleNames.length > 0) {
+    // First, try to find local emojis
+    const localEmojiMap = await customEmojiRepository.findManyByNames(simpleNames, null);
+
+    for (const [name, emoji] of localEmojiMap) {
       response[name] = emoji.publicUrl || emoji.url;
+    }
+
+    // Find names not found locally and search in remote emojis (single batch query)
+    const missingNames = simpleNames.filter((name) => !response[name]);
+
+    if (missingNames.length > 0) {
+      const remoteEmojiMap = await customEmojiRepository.findManyByNamesAnyHost(missingNames);
+      for (const [name, emoji] of remoteEmojiMap) {
+        response[name] = emoji.publicUrl || emoji.url;
+      }
     }
   }
 

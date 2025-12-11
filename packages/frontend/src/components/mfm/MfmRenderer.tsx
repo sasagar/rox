@@ -96,13 +96,26 @@ function MfmRendererComponent({
   const [fetchedEmojisVersion, setFetchedEmojisVersion] = useState(0);
   const pendingFetchRef = useRef<Set<string>>(new Set());
 
-  // Extract custom emoji names from AST
+  // Regex to match :emoji_name@host: format (not parsed by mfm-js)
+  const remoteEmojiRegex = /:([a-zA-Z0-9_]+)@([a-zA-Z0-9.-]+):/g;
+
+  // Extract custom emoji names from AST (including remote emoji in text nodes)
   const emojiNames = useMemo(() => {
     const names: string[] = [];
     const collectEmojiNames = (nodeList: MfmNode[]) => {
       for (const node of nodeList) {
         if (node.type === "emojiCode") {
           names.push(node.props.name);
+        }
+        // Also check text nodes for :name@host: format (not parsed by mfm-js)
+        if (node.type === "text" && node.props.text) {
+          const text = node.props.text as string;
+          const matches = text.matchAll(remoteEmojiRegex);
+          for (const match of matches) {
+            const name = match[1];
+            const host = match[2];
+            names.push(`${name}@${host}`);
+          }
         }
         if (node.children) {
           collectEmojiNames(node.children);
@@ -155,11 +168,64 @@ function MfmRendererComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customEmojis, fetchedEmojisVersion]);
 
+  // Render remote emoji (:name@host: format) as image
+  const renderRemoteEmoji = (nameWithHost: string, key: string): ReactNode => {
+    const emojiUrl = mergedEmojis[nameWithHost];
+    if (emojiUrl) {
+      return (
+        <img
+          key={key}
+          src={getProxiedImageUrl(emojiUrl) || ""}
+          alt={`:${nameWithHost}:`}
+          title={`:${nameWithHost}:`}
+          className="inline-block h-[1.25em] w-auto max-w-[4em] mx-0.5 object-contain"
+          style={{ verticalAlign: "-0.2em" }}
+          loading="lazy"
+        />
+      );
+    }
+    // Fallback: show as text if emoji not found
+    return <span key={key}>:{nameWithHost}:</span>;
+  };
+
+  // Render text with remote emoji support (:name@host: format)
+  const renderTextWithRemoteEmoji = (text: string, baseKey: number): ReactNode => {
+    // Check if text contains any :name@host: patterns
+    const pattern = /:([a-zA-Z0-9_]+)@([a-zA-Z0-9.-]+):/g;
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let partIndex = 0;
+
+    while ((match = pattern.exec(text)) !== null) {
+      // Add text before the emoji
+      if (match.index > lastIndex) {
+        parts.push(<span key={`${baseKey}-${partIndex++}`}>{text.slice(lastIndex, match.index)}</span>);
+      }
+      // Add the emoji
+      const nameWithHost = `${match[1]}@${match[2]}`;
+      parts.push(renderRemoteEmoji(nameWithHost, `${baseKey}-${partIndex++}`));
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text after last emoji
+    if (lastIndex < text.length) {
+      parts.push(<span key={`${baseKey}-${partIndex++}`}>{text.slice(lastIndex)}</span>);
+    }
+
+    // If no remote emojis found, return simple text
+    if (parts.length === 0) {
+      return <span key={baseKey}>{text}</span>;
+    }
+
+    return <span key={baseKey}>{parts}</span>;
+  };
+
   // Render a single MFM node
   const renderNode = (node: MfmNode, index: number): ReactNode => {
     switch (node.type) {
       case "text":
-        return <span key={index}>{node.props.text}</span>;
+        return renderTextWithRemoteEmoji(node.props.text, index);
 
       case "bold":
         return (
