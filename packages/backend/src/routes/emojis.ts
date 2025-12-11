@@ -346,8 +346,8 @@ app.post("/create", async (c: Context) => {
   }
 
   // Validate name format (alphanumeric and underscores only)
-  if (!/^[a-zA-Z0-9_]+$/.test(body.name)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, and underscores" }, 400);
+  if (!/^[a-zA-Z0-9_-]+$/.test(body.name)) {
+    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
   }
 
   // Check if name already exists
@@ -413,8 +413,8 @@ app.patch("/:id", async (c: Context) => {
   }>();
 
   // Validate name format if provided
-  if (body.name && !/^[a-zA-Z0-9_]+$/.test(body.name)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, and underscores" }, 400);
+  if (body.name && !/^[a-zA-Z0-9_-]+$/.test(body.name)) {
+    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
   }
 
   const emoji = await customEmojiRepository.update(id, {
@@ -527,8 +527,8 @@ app.post("/adopt", async (c: Context) => {
   const newName = (body.name || remoteEmoji.name).toLowerCase();
 
   // Validate name format
-  if (!/^[a-zA-Z0-9_]+$/.test(newName)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, and underscores" }, 400);
+  if (!/^[a-zA-Z0-9_-]+$/.test(newName)) {
+    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
   }
 
   // Check if name already exists locally
@@ -733,17 +733,28 @@ app.post("/import", async (c: Context) => {
   } else {
     // No meta.json - create entries from image files
     const imageFiles = Object.keys(zip.files).filter((name) => {
+      // Skip directories (they end with /)
+      const file = zip.files[name];
+      if (!file || file.dir) return false;
+      // Skip macOS metadata files
+      if (name.startsWith("__MACOSX/") || name.includes("/.")) return false;
       const ext = name.split(".").pop()?.toLowerCase();
       return ["png", "gif", "webp", "apng"].includes(ext || "");
     });
 
+    logger.info({ imageFiles }, "Found image files in ZIP (no meta.json)");
+
     emojiMetas = imageFiles.map((file) => {
-      const name = file.split("/").pop()?.replace(/\.[^.]+$/, "") || "";
+      // Extract filename without path and extension
+      const filename = file.split("/").pop() || "";
+      const name = filename.replace(/\.[^.]+$/, "");
+      // Sanitize name: only alphanumeric, underscores, and hyphens
+      const sanitizedName = name.toLowerCase().replace(/[^a-z0-9_-]/g, "_").replace(/^[_-]+|[_-]+$/g, "").replace(/[_-]+/g, (m) => m[0] || "_");
       return {
-        name: name.toLowerCase().replace(/[^a-z0-9_]/g, "_"),
+        name: sanitizedName || `emoji_${Date.now()}`,
         file,
       };
-    });
+    }).filter((meta) => meta.name.length > 0);
   }
 
   if (emojiMetas.length === 0) {
@@ -763,7 +774,7 @@ app.post("/import", async (c: Context) => {
 
   for (const meta of emojiMetas) {
     // Validate name
-    if (!meta.name || !/^[a-zA-Z0-9_]+$/.test(meta.name)) {
+    if (!meta.name || !/^[a-zA-Z0-9_-]+$/.test(meta.name)) {
       results.failed.push({
         name: meta.name || "(unknown)",
         error: "Invalid emoji name",

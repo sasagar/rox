@@ -85,6 +85,7 @@ export default function AdminEmojisPage() {
   // ZIP import state
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Form state
   const [showAddForm, setShowAddForm] = useState(false);
@@ -176,9 +177,8 @@ export default function AdminEmojisPage() {
     }
   };
 
-  const handleZipImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !token) return;
+  const processZipFile = async (file: File) => {
+    if (!token) return;
 
     // Validate file type
     if (!file.name.endsWith(".zip")) {
@@ -236,9 +236,38 @@ export default function AdminEmojisPage() {
       });
     } finally {
       setIsImporting(false);
-      // Reset file input
-      e.target.value = "";
+      setIsDragging(false);
     }
+  };
+
+  const handleZipImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processZipFile(file);
+    // Reset file input
+    e.target.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await processZipFile(file);
   };
 
   // Check admin access and load emojis
@@ -605,14 +634,14 @@ export default function AdminEmojisPage() {
                       type="text"
                       value={name}
                       onChange={(e) =>
-                        setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+                        setName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
                       }
                       placeholder={t`emoji_name`}
                       className="w-full px-3 py-2 border rounded-md"
-                      pattern="[a-z0-9_]+"
+                      pattern="[a-z0-9_-]+"
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <Trans>Lowercase letters, numbers, and underscores only</Trans>
+                      <Trans>Lowercase letters, numbers, underscores, and hyphens only</Trans>
                     </p>
                   </div>
 
@@ -1027,7 +1056,16 @@ export default function AdminEmojisPage() {
                   </div>
 
                   {/* Upload area */}
-                  <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">
+                  <label
+                    className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      isDragging
+                        ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                        : "hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30"
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
                     <input
                       type="file"
                       accept=".zip"
@@ -1040,6 +1078,13 @@ export default function AdminEmojisPage() {
                         <Spinner size="lg" />
                         <span className="text-sm text-gray-500 dark:text-gray-400">
                           <Trans>Importing emojis...</Trans>
+                        </span>
+                      </>
+                    ) : isDragging ? (
+                      <>
+                        <Archive className="w-12 h-12 text-primary-500" />
+                        <span className="text-sm text-primary-500 font-medium">
+                          <Trans>Drop ZIP file here</Trans>
                         </span>
                       </>
                     ) : (
