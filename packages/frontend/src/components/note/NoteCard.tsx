@@ -297,6 +297,50 @@ function NoteCardComponent({
             />
           </SpaLink>
           <div className="flex-1 min-w-0">
+            {/* Remote instance badge - shown above user info for remote users */}
+            {note.user.host && (
+              <div className="mb-0.5">
+                <a
+                  href={`https://${note.user.host}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-48 text-(--text-secondary)"
+                  style={{
+                    backgroundColor: remoteInstance?.themeColor
+                      ? `${remoteInstance.themeColor}15`
+                      : "var(--bg-tertiary)",
+                    borderLeft: remoteInstance?.themeColor
+                      ? `2px solid ${remoteInstance.themeColor}`
+                      : "2px solid var(--border-color)",
+                  }}
+                  title={
+                    remoteInstance
+                      ? `${remoteInstance.name || note.user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                      : `From ${note.user.host}`
+                  }
+                >
+                  {remoteInstance?.iconUrl ? (
+                    <img
+                      src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
+                      alt=""
+                      className="w-3.5 h-3.5 rounded-sm object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        // Hide broken image and show fallback
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.nextElementSibling?.classList.remove("hidden");
+                      }}
+                    />
+                  ) : null}
+                  <Globe
+                    className={`w-3 h-3 ${remoteInstance?.iconUrl ? "hidden" : ""}`}
+                  />
+                  <span className="truncate">
+                    {remoteInstance?.name || note.user.host}
+                  </span>
+                </a>
+              </div>
+            )}
             <div className="flex items-center gap-2 flex-wrap">
               <SpaLink
                 to={
@@ -332,48 +376,6 @@ function NoteCardComponent({
                   <Lock className="w-3 h-3" />
                   <Trans>Direct</Trans>
                 </span>
-              )}
-              {/* Remote instance badge with server info */}
-              {note.user.host && (
-                <a
-                  href={`https://${note.user.host}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40 text-(--text-secondary)"
-                  style={{
-                    backgroundColor: remoteInstance?.themeColor
-                      ? `${remoteInstance.themeColor}15`
-                      : "var(--bg-tertiary)",
-                    borderLeft: remoteInstance?.themeColor
-                      ? `2px solid ${remoteInstance.themeColor}`
-                      : "2px solid var(--border-color)",
-                  }}
-                  title={
-                    remoteInstance
-                      ? `${remoteInstance.name || note.user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
-                      : `From ${note.user.host}`
-                  }
-                >
-                  {remoteInstance?.iconUrl ? (
-                    <img
-                      src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
-                      alt=""
-                      className="w-3.5 h-3.5 rounded-sm object-contain"
-                      loading="lazy"
-                      onError={(e) => {
-                        // Hide broken image and show fallback
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.nextElementSibling?.classList.remove("hidden");
-                      }}
-                    />
-                  ) : null}
-                  <Globe
-                    className={`w-3 h-3 ${remoteInstance?.iconUrl ? "hidden" : ""}`}
-                  />
-                  <span className="truncate">
-                    {remoteInstance?.name || note.user.host}
-                  </span>
-                </a>
               )}
             </div>
             <SpaLink
