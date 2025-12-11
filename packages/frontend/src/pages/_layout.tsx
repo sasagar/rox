@@ -59,7 +59,7 @@ const splashScreenStyles = `
   color: #4f46e5;
 }
 #rox-splash-screen .splash-title {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "M PLUS Rounded 1c", system-ui, -apple-system, sans-serif;
   font-size: 28px;
   font-weight: 700;
   color: #111827;
@@ -72,7 +72,7 @@ const splashScreenStyles = `
   }
 }
 #rox-splash-screen .splash-subtitle {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "M PLUS Rounded 1c", system-ui, -apple-system, sans-serif;
   font-size: 14px;
   color: #6b7280;
 }
@@ -293,6 +293,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
       {/* Favicon */}
       <link rel="icon" type="image/png" href="/favicon.png" />
+
+      {/* Google Fonts - M PLUS Rounded 1c */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+      />
 
       {/* PWA Splash Screen - shown only in standalone mode until app loads */}
       <div id="rox-splash-screen">
