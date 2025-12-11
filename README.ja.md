@@ -20,7 +20,7 @@
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-342%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -40,30 +40,11 @@
 
 ## ハイライト
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zap.svg" width="48" height="48" alt="Fast" /><br />
-      <b>超高速</b><br />
-      <sub>Bunランタイムで<br />最高のパフォーマンス</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="48" height="48" alt="Flexible" /><br />
-      <b>インフラ非依存</b><br />
-      <sub>VPS、Docker、<br />エッジ環境で動作</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/globe.svg" width="48" height="48" alt="Federated" /><br />
-      <b>完全連合</b><br />
-      <sub>Mastodon、Misskey<br />などと連携</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="48" height="48" alt="Secure" /><br />
-      <b>セキュア設計</b><br />
-      <sub>Passkey、OAuth、<br />ロールベース権限</sub>
-    </td>
-  </tr>
-</table>
+| | | | |
+|:---:|:---:|:---:|:---:|
+| ⚡ | 🖥️ | 🌐 | 🔒 |
+| **超高速** | **インフラ非依存** | **完全連合** | **セキュア設計** |
+| Bunランタイムで最高のパフォーマンス | VPS、Docker、エッジ環境で動作 | Mastodon、Misskeyなどと連携 | Passkey、OAuth、ロールベース権限 |
 
 ## 特徴
 

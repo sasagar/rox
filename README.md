@@ -20,7 +20,7 @@
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-342%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -40,30 +40,11 @@
 
 ## Highlights
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zap.svg" width="48" height="48" alt="Fast" /><br />
-      <b>Lightning Fast</b><br />
-      <sub>Built with Bun runtime<br />for maximum performance</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="48" height="48" alt="Flexible" /><br />
-      <b>Infrastructure Agnostic</b><br />
-      <sub>Run on VPS, Docker,<br />or edge environments</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/globe.svg" width="48" height="48" alt="Federated" /><br />
-      <b>Fully Federated</b><br />
-      <sub>Connect with Mastodon,<br />Misskey, and more</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="48" height="48" alt="Secure" /><br />
-      <b>Secure by Design</b><br />
-      <sub>Passkey, OAuth,<br />role-based permissions</sub>
-    </td>
-  </tr>
-</table>
+| | | | |
+|:---:|:---:|:---:|:---:|
+| ⚡ | 🖥️ | 🌐 | 🔒 |
+| **Lightning Fast** | **Infrastructure Agnostic** | **Fully Federated** | **Secure by Design** |
+| Built with Bun runtime for maximum performance | Run on VPS, Docker, or edge environments | Connect with Mastodon, Misskey, and more | Passkey, OAuth, role-based permissions |
 
 ## Features
 
