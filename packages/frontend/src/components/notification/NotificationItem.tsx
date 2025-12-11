@@ -85,6 +85,22 @@ function NotifierName({ notification }: { notification: Notification }) {
 }
 
 /**
+ * Render reaction emoji (handles both Unicode and custom emoji)
+ */
+function ReactionEmoji({ reaction }: { reaction: string }) {
+  // Custom emoji format: :emoji_name: or :emoji_name@host:
+  if (reaction.startsWith(":") && reaction.endsWith(":")) {
+    return (
+      <span className="inline-flex items-center">
+        <MfmRenderer text={reaction} plain />
+      </span>
+    );
+  }
+  // Unicode emoji - render directly with proper sizing
+  return <span className="text-lg align-middle">{reaction}</span>;
+}
+
+/**
  * Get notification message based on type
  */
 function NotificationMessage({ notification }: { notification: Notification }) {
@@ -109,8 +125,9 @@ function NotificationMessage({ notification }: { notification: Notification }) {
       );
     case "reaction":
       return (
-        <span>
-          <NotifierName notification={notification} /> <Trans>reacted with</Trans> {notification.reaction}
+        <span className="inline-flex items-center flex-wrap gap-1">
+          <NotifierName notification={notification} /> <Trans>reacted with</Trans>{" "}
+          {notification.reaction && <ReactionEmoji reaction={notification.reaction} />}
         </span>
       );
     case "renote":
