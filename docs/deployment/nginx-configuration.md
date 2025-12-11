@@ -26,6 +26,7 @@ Rox consists of two components served from the same domain:
                     │ /nodeinfo/*                         │
                     │ /users/*                            │
                     │ /notes/*                            │
+                    │ /inbox                              │
                     │                                     │
                     └────┬────────────────────────┬───────┘
                          │                        │
@@ -256,6 +257,28 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # ActivityPub Shared Inbox (IMPORTANT for federation)
+    # Many servers (e.g., Misskey) send public activities to the shared inbox
+    # rather than individual user inboxes. Without this, remote public posts
+    # will not be received.
+    location = /inbox {
+        proxy_pass http://rox_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Longer timeouts for ActivityPub processing
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 120s;
+        proxy_read_timeout 120s;
+
+        # Disable buffering for immediate processing
+        proxy_buffering off;
+        proxy_set_header Connection "";
     }
 
     # ===========================================
@@ -509,6 +532,19 @@ location /nginx_status {
 
 1. Increase `client_max_body_size`
 2. Check file permissions on upload directory
+
+#### Not receiving public posts from Misskey servers
+
+If direct messages work but public posts from Misskey servers are not received:
+
+1. Check that the `/inbox` location block is configured
+2. Misskey sends public activities to the shared inbox (`/inbox`), not individual user inboxes
+3. Verify nginx is routing `/inbox` to the backend:
+   ```bash
+   curl -X POST https://your-domain.com/inbox -H "Content-Type: application/json" -d '{}'
+   # Should return error from backend, not HTML from frontend
+   ```
+4. Check nginx access logs for `/inbox` requests - response size > 1KB with status 200 likely means it's hitting the frontend
 
 ## Performance Tuning
 
