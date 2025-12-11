@@ -209,6 +209,32 @@ describe("NodeInfo Endpoints", () => {
       expect(data.metadata.themeColor).toBe("#3b82f6");
     });
 
+    test("should use nodeInfoThemeColor when set (overriding primaryColor)", async () => {
+      settingsStore.set("theme.nodeInfoThemeColor", "#00ff00");
+
+      const res = await app.request("/nodeinfo/2.1");
+
+      expect(res.status).toBe(200);
+
+      const data = await res.json() as NodeInfoResponse;
+
+      // Should use nodeInfoThemeColor instead of primaryColor
+      expect(data.metadata.themeColor).toBe("#00ff00");
+    });
+
+    test("should fall back to primaryColor when nodeInfoThemeColor is null", async () => {
+      settingsStore.set("theme.nodeInfoThemeColor", null);
+
+      const res = await app.request("/nodeinfo/2.1");
+
+      expect(res.status).toBe(200);
+
+      const data = await res.json() as NodeInfoResponse;
+
+      // Should fall back to primaryColor (#ff6b6b)
+      expect(data.metadata.themeColor).toBe("#ff6b6b");
+    });
+
     test("should handle missing count methods gracefully", async () => {
       // Remove count methods - use type assertion for test purposes
       (mockUserRepository as { count: unknown }).count = undefined;

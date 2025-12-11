@@ -29,6 +29,7 @@ export type InstanceSettingKey =
   | "instance.sourceCodeUrl"
   | "theme.primaryColor"
   | "theme.darkMode"
+  | "theme.nodeInfoThemeColor"
   | "onboarding.completed";
 
 /**

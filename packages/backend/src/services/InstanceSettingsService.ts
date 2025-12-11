@@ -45,6 +45,8 @@ export interface InstanceMetadata {
 export interface ThemeSettings {
   primaryColor: string;
   darkMode: "light" | "dark" | "system";
+  /** Theme color for NodeInfo/external services (separate from internal primaryColor) */
+  nodeInfoThemeColor: string | null;
 }
 
 /**
@@ -81,6 +83,7 @@ const DEFAULT_METADATA: InstanceMetadata = {
 const DEFAULT_THEME: ThemeSettings = {
   primaryColor: "#3b82f6", // Blue as default
   darkMode: "system",
+  nodeInfoThemeColor: null, // Falls back to primaryColor when null
 };
 
 export class InstanceSettingsService {
@@ -630,6 +633,30 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get NodeInfo theme color (for external services like Misskey)
+   * Falls back to primaryColor if not set
+   */
+  async getNodeInfoThemeColor(): Promise<string | null> {
+    return this.getCachedValue<string | null>(
+      "theme.nodeInfoThemeColor",
+      DEFAULT_THEME.nodeInfoThemeColor,
+    );
+  }
+
+  /**
+   * Set NodeInfo theme color
+   * @param color - Hex color code or null to use primaryColor
+   */
+  async setNodeInfoThemeColor(color: string | null, updatedById?: string): Promise<void> {
+    if (color === null) {
+      await this.settingsRepository.delete("theme.nodeInfoThemeColor");
+    } else {
+      await this.settingsRepository.set("theme.nodeInfoThemeColor", color, updatedById);
+    }
+    await this.invalidateCache("theme.nodeInfoThemeColor");
+  }
+
+  /**
    * Get all theme settings
    */
   async getThemeSettings(): Promise<ThemeSettings> {
@@ -643,13 +670,20 @@ export class InstanceSettingsService {
       }
     }
 
-    const keys: InstanceSettingKey[] = ["theme.primaryColor", "theme.darkMode"];
+    const keys: InstanceSettingKey[] = [
+      "theme.primaryColor",
+      "theme.darkMode",
+      "theme.nodeInfoThemeColor",
+    ];
     const values = await this.settingsRepository.getMany(keys);
 
     const result: ThemeSettings = {
       primaryColor: (values.get("theme.primaryColor") as string) ?? DEFAULT_THEME.primaryColor,
       darkMode:
         (values.get("theme.darkMode") as "light" | "dark" | "system") ?? DEFAULT_THEME.darkMode,
+      nodeInfoThemeColor:
+        (values.get("theme.nodeInfoThemeColor") as string | null) ??
+        DEFAULT_THEME.nodeInfoThemeColor,
     };
 
     // Cache the result
@@ -671,6 +705,9 @@ export class InstanceSettingsService {
     if (settings.darkMode !== undefined) {
       await this.settingsRepository.set("theme.darkMode", settings.darkMode, updatedById);
       await this.invalidateCache("theme.darkMode");
+    }
+    if (settings.nodeInfoThemeColor !== undefined) {
+      await this.setNodeInfoThemeColor(settings.nodeInfoThemeColor, updatedById);
     }
   }
 

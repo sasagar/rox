@@ -45,6 +45,7 @@ interface AdminSettings {
   theme: {
     primaryColor: string;
     darkMode: "light" | "dark" | "system";
+    nodeInfoThemeColor: string | null;
   };
 }
 
@@ -708,6 +709,75 @@ export default function AdminSettingsPage() {
               <p className="mt-2 text-sm text-(--text-muted)">
                 <Trans>Users can still override this with their own preference</Trans>
               </p>
+            </div>
+
+            {/* External Theme Color */}
+            <div className="border-t border-(--border-color) pt-4">
+              <label className="block text-sm font-medium text-(--text-primary) mb-1">
+                <Trans>External Theme Color</Trans>
+              </label>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>
+                  This color is shown on external services like Misskey when displaying your instance info.
+                  Leave empty to use the primary color.
+                </Trans>
+              </p>
+
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={settings.theme.nodeInfoThemeColor !== null}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        theme: {
+                          ...settings.theme,
+                          nodeInfoThemeColor: e.target.checked ? settings.theme.primaryColor : null,
+                        },
+                      })
+                    }
+                    className="w-4 h-4 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
+                    disabled={isSaving}
+                  />
+                  <span className="text-sm text-(--text-primary)">
+                    <Trans>Use different color</Trans>
+                  </span>
+                </label>
+              </div>
+
+              {settings.theme.nodeInfoThemeColor !== null && (
+                <div className="flex items-center gap-3 mt-3">
+                  <input
+                    type="color"
+                    value={settings.theme.nodeInfoThemeColor}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, nodeInfoThemeColor: e.target.value },
+                      })
+                    }
+                    className="w-12 h-10 rounded cursor-pointer"
+                    disabled={isSaving}
+                  />
+                  <input
+                    type="text"
+                    value={settings.theme.nodeInfoThemeColor}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^#[0-9a-fA-F]{0,6}$/.test(value)) {
+                        setSettings({
+                          ...settings,
+                          theme: { ...settings.theme, nodeInfoThemeColor: value },
+                        });
+                      }
+                    }}
+                    placeholder="#ff6b6b"
+                    className="w-28 rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    disabled={isSaving}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Preview */}

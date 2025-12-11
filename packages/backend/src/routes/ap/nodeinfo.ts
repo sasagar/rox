@@ -121,7 +121,7 @@ app.get("/nodeinfo/2.1", async (c) => {
       tosUrl: metadata.tosUrl || null,
       privacyPolicyUrl: metadata.privacyPolicyUrl || null,
       iconUrl: metadata.iconUrl || null,
-      themeColor: theme.primaryColor || null,
+      themeColor: theme.nodeInfoThemeColor || theme.primaryColor || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });
@@ -188,7 +188,7 @@ app.get("/nodeinfo/2.0", async (c) => {
       tosUrl: metadata.tosUrl || null,
       privacyPolicyUrl: metadata.privacyPolicyUrl || null,
       iconUrl: metadata.iconUrl || null,
-      themeColor: theme.primaryColor || null,
+      themeColor: theme.nodeInfoThemeColor || theme.primaryColor || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });

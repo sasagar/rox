@@ -1069,9 +1069,13 @@ app.patch("/settings/instance", async (c) => {
  * ```json
  * {
  *   "primaryColor": "#3b82f6",
- *   "darkMode": "system"
+ *   "darkMode": "system",
+ *   "nodeInfoThemeColor": "#ff6b6b"
  * }
  * ```
+ *
+ * Note: nodeInfoThemeColor is used for external services (e.g., Misskey instance info).
+ * Set to null to use primaryColor as fallback.
  */
 app.patch("/settings/theme", async (c) => {
   const instanceSettingsService = c.get("instanceSettingsService");
@@ -1094,10 +1098,22 @@ app.patch("/settings/theme", async (c) => {
     }
   }
 
+  // Validate nodeInfoThemeColor (can be null to use primaryColor as fallback)
+  if (body.nodeInfoThemeColor !== undefined && body.nodeInfoThemeColor !== null) {
+    const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    if (!hexColorRegex.test(body.nodeInfoThemeColor)) {
+      return c.json(
+        { error: "nodeInfoThemeColor must be a valid hex color (e.g., #ff6b6b) or null" },
+        400,
+      );
+    }
+  }
+
   await instanceSettingsService.updateThemeSettings(
     {
       primaryColor: body.primaryColor,
       darkMode: body.darkMode,
+      nodeInfoThemeColor: body.nodeInfoThemeColor,
     },
     admin?.id,
   );
