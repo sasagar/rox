@@ -604,7 +604,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/user/UserProfile.tsx:468
+#: src/components/user/UserProfile.tsx:480
 msgid "Bot"
 msgstr "Bot"
 
@@ -736,6 +736,7 @@ msgstr "Click to upload (PNG, GIF, WebP, max 256KB)"
 
 #: src/components/drive/DrivePickerDialog.tsx:276
 #: src/components/report/ReportDialog.tsx:108
+#: src/components/user/UserQRCodeModal.tsx:140
 #: src/pages/admin/reports.tsx:388
 #: src/pages/mod/reports.tsx:365
 msgid "Close"
@@ -810,10 +811,22 @@ msgstr "Control your data and choose who sees your posts"
 msgid "Conversation thread"
 msgstr "Conversation thread"
 
+#: src/components/user/UserQRCodeModal.tsx:200
+msgid "Copied!"
+msgstr "Copied!"
+
+#: src/pages/interact.tsx:235
+msgid "Copy address"
+msgstr "Copy address"
+
 #: src/components/settings/InvitationCodeSection.tsx:261
 #: src/pages/admin/invitations.tsx:401
 msgid "Copy code"
 msgstr "Copy code"
+
+#: src/components/user/UserQRCodeModal.tsx:205
+msgid "Copy link"
+msgstr "Copy link"
 
 #: src/pages/legal/privacy.tsx:197
 msgid "Correct inaccurate data"
@@ -1133,7 +1146,7 @@ msgstr "Edit"
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
-#: src/components/user/UserProfile.tsx:417
+#: src/components/user/UserProfile.tsx:420
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -1265,11 +1278,15 @@ msgstr "Enter your invitation code to register"
 msgid "Enter your password"
 msgstr "Enter your password"
 
+#: src/pages/interact.tsx:187
+msgid "Enter your server to follow"
+msgstr "Enter your server to follow"
+
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:350
+#: src/components/user/UserProfile.tsx:352
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -1650,7 +1667,8 @@ msgstr "First detected"
 msgid "Folder name"
 msgstr "Folder name"
 
-#: src/components/user/UserProfile.tsx:440
+#: src/components/user/UserProfile.tsx:452
+#: src/pages/interact.tsx:212
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:502
 #: src/pages/search.tsx:517
@@ -1659,17 +1677,22 @@ msgstr "Folder name"
 msgid "Follow"
 msgstr "Follow"
 
+#. placeholder {0}: user.username
+#: src/pages/interact.tsx:142
+msgid "Follow @{0}"
+msgstr "Follow @{0}"
+
 #: src/components/notification/NotificationItem.tsx:95
 msgid "followed you"
 msgstr "followed you"
 
 #: src/components/note/NoteComposer.tsx:657
-#: src/components/user/UserProfile.tsx:507
+#: src/components/user/UserProfile.tsx:519
 msgid "Followers"
 msgstr "Followers"
 
-#: src/components/user/UserProfile.tsx:438
-#: src/components/user/UserProfile.tsx:519
+#: src/components/user/UserProfile.tsx:450
+#: src/components/user/UserProfile.tsx:531
 #: src/pages/search.tsx:510
 #: src/pages/search.tsx:590
 msgid "Following"
@@ -1683,7 +1706,7 @@ msgstr "Following and follower relationships"
 #~ msgid "Following successfully"
 #~ msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:433
+#: src/components/user/UserProfile.tsx:445
 msgid "Following..."
 msgstr "Following..."
 
@@ -1724,14 +1747,18 @@ msgid "Global"
 msgstr "Global"
 
 #: src/components/ErrorPage.tsx:88
-#: src/components/user/UserProfile.tsx:334
+#: src/components/user/UserProfile.tsx:336
 msgid "Go Back"
 msgstr "Go Back"
 
 #: src/components/ErrorPage.tsx:106
-#: src/components/user/UserProfile.tsx:337
+#: src/components/user/UserProfile.tsx:339
 msgid "Go Home"
 msgstr "Go Home"
+
+#: src/pages/interact.tsx:121
+msgid "Go to Home"
+msgstr "Go to Home"
 
 #: src/pages/onboarding.tsx:219
 msgid "Go to login"
@@ -2069,7 +2096,7 @@ msgstr "Load All ({0} more)"
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:229
-#: src/components/user/UserProfile.tsx:570
+#: src/components/user/UserProfile.tsx:582
 msgid "Load more"
 msgstr "Load more"
 
@@ -2093,7 +2120,7 @@ msgstr "Loading posts..."
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:226
-#: src/components/user/UserProfile.tsx:566
+#: src/components/user/UserProfile.tsx:578
 #: src/pages/admin/emojis.tsx:1263
 msgid "Loading..."
 msgstr "Loading..."
@@ -2346,6 +2373,10 @@ msgstr "New notification"
 msgid "Next"
 msgstr "Next"
 
+#: src/pages/interact.tsx:47
+msgid "No account specified"
+msgstr "No account specified"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "No aliases configured"
@@ -2449,7 +2480,7 @@ msgstr "No passkeys registered yet"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/user/UserProfile.tsx:546
+#: src/components/user/UserProfile.tsx:558
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -2612,6 +2643,10 @@ msgstr "Optional"
 msgid "Or continue with password"
 msgstr "Or continue with password"
 
+#: src/pages/interact.tsx:225
+msgid "Or copy the address"
+msgstr "Or copy the address"
+
 #: src/pages/admin/emojis.tsx:1581
 msgid "Or enter new category"
 msgstr "Or enter new category"
@@ -2688,6 +2723,10 @@ msgstr "Password must be at least 8 characters"
 #: src/pages/onboarding.tsx:102
 msgid "Passwords do not match"
 msgstr "Passwords do not match"
+
+#: src/pages/interact.tsx:245
+msgid "Paste this address in your app's search to find and follow this account"
+msgstr "Paste this address in your app's search to find and follow this account"
 
 #: src/pages/admin/reports.tsx:305
 #: src/pages/mod/reports.tsx:289
@@ -2774,8 +2813,8 @@ msgstr "Post illegal content or engage in illegal activities"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:495
-#: src/components/user/UserProfile.tsx:529
+#: src/components/user/UserProfile.tsx:507
+#: src/components/user/UserProfile.tsx:541
 #: src/pages/admin/federation.tsx:403
 msgid "Posts"
 msgstr "Posts"
@@ -2988,6 +3027,10 @@ msgstr "Recommended: 1500x500 pixels, max 5MB"
 #: src/components/settings/ProfileImageSection.tsx:266
 msgid "Recommended: Square image, max 2MB"
 msgstr "Recommended: Square image, max 2MB"
+
+#: src/pages/interact.tsx:207
+msgid "Redirecting..."
+msgstr "Redirecting..."
 
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
@@ -3383,6 +3426,10 @@ msgstr "Save Theme Settings"
 #: src/pages/settings.tsx:317
 msgid "Saving..."
 msgstr "Saving..."
+
+#: src/components/user/UserQRCodeModal.tsx:191
+msgid "Scan to follow from another server"
+msgstr "Scan to follow from another server"
 
 #: src/components/note/NoteComposer.tsx:1356
 msgid "Schedule"
@@ -3805,11 +3852,15 @@ msgstr "The job queue system is not currently configured or running."
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "The page you're looking for doesn't exist or has been moved."
 
+#: src/pages/interact.tsx:119
+msgid "The requested user could not be found."
+msgstr "The requested user could not be found."
+
 #: src/pages/503.tsx:16
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 
-#: src/components/user/UserProfile.tsx:319
+#: src/components/user/UserProfile.tsx:321
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
@@ -3914,7 +3965,7 @@ msgstr "This software is licensed under the GNU Affero General Public License ve
 msgid "This thread is closed."
 msgstr "This thread is closed."
 
-#: src/components/user/UserProfile.tsx:552
+#: src/components/user/UserProfile.tsx:564
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -4062,7 +4113,7 @@ msgstr "Unfollow"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:431
+#: src/components/user/UserProfile.tsx:443
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
@@ -4181,12 +4232,14 @@ msgid "User Moderation"
 msgstr "User Moderation"
 
 #: src/components/pages/MessageThreadPageClient.tsx:271
-#: src/components/user/UserProfile.tsx:351
+#: src/components/user/UserProfile.tsx:353
+#: src/pages/interact.tsx:59
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "User not found"
 
-#: src/components/user/UserProfile.tsx:314
+#: src/components/user/UserProfile.tsx:316
+#: src/pages/interact.tsx:115
 msgid "User Not Found"
 msgstr "User Not Found"
 
@@ -4472,7 +4525,7 @@ msgstr "You have reached your invitation limit"
 msgid "You have the right to:"
 msgstr "You have the right to:"
 
-#: src/components/user/UserProfile.tsx:550
+#: src/components/user/UserProfile.tsx:562
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
@@ -4497,7 +4550,7 @@ msgstr "You will receive notifications even when the browser is closed."
 msgid "You're all caught up!"
 msgstr "You're all caught up!"
 
-#: src/components/user/UserProfile.tsx:579
+#: src/components/user/UserProfile.tsx:591
 #: src/pages/mentions.tsx:152
 msgid "You've reached the end"
 msgstr "You've reached the end"
@@ -4549,6 +4602,10 @@ msgstr "Your public profile information"
 #: src/components/settings/DataExportSection.tsx:86
 msgid "Your Right to Data Portability"
 msgstr "Your Right to Data Portability"
+
+#: src/pages/interact.tsx:190
+msgid "Your server (e.g., mastodon.social)"
+msgstr "Your server (e.g., mastodon.social)"
 
 #: src/components/settings/StorageSection.tsx:354
 msgid "Your storage is full. Delete some files to upload more."

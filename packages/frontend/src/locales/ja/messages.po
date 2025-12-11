@@ -604,7 +604,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:468
+#: src/components/user/UserProfile.tsx:480
 msgid "Bot"
 msgstr "Bot"
 
@@ -736,6 +736,7 @@ msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）
 
 #: src/components/drive/DrivePickerDialog.tsx:276
 #: src/components/report/ReportDialog.tsx:108
+#: src/components/user/UserQRCodeModal.tsx:140
 #: src/pages/admin/reports.tsx:388
 #: src/pages/mod/reports.tsx:365
 msgid "Close"
@@ -810,10 +811,22 @@ msgstr "データを管理し、誰が投稿を見るかを選択できます"
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
+#: src/components/user/UserQRCodeModal.tsx:200
+msgid "Copied!"
+msgstr "コピーしました！"
+
+#: src/pages/interact.tsx:235
+msgid "Copy address"
+msgstr "アドレスをコピー"
+
 #: src/components/settings/InvitationCodeSection.tsx:261
 #: src/pages/admin/invitations.tsx:401
 msgid "Copy code"
 msgstr "コードをコピー"
+
+#: src/components/user/UserQRCodeModal.tsx:205
+msgid "Copy link"
+msgstr "リンクをコピー"
 
 #: src/pages/legal/privacy.tsx:197
 msgid "Correct inaccurate data"
@@ -1133,7 +1146,7 @@ msgstr "編集"
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
-#: src/components/user/UserProfile.tsx:417
+#: src/components/user/UserProfile.tsx:420
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -1265,11 +1278,15 @@ msgstr "登録には招待コードを入力してください"
 msgid "Enter your password"
 msgstr "パスワードを入力してください"
 
+#: src/pages/interact.tsx:187
+msgid "Enter your server to follow"
+msgstr "フォローするにはあなたのサーバーを入力"
+
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:350
+#: src/components/user/UserProfile.tsx:352
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -1650,7 +1667,8 @@ msgstr "初回検知"
 msgid "Folder name"
 msgstr "フォルダ名"
 
-#: src/components/user/UserProfile.tsx:440
+#: src/components/user/UserProfile.tsx:452
+#: src/pages/interact.tsx:212
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:502
 #: src/pages/search.tsx:517
@@ -1659,17 +1677,22 @@ msgstr "フォルダ名"
 msgid "Follow"
 msgstr "フォロー"
 
+#. placeholder {0}: user.username
+#: src/pages/interact.tsx:142
+msgid "Follow @{0}"
+msgstr "@{0}をフォロー"
+
 #: src/components/notification/NotificationItem.tsx:95
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
 #: src/components/note/NoteComposer.tsx:657
-#: src/components/user/UserProfile.tsx:507
+#: src/components/user/UserProfile.tsx:519
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/user/UserProfile.tsx:438
-#: src/components/user/UserProfile.tsx:519
+#: src/components/user/UserProfile.tsx:450
+#: src/components/user/UserProfile.tsx:531
 #: src/pages/search.tsx:510
 #: src/pages/search.tsx:590
 msgid "Following"
@@ -1683,7 +1706,7 @@ msgstr "フォローとフォロワーの関係"
 #~ msgid "Following successfully"
 #~ msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:433
+#: src/components/user/UserProfile.tsx:445
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -1724,14 +1747,18 @@ msgid "Global"
 msgstr "グローバル"
 
 #: src/components/ErrorPage.tsx:88
-#: src/components/user/UserProfile.tsx:334
+#: src/components/user/UserProfile.tsx:336
 msgid "Go Back"
 msgstr "戻る"
 
 #: src/components/ErrorPage.tsx:106
-#: src/components/user/UserProfile.tsx:337
+#: src/components/user/UserProfile.tsx:339
 msgid "Go Home"
 msgstr "ホームへ"
+
+#: src/pages/interact.tsx:121
+msgid "Go to Home"
+msgstr "ホームへ戻る"
 
 #: src/pages/onboarding.tsx:219
 msgid "Go to login"
@@ -2069,7 +2096,7 @@ msgstr "すべて読み込む（残り{0}件）"
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:229
-#: src/components/user/UserProfile.tsx:570
+#: src/components/user/UserProfile.tsx:582
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -2093,7 +2120,7 @@ msgstr "投稿を読み込み中..."
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:226
-#: src/components/user/UserProfile.tsx:566
+#: src/components/user/UserProfile.tsx:578
 #: src/pages/admin/emojis.tsx:1263
 msgid "Loading..."
 msgstr "読み込み中..."
@@ -2346,6 +2373,10 @@ msgstr "新しい通知"
 msgid "Next"
 msgstr "次へ"
 
+#: src/pages/interact.tsx:47
+msgid "No account specified"
+msgstr "アカウントが指定されていません"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "エイリアスが設定されていません"
@@ -2449,7 +2480,7 @@ msgstr "パスキーはまだ登録されていません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:546
+#: src/components/user/UserProfile.tsx:558
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -2612,6 +2643,10 @@ msgstr "任意"
 msgid "Or continue with password"
 msgstr "またはパスワードでログイン"
 
+#: src/pages/interact.tsx:225
+msgid "Or copy the address"
+msgstr "またはアドレスをコピー"
+
 #: src/pages/admin/emojis.tsx:1581
 msgid "Or enter new category"
 msgstr "または新しいカテゴリを入力"
@@ -2688,6 +2723,10 @@ msgstr "パスワードは8文字以上必要です"
 #: src/pages/onboarding.tsx:102
 msgid "Passwords do not match"
 msgstr "パスワードが一致しません"
+
+#: src/pages/interact.tsx:245
+msgid "Paste this address in your app's search to find and follow this account"
+msgstr "アプリの検索欄にこのアドレスを貼り付けて、このアカウントを見つけてフォローできます"
 
 #: src/pages/admin/reports.tsx:305
 #: src/pages/mod/reports.tsx:289
@@ -2774,8 +2813,8 @@ msgstr "違法なコンテンツの投稿や違法行為への関与"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:495
-#: src/components/user/UserProfile.tsx:529
+#: src/components/user/UserProfile.tsx:507
+#: src/components/user/UserProfile.tsx:541
 #: src/pages/admin/federation.tsx:403
 msgid "Posts"
 msgstr "投稿"
@@ -2988,6 +3027,10 @@ msgstr "推奨: 1500x500ピクセル、最大5MB"
 #: src/components/settings/ProfileImageSection.tsx:266
 msgid "Recommended: Square image, max 2MB"
 msgstr "推奨: 正方形の画像、最大2MB"
+
+#: src/pages/interact.tsx:207
+msgid "Redirecting..."
+msgstr "リダイレクト中..."
 
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
@@ -3383,6 +3426,10 @@ msgstr "テーマ設定を保存"
 #: src/pages/settings.tsx:317
 msgid "Saving..."
 msgstr "保存中..."
+
+#: src/components/user/UserQRCodeModal.tsx:191
+msgid "Scan to follow from another server"
+msgstr "他のサーバーからフォローするにはスキャン"
 
 #: src/components/note/NoteComposer.tsx:1356
 msgid "Schedule"
@@ -3805,11 +3852,15 @@ msgstr "ジョブキューシステムは現在設定されていないか、実
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "お探しのページは存在しないか、移動されました。"
 
+#: src/pages/interact.tsx:119
+msgid "The requested user could not be found."
+msgstr "指定されたユーザーが見つかりませんでした。"
+
 #: src/pages/503.tsx:16
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "メンテナンスまたは高負荷のため、サーバーは一時的に利用できません。数分後に再度お試しください。"
 
-#: src/components/user/UserProfile.tsx:319
+#: src/components/user/UserProfile.tsx:321
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
@@ -3914,7 +3965,7 @@ msgstr "このソフトウェアはGNU Affero General Public License version 3.0
 msgid "This thread is closed."
 msgstr "このスレッドは終了しました。"
 
-#: src/components/user/UserProfile.tsx:552
+#: src/components/user/UserProfile.tsx:564
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -4062,7 +4113,7 @@ msgstr "フォロー解除"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:431
+#: src/components/user/UserProfile.tsx:443
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -4181,12 +4232,14 @@ msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
 #: src/components/pages/MessageThreadPageClient.tsx:271
-#: src/components/user/UserProfile.tsx:351
+#: src/components/user/UserProfile.tsx:353
+#: src/pages/interact.tsx:59
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
-#: src/components/user/UserProfile.tsx:314
+#: src/components/user/UserProfile.tsx:316
+#: src/pages/interact.tsx:115
 msgid "User Not Found"
 msgstr "ユーザーが見つかりません"
 
@@ -4472,7 +4525,7 @@ msgstr "招待コードの作成上限に達しました"
 msgid "You have the right to:"
 msgstr "以下の権利があります："
 
-#: src/components/user/UserProfile.tsx:550
+#: src/components/user/UserProfile.tsx:562
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
@@ -4497,7 +4550,7 @@ msgstr "ブラウザを閉じていても通知を受け取ることができま
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
-#: src/components/user/UserProfile.tsx:579
+#: src/components/user/UserProfile.tsx:591
 #: src/pages/mentions.tsx:152
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
@@ -4549,6 +4602,10 @@ msgstr "公開プロフィール情報"
 #: src/components/settings/DataExportSection.tsx:86
 msgid "Your Right to Data Portability"
 msgstr "データポータビリティの権利"
+
+#: src/pages/interact.tsx:190
+msgid "Your server (e.g., mastodon.social)"
+msgstr "あなたのサーバー（例: mastodon.social）"
 
 #: src/components/settings/StorageSection.tsx:354
 msgid "Your storage is full. Delete some files to upload more."

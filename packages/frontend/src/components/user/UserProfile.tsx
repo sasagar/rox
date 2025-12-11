@@ -8,7 +8,7 @@ import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient, ApiError } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Flag } from "lucide-react";
+import { Flag, QrCode } from "lucide-react";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -20,6 +20,7 @@ import { Layout } from "../layout/Layout";
 import { ReportDialog } from "../report/ReportDialog";
 import { RoleBadgeList } from "./RoleBadge";
 import { FollowListModal } from "./FollowListModal";
+import { UserQRCodeModal } from "./UserQRCodeModal";
 import { useRouter } from "../ui/SpaLink";
 
 /**
@@ -111,6 +112,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [publicRoles, setPublicRoles] = useState<PublicRole[]>([]);
   const [showFollowList, setShowFollowList] = useState<"followers" | "following" | null>(null);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
@@ -408,14 +410,24 @@ export function UserProfile({ username, host }: UserProfileProps) {
               {/* Action Buttons */}
               <div className="flex-1 flex justify-end gap-1 sm:gap-2 flex-wrap">
                 {isOwnProfile ? (
-                  <Button
-                    variant="secondary"
-                    onPress={() => {
-                      router.push("/settings");
-                    }}
-                  >
-                    <Trans>Edit Profile</Trans>
-                  </Button>
+                  <>
+                    <Button
+                      variant="secondary"
+                      onPress={() => {
+                        router.push("/settings");
+                      }}
+                    >
+                      <Trans>Edit Profile</Trans>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onPress={() => setShowQRCode(true)}
+                      aria-label="Show QR Code"
+                      className="text-gray-500 dark:text-gray-400"
+                    >
+                      <QrCode className="w-5 h-5" />
+                    </Button>
+                  </>
                 ) : currentUser ? (
                   <>
                     <Button
@@ -598,6 +610,13 @@ export function UserProfile({ username, host }: UserProfileProps) {
         userId={user.id}
         type={showFollowList || "followers"}
         username={user.username}
+      />
+
+      {/* QR Code Modal */}
+      <UserQRCodeModal
+        isOpen={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        user={user}
       />
     </Layout>
   );
