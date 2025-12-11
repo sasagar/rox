@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import {
@@ -16,16 +16,24 @@ import {
   Heart,
   Flag,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { Button } from "./Button";
 import { Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components";
 import {
   emojiListAtom,
   emojiCategoriesAtom,
+  emojisByCategoryAtom,
+  emojiLoadingAtom,
   fetchEmojisAtom,
   type CustomEmoji,
 } from "../../lib/atoms/customEmoji";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
+
+/**
+ * Number of emojis to render per page for virtualization
+ */
+const EMOJIS_PER_PAGE = 100;
 
 /**
  * Emoji categories with their emojis
@@ -716,15 +724,20 @@ export interface EmojiPickerProps {
  * ```
  */
 export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerProps) {
-  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | "custom">("smileys");
+  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | string>("smileys");
+  const [selectedCustomCategory, setSelectedCustomCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(EMOJIS_PER_PAGE);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const emojiGridRef = useRef<HTMLDivElement>(null);
 
   // Custom emoji state
-  const [customEmojis] = useAtom(emojiListAtom);
-  const [_customCategories] = useAtom(emojiCategoriesAtom); // Reserved for future category filtering
+  const customEmojis = useAtomValue(emojiListAtom);
+  const customCategories = useAtomValue(emojiCategoriesAtom);
+  const emojisByCategory = useAtomValue(emojisByCategoryAtom);
+  const isLoadingEmojis = useAtomValue(emojiLoadingAtom);
   const fetchEmojis = useSetAtom(fetchEmojisAtom);
 
   // Load recent emojis from localStorage
@@ -744,68 +757,115 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     fetchEmojis();
   }, [fetchEmojis]);
 
+  // Reset visible count when category changes
+  useEffect(() => {
+    setVisibleCount(EMOJIS_PER_PAGE);
+  }, [selectedCategory, selectedCustomCategory, searchQuery]);
+
+  // Handle scroll to load more emojis
+  const handleScroll = useCallback(() => {
+    if (!emojiGridRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = emojiGridRef.current;
+    if (scrollHeight - scrollTop - clientHeight < 200) {
+      setVisibleCount((prev) => prev + EMOJIS_PER_PAGE);
+    }
+  }, []);
+
   // Save emoji to recent emojis
-  const saveToRecent = (emoji: string) => {
+  const saveToRecent = useCallback((emoji: string) => {
     try {
-      const updated = [emoji, ...recentEmojis.filter((e) => e !== emoji)].slice(
-        0,
-        MAX_RECENT_EMOJIS,
-      );
-      setRecentEmojis(updated);
-      localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
+      setRecentEmojis((prev) => {
+        const updated = [emoji, ...prev.filter((e) => e !== emoji)].slice(0, MAX_RECENT_EMOJIS);
+        localStorage.setItem(RECENT_EMOJIS_KEY, JSON.stringify(updated));
+        return updated;
+      });
     } catch (error) {
       console.error("Failed to save recent emoji:", error);
     }
-  };
+  }, []);
 
-  const handleEmojiClick = (emoji: string) => {
-    saveToRecent(emoji);
-    onEmojiSelect(emoji);
-    setIsOpen(false);
-  };
+  const handleEmojiClick = useCallback(
+    (emoji: string) => {
+      saveToRecent(emoji);
+      onEmojiSelect(emoji);
+      setIsOpen(false);
+    },
+    [saveToRecent, onEmojiSelect],
+  );
 
   // Handle custom emoji click (inserts :name: format)
-  const handleCustomEmojiClick = (emoji: CustomEmoji) => {
-    const emojiCode = `:${emoji.name}:`;
-    saveToRecent(emojiCode);
-    onEmojiSelect(emojiCode);
-    setIsOpen(false);
-  };
+  const handleCustomEmojiClick = useCallback(
+    (emoji: CustomEmoji) => {
+      const emojiCode = `:${emoji.name}:`;
+      saveToRecent(emojiCode);
+      onEmojiSelect(emojiCode);
+      setIsOpen(false);
+    },
+    [saveToRecent, onEmojiSelect],
+  );
+
+  // Check if currently viewing custom emojis
+  const isCustomCategory = selectedCategory === "custom";
 
   // Get emojis for the selected category
-  const getEmojisForCategory = (): string[] => {
+  const getEmojisForCategory = useMemo((): string[] => {
     if (selectedCategory === "recent") {
       return recentEmojis;
     }
-    if (selectedCategory === "custom") {
+    if (isCustomCategory) {
       return []; // Custom emojis are handled separately
     }
-    return [...EMOJI_CATEGORIES[selectedCategory].emojis];
-  };
+    if (selectedCategory in EMOJI_CATEGORIES) {
+      return [...EMOJI_CATEGORIES[selectedCategory as EmojiCategory].emojis];
+    }
+    return [];
+  }, [selectedCategory, recentEmojis, isCustomCategory]);
 
-  // Get custom emojis for current view
-  const getCustomEmojisForCategory = (): CustomEmoji[] => {
-    if (selectedCategory !== "custom") {
+  // Get custom emojis for current view (filtered by selected custom category)
+  const getCustomEmojisForCategory = useMemo((): CustomEmoji[] => {
+    if (!isCustomCategory) {
       return [];
     }
-    return customEmojis;
-  };
+    if (selectedCustomCategory === null) {
+      // Show all custom emojis
+      return customEmojis;
+    }
+    // Show emojis for specific category
+    return emojisByCategory.get(selectedCustomCategory) || [];
+  }, [isCustomCategory, selectedCustomCategory, customEmojis, emojisByCategory]);
 
   // Filter emojis by search query
-  const filteredEmojis = searchQuery
-    ? Object.values(EMOJI_CATEGORIES)
+  const filteredEmojis = useMemo(() => {
+    if (searchQuery) {
+      return Object.values(EMOJI_CATEGORIES)
         .flatMap((cat) => cat.emojis)
-        .filter((emoji) => emoji.includes(searchQuery))
-    : getEmojisForCategory();
+        .filter((emoji) => emoji.includes(searchQuery));
+    }
+    return getEmojisForCategory;
+  }, [searchQuery, getEmojisForCategory]);
 
   // Filter custom emojis by search query
-  const filteredCustomEmojis = searchQuery
-    ? customEmojis.filter(
+  const filteredCustomEmojis = useMemo(() => {
+    if (searchQuery) {
+      return customEmojis.filter(
         (emoji) =>
           emoji.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           emoji.aliases.some((alias) => alias.toLowerCase().includes(searchQuery.toLowerCase())),
-      )
-    : getCustomEmojisForCategory();
+      );
+    }
+    return getCustomEmojisForCategory;
+  }, [searchQuery, customEmojis, getCustomEmojisForCategory]);
+
+  // Paginated emojis for display
+  const displayedEmojis = useMemo(
+    () => filteredEmojis.slice(0, visibleCount),
+    [filteredEmojis, visibleCount],
+  );
+
+  const displayedCustomEmojis = useMemo(
+    () => filteredCustomEmojis.slice(0, visibleCount),
+    [filteredCustomEmojis, visibleCount],
+  );
 
   // Focus search input when modal opens
   useEffect(() => {
@@ -910,18 +970,72 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   </div>
                 )}
 
+                {/* Custom emoji category tabs (when custom category is selected) */}
+                {!searchQuery && isCustomCategory && customCategories.length > 0 && (
+                  <div className="flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                    <button
+                      onClick={() => setSelectedCustomCategory(null)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                        selectedCustomCategory === null
+                          ? "bg-primary-500 text-white"
+                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      <Trans>All</Trans>
+                    </button>
+                    {customCategories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCustomCategory(category)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                          selectedCustomCategory === category
+                            ? "bg-primary-500 text-white"
+                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                    {/* Show uncategorized if exists */}
+                    {emojisByCategory.has("") && (
+                      <button
+                        onClick={() => setSelectedCustomCategory("")}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                          selectedCustomCategory === ""
+                            ? "bg-primary-500 text-white"
+                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        <Trans>Uncategorized</Trans>
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 {/* Emoji grid */}
-                <div className="flex-1 overflow-y-auto p-4">
+                <div
+                  ref={emojiGridRef}
+                  className="flex-1 overflow-y-auto p-4"
+                  onScroll={handleScroll}
+                >
+                  {/* Loading state */}
+                  {isLoadingEmojis && isCustomCategory && (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                    </div>
+                  )}
+
                   {/* Custom emojis when searching or custom category selected */}
-                  {filteredCustomEmojis.length > 0 && (
+                  {displayedCustomEmojis.length > 0 && (
                     <>
                       {searchQuery && (
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                           <Trans>Custom Emojis</Trans>
+                          <span className="ml-1 text-xs">({filteredCustomEmojis.length})</span>
                         </h3>
                       )}
                       <div className="grid grid-cols-8 gap-2 mb-4">
-                        {filteredCustomEmojis.map((emoji) => (
+                        {displayedCustomEmojis.map((emoji) => (
                           <button
                             key={emoji.id}
                             onClick={() => handleCustomEmojiClick(emoji)}
@@ -938,19 +1052,27 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           </button>
                         ))}
                       </div>
+                      {/* Show load more indicator */}
+                      {displayedCustomEmojis.length < filteredCustomEmojis.length && (
+                        <div className="text-center py-2 text-xs text-gray-400">
+                          <Trans>Scroll for more...</Trans> ({displayedCustomEmojis.length}/
+                          {filteredCustomEmojis.length})
+                        </div>
+                      )}
                     </>
                   )}
 
                   {/* Unicode emojis */}
-                  {filteredEmojis.length > 0 && (
+                  {displayedEmojis.length > 0 && (
                     <>
-                      {searchQuery && filteredCustomEmojis.length > 0 && (
+                      {searchQuery && displayedCustomEmojis.length > 0 && (
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                           <Trans>Standard Emojis</Trans>
+                          <span className="ml-1 text-xs">({filteredEmojis.length})</span>
                         </h3>
                       )}
                       <div className="grid grid-cols-8 gap-2">
-                        {filteredEmojis.map((emoji, index) => (
+                        {displayedEmojis.map((emoji, index) => (
                           <button
                             key={`${emoji}-${index}`}
                             onClick={() => handleEmojiClick(emoji)}
@@ -962,11 +1084,18 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           </button>
                         ))}
                       </div>
+                      {/* Show load more indicator */}
+                      {displayedEmojis.length < filteredEmojis.length && (
+                        <div className="text-center py-2 text-xs text-gray-400">
+                          <Trans>Scroll for more...</Trans> ({displayedEmojis.length}/
+                          {filteredEmojis.length})
+                        </div>
+                      )}
                     </>
                   )}
 
                   {/* Empty state */}
-                  {filteredEmojis.length === 0 && filteredCustomEmojis.length === 0 && (
+                  {displayedEmojis.length === 0 && displayedCustomEmojis.length === 0 && !isLoadingEmojis && (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                       <Smile className="w-12 h-12 mb-2" />
                       <p className="text-sm">

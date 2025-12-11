@@ -383,6 +383,7 @@ msgstr "エイリアスを削除しました"
 msgid "Aliases"
 msgstr "エイリアス"
 
+#: src/components/ui/EmojiPicker.tsx:984
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
 #: src/pages/admin/users.tsx:397
@@ -884,7 +885,7 @@ msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
-#: src/components/ui/EmojiPicker.tsx:920
+#: src/components/ui/EmojiPicker.tsx:1033
 #: src/pages/admin/emojis.tsx:759
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
@@ -1176,7 +1177,7 @@ msgstr "絵文字 \":{name}:\" を追加しました"
 msgid "Emoji names are derived from filenames if no meta.json is provided"
 msgstr "meta.jsonがない場合、絵文字名はファイル名から生成されます"
 
-#: src/components/ui/EmojiPicker.tsx:839
+#: src/components/ui/EmojiPicker.tsx:899
 msgid "Emoji Picker"
 msgstr "絵文字ピッカー"
 
@@ -2366,7 +2367,7 @@ msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
 #: src/components/note/NoteComposer.tsx:963
-#: src/components/ui/EmojiPicker.tsx:973
+#: src/components/ui/EmojiPicker.tsx:1102
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
@@ -3389,6 +3390,11 @@ msgstr "予約投稿"
 msgid "Scheduled time must be in the future"
 msgstr "予約時刻は現在時刻より後に設定してください"
 
+#: src/components/ui/EmojiPicker.tsx:1058
+#: src/components/ui/EmojiPicker.tsx:1090
+msgid "Scroll for more..."
+msgstr "スクロールして続きを表示..."
+
 #: src/components/layout/Sidebar.tsx:97
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:334
@@ -3396,7 +3402,7 @@ msgstr "予約時刻は現在時刻より後に設定してください"
 msgid "Search"
 msgstr "検索"
 
-#: src/components/ui/EmojiPicker.tsx:856
+#: src/components/ui/EmojiPicker.tsx:916
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
 
@@ -3633,7 +3639,7 @@ msgstr "ソースコードURL（AGPL-3.0準拠）"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:949
+#: src/components/ui/EmojiPicker.tsx:1070
 msgid "Standard Emojis"
 msgstr "標準絵文字"
 
@@ -4021,6 +4027,7 @@ msgstr "ブロック解除"
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
+#: src/components/ui/EmojiPicker.tsx:1009
 #: src/pages/admin/emojis.tsx:1570
 msgid "Uncategorized"
 msgstr "未分類"

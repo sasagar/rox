@@ -383,6 +383,7 @@ msgstr "Alias removed successfully"
 msgid "Aliases"
 msgstr "Aliases"
 
+#: src/components/ui/EmojiPicker.tsx:984
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
 #: src/pages/admin/users.tsx:397
@@ -884,7 +885,7 @@ msgstr "Custom CSS applied to the entire app (max 10KB)"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
-#: src/components/ui/EmojiPicker.tsx:920
+#: src/components/ui/EmojiPicker.tsx:1033
 #: src/pages/admin/emojis.tsx:759
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
@@ -1176,7 +1177,7 @@ msgstr "Emoji \":{name}:\" added successfully"
 msgid "Emoji names are derived from filenames if no meta.json is provided"
 msgstr "Emoji names are derived from filenames if no meta.json is provided"
 
-#: src/components/ui/EmojiPicker.tsx:839
+#: src/components/ui/EmojiPicker.tsx:899
 msgid "Emoji Picker"
 msgstr "Emoji Picker"
 
@@ -2366,7 +2367,7 @@ msgid "No drafts saved"
 msgstr "No drafts saved"
 
 #: src/components/note/NoteComposer.tsx:963
-#: src/components/ui/EmojiPicker.tsx:973
+#: src/components/ui/EmojiPicker.tsx:1102
 msgid "No emojis found"
 msgstr "No emojis found"
 
@@ -3389,6 +3390,11 @@ msgstr "Schedule post"
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
+#: src/components/ui/EmojiPicker.tsx:1058
+#: src/components/ui/EmojiPicker.tsx:1090
+msgid "Scroll for more..."
+msgstr "Scroll for more..."
+
 #: src/components/layout/Sidebar.tsx:97
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:334
@@ -3396,7 +3402,7 @@ msgstr "Scheduled time must be in the future"
 msgid "Search"
 msgstr "Search"
 
-#: src/components/ui/EmojiPicker.tsx:856
+#: src/components/ui/EmojiPicker.tsx:916
 msgid "Search emoji..."
 msgstr "Search emoji..."
 
@@ -3633,7 +3639,7 @@ msgstr "Source Code URL (AGPL-3.0 Compliance)"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:949
+#: src/components/ui/EmojiPicker.tsx:1070
 msgid "Standard Emojis"
 msgstr "Standard Emojis"
 
@@ -4021,6 +4027,7 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
+#: src/components/ui/EmojiPicker.tsx:1009
 #: src/pages/admin/emojis.tsx:1570
 msgid "Uncategorized"
 msgstr "Uncategorized"

@@ -108,6 +108,7 @@ export const emojiErrorAtom = atom<string | null>(null);
 
 /**
  * Fetch emoji list action atom
+ * Fetches all emojis with pagination to handle large emoji sets
  */
 export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false) => {
   // Check cache validity
@@ -122,22 +123,67 @@ export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false)
   set(emojiErrorAtom, null);
 
   try {
-    const response = await apiClient.get<{ emojis: CustomEmoji[] }>("/api/emojis");
-    const emojis = response.emojis;
+    // Fetch emojis with pagination to handle large sets
+    const allEmojis: CustomEmoji[] = [];
+    let offset = 0;
+    const limit = 500; // Fetch in batches of 500
+    let hasMore = true;
+
+    while (hasMore) {
+      const response = await apiClient.get<{
+        emojis: CustomEmoji[];
+        total: number;
+        limit: number;
+        offset: number;
+      }>(`/api/emojis?limit=${limit}&offset=${offset}`);
+
+      allEmojis.push(...response.emojis);
+      offset += response.emojis.length;
+      hasMore = offset < response.total;
+    }
 
     // Update cache
     set(emojiCacheAtom, {
-      emojis,
+      emojis: allEmojis,
       timestamp: now,
     });
 
     set(emojiLoadingAtom, false);
-    return emojis;
+    return allEmojis;
   } catch (error) {
     set(emojiLoadingAtom, false);
     set(emojiErrorAtom, error instanceof Error ? error.message : "Failed to load emojis");
     throw error;
   }
+});
+
+/**
+ * Emojis grouped by category atom
+ * Groups emojis by their category for efficient display
+ */
+export const emojisByCategoryAtom = atom<Map<string, CustomEmoji[]>>((get) => {
+  const emojis = get(emojiListAtom);
+  const map = new Map<string, CustomEmoji[]>();
+
+  // Group for uncategorized emojis
+  const uncategorized: CustomEmoji[] = [];
+
+  for (const emoji of emojis) {
+    if (emoji.category) {
+      const existing = map.get(emoji.category) || [];
+      existing.push(emoji);
+      map.set(emoji.category, existing);
+    } else {
+      uncategorized.push(emoji);
+    }
+  }
+
+  // Add uncategorized at the end if any
+  if (uncategorized.length > 0) {
+    map.set("", uncategorized);
+  }
+
+  return map;
 });
 
 /**
