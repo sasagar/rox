@@ -43,6 +43,13 @@
       "when": 1765334998862,
       "tag": "0005_nosy_enchantress",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765473763966,
+      "tag": "0006_sweet_switch",
+      "breakpoints": true
     }
   ]
 }

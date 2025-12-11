@@ -50,6 +50,7 @@ export const pushApi = {
    */
   async subscribe(
     subscription: PushSubscription,
+    language?: string,
   ): Promise<{ success: boolean; subscription?: PushSubscriptionInfo }> {
     const json = subscription.toJSON();
     return apiClient.post("/api/push/subscribe", {
@@ -58,6 +59,7 @@ export const pushApi = {
         p256dh: json.keys?.p256dh,
         auth: json.keys?.auth,
       },
+      language,
     });
   },
 

@@ -47,6 +47,12 @@ push.get("/status", (c: Context) => {
 /**
  * Subscribe to push notifications
  * POST /api/push/subscribe
+ *
+ * Body:
+ * - endpoint: string (required) - Push service endpoint URL
+ * - keys.p256dh: string (required) - Client public key
+ * - keys.auth: string (required) - Auth secret
+ * - language: string (optional) - Preferred language for notifications (e.g., "en", "ja")
  */
 push.post("/subscribe", requireAuth(), async (c: Context) => {
   const user = c.get("user") as User;
@@ -65,6 +71,9 @@ push.post("/subscribe", requireAuth(), async (c: Context) => {
       return c.json({ error: "Invalid subscription data" }, 400);
     }
 
+    // Validate language if provided (only allow supported languages)
+    const language = body.language && ["en", "ja"].includes(body.language) ? body.language : undefined;
+
     const subscription = await webPushService.subscribe(
       user.id,
       {
@@ -75,6 +84,7 @@ push.post("/subscribe", requireAuth(), async (c: Context) => {
         },
       },
       c.req.header("user-agent"),
+      language,
     );
 
     return c.json({
@@ -82,6 +92,7 @@ push.post("/subscribe", requireAuth(), async (c: Context) => {
       subscription: {
         id: subscription.id,
         endpoint: subscription.endpoint,
+        language: subscription.language,
         createdAt: subscription.createdAt,
       },
     });

@@ -36,6 +36,8 @@ export interface UISettings {
   theme?: "light" | "dark" | "system";
   /** Custom CSS applied to the entire app (for this user only) */
   appCustomCss?: string;
+  /** Preferred language for notifications and emails */
+  language?: "en" | "ja";
 }
 
 /**
@@ -619,7 +621,8 @@ export type NotificationType =
   | "renote"
   | "warning"
   | "follow_request_accepted"
-  | "quote";
+  | "quote"
+  | "dm";
 
 // Notifications table
 export const notifications = pgTable(
@@ -660,6 +663,7 @@ export const pushSubscriptions = pgTable(
     p256dh: text("p256dh").notNull(), // Client public key for encryption
     auth: text("auth").notNull(), // Auth secret for encryption
     userAgent: text("user_agent"), // Browser/device info for management
+    language: text("language"), // User's preferred language for notifications (en, ja)
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

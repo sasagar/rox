@@ -284,6 +284,34 @@ export class NotificationService {
   }
 
   /**
+   * Create a direct message notification
+   *
+   * @param recipientId - User who received the DM
+   * @param senderId - User who sent the DM
+   * @param noteId - DM note ID
+   */
+  async createDMNotification(
+    recipientId: string,
+    senderId: string,
+    noteId: string,
+  ): Promise<Notification | null> {
+    // Don't notify yourself
+    if (recipientId === senderId) {
+      return null;
+    }
+
+    const notification = await this.notificationRepository.create({
+      userId: recipientId,
+      type: "dm",
+      notifierId: senderId,
+      noteId,
+    });
+
+    await this.pushToStream(notification);
+    return notification;
+  }
+
+  /**
    * Get notifications for a user with populated user data
    *
    * @param userId - User ID
@@ -446,16 +474,16 @@ export class NotificationService {
       );
       streamService.pushUnreadCount(notification.userId, unreadCount);
 
-      // Send Web Push notification if available
+      // Send Web Push notification if available (with localization support)
       if (this.webPushService?.isAvailable()) {
         try {
-          const payload = await this.webPushService.createPayload(
+          await this.webPushService.sendToUserWithLocalization(
+            notification.userId,
             notification.type,
             notifierName,
             notification.id,
             notification.noteId,
           );
-          await this.webPushService.sendToUser(notification.userId, payload);
         } catch (pushError) {
           logger.error({ err: pushError }, "Failed to send web push notification");
         }

@@ -111,6 +111,7 @@ export class WebPushService {
     userId: string,
     subscription: PushSubscriptionData,
     userAgent?: string,
+    language?: string,
   ): Promise<PushSubscription> {
     const { pushSubscriptions } = await import("../db/schema/pg.js");
 
@@ -130,6 +131,7 @@ export class WebPushService {
           p256dh: subscription.keys.p256dh,
           auth: subscription.keys.auth,
           userAgent,
+          language,
           updatedAt: new Date(),
         })
         .where(eq(pushSubscriptions.endpoint, subscription.endpoint))
@@ -147,6 +149,7 @@ export class WebPushService {
       p256dh: subscription.keys.p256dh,
       auth: subscription.keys.auth,
       userAgent,
+      language,
     };
 
     const [created] = await this.db.insert(pushSubscriptions).values(newSubscription).returning();
@@ -302,6 +305,54 @@ export class WebPushService {
 
   /**
    * Send push notification to all subscriptions of a user
+   * Each subscription may have a different language preference
+   */
+  async sendToUserWithLocalization(
+    userId: string,
+    type: NotificationType,
+    notifierName: string | null,
+    notificationId: string,
+    noteId?: string | null,
+  ): Promise<number> {
+    if (!this.vapidConfigured) {
+      return 0;
+    }
+
+    const subscriptions = await this.getSubscriptions(userId);
+
+    if (subscriptions.length === 0) {
+      return 0;
+    }
+
+    let successCount = 0;
+    await Promise.all(
+      subscriptions.map(async (subscription) => {
+        // Create localized payload for each subscription's language
+        const payload = await this.createPayload(
+          type,
+          notifierName,
+          notificationId,
+          noteId,
+          subscription.language || "en",
+        );
+        const success = await this.sendToSubscription(subscription, payload);
+        if (success) {
+          successCount++;
+        }
+      }),
+    );
+
+    logger.info(
+      { userId, total: subscriptions.length, success: successCount },
+      "Push notifications sent to user",
+    );
+
+    return successCount;
+  }
+
+  /**
+   * Send push notification to all subscriptions of a user (legacy - uses default English)
+   * @deprecated Use sendToUserWithLocalization for localized notifications
    */
   async sendToUser(userId: string, payload: PushNotificationPayload): Promise<number> {
     if (!this.vapidConfigured) {
@@ -333,6 +384,46 @@ export class WebPushService {
   }
 
   /**
+   * Localized notification message functions
+   */
+  private readonly localizedMessages = {
+    en: {
+      follow: (name: string) => `${name} followed you`,
+      mention: (name: string) => `${name} mentioned you`,
+      reply: (name: string) => `${name} replied to your note`,
+      reaction: (name: string) => `${name} reacted to your note`,
+      renote: (name: string) => `${name} renoted your note`,
+      quote: (name: string) => `${name} quoted your note`,
+      warning: () => "You have received a warning from the moderators",
+      follow_request_accepted: (name: string) => `${name} accepted your follow request`,
+      dm: (name: string) => `${name} sent you a direct message`,
+      default: () => "You have a new notification",
+    },
+    ja: {
+      follow: (name: string) => `${name}さんにフォローされました`,
+      mention: (name: string) => `${name}さんからメンションされました`,
+      reply: (name: string) => `${name}さんから返信がありました`,
+      reaction: (name: string) => `${name}さんがリアクションしました`,
+      renote: (name: string) => `${name}さんがリノートしました`,
+      quote: (name: string) => `${name}さんが引用しました`,
+      warning: () => "モデレーターから警告を受けました",
+      follow_request_accepted: (name: string) => `${name}さんがフォローリクエストを承認しました`,
+      dm: (name: string) => `${name}さんからダイレクトメッセージが届きました`,
+      default: () => "新しい通知があります",
+    },
+  } as const;
+
+  /**
+   * Get localized messages for the given language
+   */
+  private getLocalizedMessages(language: string): (typeof this.localizedMessages)["en"] {
+    if (language === "ja") {
+      return this.localizedMessages.ja;
+    }
+    return this.localizedMessages.en;
+  }
+
+  /**
    * Create notification payload from notification data
    */
   async createPayload(
@@ -340,6 +431,7 @@ export class WebPushService {
     notifierName: string | null,
     notificationId: string,
     noteId?: string | null,
+    language: string = "en",
   ): Promise<PushNotificationPayload> {
     const baseUrl = process.env.URL || "http://localhost:3000";
 
@@ -352,44 +444,52 @@ export class WebPushService {
     // Use instance icon if available, otherwise fall back to default
     const icon = instanceIconUrl || `${baseUrl}/icon-192.png`;
 
+    const messages = this.getLocalizedMessages(language);
+    const someone = language === "ja" ? "誰か" : "Someone";
+    const name = notifierName || someone;
+
     let body: string;
     let url: string;
 
     switch (type) {
       case "follow":
-        body = `${notifierName || "Someone"} followed you`;
+        body = messages.follow(name);
         url = notifierName ? `${baseUrl}/@${notifierName}` : `${baseUrl}/notifications`;
         break;
       case "mention":
-        body = `${notifierName || "Someone"} mentioned you`;
+        body = messages.mention(name);
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "reply":
-        body = `${notifierName || "Someone"} replied to your note`;
+        body = messages.reply(name);
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "reaction":
-        body = `${notifierName || "Someone"} reacted to your note`;
+        body = messages.reaction(name);
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "renote":
-        body = `${notifierName || "Someone"} renoted your note`;
+        body = messages.renote(name);
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "quote":
-        body = `${notifierName || "Someone"} quoted your note`;
+        body = messages.quote(name);
         url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
         break;
       case "warning":
-        body = "You have received a warning from the moderators";
+        body = messages.warning();
         url = `${baseUrl}/notifications`;
         break;
       case "follow_request_accepted":
-        body = `${notifierName || "Someone"} accepted your follow request`;
+        body = messages.follow_request_accepted(name);
         url = notifierName ? `${baseUrl}/@${notifierName}` : `${baseUrl}/notifications`;
         break;
+      case "dm":
+        body = messages.dm(name);
+        url = noteId ? `${baseUrl}/notes/${noteId}` : `${baseUrl}/notifications`;
+        break;
       default:
-        body = "You have a new notification";
+        body = messages.default();
         url = `${baseUrl}/notifications`;
     }
 

@@ -51,6 +51,8 @@ export interface UISettings {
   theme?: "light" | "dark" | "system";
   /** Custom CSS applied to the entire app (for this user only) */
   appCustomCss?: string;
+  /** Preferred language for notifications and emails */
+  language?: "en" | "ja";
 }
 
 /**
@@ -661,7 +663,8 @@ export type NotificationType =
   | "renote"
   | "warning"
   | "follow_request_accepted"
-  | "quote";
+  | "quote"
+  | "dm";
 
 // Notifications table
 export const notifications = mysqlTable(
@@ -708,6 +711,7 @@ export const pushSubscriptions = mysqlTable(
     p256dh: text("p256dh").notNull(),
     auth: varchar("auth", { length: 64 }).notNull(),
     userAgent: text("user_agent"),
+    language: varchar("language", { length: 8 }), // User's preferred language for notifications (en, ja)
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),
