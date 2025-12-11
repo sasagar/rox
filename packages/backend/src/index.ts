@@ -158,19 +158,22 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
-// Log startup summary (single consolidated log for all services)
-logger.info(
-  {
-    version: packageJson.version,
-    port,
-    database: process.env.DB_TYPE || "postgres",
-    storage: process.env.STORAGE_TYPE || "local",
-    queue: container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync",
-    cache: container.cacheService.isAvailable() ? "dragonfly" : "disabled",
-    environment: process.env.NODE_ENV || "development",
-  },
-  "Rox API server started",
-);
+// Print startup banner (plain text for systemd/console compatibility)
+const env = process.env.NODE_ENV || "development";
+const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
+const cacheMode = container.cacheService.isAvailable() ? "dragonfly" : "disabled";
+
+console.log("══════════════════════════════════════════════════");
+console.log(`🦊 Rox v${packageJson.version}`);
+console.log("══════════════════════════════════════════════════");
+console.log(`Environment:  ${env}`);
+console.log(`Port:         ${port}`);
+console.log(`URL:          ${process.env.URL || "(not set)"}`);
+console.log(`Database:     ${process.env.DB_TYPE || "postgres"}`);
+console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
+console.log(`Queue:        ${queueMode}`);
+console.log(`Cache:        ${cacheMode}`);
+console.log("══════════════════════════════════════════════════");
 
 // Graceful shutdown handler
 let isShuttingDown = false;
