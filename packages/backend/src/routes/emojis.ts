@@ -47,8 +47,16 @@ app.get("/", async (c: Context) => {
 
   const category = c.req.query("category");
   const search = c.req.query("search");
-  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
+  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 1000);
   const offset = parseInt(c.req.query("offset") || "0", 10);
+
+  // Get total count for pagination
+  const total = await customEmojiRepository.count({
+    host: null, // Local emojis only
+    category: category || undefined,
+    search: search || undefined,
+    includeSensitive: false,
+  });
 
   const emojis = await customEmojiRepository.list({
     host: null, // Local emojis only
@@ -69,7 +77,7 @@ app.get("/", async (c: Context) => {
     isSensitive: emoji.isSensitive,
   }));
 
-  return c.json({ emojis: response });
+  return c.json({ emojis: response, total, limit, offset });
 });
 
 /**

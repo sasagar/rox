@@ -36,6 +36,9 @@ interface CustomEmoji {
 
 interface EmojisResponse {
   emojis: CustomEmoji[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 interface CategoriesResponse {
@@ -67,10 +70,12 @@ export default function AdminEmojisPage() {
   const [, addToast] = useAtom(addToastAtom);
 
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
+  const [totalEmojis, setTotalEmojis] = useState(0);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("local");
@@ -111,16 +116,28 @@ export default function AdminEmojisPage() {
   const [showBulkCategoryModal, setShowBulkCategoryModal] = useState(false);
   const [bulkCategory, setBulkCategory] = useState("");
 
-  const loadEmojis = useCallback(async () => {
+  const loadEmojis = useCallback(async (loadAll = false) => {
     if (!token) return;
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<EmojisResponse>("/api/emojis");
-      setEmojis(response.emojis);
+      // First, get initial batch and total count
+      const response = await apiClient.get<EmojisResponse>("/api/emojis?limit=100");
+      setTotalEmojis(response.total);
+
+      if (loadAll && response.total > response.emojis.length) {
+        // Load all emojis if requested and there are more
+        setIsLoadingMore(true);
+        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
+        setEmojis(allResponse.emojis);
+        setIsLoadingMore(false);
+      } else {
+        setEmojis(response.emojis);
+      }
     } catch (err) {
       console.error("Failed to load emojis:", err);
       setError("Failed to load custom emojis");
+      setIsLoadingMore(false);
     }
   }, [token]);
 
@@ -518,6 +535,43 @@ export default function AdminEmojisPage() {
 
   const selectAllFiltered = () => {
     setSelectedEmojis(new Set(filteredEmojis.map((e) => e.id)));
+  };
+
+  const loadAndSelectAll = async () => {
+    // Load all emojis first, then select them
+    if (emojis.length < totalEmojis) {
+      setIsLoadingMore(true);
+      try {
+        apiClient.setToken(token!);
+        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${totalEmojis}`);
+        const allEmojis = allResponse.emojis;
+        setEmojis(allEmojis);
+        // Apply filters and select all matching
+        const filtered = allEmojis.filter((emoji) => {
+          if (filterCategory && emoji.category !== filterCategory) return false;
+          if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            return (
+              emoji.name.toLowerCase().includes(query) ||
+              emoji.aliases.some((a) => a.toLowerCase().includes(query))
+            );
+          }
+          return true;
+        });
+        setSelectedEmojis(new Set(filtered.map((e) => e.id)));
+      } catch (err) {
+        console.error("Failed to load all emojis:", err);
+        addToast({
+          type: "error",
+          message: t`Failed to load all emojis`,
+        });
+      } finally {
+        setIsLoadingMore(false);
+      }
+    } else {
+      // All emojis already loaded, just select filtered
+      setSelectedEmojis(new Set(filteredEmojis.map((e) => e.id)));
+    }
   };
 
   const deselectAll = () => {
@@ -953,10 +1007,34 @@ export default function AdminEmojisPage() {
                         )}
                       </span>
                       <div className="flex gap-2 ml-auto">
-                        <Button variant="secondary" size="sm" onPress={selectAllFiltered}>
-                          <CheckSquare className="w-4 h-4 mr-1" />
-                          <Trans>Select All</Trans>
-                        </Button>
+                        {emojis.length < totalEmojis ? (
+                          <>
+                            <Button variant="secondary" size="sm" onPress={selectAllFiltered}>
+                              <CheckSquare className="w-4 h-4 mr-1" />
+                              <Trans>Select Visible ({filteredEmojis.length})</Trans>
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onPress={loadAndSelectAll}
+                              isDisabled={isLoadingMore}
+                            >
+                              {isLoadingMore ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <>
+                                  <CheckSquare className="w-4 h-4 mr-1" />
+                                  <Trans>Select All ({totalEmojis})</Trans>
+                                </>
+                              )}
+                            </Button>
+                          </>
+                        ) : (
+                          <Button variant="secondary" size="sm" onPress={selectAllFiltered}>
+                            <CheckSquare className="w-4 h-4 mr-1" />
+                            <Trans>Select All</Trans>
+                          </Button>
+                        )}
                         {selectedEmojis.size > 0 && (
                           <>
                             <Button variant="secondary" size="sm" onPress={deselectAll}>
@@ -1113,13 +1191,36 @@ export default function AdminEmojisPage() {
                   </div>
                 )}
 
-                {/* Stats */}
-                <div className="mt-6 pt-4 border-t dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
-                  <Trans>Total: {emojis.length} emojis</Trans>
-                  {categories.length > 0 && (
-                    <span className="ml-4">
-                      <Trans>{categories.length} categories</Trans>
-                    </span>
+                {/* Stats and Load More */}
+                <div className="mt-6 pt-4 border-t dark:border-gray-700 flex flex-wrap items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {emojis.length < totalEmojis ? (
+                      <Trans>Showing {emojis.length} of {totalEmojis} emojis</Trans>
+                    ) : (
+                      <Trans>Total: {totalEmojis} emojis</Trans>
+                    )}
+                    {categories.length > 0 && (
+                      <span className="ml-4">
+                        <Trans>{categories.length} categories</Trans>
+                      </span>
+                    )}
+                  </div>
+                  {emojis.length < totalEmojis && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onPress={() => loadEmojis(true)}
+                      isDisabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Spinner size="xs" />
+                          <span className="ml-1"><Trans>Loading...</Trans></span>
+                        </>
+                      ) : (
+                        <Trans>Load All ({totalEmojis - emojis.length} more)</Trans>
+                      )}
+                    </Button>
                   )}
                 </div>
               </>

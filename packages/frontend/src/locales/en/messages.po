@@ -25,7 +25,7 @@ msgid "{0} / {1} MB ({2}%)"
 msgstr "{0} / {1} MB ({2}%)"
 
 #. placeholder {0}: categories.length
-#: src/pages/admin/emojis.tsx:1121
+#: src/pages/admin/emojis.tsx:1204
 msgid "{0} categories"
 msgstr "{0} categories"
 
@@ -51,7 +51,7 @@ msgstr "{0} reports against this user"
 
 #. placeholder {0}: selectedEmojis.size
 #. placeholder {0}: selectedIds.size
-#: src/pages/admin/emojis.tsx:950
+#: src/pages/admin/emojis.tsx:1004
 #: src/pages/admin/gone-users.tsx:230
 msgid "{0} selected"
 msgstr "{0} selected"
@@ -273,8 +273,8 @@ msgstr "ActivityPub delivery is running in synchronous mode."
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 
-#: src/pages/admin/emojis.tsx:696
-#: src/pages/admin/emojis.tsx:931
+#: src/pages/admin/emojis.tsx:750
+#: src/pages/admin/emojis.tsx:985
 msgid "Add Emoji"
 msgstr "Add Emoji"
 
@@ -283,7 +283,7 @@ msgstr "Add Emoji"
 msgid "Add images"
 msgstr "Add images"
 
-#: src/pages/admin/emojis.tsx:754
+#: src/pages/admin/emojis.tsx:808
 msgid "Add New Emoji"
 msgstr "Add New Emoji"
 
@@ -304,11 +304,11 @@ msgstr "Add Passkey"
 msgid "Add recipient"
 msgstr "Add recipient"
 
-#: src/pages/admin/emojis.tsx:1031
+#: src/pages/admin/emojis.tsx:1109
 msgid "Add your first custom emoji to get started"
 msgstr "Add your first custom emoji to get started"
 
-#: src/pages/admin/emojis.tsx:1325
+#: src/pages/admin/emojis.tsx:1426
 msgid "Added"
 msgstr "Added"
 
@@ -359,11 +359,11 @@ msgstr "Admin users cannot be suspended"
 msgid "admin@example.com"
 msgstr "admin@example.com"
 
-#: src/pages/admin/emojis.tsx:1210
+#: src/pages/admin/emojis.tsx:1311
 msgid "Adopt"
 msgstr "Adopt"
 
-#: src/pages/admin/emojis.tsx:1203
+#: src/pages/admin/emojis.tsx:1304
 msgid "Adopt as local emoji"
 msgstr "Adopt as local emoji"
 
@@ -379,7 +379,7 @@ msgstr "Alias added successfully"
 msgid "Alias removed successfully"
 msgstr "Alias removed successfully"
 
-#: src/pages/admin/emojis.tsx:860
+#: src/pages/admin/emojis.tsx:914
 msgid "Aliases"
 msgstr "Aliases"
 
@@ -395,7 +395,7 @@ msgstr "All"
 msgid "All Actions"
 msgstr "All Actions"
 
-#: src/pages/admin/emojis.tsx:1013
+#: src/pages/admin/emojis.tsx:1091
 msgid "All Categories"
 msgstr "All Categories"
 
@@ -403,7 +403,7 @@ msgstr "All Categories"
 msgid "All instances can federate with this server"
 msgstr "All instances can federate with this server"
 
-#: src/pages/admin/emojis.tsx:1149
+#: src/pages/admin/emojis.tsx:1250
 msgid "All Servers"
 msgstr "All Servers"
 
@@ -431,7 +431,7 @@ msgstr "Already have an account? Sign in"
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
-#: src/pages/admin/emojis.tsx:1456
+#: src/pages/admin/emojis.tsx:1557
 msgid "Apply"
 msgstr "Apply"
 
@@ -444,12 +444,12 @@ msgid "Are you absolutely sure?"
 msgstr "Are you absolutely sure?"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:467
+#: src/pages/admin/emojis.tsx:484
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
 #. placeholder {0}: selectedEmojis.size
-#: src/pages/admin/emojis.tsx:531
+#: src/pages/admin/emojis.tsx:585
 msgid "Are you sure you want to delete {0} emojis? This action cannot be undone."
 msgstr "Are you sure you want to delete {0} emojis? This action cannot be undone."
 
@@ -615,15 +615,15 @@ msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 
-#: src/pages/admin/emojis.tsx:678
+#: src/pages/admin/emojis.tsx:732
 msgid "Bulk Edit"
 msgstr "Bulk Edit"
 
-#: src/pages/admin/emojis.tsx:743
+#: src/pages/admin/emojis.tsx:797
 msgid "Bulk Import"
 msgstr "Bulk Import"
 
-#: src/pages/admin/emojis.tsx:1230
+#: src/pages/admin/emojis.tsx:1331
 msgid "Bulk Import Emojis"
 msgstr "Bulk Import Emojis"
 
@@ -666,8 +666,8 @@ msgstr "Can suspend users"
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
-#: src/pages/admin/emojis.tsx:935
-#: src/pages/admin/emojis.tsx:1449
+#: src/pages/admin/emojis.tsx:989
+#: src/pages/admin/emojis.tsx:1550
 #: src/pages/admin/roles.tsx:568
 #: src/pages/admin/storage.tsx:543
 #: src/pages/admin/users.tsx:619
@@ -682,8 +682,8 @@ msgstr "Cancel"
 msgid "Cannot save empty draft"
 msgstr "Cannot save empty draft"
 
-#: src/pages/admin/emojis.tsx:841
-#: src/pages/admin/emojis.tsx:1416
+#: src/pages/admin/emojis.tsx:895
+#: src/pages/admin/emojis.tsx:1517
 #: src/pages/contact/index.tsx:211
 msgid "Category"
 msgstr "Category"
@@ -717,15 +717,15 @@ msgstr "Clear Status"
 msgid "Cleared failure status for {0} users"
 msgstr "Cleared failure status for {0} users"
 
-#: src/pages/admin/emojis.tsx:952
+#: src/pages/admin/emojis.tsx:1006
 msgid "Click emojis to select"
 msgstr "Click emojis to select"
 
-#: src/pages/admin/emojis.tsx:1306
+#: src/pages/admin/emojis.tsx:1407
 msgid "Click to select a ZIP file or drag and drop"
 msgstr "Click to select a ZIP file or drag and drop"
 
-#: src/pages/admin/emojis.tsx:821
+#: src/pages/admin/emojis.tsx:875
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
 msgstr "Click to upload (PNG, GIF, WebP, max 256KB)"
 
@@ -745,7 +745,7 @@ msgstr "Code copied to clipboard"
 msgid "Color"
 msgstr "Color"
 
-#: src/pages/admin/emojis.tsx:866
+#: src/pages/admin/emojis.tsx:920
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
@@ -885,7 +885,7 @@ msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
 #: src/components/ui/EmojiPicker.tsx:920
-#: src/pages/admin/emojis.tsx:660
+#: src/pages/admin/emojis.tsx:714
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
 
@@ -938,8 +938,8 @@ msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running 
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
 #: src/components/settings/PasskeySection.tsx:353
-#: src/pages/admin/emojis.tsx:985
-#: src/pages/admin/emojis.tsx:1101
+#: src/pages/admin/emojis.tsx:1063
+#: src/pages/admin/emojis.tsx:1179
 #: src/pages/admin/users.tsx:632
 msgid "Delete"
 msgstr "Delete"
@@ -996,7 +996,7 @@ msgid "Deleted {0}"
 msgstr "Deleted {0}"
 
 #. placeholder {0}: result.success
-#: src/pages/admin/emojis.tsx:548
+#: src/pages/admin/emojis.tsx:602
 msgid "Deleted {0} emojis"
 msgstr "Deleted {0} emojis"
 
@@ -1024,7 +1024,7 @@ msgstr "Describe the reason for this warning..."
 msgid "Description"
 msgstr "Description"
 
-#: src/pages/admin/emojis.tsx:964
+#: src/pages/admin/emojis.tsx:1042
 msgid "Deselect"
 msgstr "Deselect"
 
@@ -1105,23 +1105,23 @@ msgstr "Draft saved"
 msgid "Drafts"
 msgstr "Drafts"
 
-#: src/pages/admin/emojis.tsx:1299
+#: src/pages/admin/emojis.tsx:1400
 msgid "Drop ZIP file here"
 msgstr "Drop ZIP file here"
 
-#: src/pages/admin/emojis.tsx:879
+#: src/pages/admin/emojis.tsx:933
 msgid "e.g., CC BY 4.0"
 msgstr "e.g., CC BY 4.0"
 
-#: src/pages/admin/emojis.tsx:847
+#: src/pages/admin/emojis.tsx:901
 msgid "e.g., reactions, animals"
 msgstr "e.g., reactions, animals"
 
-#: src/pages/admin/emojis.tsx:1094
+#: src/pages/admin/emojis.tsx:1172
 msgid "Edit"
 msgstr "Edit"
 
-#: src/pages/admin/emojis.tsx:754
+#: src/pages/admin/emojis.tsx:808
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
@@ -1151,25 +1151,25 @@ msgstr "Email is required"
 msgid "Email:"
 msgstr "Email:"
 
-#: src/pages/admin/emojis.tsx:1352
+#: src/pages/admin/emojis.tsx:1453
 msgid "Emoji"
 msgstr "Emoji"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:172
+#: src/pages/admin/emojis.tsx:189
 msgid "Emoji \":{0}:\" adopted as local emoji"
 msgstr "Emoji \":{0}:\" adopted as local emoji"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:475
+#: src/pages/admin/emojis.tsx:492
 msgid "Emoji \":{0}:\" deleted"
 msgstr "Emoji \":{0}:\" deleted"
 
-#: src/pages/admin/emojis.tsx:417
+#: src/pages/admin/emojis.tsx:434
 msgid "Emoji \":{name}:\" added successfully"
 msgstr "Emoji \":{name}:\" added successfully"
 
-#: src/pages/admin/emojis.tsx:1248
+#: src/pages/admin/emojis.tsx:1349
 msgid "Emoji names are derived from filenames if no meta.json is provided"
 msgstr "Emoji names are derived from filenames if no meta.json is provided"
 
@@ -1177,11 +1177,11 @@ msgstr "Emoji names are derived from filenames if no meta.json is provided"
 msgid "Emoji Picker"
 msgstr "Emoji Picker"
 
-#: src/pages/admin/emojis.tsx:449
+#: src/pages/admin/emojis.tsx:466
 msgid "Emoji updated successfully"
 msgstr "Emoji updated successfully"
 
-#: src/pages/admin/emojis.tsx:775
+#: src/pages/admin/emojis.tsx:829
 msgid "emoji_name"
 msgstr "emoji_name"
 
@@ -1269,7 +1269,7 @@ msgstr "Error loading user profile"
 msgid "example.com"
 msgstr "example.com"
 
-#: src/pages/admin/emojis.tsx:673
+#: src/pages/admin/emojis.tsx:727
 msgid "Exit Bulk Mode"
 msgstr "Exit Bulk Mode"
 
@@ -1304,7 +1304,7 @@ msgstr "Export your data in a portable format"
 msgid "Exporting..."
 msgstr "Exporting..."
 
-#: src/pages/admin/emojis.tsx:1341
+#: src/pages/admin/emojis.tsx:1442
 #: src/pages/admin/queue.tsx:278
 #: src/pages/admin/queue.tsx:454
 msgid "Failed"
@@ -1314,7 +1314,7 @@ msgstr "Failed"
 msgid "Failed to add alias"
 msgstr "Failed to add alias"
 
-#: src/pages/admin/emojis.tsx:426
+#: src/pages/admin/emojis.tsx:443
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
@@ -1322,7 +1322,7 @@ msgstr "Failed to add emoji"
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
-#: src/pages/admin/emojis.tsx:181
+#: src/pages/admin/emojis.tsx:198
 msgid "Failed to adopt emoji"
 msgstr "Failed to adopt emoji"
 
@@ -1361,11 +1361,11 @@ msgstr "Failed to create invitation code"
 msgid "Failed to delete account"
 msgstr "Failed to delete account"
 
-#: src/pages/admin/emojis.tsx:483
+#: src/pages/admin/emojis.tsx:500
 msgid "Failed to delete emoji"
 msgstr "Failed to delete emoji"
 
-#: src/pages/admin/emojis.tsx:559
+#: src/pages/admin/emojis.tsx:613
 msgid "Failed to delete emojis"
 msgstr "Failed to delete emojis"
 
@@ -1403,7 +1403,7 @@ msgstr "Failed to export data"
 msgid "Failed to find user"
 msgstr "Failed to find user"
 
-#: src/pages/admin/emojis.tsx:243
+#: src/pages/admin/emojis.tsx:260
 msgid "Failed to import emojis"
 msgstr "Failed to import emojis"
 
@@ -1414,6 +1414,10 @@ msgstr "Failed to initiate migration"
 #: src/pages/mod/users.tsx:215
 msgid "Failed to issue warning"
 msgstr "Failed to issue warning"
+
+#: src/pages/admin/emojis.tsx:566
+msgid "Failed to load all emojis"
+msgstr "Failed to load all emojis"
 
 #: src/components/drive/DrivePickerDialog.tsx:196
 msgid "Failed to load files"
@@ -1432,7 +1436,7 @@ msgstr "Failed to load note"
 msgid "Failed to load passkeys"
 msgstr "Failed to load passkeys"
 
-#: src/pages/admin/emojis.tsx:153
+#: src/pages/admin/emojis.tsx:170
 msgid "Failed to load remote emojis"
 msgstr "Failed to load remote emojis"
 
@@ -1531,11 +1535,11 @@ msgstr "Failed to unblock instance"
 msgid "Failed to unsuspend user"
 msgstr "Failed to unsuspend user"
 
-#: src/pages/admin/emojis.tsx:458
+#: src/pages/admin/emojis.tsx:475
 msgid "Failed to update emoji"
 msgstr "Failed to update emoji"
 
-#: src/pages/admin/emojis.tsx:601
+#: src/pages/admin/emojis.tsx:655
 msgid "Failed to update emojis"
 msgstr "Failed to update emojis"
 
@@ -1565,7 +1569,7 @@ msgstr "Failed to upload avatar"
 msgid "Failed to upload banner"
 msgstr "Failed to upload banner"
 
-#: src/pages/admin/emojis.tsx:392
+#: src/pages/admin/emojis.tsx:409
 msgid "Failed to upload file"
 msgstr "Failed to upload file"
 
@@ -1602,15 +1606,15 @@ msgstr "Fetch errors"
 msgid "File deleted"
 msgstr "File deleted"
 
-#: src/pages/admin/emojis.tsx:353
+#: src/pages/admin/emojis.tsx:370
 msgid "File too large. Maximum size: 256KB"
 msgstr "File too large. Maximum size: 256KB"
 
-#: src/pages/admin/emojis.tsx:204
+#: src/pages/admin/emojis.tsx:221
 msgid "File too large. Maximum size: 50MB"
 msgstr "File too large. Maximum size: 50MB"
 
-#: src/pages/admin/emojis.tsx:386
+#: src/pages/admin/emojis.tsx:403
 msgid "File uploaded successfully"
 msgstr "File uploaded successfully"
 
@@ -1788,7 +1792,7 @@ msgstr "Icon URL"
 msgid "If no custom URLs are set, visitors will see the default legal pages:"
 msgstr "If no custom URLs are set, visitors will see the default legal pages:"
 
-#: src/pages/admin/emojis.tsx:786
+#: src/pages/admin/emojis.tsx:840
 msgid "Image"
 msgstr "Image"
 
@@ -1807,15 +1811,15 @@ msgstr "Impersonate others or spread misinformation"
 #. placeholder {0}: result.success
 #. placeholder {1}: result.skipped
 #. placeholder {2}: result.failed
-#: src/pages/admin/emojis.tsx:234
+#: src/pages/admin/emojis.tsx:251
 msgid "Import complete: {0} added, {1} skipped, {2} failed"
 msgstr "Import complete: {0} added, {1} skipped, {2} failed"
 
-#: src/pages/admin/emojis.tsx:1317
+#: src/pages/admin/emojis.tsx:1418
 msgid "Import Results"
 msgstr "Import Results"
 
-#: src/pages/admin/emojis.tsx:1292
+#: src/pages/admin/emojis.tsx:1393
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
@@ -1910,7 +1914,7 @@ msgstr "Instance unblocked successfully"
 msgid "Internal Notes"
 msgstr "Internal Notes"
 
-#: src/pages/admin/emojis.tsx:344
+#: src/pages/admin/emojis.tsx:361
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 
@@ -2019,7 +2023,7 @@ msgstr "Legal"
 msgid "Legal Documents"
 msgstr "Legal Documents"
 
-#: src/pages/admin/emojis.tsx:873
+#: src/pages/admin/emojis.tsx:927
 #: src/pages/legal/licenses.tsx:168
 msgid "License"
 msgstr "License"
@@ -2040,6 +2044,11 @@ msgstr "Lightweight"
 #: src/components/settings/UISettingsSection.tsx:280
 msgid "Line Height"
 msgstr "Line Height"
+
+#. placeholder {0}: totalEmojis - emojis.length
+#: src/pages/admin/emojis.tsx:1221
+msgid "Load All ({0} more)"
+msgstr "Load All ({0} more)"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
@@ -2069,6 +2078,7 @@ msgstr "Loading posts..."
 #: src/components/note/NoteComposer.tsx:959
 #: src/components/user/FollowListModal.tsx:226
 #: src/components/user/UserProfile.tsx:566
+#: src/pages/admin/emojis.tsx:1218
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -2078,7 +2088,7 @@ msgstr "Loading..."
 msgid "Local"
 msgstr "Local"
 
-#: src/pages/admin/emojis.tsx:721
+#: src/pages/admin/emojis.tsx:775
 msgid "Local Emojis"
 msgstr "Local Emojis"
 
@@ -2118,7 +2128,7 @@ msgstr "Looking up remote user..."
 #~ msgid "Lowercase letters, numbers, and underscores only"
 #~ msgstr "Lowercase letters, numbers, and underscores only"
 
-#: src/pages/admin/emojis.tsx:780
+#: src/pages/admin/emojis.tsx:834
 msgid "Lowercase letters, numbers, underscores, and hyphens only"
 msgstr "Lowercase letters, numbers, underscores, and hyphens only"
 
@@ -2189,11 +2199,11 @@ msgstr "Marked {0} users as deleted"
 msgid "Max Uses"
 msgstr "Max Uses"
 
-#: src/pages/admin/emojis.tsx:1246
+#: src/pages/admin/emojis.tsx:1347
 msgid "Maximum file size per emoji: 256KB"
 msgstr "Maximum file size per emoji: 256KB"
 
-#: src/pages/admin/emojis.tsx:1247
+#: src/pages/admin/emojis.tsx:1348
 msgid "Maximum ZIP size: 50MB"
 msgstr "Maximum ZIP size: 50MB"
 
@@ -2274,7 +2284,7 @@ msgstr "Move to a Different Account"
 msgid "My Rox Server"
 msgstr "My Rox Server"
 
-#: src/pages/admin/emojis.tsx:767
+#: src/pages/admin/emojis.tsx:821
 #: src/pages/admin/roles.tsx:362
 msgid "Name"
 msgstr "Name"
@@ -2332,7 +2342,7 @@ msgstr "No audit logs found"
 msgid "No blocked instances"
 msgstr "No blocked instances"
 
-#: src/pages/admin/emojis.tsx:1028
+#: src/pages/admin/emojis.tsx:1106
 msgid "No custom emojis yet"
 msgstr "No custom emojis yet"
 
@@ -2353,7 +2363,7 @@ msgstr "No drafts saved"
 msgid "No emojis found"
 msgstr "No emojis found"
 
-#: src/pages/admin/emojis.tsx:1036
+#: src/pages/admin/emojis.tsx:1114
 msgid "No emojis match your search"
 msgstr "No emojis match your search"
 
@@ -2427,7 +2437,7 @@ msgstr "No pending reports to review"
 msgid "No posts yet"
 msgstr "No posts yet"
 
-#: src/pages/admin/emojis.tsx:1168
+#: src/pages/admin/emojis.tsx:1269
 msgid "No remote emojis collected yet"
 msgstr "No remote emojis collected yet"
 
@@ -2586,7 +2596,7 @@ msgstr "Optional"
 msgid "Or continue with password"
 msgstr "Or continue with password"
 
-#: src/pages/admin/emojis.tsx:1435
+#: src/pages/admin/emojis.tsx:1536
 msgid "Or enter new category"
 msgstr "Or enter new category"
 
@@ -2717,7 +2727,7 @@ msgstr "Please log in to update your profile"
 msgid "Please log in to view your inquiries."
 msgstr "Please log in to view your inquiries."
 
-#: src/pages/admin/emojis.tsx:195
+#: src/pages/admin/emojis.tsx:212
 msgid "Please select a ZIP file"
 msgstr "Please select a ZIP file"
 
@@ -2764,7 +2774,7 @@ msgstr "Powered by Rox - Lightweight ActivityPub Server"
 
 #: src/components/note/NoteComposer.tsx:1004
 #: src/components/settings/UISettingsSection.tsx:488
-#: src/pages/admin/emojis.tsx:902
+#: src/pages/admin/emojis.tsx:956
 #: src/pages/admin/settings.tsx:716
 msgid "Preview"
 msgstr "Preview"
@@ -2923,7 +2933,7 @@ msgid "Read Full License"
 msgstr "Read Full License"
 
 #: src/components/report/ReportDialog.tsx:126
-#: src/pages/admin/emojis.tsx:1354
+#: src/pages/admin/emojis.tsx:1455
 msgid "Reason"
 msgstr "Reason"
 
@@ -2966,8 +2976,8 @@ msgstr "Recommended: Square image, max 2MB"
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
 #: src/pages/admin/contacts.tsx:515
-#: src/pages/admin/emojis.tsx:684
-#: src/pages/admin/emojis.tsx:704
+#: src/pages/admin/emojis.tsx:738
+#: src/pages/admin/emojis.tsx:758
 #: src/pages/admin/federation.tsx:440
 #: src/pages/admin/queue.tsx:230
 msgid "Refresh"
@@ -3036,15 +3046,15 @@ msgstr "Rejected"
 msgid "Remote"
 msgstr "Remote"
 
-#: src/pages/admin/emojis.tsx:732
+#: src/pages/admin/emojis.tsx:786
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
 
-#: src/pages/admin/emojis.tsx:1133
+#: src/pages/admin/emojis.tsx:1234
 msgid "Remote emojis are collected from reactions received from other servers. You can adopt them as local emojis to use on your instance."
 msgstr "Remote emojis are collected from reactions received from other servers. You can adopt them as local emojis to use on your instance."
 
-#: src/pages/admin/emojis.tsx:1171
+#: src/pages/admin/emojis.tsx:1272
 msgid "Remote emojis will appear here when users from other servers react with custom emojis"
 msgstr "Remote emojis will appear here when users from other servers react with custom emojis"
 
@@ -3383,7 +3393,7 @@ msgstr "Search"
 msgid "Search emoji..."
 msgstr "Search emoji..."
 
-#: src/pages/admin/emojis.tsx:1003
+#: src/pages/admin/emojis.tsx:1081
 msgid "Search emojis..."
 msgstr "Search emojis..."
 
@@ -3429,10 +3439,14 @@ msgstr "Security"
 msgid "Select"
 msgstr "Select"
 
-#: src/pages/admin/emojis.tsx:958
+#: src/pages/admin/emojis.tsx:1035
 #: src/pages/admin/gone-users.tsx:227
 msgid "Select All"
 msgstr "Select All"
+
+#: src/pages/admin/emojis.tsx:1027
+msgid "Select All ({totalEmojis})"
+msgstr "Select All ({totalEmojis})"
 
 #: src/components/note/NoteComposer.tsx:1100
 #: src/components/note/NoteComposer.tsx:1101
@@ -3442,6 +3456,11 @@ msgstr "Select from drive"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "Select from Drive"
+
+#. placeholder {0}: filteredEmojis.length
+#: src/pages/admin/emojis.tsx:1014
+msgid "Select Visible ({0})"
+msgstr "Select Visible ({0})"
 
 #: src/components/pages/ContactThreadPageClient.tsx:287
 #: src/pages/admin/contacts.tsx:420
@@ -3464,7 +3483,7 @@ msgstr "Send service-related notifications"
 msgid "Send test"
 msgstr "Send test"
 
-#: src/pages/admin/emojis.tsx:893
+#: src/pages/admin/emojis.tsx:947
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
@@ -3496,13 +3515,13 @@ msgstr "Service Unavailable"
 msgid "Session"
 msgstr "Session"
 
-#: src/pages/admin/emojis.tsx:972
-#: src/pages/admin/emojis.tsx:1397
+#: src/pages/admin/emojis.tsx:1050
+#: src/pages/admin/emojis.tsx:1498
 msgid "Set Category"
 msgstr "Set Category"
 
 #. placeholder {0}: selectedEmojis.size
-#: src/pages/admin/emojis.tsx:1411
+#: src/pages/admin/emojis.tsx:1512
 msgid "Set category for {0} selected emojis"
 msgstr "Set category for {0} selected emojis"
 
@@ -3543,6 +3562,11 @@ msgstr "Show unread only"
 msgid "Showing {0} - {1} of {total}"
 msgstr "Showing {0} - {1} of {total}"
 
+#. placeholder {0}: emojis.length
+#: src/pages/admin/emojis.tsx:1198
+msgid "Showing {0} of {totalEmojis} emojis"
+msgstr "Showing {0} of {totalEmojis} emojis"
+
 #: src/pages/login.tsx:263
 #: src/pages/signup.tsx:232
 msgid "Sign in"
@@ -3578,7 +3602,7 @@ msgstr "Sign up"
 msgid "Signing in..."
 msgstr "Signing in..."
 
-#: src/pages/admin/emojis.tsx:1333
+#: src/pages/admin/emojis.tsx:1434
 msgid "Skipped"
 msgstr "Skipped"
 
@@ -3610,7 +3634,7 @@ msgstr "Standard Emojis"
 msgid "Start a conversation by composing a direct message"
 msgstr "Start a conversation by composing a direct message"
 
-#: src/pages/admin/emojis.tsx:1353
+#: src/pages/admin/emojis.tsx:1454
 msgid "Status"
 msgstr "Status"
 
@@ -3662,7 +3686,7 @@ msgstr "Success Rate"
 msgid "Successful"
 msgstr "Successful"
 
-#: src/pages/admin/emojis.tsx:1245
+#: src/pages/admin/emojis.tsx:1346
 msgid "Supported formats: PNG, GIF, WebP, APNG"
 msgstr "Supported formats: PNG, GIF, WebP, APNG"
 
@@ -3928,16 +3952,19 @@ msgstr "Total Roles"
 msgid "Total Size"
 msgstr "Total Size"
 
-#. placeholder {0}: emojis.length
 #: src/pages/admin/emojis.tsx:1118
-msgid "Total: {0} emojis"
-msgstr "Total: {0} emojis"
+#~ msgid "Total: {0} emojis"
+#~ msgstr "Total: {0} emojis"
 
 #. placeholder {0}: remoteEmojis.length
 #. placeholder {1}: remoteHosts.length
-#: src/pages/admin/emojis.tsx:1218
+#: src/pages/admin/emojis.tsx:1319
 msgid "Total: {0} remote emojis from {1} servers"
 msgstr "Total: {0} remote emojis from {1} servers"
+
+#: src/pages/admin/emojis.tsx:1200
+msgid "Total: {totalEmojis} emojis"
+msgstr "Total: {totalEmojis} emojis"
 
 #: src/pages/search.tsx:441
 msgid "Try a different search term or check the spelling"
@@ -3987,7 +4014,7 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
-#: src/pages/admin/emojis.tsx:1424
+#: src/pages/admin/emojis.tsx:1525
 msgid "Uncategorized"
 msgstr "Uncategorized"
 
@@ -4025,7 +4052,7 @@ msgstr "Unsuspend"
 msgid "Unsuspend User"
 msgstr "Unsuspend User"
 
-#: src/pages/admin/emojis.tsx:929
+#: src/pages/admin/emojis.tsx:983
 msgid "Update Emoji"
 msgstr "Update Emoji"
 
@@ -4034,7 +4061,7 @@ msgid "Update Role"
 msgstr "Update Role"
 
 #. placeholder {0}: result.success
-#: src/pages/admin/emojis.tsx:583
+#: src/pages/admin/emojis.tsx:637
 msgid "Updated {0} emojis"
 msgstr "Updated {0} emojis"
 
@@ -4042,7 +4069,7 @@ msgstr "Updated {0} emojis"
 msgid "Upload"
 msgstr "Upload"
 
-#: src/pages/admin/emojis.tsx:1233
+#: src/pages/admin/emojis.tsx:1334
 msgid "Upload a ZIP file containing emoji images. You can optionally include a meta.json file to specify emoji names, categories, and other metadata."
 msgstr "Upload a ZIP file containing emoji images. You can optionally include a meta.json file to specify emoji names, categories, and other metadata."
 
@@ -4073,7 +4100,7 @@ msgstr "Uploading files..."
 #: src/components/note/NoteComposer.tsx:1358
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
-#: src/pages/admin/emojis.tsx:809
+#: src/pages/admin/emojis.tsx:863
 msgid "Uploading..."
 msgstr "Uploading..."
 
@@ -4493,6 +4520,6 @@ msgstr "Your storage is full. Delete some files to upload more."
 msgid "your@email.com"
 msgstr "your@email.com"
 
-#: src/pages/admin/emojis.tsx:1242
+#: src/pages/admin/emojis.tsx:1343
 msgid "ZIP Format"
 msgstr "ZIP Format"

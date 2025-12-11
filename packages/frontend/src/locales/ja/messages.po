@@ -25,7 +25,7 @@ msgid "{0} / {1} MB ({2}%)"
 msgstr "{0} / {1} MB ({2}%)"
 
 #. placeholder {0}: categories.length
-#: src/pages/admin/emojis.tsx:1121
+#: src/pages/admin/emojis.tsx:1204
 msgid "{0} categories"
 msgstr "{0}カテゴリ"
 
@@ -51,7 +51,7 @@ msgstr "このユーザーに対する通報: {0}件"
 
 #. placeholder {0}: selectedEmojis.size
 #. placeholder {0}: selectedIds.size
-#: src/pages/admin/emojis.tsx:950
+#: src/pages/admin/emojis.tsx:1004
 #: src/pages/admin/gone-users.tsx:230
 msgid "{0} selected"
 msgstr "{0}件選択中"
@@ -273,8 +273,8 @@ msgstr "ActivityPub配信は同期モードで実行されています。"
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "他のサーバーのアカウントとリンクするためにエイリアスを追加します。これにより、それらのアカウントのフォロワーがここであなたを見つけることができます。"
 
-#: src/pages/admin/emojis.tsx:696
-#: src/pages/admin/emojis.tsx:931
+#: src/pages/admin/emojis.tsx:750
+#: src/pages/admin/emojis.tsx:985
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
@@ -283,7 +283,7 @@ msgstr "絵文字を追加"
 msgid "Add images"
 msgstr "画像を追加"
 
-#: src/pages/admin/emojis.tsx:754
+#: src/pages/admin/emojis.tsx:808
 msgid "Add New Emoji"
 msgstr "新しい絵文字を追加"
 
@@ -304,11 +304,11 @@ msgstr "パスキーを追加"
 msgid "Add recipient"
 msgstr "宛先を追加"
 
-#: src/pages/admin/emojis.tsx:1031
+#: src/pages/admin/emojis.tsx:1109
 msgid "Add your first custom emoji to get started"
 msgstr "最初のカスタム絵文字を追加して始めましょう"
 
-#: src/pages/admin/emojis.tsx:1325
+#: src/pages/admin/emojis.tsx:1426
 msgid "Added"
 msgstr "追加済み"
 
@@ -359,11 +359,11 @@ msgstr "管理者ユーザーは停止できません"
 msgid "admin@example.com"
 msgstr "admin@example.com"
 
-#: src/pages/admin/emojis.tsx:1210
+#: src/pages/admin/emojis.tsx:1311
 msgid "Adopt"
 msgstr "採用"
 
-#: src/pages/admin/emojis.tsx:1203
+#: src/pages/admin/emojis.tsx:1304
 msgid "Adopt as local emoji"
 msgstr "ローカル絵文字として採用"
 
@@ -379,7 +379,7 @@ msgstr "エイリアスを追加しました"
 msgid "Alias removed successfully"
 msgstr "エイリアスを削除しました"
 
-#: src/pages/admin/emojis.tsx:860
+#: src/pages/admin/emojis.tsx:914
 msgid "Aliases"
 msgstr "エイリアス"
 
@@ -395,7 +395,7 @@ msgstr "すべて"
 msgid "All Actions"
 msgstr "すべてのアクション"
 
-#: src/pages/admin/emojis.tsx:1013
+#: src/pages/admin/emojis.tsx:1091
 msgid "All Categories"
 msgstr "すべてのカテゴリ"
 
@@ -403,7 +403,7 @@ msgstr "すべてのカテゴリ"
 msgid "All instances can federate with this server"
 msgstr "すべてのインスタンスがこのサーバーと連携できます"
 
-#: src/pages/admin/emojis.tsx:1149
+#: src/pages/admin/emojis.tsx:1250
 msgid "All Servers"
 msgstr "すべてのサーバー"
 
@@ -431,7 +431,7 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
-#: src/pages/admin/emojis.tsx:1456
+#: src/pages/admin/emojis.tsx:1557
 msgid "Apply"
 msgstr "適用"
 
@@ -444,12 +444,12 @@ msgid "Are you absolutely sure?"
 msgstr "本当に削除しますか？"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:467
+#: src/pages/admin/emojis.tsx:484
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: selectedEmojis.size
-#: src/pages/admin/emojis.tsx:531
+#: src/pages/admin/emojis.tsx:585
 msgid "Are you sure you want to delete {0} emojis? This action cannot be undone."
 msgstr "{0}個の絵文字を削除してもよろしいですか？この操作は元に戻せません。"
 
@@ -615,15 +615,15 @@ msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 msgid "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大512KB）"
 
-#: src/pages/admin/emojis.tsx:678
+#: src/pages/admin/emojis.tsx:732
 msgid "Bulk Edit"
 msgstr "一括編集"
 
-#: src/pages/admin/emojis.tsx:743
+#: src/pages/admin/emojis.tsx:797
 msgid "Bulk Import"
 msgstr "一括インポート"
 
-#: src/pages/admin/emojis.tsx:1230
+#: src/pages/admin/emojis.tsx:1331
 msgid "Bulk Import Emojis"
 msgstr "絵文字を一括インポート"
 
@@ -666,8 +666,8 @@ msgstr "ユーザーを凍結可能"
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
-#: src/pages/admin/emojis.tsx:935
-#: src/pages/admin/emojis.tsx:1449
+#: src/pages/admin/emojis.tsx:989
+#: src/pages/admin/emojis.tsx:1550
 #: src/pages/admin/roles.tsx:568
 #: src/pages/admin/storage.tsx:543
 #: src/pages/admin/users.tsx:619
@@ -682,8 +682,8 @@ msgstr "キャンセル"
 msgid "Cannot save empty draft"
 msgstr "空の下書きは保存できません"
 
-#: src/pages/admin/emojis.tsx:841
-#: src/pages/admin/emojis.tsx:1416
+#: src/pages/admin/emojis.tsx:895
+#: src/pages/admin/emojis.tsx:1517
 #: src/pages/contact/index.tsx:211
 msgid "Category"
 msgstr "カテゴリ"
@@ -717,15 +717,15 @@ msgstr "ステータスをクリア"
 msgid "Cleared failure status for {0} users"
 msgstr "{0}人のユーザーの失敗ステータスをクリアしました"
 
-#: src/pages/admin/emojis.tsx:952
+#: src/pages/admin/emojis.tsx:1006
 msgid "Click emojis to select"
 msgstr "絵文字をクリックして選択"
 
-#: src/pages/admin/emojis.tsx:1306
+#: src/pages/admin/emojis.tsx:1407
 msgid "Click to select a ZIP file or drag and drop"
 msgstr "クリックしてZIPファイルを選択、またはドラッグ＆ドロップ"
 
-#: src/pages/admin/emojis.tsx:821
+#: src/pages/admin/emojis.tsx:875
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
 msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）"
 
@@ -745,7 +745,7 @@ msgstr "コードをクリップボードにコピーしました"
 msgid "Color"
 msgstr "カラー"
 
-#: src/pages/admin/emojis.tsx:866
+#: src/pages/admin/emojis.tsx:920
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
@@ -885,7 +885,7 @@ msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
 #: src/components/ui/EmojiPicker.tsx:920
-#: src/pages/admin/emojis.tsx:660
+#: src/pages/admin/emojis.tsx:714
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
 
@@ -938,8 +938,8 @@ msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running 
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
 #: src/components/settings/PasskeySection.tsx:353
-#: src/pages/admin/emojis.tsx:985
-#: src/pages/admin/emojis.tsx:1101
+#: src/pages/admin/emojis.tsx:1063
+#: src/pages/admin/emojis.tsx:1179
 #: src/pages/admin/users.tsx:632
 msgid "Delete"
 msgstr "削除"
@@ -996,7 +996,7 @@ msgid "Deleted {0}"
 msgstr "{0} 削除済み"
 
 #. placeholder {0}: result.success
-#: src/pages/admin/emojis.tsx:548
+#: src/pages/admin/emojis.tsx:602
 msgid "Deleted {0} emojis"
 msgstr "{0}個の絵文字を削除しました"
 
@@ -1024,7 +1024,7 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
-#: src/pages/admin/emojis.tsx:964
+#: src/pages/admin/emojis.tsx:1042
 msgid "Deselect"
 msgstr "選択解除"
 
@@ -1105,23 +1105,23 @@ msgstr "下書きを保存しました"
 msgid "Drafts"
 msgstr "下書き"
 
-#: src/pages/admin/emojis.tsx:1299
+#: src/pages/admin/emojis.tsx:1400
 msgid "Drop ZIP file here"
 msgstr "ここにZIPファイルをドロップ"
 
-#: src/pages/admin/emojis.tsx:879
+#: src/pages/admin/emojis.tsx:933
 msgid "e.g., CC BY 4.0"
 msgstr "例: CC BY 4.0"
 
-#: src/pages/admin/emojis.tsx:847
+#: src/pages/admin/emojis.tsx:901
 msgid "e.g., reactions, animals"
 msgstr "例: リアクション、動物"
 
-#: src/pages/admin/emojis.tsx:1094
+#: src/pages/admin/emojis.tsx:1172
 msgid "Edit"
 msgstr "編集"
 
-#: src/pages/admin/emojis.tsx:754
+#: src/pages/admin/emojis.tsx:808
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
@@ -1151,25 +1151,25 @@ msgstr "メールアドレスを入力してください"
 msgid "Email:"
 msgstr "メールアドレス:"
 
-#: src/pages/admin/emojis.tsx:1352
+#: src/pages/admin/emojis.tsx:1453
 msgid "Emoji"
 msgstr "絵文字"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:172
+#: src/pages/admin/emojis.tsx:189
 msgid "Emoji \":{0}:\" adopted as local emoji"
 msgstr "絵文字「:{0}:」をローカル絵文字として採用しました"
 
 #. placeholder {0}: emoji.name
-#: src/pages/admin/emojis.tsx:475
+#: src/pages/admin/emojis.tsx:492
 msgid "Emoji \":{0}:\" deleted"
 msgstr "絵文字 \":{0}:\" を削除しました"
 
-#: src/pages/admin/emojis.tsx:417
+#: src/pages/admin/emojis.tsx:434
 msgid "Emoji \":{name}:\" added successfully"
 msgstr "絵文字 \":{name}:\" を追加しました"
 
-#: src/pages/admin/emojis.tsx:1248
+#: src/pages/admin/emojis.tsx:1349
 msgid "Emoji names are derived from filenames if no meta.json is provided"
 msgstr "meta.jsonがない場合、絵文字名はファイル名から生成されます"
 
@@ -1177,11 +1177,11 @@ msgstr "meta.jsonがない場合、絵文字名はファイル名から生成さ
 msgid "Emoji Picker"
 msgstr "絵文字ピッカー"
 
-#: src/pages/admin/emojis.tsx:449
+#: src/pages/admin/emojis.tsx:466
 msgid "Emoji updated successfully"
 msgstr "絵文字を更新しました"
 
-#: src/pages/admin/emojis.tsx:775
+#: src/pages/admin/emojis.tsx:829
 msgid "emoji_name"
 msgstr "絵文字名"
 
@@ -1269,7 +1269,7 @@ msgstr "ユーザープロフィールの読み込みに失敗しました"
 msgid "example.com"
 msgstr "example.com"
 
-#: src/pages/admin/emojis.tsx:673
+#: src/pages/admin/emojis.tsx:727
 msgid "Exit Bulk Mode"
 msgstr "一括編集を終了"
 
@@ -1304,7 +1304,7 @@ msgstr "ポータブル形式でのデータエクスポート"
 msgid "Exporting..."
 msgstr "エクスポート中..."
 
-#: src/pages/admin/emojis.tsx:1341
+#: src/pages/admin/emojis.tsx:1442
 #: src/pages/admin/queue.tsx:278
 #: src/pages/admin/queue.tsx:454
 msgid "Failed"
@@ -1314,7 +1314,7 @@ msgstr "失敗"
 msgid "Failed to add alias"
 msgstr "エイリアスの追加に失敗しました"
 
-#: src/pages/admin/emojis.tsx:426
+#: src/pages/admin/emojis.tsx:443
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
@@ -1322,7 +1322,7 @@ msgstr "絵文字の追加に失敗しました"
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
-#: src/pages/admin/emojis.tsx:181
+#: src/pages/admin/emojis.tsx:198
 msgid "Failed to adopt emoji"
 msgstr "絵文字の採用に失敗しました"
 
@@ -1361,11 +1361,11 @@ msgstr "招待コードの作成に失敗しました"
 msgid "Failed to delete account"
 msgstr "アカウントの削除に失敗しました"
 
-#: src/pages/admin/emojis.tsx:483
+#: src/pages/admin/emojis.tsx:500
 msgid "Failed to delete emoji"
 msgstr "絵文字の削除に失敗しました"
 
-#: src/pages/admin/emojis.tsx:559
+#: src/pages/admin/emojis.tsx:613
 msgid "Failed to delete emojis"
 msgstr "絵文字の削除に失敗しました"
 
@@ -1403,7 +1403,7 @@ msgstr "データのエクスポートに失敗しました"
 msgid "Failed to find user"
 msgstr "ユーザーが見つかりませんでした"
 
-#: src/pages/admin/emojis.tsx:243
+#: src/pages/admin/emojis.tsx:260
 msgid "Failed to import emojis"
 msgstr "絵文字のインポートに失敗しました"
 
@@ -1414,6 +1414,10 @@ msgstr "引っ越しの開始に失敗しました"
 #: src/pages/mod/users.tsx:215
 msgid "Failed to issue warning"
 msgstr "警告の発行に失敗しました"
+
+#: src/pages/admin/emojis.tsx:566
+msgid "Failed to load all emojis"
+msgstr "すべての絵文字の読み込みに失敗しました"
 
 #: src/components/drive/DrivePickerDialog.tsx:196
 msgid "Failed to load files"
@@ -1432,7 +1436,7 @@ msgstr "ノートの読み込みに失敗しました"
 msgid "Failed to load passkeys"
 msgstr "パスキーの読み込みに失敗しました"
 
-#: src/pages/admin/emojis.tsx:153
+#: src/pages/admin/emojis.tsx:170
 msgid "Failed to load remote emojis"
 msgstr "リモート絵文字の読み込みに失敗しました"
 
@@ -1531,11 +1535,11 @@ msgstr "インスタンスのブロック解除に失敗しました"
 msgid "Failed to unsuspend user"
 msgstr "ユーザーの停止解除に失敗しました"
 
-#: src/pages/admin/emojis.tsx:458
+#: src/pages/admin/emojis.tsx:475
 msgid "Failed to update emoji"
 msgstr "絵文字の更新に失敗しました"
 
-#: src/pages/admin/emojis.tsx:601
+#: src/pages/admin/emojis.tsx:655
 msgid "Failed to update emojis"
 msgstr "絵文字の更新に失敗しました"
 
@@ -1565,7 +1569,7 @@ msgstr "アバターのアップロードに失敗しました"
 msgid "Failed to upload banner"
 msgstr "バナーのアップロードに失敗しました"
 
-#: src/pages/admin/emojis.tsx:392
+#: src/pages/admin/emojis.tsx:409
 msgid "Failed to upload file"
 msgstr "ファイルのアップロードに失敗しました"
 
@@ -1602,15 +1606,15 @@ msgstr "取得エラー"
 msgid "File deleted"
 msgstr "ファイルを削除しました"
 
-#: src/pages/admin/emojis.tsx:353
+#: src/pages/admin/emojis.tsx:370
 msgid "File too large. Maximum size: 256KB"
 msgstr "ファイルが大きすぎます。最大サイズ: 256KB"
 
-#: src/pages/admin/emojis.tsx:204
+#: src/pages/admin/emojis.tsx:221
 msgid "File too large. Maximum size: 50MB"
 msgstr "ファイルが大きすぎます。最大サイズ: 50MB"
 
-#: src/pages/admin/emojis.tsx:386
+#: src/pages/admin/emojis.tsx:403
 msgid "File uploaded successfully"
 msgstr "ファイルをアップロードしました"
 
@@ -1788,7 +1792,7 @@ msgstr "アイコンURL"
 msgid "If no custom URLs are set, visitors will see the default legal pages:"
 msgstr "カスタムURLが設定されていない場合、訪問者にはデフォルトの法的文書ページが表示されます："
 
-#: src/pages/admin/emojis.tsx:786
+#: src/pages/admin/emojis.tsx:840
 msgid "Image"
 msgstr "画像"
 
@@ -1807,15 +1811,15 @@ msgstr "他者のなりすましや誤情報の拡散"
 #. placeholder {0}: result.success
 #. placeholder {1}: result.skipped
 #. placeholder {2}: result.failed
-#: src/pages/admin/emojis.tsx:234
+#: src/pages/admin/emojis.tsx:251
 msgid "Import complete: {0} added, {1} skipped, {2} failed"
 msgstr "インポート完了: {0}件追加、{1}件スキップ、{2}件失敗"
 
-#: src/pages/admin/emojis.tsx:1317
+#: src/pages/admin/emojis.tsx:1418
 msgid "Import Results"
 msgstr "インポート結果"
 
-#: src/pages/admin/emojis.tsx:1292
+#: src/pages/admin/emojis.tsx:1393
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
@@ -1910,7 +1914,7 @@ msgstr "インスタンスのブロックを解除しました"
 msgid "Internal Notes"
 msgstr "内部メモ"
 
-#: src/pages/admin/emojis.tsx:344
+#: src/pages/admin/emojis.tsx:361
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
 msgstr "無効なファイル形式です。PNG、GIF、WebP、APNGのみ対応"
 
@@ -2019,7 +2023,7 @@ msgstr "法的文書"
 msgid "Legal Documents"
 msgstr "法的文書"
 
-#: src/pages/admin/emojis.tsx:873
+#: src/pages/admin/emojis.tsx:927
 #: src/pages/legal/licenses.tsx:168
 msgid "License"
 msgstr "ライセンス"
@@ -2040,6 +2044,11 @@ msgstr "軽量"
 #: src/components/settings/UISettingsSection.tsx:280
 msgid "Line Height"
 msgstr "行の高さ"
+
+#. placeholder {0}: totalEmojis - emojis.length
+#: src/pages/admin/emojis.tsx:1221
+msgid "Load All ({0} more)"
+msgstr "すべて読み込む（残り{0}件）"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
@@ -2069,6 +2078,7 @@ msgstr "投稿を読み込み中..."
 #: src/components/note/NoteComposer.tsx:959
 #: src/components/user/FollowListModal.tsx:226
 #: src/components/user/UserProfile.tsx:566
+#: src/pages/admin/emojis.tsx:1218
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -2078,7 +2088,7 @@ msgstr "読み込み中..."
 msgid "Local"
 msgstr "ローカル"
 
-#: src/pages/admin/emojis.tsx:721
+#: src/pages/admin/emojis.tsx:775
 msgid "Local Emojis"
 msgstr "ローカル絵文字"
 
@@ -2118,7 +2128,7 @@ msgstr "リモートユーザーを検索中..."
 #~ msgid "Lowercase letters, numbers, and underscores only"
 #~ msgstr "小文字、数字、アンダースコアのみ使用可"
 
-#: src/pages/admin/emojis.tsx:780
+#: src/pages/admin/emojis.tsx:834
 msgid "Lowercase letters, numbers, underscores, and hyphens only"
 msgstr "小文字、数字、アンダースコア、ハイフンのみ使用可"
 
@@ -2189,11 +2199,11 @@ msgstr "{0}人のユーザーを削除済みにしました"
 msgid "Max Uses"
 msgstr "最大使用回数"
 
-#: src/pages/admin/emojis.tsx:1246
+#: src/pages/admin/emojis.tsx:1347
 msgid "Maximum file size per emoji: 256KB"
 msgstr "絵文字1つあたりの最大サイズ: 256KB"
 
-#: src/pages/admin/emojis.tsx:1247
+#: src/pages/admin/emojis.tsx:1348
 msgid "Maximum ZIP size: 50MB"
 msgstr "ZIPファイルの最大サイズ: 50MB"
 
@@ -2274,7 +2284,7 @@ msgstr "別のアカウントに引っ越す"
 msgid "My Rox Server"
 msgstr "マイRoxサーバー"
 
-#: src/pages/admin/emojis.tsx:767
+#: src/pages/admin/emojis.tsx:821
 #: src/pages/admin/roles.tsx:362
 msgid "Name"
 msgstr "名前"
@@ -2332,7 +2342,7 @@ msgstr "監査ログがありません"
 msgid "No blocked instances"
 msgstr "ブロック中のインスタンスはありません"
 
-#: src/pages/admin/emojis.tsx:1028
+#: src/pages/admin/emojis.tsx:1106
 msgid "No custom emojis yet"
 msgstr "カスタム絵文字がまだありません"
 
@@ -2353,7 +2363,7 @@ msgstr "保存された下書きはありません"
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
-#: src/pages/admin/emojis.tsx:1036
+#: src/pages/admin/emojis.tsx:1114
 msgid "No emojis match your search"
 msgstr "検索に一致する絵文字がありません"
 
@@ -2427,7 +2437,7 @@ msgstr "確認待ちの報告はありません"
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
-#: src/pages/admin/emojis.tsx:1168
+#: src/pages/admin/emojis.tsx:1269
 msgid "No remote emojis collected yet"
 msgstr "リモート絵文字はまだ収集されていません"
 
@@ -2586,7 +2596,7 @@ msgstr "任意"
 msgid "Or continue with password"
 msgstr "またはパスワードでログイン"
 
-#: src/pages/admin/emojis.tsx:1435
+#: src/pages/admin/emojis.tsx:1536
 msgid "Or enter new category"
 msgstr "または新しいカテゴリを入力"
 
@@ -2717,7 +2727,7 @@ msgstr "プロフィールを更新するにはログインしてください"
 msgid "Please log in to view your inquiries."
 msgstr "お問い合わせを表示するにはログインしてください。"
 
-#: src/pages/admin/emojis.tsx:195
+#: src/pages/admin/emojis.tsx:212
 msgid "Please select a ZIP file"
 msgstr "ZIPファイルを選択してください"
 
@@ -2764,7 +2774,7 @@ msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
 #: src/components/note/NoteComposer.tsx:1004
 #: src/components/settings/UISettingsSection.tsx:488
-#: src/pages/admin/emojis.tsx:902
+#: src/pages/admin/emojis.tsx:956
 #: src/pages/admin/settings.tsx:716
 msgid "Preview"
 msgstr "プレビュー"
@@ -2923,7 +2933,7 @@ msgid "Read Full License"
 msgstr "ライセンス全文を読む"
 
 #: src/components/report/ReportDialog.tsx:126
-#: src/pages/admin/emojis.tsx:1354
+#: src/pages/admin/emojis.tsx:1455
 msgid "Reason"
 msgstr "報告理由"
 
@@ -2966,8 +2976,8 @@ msgstr "推奨: 正方形の画像、最大2MB"
 #: src/components/settings/AccountMigrationSection.tsx:243
 #: src/components/settings/InvitationCodeSection.tsx:174
 #: src/pages/admin/contacts.tsx:515
-#: src/pages/admin/emojis.tsx:684
-#: src/pages/admin/emojis.tsx:704
+#: src/pages/admin/emojis.tsx:738
+#: src/pages/admin/emojis.tsx:758
 #: src/pages/admin/federation.tsx:440
 #: src/pages/admin/queue.tsx:230
 msgid "Refresh"
@@ -3036,15 +3046,15 @@ msgstr "却下済み"
 msgid "Remote"
 msgstr "リモート"
 
-#: src/pages/admin/emojis.tsx:732
+#: src/pages/admin/emojis.tsx:786
 msgid "Remote Emojis"
 msgstr "リモート絵文字"
 
-#: src/pages/admin/emojis.tsx:1133
+#: src/pages/admin/emojis.tsx:1234
 msgid "Remote emojis are collected from reactions received from other servers. You can adopt them as local emojis to use on your instance."
 msgstr "リモート絵文字は他のサーバーからのリアクションで収集されます。これらをローカル絵文字として採用してインスタンスで使用できます。"
 
-#: src/pages/admin/emojis.tsx:1171
+#: src/pages/admin/emojis.tsx:1272
 msgid "Remote emojis will appear here when users from other servers react with custom emojis"
 msgstr "他のサーバーのユーザーがカスタム絵文字でリアクションすると、ここに表示されます"
 
@@ -3383,7 +3393,7 @@ msgstr "検索"
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
 
-#: src/pages/admin/emojis.tsx:1003
+#: src/pages/admin/emojis.tsx:1081
 msgid "Search emojis..."
 msgstr "絵文字を検索..."
 
@@ -3429,10 +3439,14 @@ msgstr "セキュリティ"
 msgid "Select"
 msgstr "選択する"
 
-#: src/pages/admin/emojis.tsx:958
+#: src/pages/admin/emojis.tsx:1035
 #: src/pages/admin/gone-users.tsx:227
 msgid "Select All"
 msgstr "すべて選択"
+
+#: src/pages/admin/emojis.tsx:1027
+msgid "Select All ({totalEmojis})"
+msgstr "すべて選択（{totalEmojis}件）"
 
 #: src/components/note/NoteComposer.tsx:1100
 #: src/components/note/NoteComposer.tsx:1101
@@ -3442,6 +3456,11 @@ msgstr "ドライブから選択"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "ドライブから選択"
+
+#. placeholder {0}: filteredEmojis.length
+#: src/pages/admin/emojis.tsx:1014
+msgid "Select Visible ({0})"
+msgstr "表示中を選択（{0}件）"
 
 #: src/components/pages/ContactThreadPageClient.tsx:287
 #: src/pages/admin/contacts.tsx:420
@@ -3464,7 +3483,7 @@ msgstr "サービス関連の通知を送信"
 msgid "Send test"
 msgstr "テスト送信"
 
-#: src/pages/admin/emojis.tsx:893
+#: src/pages/admin/emojis.tsx:947
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
@@ -3496,13 +3515,13 @@ msgstr "サービス利用不可"
 msgid "Session"
 msgstr "セッション"
 
-#: src/pages/admin/emojis.tsx:972
-#: src/pages/admin/emojis.tsx:1397
+#: src/pages/admin/emojis.tsx:1050
+#: src/pages/admin/emojis.tsx:1498
 msgid "Set Category"
 msgstr "カテゴリを設定"
 
 #. placeholder {0}: selectedEmojis.size
-#: src/pages/admin/emojis.tsx:1411
+#: src/pages/admin/emojis.tsx:1512
 msgid "Set category for {0} selected emojis"
 msgstr "選択した{0}個の絵文字のカテゴリを設定"
 
@@ -3543,6 +3562,11 @@ msgstr "未読のみ表示"
 msgid "Showing {0} - {1} of {total}"
 msgstr "{total}件中 {0} - {1}を表示"
 
+#. placeholder {0}: emojis.length
+#: src/pages/admin/emojis.tsx:1198
+msgid "Showing {0} of {totalEmojis} emojis"
+msgstr "{totalEmojis}件中 {0}件を表示"
+
 #: src/pages/login.tsx:263
 #: src/pages/signup.tsx:232
 msgid "Sign in"
@@ -3578,7 +3602,7 @@ msgstr "新規登録"
 msgid "Signing in..."
 msgstr "サインイン中..."
 
-#: src/pages/admin/emojis.tsx:1333
+#: src/pages/admin/emojis.tsx:1434
 msgid "Skipped"
 msgstr "スキップ"
 
@@ -3610,7 +3634,7 @@ msgstr "標準絵文字"
 msgid "Start a conversation by composing a direct message"
 msgstr "ダイレクトメッセージを送信して会話を始めましょう"
 
-#: src/pages/admin/emojis.tsx:1353
+#: src/pages/admin/emojis.tsx:1454
 msgid "Status"
 msgstr "ステータス"
 
@@ -3662,7 +3686,7 @@ msgstr "成功率"
 msgid "Successful"
 msgstr "成功"
 
-#: src/pages/admin/emojis.tsx:1245
+#: src/pages/admin/emojis.tsx:1346
 msgid "Supported formats: PNG, GIF, WebP, APNG"
 msgstr "対応フォーマット: PNG, GIF, WebP, APNG"
 
@@ -3928,16 +3952,19 @@ msgstr "ロール総数"
 msgid "Total Size"
 msgstr "総サイズ"
 
-#. placeholder {0}: emojis.length
 #: src/pages/admin/emojis.tsx:1118
-msgid "Total: {0} emojis"
-msgstr "合計: {0}個の絵文字"
+#~ msgid "Total: {0} emojis"
+#~ msgstr "合計: {0}個の絵文字"
 
 #. placeholder {0}: remoteEmojis.length
 #. placeholder {1}: remoteHosts.length
-#: src/pages/admin/emojis.tsx:1218
+#: src/pages/admin/emojis.tsx:1319
 msgid "Total: {0} remote emojis from {1} servers"
 msgstr "合計: {1}サーバーから{0}件のリモート絵文字"
+
+#: src/pages/admin/emojis.tsx:1200
+msgid "Total: {totalEmojis} emojis"
+msgstr "合計: {totalEmojis}個の絵文字"
 
 #: src/pages/search.tsx:441
 msgid "Try a different search term or check the spelling"
@@ -3987,7 +4014,7 @@ msgstr "ブロック解除"
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
-#: src/pages/admin/emojis.tsx:1424
+#: src/pages/admin/emojis.tsx:1525
 msgid "Uncategorized"
 msgstr "未分類"
 
@@ -4025,7 +4052,7 @@ msgstr "停止解除"
 msgid "Unsuspend User"
 msgstr "ユーザーの停止を解除"
 
-#: src/pages/admin/emojis.tsx:929
+#: src/pages/admin/emojis.tsx:983
 msgid "Update Emoji"
 msgstr "絵文字を更新"
 
@@ -4034,7 +4061,7 @@ msgid "Update Role"
 msgstr "ロールを更新"
 
 #. placeholder {0}: result.success
-#: src/pages/admin/emojis.tsx:583
+#: src/pages/admin/emojis.tsx:637
 msgid "Updated {0} emojis"
 msgstr "{0}個の絵文字を更新しました"
 
@@ -4042,7 +4069,7 @@ msgstr "{0}個の絵文字を更新しました"
 msgid "Upload"
 msgstr "アップロード"
 
-#: src/pages/admin/emojis.tsx:1233
+#: src/pages/admin/emojis.tsx:1334
 msgid "Upload a ZIP file containing emoji images. You can optionally include a meta.json file to specify emoji names, categories, and other metadata."
 msgstr "絵文字画像を含むZIPファイルをアップロードしてください。オプションでmeta.jsonファイルを含めて、絵文字名、カテゴリ、その他のメタデータを指定できます。"
 
@@ -4073,7 +4100,7 @@ msgstr "ファイルをアップロード中..."
 #: src/components/note/NoteComposer.tsx:1358
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
-#: src/pages/admin/emojis.tsx:809
+#: src/pages/admin/emojis.tsx:863
 msgid "Uploading..."
 msgstr "アップロード中..."
 
@@ -4493,6 +4520,6 @@ msgstr "ストレージがいっぱいです。アップロードするにはフ
 msgid "your@email.com"
 msgstr "your@email.com"
 
-#: src/pages/admin/emojis.tsx:1242
+#: src/pages/admin/emojis.tsx:1343
 msgid "ZIP Format"
 msgstr "ZIPフォーマット"
