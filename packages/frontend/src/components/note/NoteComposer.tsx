@@ -99,6 +99,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const handleSubmitRef = useRef<() => void>(() => {});
 
   // DM recipient selection state
   const [dmRecipients, setDmRecipients] = useState<User[]>([]);
@@ -339,6 +340,21 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
   // Handle keyboard events for suggestions (mentions and emojis)
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux) to submit
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        // Only submit if not already submitting and content is valid
+        if (
+          !isSubmitting &&
+          !isUploading &&
+          (text.trim() || totalFileCount > 0) &&
+          text.length <= maxLength
+        ) {
+          handleSubmitRef.current();
+        }
+        return;
+      }
+
       // Check if mention suggestions should handle this event
       if (handleMentionKeyDown(e)) {
         e.preventDefault();
@@ -387,6 +403,11 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
       emojiSuggestions,
       emojiSelectedIndex,
       selectEmojiSuggestion,
+      isSubmitting,
+      isUploading,
+      text,
+      totalFileCount,
+      maxLength,
     ],
   );
 
@@ -620,6 +641,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
       setIsUploading(false);
     }
   };
+
+  // Keep ref updated for use in handleKeyDown (which is defined before handleSubmit)
+  handleSubmitRef.current = () => handleSubmit();
 
   const handleScheduleSubmit = () => {
     if (scheduledAt) {
@@ -1339,32 +1363,39 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                 )}
               </div>
 
-              {/* Submit button */}
-              <Button
-                onPress={() => handleSubmit()}
-                isDisabled={
-                  isSubmitting ||
-                  isUploading ||
-                  (!text.trim() && totalFileCount === 0) ||
-                  text.length > maxLength
-                }
-                variant="primary"
-                size="sm"
-                className="min-w-[72px] shrink-0"
-              >
-                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
-                  {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
-                  {isUploading ? (
-                    <Trans>Uploading...</Trans>
-                  ) : isSubmitting ? (
-                    <Trans>Posting...</Trans>
-                  ) : replyId ? (
-                    <Trans>Reply</Trans>
-                  ) : (
-                    <Trans>Post</Trans>
-                  )}
+              {/* Submit button with shortcut hint */}
+              <div className="flex flex-col items-end gap-1">
+                <Button
+                  onPress={() => handleSubmit()}
+                  isDisabled={
+                    isSubmitting ||
+                    isUploading ||
+                    (!text.trim() && totalFileCount === 0) ||
+                    text.length > maxLength
+                  }
+                  variant="primary"
+                  size="sm"
+                  className="min-w-[72px] shrink-0"
+                >
+                  <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                    {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
+                    {isUploading ? (
+                      <Trans>Uploading...</Trans>
+                    ) : isSubmitting ? (
+                      <Trans>Posting...</Trans>
+                    ) : replyId ? (
+                      <Trans>Reply</Trans>
+                    ) : (
+                      <Trans>Post</Trans>
+                    )}
+                  </span>
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  {typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+                    ? "⌘↵"
+                    : "Ctrl+Enter"}
                 </span>
-              </Button>
+              </div>
             </div>
           </div>
         </div>
