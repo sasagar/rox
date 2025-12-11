@@ -75,17 +75,25 @@ export default function TimelinePage() {
     restoreSession();
   }, [token, currentUser, setCurrentUser]);
 
-  const handleNoteCreated = async () => {
-    // Refresh timeline by fetching latest notes
+  const handleNoteCreated = useCallback(async () => {
+    // Refresh timeline by fetching latest notes based on current timeline type
+    const endpoint =
+      timelineType === "home"
+        ? "/api/notes/timeline"
+        : timelineType === "social"
+          ? "/api/notes/social-timeline"
+          : timelineType === "global"
+            ? "/api/notes/global-timeline"
+            : "/api/notes/local-timeline";
+
     try {
-      const newNotes = await apiClient.get<any[]>("/api/notes/local-timeline?limit=20");
+      const newNotes = await apiClient.get<any[]>(`${endpoint}?limit=20`);
       setTimelineNotes(newNotes);
     } catch (error) {
       console.error("Failed to refresh timeline:", error);
-      // Fallback: just reload the page
-      window.location.reload();
+      // Don't reload the page - WebSocket will still push new notes
     }
-  };
+  }, [timelineType, setTimelineNotes]);
 
   // Show loading while checking auth
   if (isLoading || !currentUser) {
