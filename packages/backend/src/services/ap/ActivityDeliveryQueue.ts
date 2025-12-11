@@ -126,6 +126,15 @@ export class ActivityDeliveryQueue {
   }
 
   /**
+   * Check if queue mode is enabled (vs synchronous delivery)
+   *
+   * @returns True if using Redis queue, false if using synchronous delivery
+   */
+  public isQueueEnabled(): boolean {
+    return this.useQueue;
+  }
+
+  /**
    * Initialize BullMQ queue and worker
    *
    * Attempts to connect to Redis. If connection fails, falls back to sync mode.
@@ -135,7 +144,7 @@ export class ActivityDeliveryQueue {
   private async initializeQueue(): Promise<void> {
     // Check if queue is explicitly disabled via environment variable
     if (process.env.USE_QUEUE === "false") {
-      logger.info("Queue disabled via USE_QUEUE=false, using synchronous delivery");
+      logger.debug("Queue disabled via USE_QUEUE=false, using synchronous delivery");
       this.useQueue = false;
       return;
     }
@@ -162,7 +171,7 @@ export class ActivityDeliveryQueue {
         this.redis!.once("error", (err) => reject(err));
       });
 
-      logger.info("Redis connected, using BullMQ for delivery queue");
+      logger.debug("Redis connected, using BullMQ for delivery queue");
 
       // Initialize queue
       // Note: Using simple prefix without hash tags for Dragonfly compatibility
@@ -576,7 +585,7 @@ export class ActivityDeliveryQueue {
       }
     }, intervalMs);
 
-    logger.info({ intervalMs }, "Periodic statistics logging started");
+    logger.debug({ intervalMs }, "Periodic statistics logging started");
   }
 
   /**

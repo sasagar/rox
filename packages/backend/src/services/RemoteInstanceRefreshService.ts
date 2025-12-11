@@ -110,7 +110,7 @@ export class RemoteInstanceRefreshService {
     }
 
     this.isRunning = true;
-    logger.info(
+    logger.debug(
       {
         intervalMs: this.config.intervalMs,
         staleTTLMs: this.config.staleTTLMs,

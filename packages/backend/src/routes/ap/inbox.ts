@@ -98,7 +98,16 @@ inbox.post(
       );
     }
 
-    logger.info({ activityType: activity.type, actor: activity.actor, username }, "Inbox received activity");
+    logger.info(
+      {
+        activityType: activity.type,
+        actor: activity.actor,
+        username,
+        activityId: activity.id,
+        objectType: typeof activity.object === "object" ? (activity.object as { type?: string })?.type : "string",
+      },
+      "Inbox received activity",
+    );
 
     // Check if actor's instance is blocked
     const actorUrl =
@@ -216,7 +225,13 @@ inbox.post(
     }
 
     logger.info(
-      { activityType: activity.type, actor: activity.actor, endpoint: "shared" },
+      {
+        activityType: activity.type,
+        actor: activity.actor,
+        endpoint: "shared",
+        activityId: activity.id,
+        objectType: typeof activity.object === "object" ? (activity.object as { type?: string })?.type : "string",
+      },
       "Shared inbox received activity",
     );
 

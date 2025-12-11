@@ -74,7 +74,7 @@ export class ReceivedActivitiesCleanupService {
     }
 
     this.isRunning = true;
-    logger.info(
+    logger.debug(
       { retentionDays: this.config.retentionDays, intervalMs: this.config.intervalMs },
       "Starting ReceivedActivitiesCleanupService",
     );

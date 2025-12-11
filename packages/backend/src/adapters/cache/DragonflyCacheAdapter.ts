@@ -79,7 +79,7 @@ export class DragonflyCacheAdapter implements ICacheService {
       await this.redis.ping();
 
       this.available = true;
-      logger.info("Dragonfly cache connected");
+      logger.debug("Dragonfly cache connected");
     } catch (error) {
       logger.debug({ err: error }, "Dragonfly cache not available, caching disabled");
       this.available = false;

@@ -79,8 +79,9 @@ export class ScheduledNotePublisher {
     }
 
     this.isRunning = true;
-    logger.info(
-      `Starting ScheduledNotePublisher (interval: ${this.config.intervalMs}ms, batch: ${this.config.batchSize})`,
+    logger.debug(
+      { intervalMs: this.config.intervalMs, batchSize: this.config.batchSize },
+      "Starting ScheduledNotePublisher",
     );
 
     // Run immediately on start

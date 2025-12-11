@@ -84,7 +84,7 @@ export class WebPushService {
         privateKey,
       );
       this.vapidConfigured = true;
-      logger.info("Web Push VAPID configured successfully");
+      logger.debug("Web Push VAPID configured successfully");
     } catch (error) {
       logger.error({ err: error }, "Failed to configure VAPID");
     }

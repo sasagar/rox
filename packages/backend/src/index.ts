@@ -117,16 +117,6 @@ app.route("/", noteAPRoute); // /notes/:id
 
 const port = parseInt(process.env.PORT || "3000", 10);
 
-logger.info(
-  {
-    port,
-    database: process.env.DB_TYPE || "postgres",
-    storage: process.env.STORAGE_TYPE || "local",
-    environment: process.env.NODE_ENV || "development",
-  },
-  "Rox API server starting",
-);
-
 // Start cleanup service for received activities
 const cleanupService = new ReceivedActivitiesCleanupService({
   retentionDays: 7,
@@ -167,6 +157,20 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
   batchSize: 50,
 });
 scheduledNotePublisher.start();
+
+// Log startup summary (single consolidated log for all services)
+logger.info(
+  {
+    version: packageJson.version,
+    port,
+    database: process.env.DB_TYPE || "postgres",
+    storage: process.env.STORAGE_TYPE || "local",
+    queue: container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync",
+    cache: container.cacheService.isAvailable() ? "dragonfly" : "disabled",
+    environment: process.env.NODE_ENV || "development",
+  },
+  "Rox API server started",
+);
 
 // Graceful shutdown handler
 let isShuttingDown = false;
