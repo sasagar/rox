@@ -17,8 +17,13 @@ const splashScreenStyles = `
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+  background: #f9fafb;
   transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen {
+    background: #111827;
+  }
 }
 #rox-splash-screen.hidden {
   opacity: 0;
@@ -30,12 +35,18 @@ const splashScreenStyles = `
   height: 96px;
   border-radius: 24px;
   background: white;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
   animation: splash-bounce 1s ease-in-out infinite;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-icon {
+    background: #1f2937;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
 }
 #rox-splash-screen .splash-icon img {
   width: 72px;
@@ -51,23 +62,39 @@ const splashScreenStyles = `
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 28px;
   font-weight: 700;
-  color: white;
+  color: #111827;
   margin-bottom: 8px;
   letter-spacing: -0.5px;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-title {
+    color: #f9fafb;
+  }
 }
 #rox-splash-screen .splash-subtitle {
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #6b7280;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-subtitle {
+    color: #9ca3af;
+  }
 }
 #rox-splash-screen .splash-loader {
   width: 40px;
   height: 40px;
   margin-top: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4f46e5;
   border-radius: 50%;
   animation: splash-spin 0.8s linear infinite;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-loader {
+    border-color: #374151;
+    border-top-color: #818cf8;
+  }
 }
 @keyframes splash-spin {
   to { transform: rotate(360deg); }
