@@ -186,27 +186,54 @@ app.get("/manifest.json", async (c: Context) => {
 
   const instanceUrl = process.env.URL || "http://localhost:3000";
 
-  // Build icons array - use dedicated PWA icons if available, otherwise fall back to instance icon or default
+  // Build icons array - separate "any" and "maskable" icons for proper PWA display
+  // "any" icons are used as-is, "maskable" icons are cropped by OS to fit icon shapes
   const icons = [];
   const fallbackIcon = metadata.iconUrl || "/favicon.png";
 
-  // 192x192 icon - use dedicated PWA icon or fallback
-  const icon192 = metadata.pwaIcon192Url || fallbackIcon;
+  // 192x192 icons
+  const icon192Any = metadata.pwaIcon192Url || fallbackIcon;
+  const icon192Maskable = metadata.pwaMaskableIcon192Url;
+
+  // Add "any" icon (standard icon without cropping)
   icons.push({
-    src: icon192,
+    src: icon192Any,
     sizes: "192x192",
     type: "image/png",
-    purpose: "any maskable",
+    purpose: "any",
   });
 
-  // 512x512 icon - use dedicated PWA icon or fallback
-  const icon512 = metadata.pwaIcon512Url || fallbackIcon;
+  // Add "maskable" icon if configured (icon with safe zone for OS cropping)
+  if (icon192Maskable) {
+    icons.push({
+      src: icon192Maskable,
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "maskable",
+    });
+  }
+
+  // 512x512 icons
+  const icon512Any = metadata.pwaIcon512Url || fallbackIcon;
+  const icon512Maskable = metadata.pwaMaskableIcon512Url;
+
+  // Add "any" icon
   icons.push({
-    src: icon512,
+    src: icon512Any,
     sizes: "512x512",
     type: "image/png",
-    purpose: "any maskable",
+    purpose: "any",
   });
+
+  // Add "maskable" icon if configured
+  if (icon512Maskable) {
+    icons.push({
+      src: icon512Maskable,
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "maskable",
+    });
+  }
 
   const manifest = {
     name: metadata.name || "Rox",

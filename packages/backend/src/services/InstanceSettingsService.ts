@@ -34,6 +34,9 @@ export interface InstanceMetadata {
   faviconUrl: string | null;
   pwaIcon192Url: string | null;
   pwaIcon512Url: string | null;
+  /** Maskable icons for PWA (with safe zone padding for OS icon masks) */
+  pwaMaskableIcon192Url: string | null;
+  pwaMaskableIcon512Url: string | null;
   tosUrl: string | null;
   privacyPolicyUrl: string | null;
   sourceCodeUrl: string | null;
@@ -71,6 +74,8 @@ const DEFAULT_METADATA: InstanceMetadata = {
   faviconUrl: null,
   pwaIcon192Url: null,
   pwaIcon512Url: null,
+  pwaMaskableIcon192Url: null,
+  pwaMaskableIcon512Url: null,
   tosUrl: null,
   privacyPolicyUrl: null,
   sourceCodeUrl: "https://github.com/Love-Rox/rox",
@@ -421,6 +426,50 @@ export class InstanceSettingsService {
   }
 
   /**
+   * Get PWA maskable icon 192x192 URL
+   */
+  async getPwaMaskableIcon192Url(): Promise<string | null> {
+    return this.getCachedValue<string | null>(
+      "instance.pwaMaskableIcon192Url",
+      DEFAULT_METADATA.pwaMaskableIcon192Url,
+    );
+  }
+
+  /**
+   * Set PWA maskable icon 192x192 URL
+   */
+  async setPwaMaskableIcon192Url(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.pwaMaskableIcon192Url");
+    } else {
+      await this.settingsRepository.set("instance.pwaMaskableIcon192Url", url, updatedById);
+    }
+    await this.invalidateCache("instance.pwaMaskableIcon192Url");
+  }
+
+  /**
+   * Get PWA maskable icon 512x512 URL
+   */
+  async getPwaMaskableIcon512Url(): Promise<string | null> {
+    return this.getCachedValue<string | null>(
+      "instance.pwaMaskableIcon512Url",
+      DEFAULT_METADATA.pwaMaskableIcon512Url,
+    );
+  }
+
+  /**
+   * Set PWA maskable icon 512x512 URL
+   */
+  async setPwaMaskableIcon512Url(url: string | null, updatedById?: string): Promise<void> {
+    if (url === null) {
+      await this.settingsRepository.delete("instance.pwaMaskableIcon512Url");
+    } else {
+      await this.settingsRepository.set("instance.pwaMaskableIcon512Url", url, updatedById);
+    }
+    await this.invalidateCache("instance.pwaMaskableIcon512Url");
+  }
+
+  /**
    * Get Terms of Service URL
    */
   async getTosUrl(): Promise<string | null> {
@@ -507,6 +556,8 @@ export class InstanceSettingsService {
       "instance.faviconUrl",
       "instance.pwaIcon192Url",
       "instance.pwaIcon512Url",
+      "instance.pwaMaskableIcon192Url",
+      "instance.pwaMaskableIcon512Url",
       "instance.tosUrl",
       "instance.privacyPolicyUrl",
       "instance.sourceCodeUrl",
@@ -528,6 +579,12 @@ export class InstanceSettingsService {
         (values.get("instance.pwaIcon192Url") as string | null) ?? DEFAULT_METADATA.pwaIcon192Url,
       pwaIcon512Url:
         (values.get("instance.pwaIcon512Url") as string | null) ?? DEFAULT_METADATA.pwaIcon512Url,
+      pwaMaskableIcon192Url:
+        (values.get("instance.pwaMaskableIcon192Url") as string | null) ??
+        DEFAULT_METADATA.pwaMaskableIcon192Url,
+      pwaMaskableIcon512Url:
+        (values.get("instance.pwaMaskableIcon512Url") as string | null) ??
+        DEFAULT_METADATA.pwaMaskableIcon512Url,
       tosUrl: (values.get("instance.tosUrl") as string | null) ?? DEFAULT_METADATA.tosUrl,
       privacyPolicyUrl:
         (values.get("instance.privacyPolicyUrl") as string | null) ??
@@ -585,6 +642,12 @@ export class InstanceSettingsService {
     }
     if (metadata.pwaIcon512Url !== undefined) {
       await this.setPwaIcon512Url(metadata.pwaIcon512Url, updatedById);
+    }
+    if (metadata.pwaMaskableIcon192Url !== undefined) {
+      await this.setPwaMaskableIcon192Url(metadata.pwaMaskableIcon192Url, updatedById);
+    }
+    if (metadata.pwaMaskableIcon512Url !== undefined) {
+      await this.setPwaMaskableIcon512Url(metadata.pwaMaskableIcon512Url, updatedById);
     }
     if (metadata.tosUrl !== undefined) {
       await this.setTosUrl(metadata.tosUrl, updatedById);

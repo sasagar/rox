@@ -1477,7 +1477,7 @@ app.post("/assets/upload", async (c) => {
   }
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
   if (!assetType || !validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1495,6 +1495,8 @@ app.post("/assets/upload", async (c) => {
     favicon: 512 * 1024, // 512KB
     pwaIcon192: 1 * 1024 * 1024, // 1MB
     pwaIcon512: 2 * 1024 * 1024, // 2MB
+    pwaMaskableIcon192: 1 * 1024 * 1024, // 1MB
+    pwaMaskableIcon512: 2 * 1024 * 1024, // 2MB
   };
 
   if (file.size > sizeLimits[assetType]!) {
@@ -1538,6 +1540,12 @@ app.post("/assets/upload", async (c) => {
       case "pwaIcon512":
         updateData.pwaIcon512Url = driveFile.url;
         break;
+      case "pwaMaskableIcon192":
+        updateData.pwaMaskableIcon192Url = driveFile.url;
+        break;
+      case "pwaMaskableIcon512":
+        updateData.pwaMaskableIcon512Url = driveFile.url;
+        break;
     }
 
     await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
@@ -1572,7 +1580,7 @@ app.delete("/assets/:type", async (c) => {
   const assetType = c.req.param("type");
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
   if (!validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1597,6 +1605,12 @@ app.delete("/assets/:type", async (c) => {
       break;
     case "pwaIcon512":
       updateData.pwaIcon512Url = null;
+      break;
+    case "pwaMaskableIcon192":
+      updateData.pwaMaskableIcon192Url = null;
+      break;
+    case "pwaMaskableIcon512":
+      updateData.pwaMaskableIcon512Url = null;
       break;
   }
 
@@ -1627,6 +1641,8 @@ app.get("/assets", async (c) => {
     favicon: metadata.faviconUrl,
     pwaIcon192: metadata.pwaIcon192Url,
     pwaIcon512: metadata.pwaIcon512Url,
+    pwaMaskableIcon192: metadata.pwaMaskableIcon192Url,
+    pwaMaskableIcon512: metadata.pwaMaskableIcon512Url,
   });
 });
 

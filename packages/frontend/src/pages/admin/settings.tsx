@@ -82,6 +82,8 @@ export default function AdminSettingsPage() {
     favicon: string | null;
     pwaIcon192: string | null;
     pwaIcon512: string | null;
+    pwaMaskableIcon192: string | null;
+    pwaMaskableIcon512: string | null;
   }>({
     icon: null,
     darkIcon: null,
@@ -89,6 +91,8 @@ export default function AdminSettingsPage() {
     favicon: null,
     pwaIcon192: null,
     pwaIcon512: null,
+    pwaMaskableIcon192: null,
+    pwaMaskableIcon512: null,
   });
   const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
 
@@ -123,6 +127,8 @@ export default function AdminSettingsPage() {
             favicon: string | null;
             pwaIcon192: string | null;
             pwaIcon512: string | null;
+            pwaMaskableIcon192: string | null;
+            pwaMaskableIcon512: string | null;
           }>("/api/admin/assets"),
         ]);
         setSettings(settingsResponse);
@@ -197,7 +203,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512", file: File) => {
+  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512", file: File) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -232,7 +238,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512") => {
+  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512") => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -849,6 +855,44 @@ export default function AdminSettingsPage() {
               onDelete={() => handleAssetDelete("pwaIcon512")}
               previewClassName="w-16 h-16 rounded-lg"
             />
+
+            {/* Maskable Icons Section */}
+            <div className="border-t border-(--border-color) pt-6 mt-6">
+              <h3 className="text-lg font-medium text-(--text-primary) mb-2">
+                <Trans>Maskable Icons (Optional)</Trans>
+              </h3>
+              <p className="text-sm text-(--text-muted) mb-4">
+                <Trans>
+                  Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.).
+                  These should have important content within a "safe zone" (centered 80% of the icon).
+                  If not set, only standard icons will be used.
+                </Trans>
+              </p>
+
+              <div className="space-y-6">
+                <AssetUploadCard
+                  type="pwaMaskableIcon192"
+                  title={<Trans>PWA Maskable Icon (192x192)</Trans>}
+                  description={<Trans>Maskable icon for PWA with safe zone padding, 192x192 pixels (max 1MB).</Trans>}
+                  currentUrl={assets.pwaMaskableIcon192}
+                  isUploading={isUploadingAsset === "pwaMaskableIcon192"}
+                  onUpload={(file) => handleAssetUpload("pwaMaskableIcon192", file)}
+                  onDelete={() => handleAssetDelete("pwaMaskableIcon192")}
+                  previewClassName="w-12 h-12 rounded-full"
+                />
+
+                <AssetUploadCard
+                  type="pwaMaskableIcon512"
+                  title={<Trans>PWA Maskable Icon (512x512)</Trans>}
+                  description={<Trans>High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB).</Trans>}
+                  currentUrl={assets.pwaMaskableIcon512}
+                  isUploading={isUploadingAsset === "pwaMaskableIcon512"}
+                  onUpload={(file) => handleAssetUpload("pwaMaskableIcon512", file)}
+                  onDelete={() => handleAssetDelete("pwaMaskableIcon512")}
+                  previewClassName="w-16 h-16 rounded-full"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
