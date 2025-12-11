@@ -126,6 +126,7 @@ describe("UserRepository", () => {
       countWithFetchErrors: mock(async () => Promise.resolve(0)),
       recordFetchFailure: mock(async () => Promise.resolve()),
       clearFetchFailure: mock(async () => Promise.resolve()),
+      findFirstLocalAdmin: mock(async () => Promise.resolve(mockAdminUser)),
     };
   });
 

@@ -9,7 +9,8 @@
 import type { Activity, HandlerContext, HandlerResult } from "../types.js";
 import { getObjectUri } from "../types.js";
 import { BaseHandler } from "./BaseHandler.js";
-import { RemoteFetchService } from "../../RemoteFetchService.js";
+import { RemoteFetchService, type SignatureConfig } from "../../RemoteFetchService.js";
+import { logger } from "../../../../lib/logger.js";
 
 /**
  * Handler for Announce activities
@@ -19,6 +20,37 @@ import { RemoteFetchService } from "../../RemoteFetchService.js";
  */
 export class AnnounceHandler extends BaseHandler {
   readonly activityType = "Announce";
+
+  /**
+   * Get signature configuration for authenticated fetches
+   * Uses a local admin user's credentials for signing requests
+   */
+  private async getSignatureConfig(
+    c: import("hono").Context,
+    baseUrl: string,
+  ): Promise<SignatureConfig | null> {
+    try {
+      const userRepository = this.getUserRepository(c);
+
+      // Find a local admin user with a private key
+      const adminUser = await userRepository.findFirstLocalAdmin();
+
+      if (!adminUser || !adminUser.privateKey) {
+        logger.warn("No admin user with private key found for signed fetch");
+        return null;
+      }
+
+      const keyId = `${baseUrl}/users/${adminUser.username}#main-key`;
+
+      return {
+        keyId,
+        privateKey: adminUser.privateKey,
+      };
+    } catch (error) {
+      logger.error({ err: error }, "Failed to get signature config");
+      return null;
+    }
+  }
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
     const { c } = context;
@@ -48,11 +80,35 @@ export class AnnounceHandler extends BaseHandler {
 
         const fetchService = new RemoteFetchService();
 
-        // Fetch the remote note object with retry logic
-        const result = await fetchService.fetchActivityPubObject(objectUri);
+        // Try unsigned fetch first
+        let result = await fetchService.fetchActivityPubObject(objectUri);
+
+        // If failed with 401/403/404, try with HTTP Signature (Authorized Fetch)
+        if (
+          !result.success &&
+          result.error?.statusCode &&
+          [401, 403, 404].includes(result.error.statusCode)
+        ) {
+          logger.debug(
+            { noteUri: objectUri, statusCode: result.error.statusCode },
+            "Unsigned fetch failed, retrying with HTTP Signature",
+          );
+
+          // Get a local user's credentials for signing
+          const signatureConfig = await this.getSignatureConfig(c, context.baseUrl);
+
+          if (signatureConfig) {
+            result = await fetchService.fetchActivityPubObject(objectUri, {
+              signature: signatureConfig,
+            });
+          }
+        }
 
         if (!result.success) {
-          this.warn(`Failed to fetch remote note: ${objectUri} - ${result.error}`);
+          logger.warn(
+            { noteUri: objectUri, err: result.error },
+            "Failed to fetch remote note",
+          );
           return this.failure(`Failed to fetch remote note: ${objectUri}`);
         }
 

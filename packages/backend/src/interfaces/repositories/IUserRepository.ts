@@ -153,4 +153,13 @@ export interface IUserRepository {
    * @param userId - User ID
    */
   clearFetchFailure(userId: string): Promise<void>;
+
+  /**
+   * Find the first local admin user with a private key
+   *
+   * Used for signing outbound requests when an instance actor is needed.
+   *
+   * @returns First admin user found, or null if none exists
+   */
+  findFirstLocalAdmin(): Promise<User | null>;
 }

@@ -262,4 +262,21 @@ export class SqliteUserRepository implements IUserRepository {
       .where(eq(users.id, userId))
       .run();
   }
+
+  async findFirstLocalAdmin(): Promise<User | null> {
+    const [result] = this.db
+      .select()
+      .from(users)
+      .where(
+        and(
+          isNull(users.host),
+          eq(users.isAdmin, true),
+          isNotNull(users.privateKey),
+        ),
+      )
+      .limit(1)
+      .all();
+
+    return (result as User) ?? null;
+  }
 }
