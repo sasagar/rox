@@ -109,7 +109,6 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
           title={<Trans>Note</Trans>}
           backHref="/timeline"
           backLabel={<Trans>Back</Trans>}
-          className="-mx-4 sm:mx-0"
         />
 
         {/* Ancestor notes (conversation context) */}

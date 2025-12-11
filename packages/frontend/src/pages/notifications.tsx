@@ -189,7 +189,6 @@ export default function NotificationsPage() {
           title={<Trans>Notifications</Trans>}
           icon={<Bell className="w-6 h-6" />}
           actions={headerActions as any}
-          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
         />
 
         {/* Filters Panel */}

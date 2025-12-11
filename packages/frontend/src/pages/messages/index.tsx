@@ -151,7 +151,6 @@ export default function MessagesPage() {
               variant: "primary",
             },
           ]}
-          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
         />
 
         {/* Conversations List */}

@@ -168,7 +168,6 @@ export default function SettingsPage() {
         tabs={TABS}
         activeTab={activeTab}
         onTabChange={(key) => setActiveTab(key as SettingsTab)}
-        className="mb-4 sm:mb-6 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6"
       />
 
       {/* Profile Tab */}

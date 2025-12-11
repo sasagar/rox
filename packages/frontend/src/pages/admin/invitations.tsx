@@ -19,7 +19,9 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
+import { Ticket } from "lucide-react";
 
 interface InvitationCode {
   id: string;
@@ -214,16 +216,12 @@ export default function AdminInvitationsPage() {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-(--text-primary)">
-            <Trans>Invitation Codes</Trans>
-          </h1>
-          <p className="text-(--text-secondary) mt-2">
-            <Trans>Manage invitation codes for new user registration</Trans>
-          </p>
-        </div>
+      <div className="max-w-4xl mx-auto">
+        <PageHeader
+          title={<Trans>Invitation Codes</Trans>}
+          subtitle={<Trans>Manage invitation codes for new user registration</Trans>}
+          icon={<Ticket className="w-6 h-6" />}
+        />
 
         {/* Admin Navigation */}
         <AdminNav currentPath="/admin/invitations" />

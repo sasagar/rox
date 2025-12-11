@@ -93,7 +93,6 @@ export default function MentionsPage() {
           title={<Trans>Mentions</Trans>}
           subtitle={<Trans>Notes that mention you or reply to your posts</Trans>}
           icon={<AtSign className="w-6 h-6" />}
-          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
         />
 
         {/* Mentions List */}

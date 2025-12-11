@@ -21,9 +21,11 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
 import { AdminNav } from "../../components/admin/AdminNav";
 import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
+import { Settings, Building, UserPlus, Palette, ImageIcon, Scale } from "lucide-react";
 
 interface AdminSettings {
   registration: {
@@ -270,73 +272,23 @@ export default function AdminSettingsPage() {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-(--text-primary)">
-          <Trans>Admin Settings</Trans>
-        </h1>
-        <p className="mt-2 text-(--text-secondary)">
-          <Trans>Configure your instance settings</Trans>
-        </p>
-      </div>
+      <PageHeader
+        title={<Trans>Admin Settings</Trans>}
+        subtitle={<Trans>Configure your instance settings</Trans>}
+        icon={<Settings className="w-6 h-6" />}
+        tabs={[
+          { key: "instance", label: <Trans>Instance</Trans>, icon: <Building className="w-4 h-4" /> },
+          { key: "registration", label: <Trans>Registration</Trans>, icon: <UserPlus className="w-4 h-4" /> },
+          { key: "theme", label: <Trans>Theme</Trans>, icon: <Palette className="w-4 h-4" /> },
+          { key: "assets", label: <Trans>Assets</Trans>, icon: <ImageIcon className="w-4 h-4" /> },
+          { key: "legal", label: <Trans>Legal</Trans>, icon: <Scale className="w-4 h-4" /> },
+        ]}
+        activeTab={activeTab}
+        onTabChange={(key) => setActiveTab(key as "instance" | "registration" | "theme" | "assets" | "legal")}
+      />
 
       {/* Admin Navigation */}
       <AdminNav currentPath="/admin/settings" />
-
-      {/* Tab Navigation */}
-      <div className="border-b border-(--border-color) mb-6">
-        <nav className="flex gap-4">
-          <button
-            onClick={() => setActiveTab("instance")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "instance"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Instance</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("registration")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "registration"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Registration</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("theme")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "theme"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Theme</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("assets")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "assets"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Assets</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("legal")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "legal"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Legal</Trans>
-          </button>
-        </nav>
-      </div>
 
       {error && <InlineError message={error} className="mb-4" />}
 

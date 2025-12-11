@@ -133,7 +133,6 @@ export default function TimelinePage() {
         showReload
         onReload={handleReload}
         isReloading={isRefreshing}
-        className="mb-4 sm:mb-6 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6"
       />
 
       {/* Note Composer */}

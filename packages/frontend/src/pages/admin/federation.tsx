@@ -30,6 +30,7 @@ import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
 
 interface RemoteInstance {
@@ -226,25 +227,24 @@ export default function AdminFederationPage() {
 
   return (
     <Layout>
+      <PageHeader
+        title={<Trans>Federation</Trans>}
+        subtitle={<Trans>Manage remote instances and federation status</Trans>}
+        icon={<Globe className="w-6 h-6" />}
+        actions={[
+          {
+            key: "refresh",
+            label: <Trans>Refresh List</Trans>,
+            icon: <RefreshCw className="w-4 h-4" />,
+            onPress: () => loadInstances(),
+            variant: "secondary",
+          },
+        ]}
+      />
+
       <AdminNav currentPath="/admin/federation" />
 
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Globe className="w-6 h-6 sm:w-8 sm:h-8" />
-              <Trans>Federation</Trans>
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              <Trans>Manage remote instances and federation status</Trans>
-            </p>
-          </div>
-          <Button variant="secondary" onPress={() => loadInstances()}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            <Trans>Refresh List</Trans>
-          </Button>
-        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

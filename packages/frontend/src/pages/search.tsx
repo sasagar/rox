@@ -331,7 +331,6 @@ export default function SearchPage() {
           title={<Trans>Search</Trans>}
           subtitle={<Trans>Find users by username or display name</Trans>}
           icon={<Search className="w-6 h-6" />}
-          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
         />
 
         {/* Search Form */}

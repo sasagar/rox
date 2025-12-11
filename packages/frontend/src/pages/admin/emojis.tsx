@@ -21,6 +21,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
 
 interface CustomEmoji {
@@ -746,102 +747,69 @@ export default function AdminEmojisPage() {
     );
   }
 
+  // Build actions based on active tab
+  const headerActions = [];
+  if (activeTab === "local") {
+    headerActions.push({
+      key: "bulk-mode",
+      label: isBulkMode ? <Trans>Exit Bulk Mode</Trans> : <Trans>Bulk Edit</Trans>,
+      icon: isBulkMode ? <X className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />,
+      onPress: toggleBulkMode,
+      variant: isBulkMode ? "primary" : "secondary",
+    });
+    headerActions.push({
+      key: "refresh",
+      label: <Trans>Refresh</Trans>,
+      icon: <RefreshCw className="w-4 h-4" />,
+      onPress: () => loadEmojis(),
+      variant: "secondary",
+    });
+    if (!isBulkMode) {
+      headerActions.push({
+        key: "add",
+        label: <Trans>Add Emoji</Trans>,
+        icon: <Plus className="w-4 h-4" />,
+        onPress: () => {
+          resetForm();
+          setShowAddForm(true);
+        },
+        variant: "primary",
+      });
+    }
+  } else if (activeTab === "remote") {
+    headerActions.push({
+      key: "refresh",
+      label: <Trans>Refresh</Trans>,
+      icon: <RefreshCw className="w-4 h-4" />,
+      onPress: () => loadRemoteEmojis(),
+      variant: "secondary",
+    });
+  }
+
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
+        <PageHeader
+          title={<Trans>Custom Emojis</Trans>}
+          subtitle={<Trans>Manage custom emojis for your instance</Trans>}
+          icon={<Smile className="w-6 h-6" />}
+          tabs={[
+            { key: "local", label: <Trans>Local Emojis</Trans>, icon: <Smile className="w-4 h-4" /> },
+            { key: "remote", label: <Trans>Remote Emojis</Trans>, icon: <Globe className="w-4 h-4" /> },
+            { key: "import", label: <Trans>Bulk Import</Trans>, icon: <Archive className="w-4 h-4" /> },
+          ]}
+          activeTab={activeTab}
+          onTabChange={(key) => setActiveTab(key as TabType)}
+          actions={headerActions as any}
+        />
+
         <AdminNav currentPath="/admin/emojis" />
 
         <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Smile className="w-5 h-5" />
-                <Trans>Custom Emojis</Trans>
-              </CardTitle>
-              <div className="flex gap-2">
-                {activeTab === "local" && (
-                  <>
-                    <Button
-                      variant={isBulkMode ? "primary" : "secondary"}
-                      size="sm"
-                      onPress={toggleBulkMode}
-                    >
-                      {isBulkMode ? (
-                        <>
-                          <X className="w-4 h-4 mr-1" />
-                          <Trans>Exit Bulk Mode</Trans>
-                        </>
-                      ) : (
-                        <>
-                          <CheckSquare className="w-4 h-4 mr-1" />
-                          <Trans>Bulk Edit</Trans>
-                        </>
-                      )}
-                    </Button>
-                    <Button variant="secondary" size="sm" onPress={() => loadEmojis()}>
-                      <RefreshCw className="w-4 h-4 mr-1" />
-                      <Trans>Refresh</Trans>
-                    </Button>
-                    {!isBulkMode && (
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onPress={() => {
-                          resetForm();
-                          setShowAddForm(true);
-                        }}
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        <Trans>Add Emoji</Trans>
-                      </Button>
-                    )}
-                  </>
-                )}
-                {activeTab === "remote" && (
-                  <Button variant="secondary" size="sm" onPress={() => loadRemoteEmojis()}>
-                    <RefreshCw className="w-4 h-4 mr-1" />
-                    <Trans>Refresh</Trans>
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Tab Navigation */}
-            <div className="flex gap-1 mt-4 border-b dark:border-gray-700">
-              <button
-                onClick={() => setActiveTab("local")}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "local"
-                    ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                    : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                }`}
-              >
-                <Smile className="w-4 h-4 inline mr-1" />
-                <Trans>Local Emojis</Trans>
-              </button>
-              <button
-                onClick={() => setActiveTab("remote")}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "remote"
-                    ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                    : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                }`}
-              >
-                <Globe className="w-4 h-4 inline mr-1" />
-                <Trans>Remote Emojis</Trans>
-              </button>
-              <button
-                onClick={() => setActiveTab("import")}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === "import"
-                    ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                    : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                }`}
-              >
-                <Archive className="w-4 h-4 inline mr-1" />
-                <Trans>Bulk Import</Trans>
-              </button>
-            </div>
+          <CardHeader className="sr-only">
+            <CardTitle>
+              <Trans>Emoji Management</Trans>
+            </CardTitle>
           </CardHeader>
 
           <CardContent>

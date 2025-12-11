@@ -11,7 +11,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import {
-  RefreshCw,
   Activity,
   CheckCircle,
   XCircle,
@@ -22,11 +21,11 @@ import {
 } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
-import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
 
 interface QueueStats {
@@ -207,29 +206,18 @@ export default function AdminQueuePage() {
 
   return (
     <Layout>
+      <PageHeader
+        title={<Trans>Job Queue</Trans>}
+        subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+        icon={<Activity className="w-6 h-6" />}
+        showReload
+        onReload={handleRefresh}
+        isReloading={isRefreshing}
+      />
+
       <AdminNav currentPath="/admin/queue" />
 
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Activity className="w-6 h-6 sm:w-8 sm:h-8" />
-              <Trans>Job Queue</Trans>
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              <Trans>Monitor ActivityPub delivery queue status</Trans>
-            </p>
-          </div>
-          <Button variant="secondary" onPress={handleRefresh} isDisabled={isRefreshing}>
-            {isRefreshing ? (
-              <Spinner size="sm" className="mr-2" />
-            ) : (
-              <RefreshCw className="w-4 h-4 mr-2" />
-            )}
-            <Trans>Refresh</Trans>
-          </Button>
-        </div>
 
         {/* Stats Cards */}
         {stats && (

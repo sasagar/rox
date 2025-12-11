@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Ghost, RefreshCw, Trash2, RotateCcw, CheckSquare, Square, AlertTriangle } from "lucide-react";
+import { Ghost, Trash2, RotateCcw, CheckSquare, Square, AlertTriangle } from "lucide-react";
 import { tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
@@ -19,6 +19,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
@@ -177,19 +178,24 @@ export default function AdminGoneUsersPage() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto max-w-6xl">
+        <PageHeader
+          title={<Trans>Gone Users</Trans>}
+          subtitle={<Trans>Manage remote users with fetch errors</Trans>}
+          icon={<Ghost className="w-6 h-6" />}
+          showReload
+          onReload={() => loadUsers()}
+          isReloading={isLoading}
+        />
+
         <AdminNav currentPath="/admin/gone-users" />
 
         <Card className="mt-6">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Ghost className="w-5 h-5" />
-              <Trans>Gone Users</Trans>
+              <Trans>User List</Trans>
               <span className="text-sm font-normal text-(--text-secondary)">({total})</span>
             </CardTitle>
-            <Button variant="ghost" size="sm" onPress={() => loadUsers()} isDisabled={isLoading}>
-              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-            </Button>
           </CardHeader>
           <CardContent>
             {error && <InlineError message={error} />}

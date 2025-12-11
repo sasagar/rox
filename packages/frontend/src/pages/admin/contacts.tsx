@@ -11,7 +11,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAtom } from "jotai";
 import { Trans, useLingui } from "@lingui/react/macro";
 import {
-  RefreshCw,
   MessageCircle,
   CheckCircle,
   XCircle,
@@ -30,6 +29,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { AdminNav } from "../../components/admin/AdminNav";
 import {
   listContactThreadsAdmin,
@@ -476,45 +476,40 @@ export default function AdminContactsPage() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
-        <AdminNav currentPath="/admin/contacts" />
-
-        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-(--text-primary) flex items-center gap-3">
-              <MessageCircle className="w-7 h-7" />
+        <PageHeader
+          title={
+            <>
               <Trans>Contact Inquiries</Trans>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
+                <span className="ml-2 px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
                   {unreadCount}
                 </span>
               )}
-            </h1>
-            <p className="text-(--text-muted) mt-1">
-              <Trans>Manage user inquiries and support requests</Trans>
-            </p>
-          </div>
+            </>
+          }
+          subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+          icon={<MessageCircle className="w-6 h-6" />}
+          showReload
+          onReload={loadThreads}
+        />
 
-          <div className="flex items-center gap-3">
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setOffset(0);
-              }}
-              className="px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary)"
-            >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
+        <AdminNav currentPath="/admin/contacts" />
 
-            <Button variant="secondary" onPress={loadThreads}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              <Trans>Refresh</Trans>
-            </Button>
-          </div>
+        <div className="mb-6 flex items-center justify-end">
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setOffset(0);
+            }}
+            className="px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary)"
+          >
+            <option value="all">All Status</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
 
         {error && (
