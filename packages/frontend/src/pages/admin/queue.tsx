@@ -18,7 +18,6 @@ import {
   TrendingUp,
   AlertTriangle,
   Zap,
-  BarChart3,
 } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
@@ -69,7 +68,19 @@ export default function AdminQueuePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "servers">("overview");
+
+  // Read tab from URL query parameter
+  const getActiveTab = (): "overview" | "servers" => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["overview", "servers"].includes(tab)) {
+        return tab as "overview" | "servers";
+      }
+    }
+    return "overview";
+  };
+  const activeTab = getActiveTab();
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -151,7 +162,7 @@ export default function AdminQueuePage() {
   if (isLoading) {
     return (
       <AdminLayout
-        currentPath="/admin/queue"
+        currentPath={`/admin/queue?tab=${activeTab}`}
         title={<Trans>Job Queue</Trans>}
         subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
       >
@@ -165,7 +176,7 @@ export default function AdminQueuePage() {
   if (error) {
     return (
       <AdminLayout
-        currentPath="/admin/queue"
+        currentPath={`/admin/queue?tab=${activeTab}`}
         title={<Trans>Job Queue</Trans>}
         subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
       >
@@ -178,7 +189,7 @@ export default function AdminQueuePage() {
   if (stats && !stats.available) {
     return (
       <AdminLayout
-        currentPath="/admin/queue"
+        currentPath={`/admin/queue?tab=${activeTab}`}
         title={<Trans>Job Queue</Trans>}
         subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
       >
@@ -202,18 +213,12 @@ export default function AdminQueuePage() {
 
   return (
     <AdminLayout
-      currentPath="/admin/queue"
+      currentPath={`/admin/queue?tab=${activeTab}`}
       title={<Trans>Job Queue</Trans>}
       subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
       showReload
       onReload={handleRefresh}
       isReloading={isRefreshing}
-      tabs={[
-        { key: "overview", label: <Trans>Overview</Trans>, icon: <BarChart3 className="w-4 h-4" /> },
-        { key: "servers", label: <Trans>Per Server</Trans>, icon: <Server className="w-4 h-4" /> },
-      ]}
-      activeTab={activeTab}
-      onTabChange={(key) => setActiveTab(key as "overview" | "servers")}
     >
 
       <div className="space-y-6">

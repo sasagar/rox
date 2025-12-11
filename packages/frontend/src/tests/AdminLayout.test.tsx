@@ -24,12 +24,22 @@ interface NavCategory {
 /**
  * Admin navigation categories - mirrors the component's navigation structure
  * This allows us to verify the navigation structure without DOM rendering
+ *
+ * Settings, Emojis, and Queue pages have sub-tabs that are represented
+ * as direct navigation items with query parameters.
  */
 const ADMIN_NAV_CATEGORIES: NavCategory[] = [
   {
     key: "general",
     label: "General",
-    items: [{ href: "/admin/settings", label: "Settings" }],
+    items: [
+      // Settings sub-tabs as direct items
+      { href: "/admin/settings?tab=instance", label: "Instance" },
+      { href: "/admin/settings?tab=registration", label: "Registration" },
+      { href: "/admin/settings?tab=theme", label: "Theme" },
+      { href: "/admin/settings?tab=assets", label: "Assets" },
+      { href: "/admin/settings?tab=legal", label: "Legal" },
+    ],
   },
   {
     key: "users",
@@ -45,7 +55,10 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     key: "content",
     label: "Content",
     items: [
-      { href: "/admin/emojis", label: "Emojis" },
+      // Emojis sub-tabs as direct items
+      { href: "/admin/emojis?tab=local", label: "Local Emojis" },
+      { href: "/admin/emojis?tab=remote", label: "Remote Emojis" },
+      { href: "/admin/emojis?tab=import", label: "Bulk Import" },
       { href: "/admin/reports", label: "Reports" },
     ],
   },
@@ -55,7 +68,9 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/admin/storage", label: "Storage" },
       { href: "/admin/federation", label: "Federation" },
-      { href: "/admin/queue", label: "Queue" },
+      // Queue sub-tabs as direct items
+      { href: "/admin/queue?tab=overview", label: "Queue Overview" },
+      { href: "/admin/queue?tab=servers", label: "Queue Servers" },
       { href: "/admin/blocks", label: "Blocks" },
       { href: "/admin/contacts", label: "Contacts" },
     ],
@@ -86,11 +101,17 @@ describe("AdminLayout Navigation Structure", () => {
       expect(categoryKeys).toEqual(["general", "users", "content", "system"]);
     });
 
-    test("General category has Settings", () => {
+    test("General category has 5 settings items", () => {
       const general = ADMIN_NAV_CATEGORIES.find((c) => c.key === "general");
       expect(general).toBeDefined();
-      expect(general!.items).toHaveLength(1);
-      expect(general!.items[0]!.href).toBe("/admin/settings");
+      expect(general!.items).toHaveLength(5);
+
+      const hrefs = general!.items.map((i) => i.href);
+      expect(hrefs).toContain("/admin/settings?tab=instance");
+      expect(hrefs).toContain("/admin/settings?tab=registration");
+      expect(hrefs).toContain("/admin/settings?tab=theme");
+      expect(hrefs).toContain("/admin/settings?tab=assets");
+      expect(hrefs).toContain("/admin/settings?tab=legal");
     });
 
     test("Users category has 4 items", () => {
@@ -105,25 +126,28 @@ describe("AdminLayout Navigation Structure", () => {
       expect(hrefs).toContain("/admin/gone-users");
     });
 
-    test("Content category has 2 items", () => {
+    test("Content category has 4 items (emoji tabs + reports)", () => {
       const content = ADMIN_NAV_CATEGORIES.find((c) => c.key === "content");
       expect(content).toBeDefined();
-      expect(content!.items).toHaveLength(2);
+      expect(content!.items).toHaveLength(4);
 
       const hrefs = content!.items.map((i) => i.href);
-      expect(hrefs).toContain("/admin/emojis");
+      expect(hrefs).toContain("/admin/emojis?tab=local");
+      expect(hrefs).toContain("/admin/emojis?tab=remote");
+      expect(hrefs).toContain("/admin/emojis?tab=import");
       expect(hrefs).toContain("/admin/reports");
     });
 
-    test("System category has 5 items", () => {
+    test("System category has 6 items (queue tabs + others)", () => {
       const system = ADMIN_NAV_CATEGORIES.find((c) => c.key === "system");
       expect(system).toBeDefined();
-      expect(system!.items).toHaveLength(5);
+      expect(system!.items).toHaveLength(6);
 
       const hrefs = system!.items.map((i) => i.href);
       expect(hrefs).toContain("/admin/storage");
       expect(hrefs).toContain("/admin/federation");
-      expect(hrefs).toContain("/admin/queue");
+      expect(hrefs).toContain("/admin/queue?tab=overview");
+      expect(hrefs).toContain("/admin/queue?tab=servers");
       expect(hrefs).toContain("/admin/blocks");
       expect(hrefs).toContain("/admin/contacts");
     });
@@ -145,16 +169,27 @@ describe("AdminLayout Navigation Structure", () => {
 
     test("expected admin pages are present", () => {
       const expectedPaths = [
-        "/admin/settings",
+        // Settings tabs
+        "/admin/settings?tab=instance",
+        "/admin/settings?tab=registration",
+        "/admin/settings?tab=theme",
+        "/admin/settings?tab=assets",
+        "/admin/settings?tab=legal",
+        // Users
         "/admin/users",
         "/admin/roles",
         "/admin/invitations",
         "/admin/gone-users",
-        "/admin/emojis",
+        // Content (emojis tabs + reports)
+        "/admin/emojis?tab=local",
+        "/admin/emojis?tab=remote",
+        "/admin/emojis?tab=import",
         "/admin/reports",
+        // System (queue tabs + others)
         "/admin/storage",
         "/admin/federation",
-        "/admin/queue",
+        "/admin/queue?tab=overview",
+        "/admin/queue?tab=servers",
         "/admin/blocks",
         "/admin/contacts",
       ];
@@ -166,18 +201,18 @@ describe("AdminLayout Navigation Structure", () => {
       }
     });
 
-    test("total admin pages count is 12", () => {
+    test("total admin pages count is 19", () => {
       const allPaths = ADMIN_NAV_CATEGORIES.flatMap((c) => c.items.map((i) => i.href));
-      expect(allPaths).toHaveLength(12);
+      expect(allPaths).toHaveLength(19);
     });
   });
 
   describe("findCurrentPage function", () => {
-    test("finds Settings page in General category", () => {
-      const result = findCurrentPage("/admin/settings");
+    test("finds Instance settings page in General category", () => {
+      const result = findCurrentPage("/admin/settings?tab=instance");
       expect(result).not.toBeNull();
       expect(result!.category.key).toBe("general");
-      expect(result!.item.label).toBe("Settings");
+      expect(result!.item.label).toBe("Instance");
     });
 
     test("finds Users page in Users category", () => {
@@ -194,11 +229,11 @@ describe("AdminLayout Navigation Structure", () => {
       expect(result!.item.label).toBe("Roles");
     });
 
-    test("finds Emojis page in Content category", () => {
-      const result = findCurrentPage("/admin/emojis");
+    test("finds Local Emojis page in Content category", () => {
+      const result = findCurrentPage("/admin/emojis?tab=local");
       expect(result).not.toBeNull();
       expect(result!.category.key).toBe("content");
-      expect(result!.item.label).toBe("Emojis");
+      expect(result!.item.label).toBe("Local Emojis");
     });
 
     test("finds Federation page in System category", () => {
@@ -206,6 +241,13 @@ describe("AdminLayout Navigation Structure", () => {
       expect(result).not.toBeNull();
       expect(result!.category.key).toBe("system");
       expect(result!.item.label).toBe("Federation");
+    });
+
+    test("finds Queue Overview page in System category", () => {
+      const result = findCurrentPage("/admin/queue?tab=overview");
+      expect(result).not.toBeNull();
+      expect(result!.category.key).toBe("system");
+      expect(result!.item.label).toBe("Queue Overview");
     });
 
     test("returns null for unknown path", () => {
@@ -231,8 +273,13 @@ describe("AdminLayout Navigation Structure", () => {
   });
 
   describe("Category expansion logic", () => {
-    test("Settings page should expand General category", () => {
-      const result = findCurrentPage("/admin/settings");
+    test("Settings Instance page should expand General category", () => {
+      const result = findCurrentPage("/admin/settings?tab=instance");
+      expect(result!.category.key).toBe("general");
+    });
+
+    test("Settings Theme page should expand General category", () => {
+      const result = findCurrentPage("/admin/settings?tab=theme");
       expect(result!.category.key).toBe("general");
     });
 
@@ -256,8 +303,13 @@ describe("AdminLayout Navigation Structure", () => {
       expect(result!.category.key).toBe("users");
     });
 
-    test("Emojis page should expand Content category", () => {
-      const result = findCurrentPage("/admin/emojis");
+    test("Local Emojis page should expand Content category", () => {
+      const result = findCurrentPage("/admin/emojis?tab=local");
+      expect(result!.category.key).toBe("content");
+    });
+
+    test("Remote Emojis page should expand Content category", () => {
+      const result = findCurrentPage("/admin/emojis?tab=remote");
       expect(result!.category.key).toBe("content");
     });
 
@@ -276,8 +328,13 @@ describe("AdminLayout Navigation Structure", () => {
       expect(result!.category.key).toBe("system");
     });
 
-    test("Queue page should expand System category", () => {
-      const result = findCurrentPage("/admin/queue");
+    test("Queue Overview page should expand System category", () => {
+      const result = findCurrentPage("/admin/queue?tab=overview");
+      expect(result!.category.key).toBe("system");
+    });
+
+    test("Queue Servers page should expand System category", () => {
+      const result = findCurrentPage("/admin/queue?tab=servers");
       expect(result!.category.key).toBe("system");
     });
 

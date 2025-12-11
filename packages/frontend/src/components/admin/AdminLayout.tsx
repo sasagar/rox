@@ -20,13 +20,20 @@ import {
   Smile,
   HardDrive,
   Globe,
-  Activity,
   MessageCircle,
   Ghost,
   ChevronDown,
   ChevronRight,
   X,
   LayoutDashboard,
+  Building,
+  UserPlus,
+  Palette,
+  ImageIcon,
+  Scale,
+  Archive,
+  Server,
+  BarChart3,
 } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -52,13 +59,23 @@ interface NavCategory {
 
 /**
  * Categorized admin navigation items
+ *
+ * Settings, Emojis, and Queue pages have sub-tabs that are represented
+ * as direct navigation items with query parameters.
  */
 const ADMIN_NAV_CATEGORIES: NavCategory[] = [
   {
     key: "general",
     label: "General",
     icon: Settings,
-    items: [{ href: "/admin/settings", icon: Settings, label: "Settings" }],
+    items: [
+      // Settings sub-tabs as direct items
+      { href: "/admin/settings?tab=instance", icon: Building, label: "Instance" },
+      { href: "/admin/settings?tab=registration", icon: UserPlus, label: "Registration" },
+      { href: "/admin/settings?tab=theme", icon: Palette, label: "Theme" },
+      { href: "/admin/settings?tab=assets", icon: ImageIcon, label: "Assets" },
+      { href: "/admin/settings?tab=legal", icon: Scale, label: "Legal" },
+    ],
   },
   {
     key: "users",
@@ -76,7 +93,10 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     label: "Content",
     icon: Smile,
     items: [
-      { href: "/admin/emojis", icon: Smile, label: "Emojis" },
+      // Emojis sub-tabs as direct items
+      { href: "/admin/emojis?tab=local", icon: Smile, label: "Local Emojis" },
+      { href: "/admin/emojis?tab=remote", icon: Globe, label: "Remote Emojis" },
+      { href: "/admin/emojis?tab=import", icon: Archive, label: "Bulk Import" },
       { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },
     ],
   },
@@ -87,7 +107,9 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/admin/storage", icon: HardDrive, label: "Storage" },
       { href: "/admin/federation", icon: Globe, label: "Federation" },
-      { href: "/admin/queue", icon: Activity, label: "Queue" },
+      // Queue sub-tabs as direct items
+      { href: "/admin/queue?tab=overview", icon: BarChart3, label: "Queue Overview" },
+      { href: "/admin/queue?tab=servers", icon: Server, label: "Queue Servers" },
       { href: "/admin/blocks", icon: Shield, label: "Blocks" },
       { href: "/admin/contacts", icon: MessageCircle, label: "Contacts" },
     ],
@@ -96,15 +118,69 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
 
 /**
  * Find current page info
+ *
+ * Matches both exact paths and paths with query parameters.
+ * For example, "/admin/settings?tab=instance" matches the item with that exact href,
+ * and "/admin/settings" (without query) will match the first settings item.
  */
 function findCurrentPage(path: string): { category: NavCategory; item: NavItem } | null {
+  // First try exact match (including query params)
   for (const category of ADMIN_NAV_CATEGORIES) {
     const item = category.items.find((i) => i.href === path);
     if (item) {
       return { category, item };
     }
   }
+
+  // If no exact match, try matching by base path (without query params)
+  const basePath = path.split("?")[0];
+  for (const category of ADMIN_NAV_CATEGORIES) {
+    const item = category.items.find((i) => i.href.split("?")[0] === basePath);
+    if (item) {
+      return { category, item };
+    }
+  }
+
   return null;
+}
+
+/**
+ * Check if a navigation item matches the current path
+ */
+function isNavItemActive(itemHref: string, currentPath: string): boolean {
+  // Exact match
+  if (itemHref === currentPath) return true;
+
+  // Match by base path and query param
+  const itemBase = itemHref.split("?")[0];
+  const currentBase = currentPath.split("?")[0];
+
+  if (itemBase !== currentBase) return false;
+
+  // If item has query param, check if it matches
+  const itemParams = new URLSearchParams(itemHref.split("?")[1] || "");
+  const currentParams = new URLSearchParams(currentPath.split("?")[1] || "");
+
+  const itemTab = itemParams.get("tab");
+  const currentTab = currentParams.get("tab");
+
+  // If both have tab params, they must match
+  if (itemTab && currentTab) {
+    return itemTab === currentTab;
+  }
+
+  // If current path has no tab param, match the first item for that base path
+  if (!currentTab && itemTab) {
+    // Check if this is the first item for this base path
+    for (const category of ADMIN_NAV_CATEGORIES) {
+      const firstItem = category.items.find((i) => i.href.split("?")[0] === itemBase);
+      if (firstItem) {
+        return firstItem.href === itemHref;
+      }
+    }
+  }
+
+  return false;
 }
 
 interface AdminLayoutProps {
@@ -116,17 +192,6 @@ interface AdminLayoutProps {
   showReload?: boolean;
   onReload?: () => void;
   isReloading?: boolean;
-  /** Optional tabs for the page header */
-  tabs?: React.ComponentProps<typeof PageHeader>["tabs"];
-  activeTab?: string;
-  onTabChange?: (key: string) => void;
-}
-
-/** Tab item structure from PageHeader */
-interface TabItem {
-  key: string;
-  label: React.ReactNode;
-  icon?: React.ReactNode;
 }
 
 /**
@@ -136,23 +201,17 @@ function AdminSidebar({
   currentPath,
   expandedCategories,
   onToggleCategory,
-  tabs,
-  activeTab,
-  onTabChange,
 }: {
   currentPath: string;
   expandedCategories: Set<string>;
   onToggleCategory: (key: string) => void;
-  tabs?: TabItem[];
-  activeTab?: string;
-  onTabChange?: (key: string) => void;
 }) {
   return (
     <nav className="space-y-1">
       {ADMIN_NAV_CATEGORIES.map((category) => {
         const CategoryIcon = category.icon;
         const isExpanded = expandedCategories.has(category.key);
-        const hasActiveItem = category.items.some((item) => item.href === currentPath);
+        const hasActiveItem = category.items.some((item) => isNavItemActive(item.href, currentPath));
 
         return (
           <div key={category.key}>
@@ -181,42 +240,21 @@ function AdminSidebar({
               <div className="ml-4 mt-1 space-y-1">
                 {category.items.map((item) => {
                   const ItemIcon = item.icon;
-                  const isActive = item.href === currentPath;
-                  const hasTabs = isActive && tabs && tabs.length > 0;
+                  const isActive = isNavItemActive(item.href, currentPath);
 
                   return (
-                    <div key={item.href}>
-                      <a
-                        href={item.href}
-                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
-                          isActive
-                            ? "bg-primary-600 text-white"
-                            : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
-                        }`}
-                      >
-                        <ItemIcon className="w-4 h-4" />
-                        {item.label}
-                      </a>
-                      {/* Sub-tabs for active page */}
-                      {hasTabs && (
-                        <div className="ml-4 mt-1 space-y-0.5">
-                          {tabs.map((tab) => (
-                            <button
-                              key={tab.key}
-                              onClick={() => onTabChange?.(tab.key)}
-                              className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded transition-colors ${
-                                activeTab === tab.key
-                                  ? "bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-medium"
-                                  : "text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--bg-tertiary)"
-                              }`}
-                            >
-                              {tab.icon}
-                              {tab.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                        isActive
+                          ? "bg-primary-600 text-white"
+                          : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                      }`}
+                    >
+                      <ItemIcon className="w-4 h-4" />
+                      {item.label}
+                    </a>
                   );
                 })}
               </div>
@@ -235,16 +273,10 @@ function MobileAdminNav({
   currentPath,
   isOpen,
   onClose,
-  tabs,
-  activeTab,
-  onTabChange,
 }: {
   currentPath: string;
   isOpen: boolean;
   onClose: () => void;
-  tabs?: TabItem[];
-  activeTab?: string;
-  onTabChange?: (key: string) => void;
 }) {
   if (!isOpen) return null;
 
@@ -277,46 +309,22 @@ function MobileAdminNav({
                 <div className="mt-1 space-y-1">
                   {category.items.map((item) => {
                     const ItemIcon = item.icon;
-                    const isActive = item.href === currentPath;
-                    const hasTabs = isActive && tabs && tabs.length > 0;
+                    const isActive = isNavItemActive(item.href, currentPath);
 
                     return (
-                      <div key={item.href}>
-                        <a
-                          href={item.href}
-                          onClick={onClose}
-                          className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
-                            isActive
-                              ? "bg-primary-600 text-white"
-                              : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
-                          }`}
-                        >
-                          <ItemIcon className="w-4 h-4" />
-                          {item.label}
-                        </a>
-                        {/* Sub-tabs for active page */}
-                        {hasTabs && (
-                          <div className="ml-4 mt-1 space-y-0.5">
-                            {tabs.map((tab) => (
-                              <button
-                                key={tab.key}
-                                onClick={() => {
-                                  onTabChange?.(tab.key);
-                                  onClose();
-                                }}
-                                className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded transition-colors ${
-                                  activeTab === tab.key
-                                    ? "bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-medium"
-                                    : "text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--bg-tertiary)"
-                                }`}
-                              >
-                                {tab.icon}
-                                {tab.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={onClose}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-primary-600 text-white"
+                            : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                        }`}
+                      >
+                        <ItemIcon className="w-4 h-4" />
+                        {item.label}
+                      </a>
                     );
                   })}
                 </div>
@@ -338,9 +346,6 @@ export function AdminLayout({
   showReload,
   onReload,
   isReloading,
-  tabs,
-  activeTab,
-  onTabChange,
 }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -369,7 +374,6 @@ export function AdminLayout({
   const currentPage = findCurrentPage(currentPath);
   const CurrentIcon = currentPage?.item.icon || LayoutDashboard;
 
-  // Note: tabs are now shown in the sidebar, not in the page header
   const pageHeader = (
     <PageHeader
       title={title}
@@ -392,9 +396,6 @@ export function AdminLayout({
               currentPath={currentPath}
               expandedCategories={expandedCategories}
               onToggleCategory={toggleCategory}
-              tabs={tabs}
-              activeTab={activeTab}
-              onTabChange={onTabChange}
             />
           </div>
         </aside>
@@ -408,9 +409,6 @@ export function AdminLayout({
         currentPath={currentPath}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={onTabChange}
       />
     </Layout>
   );

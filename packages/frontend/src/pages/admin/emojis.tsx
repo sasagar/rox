@@ -76,8 +76,18 @@ export default function AdminEmojisPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>("local");
+  // Read tab from URL query parameter
+  const getActiveTab = (): TabType => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["local", "remote", "import"].includes(tab)) {
+        return tab as TabType;
+      }
+    }
+    return "local";
+  };
+  const activeTab = getActiveTab();
 
   // Remote emojis state
   const [remoteEmojis, setRemoteEmojis] = useState<CustomEmoji[]>([]);
@@ -794,16 +804,9 @@ export default function AdminEmojisPage() {
 
   return (
     <AdminLayout
-      currentPath="/admin/emojis"
+      currentPath={`/admin/emojis?tab=${activeTab}`}
       title={<Trans>Custom Emojis</Trans>}
       subtitle={<Trans>Manage custom emojis for your instance</Trans>}
-      tabs={[
-        { key: "local", label: <Trans>Local Emojis</Trans>, icon: <Smile className="w-4 h-4" /> },
-        { key: "remote", label: <Trans>Remote Emojis</Trans>, icon: <Globe className="w-4 h-4" /> },
-        { key: "import", label: <Trans>Bulk Import</Trans>, icon: <Archive className="w-4 h-4" /> },
-      ]}
-      activeTab={activeTab}
-      onTabChange={(key) => setActiveTab(key as TabType)}
       actions={headerActions as any}
     >
       <div className="max-w-6xl mx-auto">

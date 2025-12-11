@@ -24,7 +24,6 @@ import { Layout } from "../../components/layout/Layout";
 import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
-import { Building, UserPlus, Palette, ImageIcon, Scale } from "lucide-react";
 
 interface AdminSettings {
   registration: {
@@ -73,7 +72,18 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets" | "legal">("instance");
+  // Read tab from URL query parameter
+  const getActiveTab = (): "instance" | "registration" | "theme" | "assets" | "legal" => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["instance", "registration", "theme", "assets", "legal"].includes(tab)) {
+        return tab as "instance" | "registration" | "theme" | "assets" | "legal";
+      }
+    }
+    return "instance";
+  };
+  const activeTab = getActiveTab();
   const [assets, setAssets] = useState<{
     icon: string | null;
     darkIcon: string | null;
@@ -277,18 +287,9 @@ export default function AdminSettingsPage() {
 
   return (
     <AdminLayout
-      currentPath="/admin/settings"
+      currentPath={`/admin/settings?tab=${activeTab}`}
       title={<Trans>Settings</Trans>}
       subtitle={<Trans>Configure your instance settings</Trans>}
-      tabs={[
-        { key: "instance", label: <Trans>Instance</Trans>, icon: <Building className="w-4 h-4" /> },
-        { key: "registration", label: <Trans>Registration</Trans>, icon: <UserPlus className="w-4 h-4" /> },
-        { key: "theme", label: <Trans>Theme</Trans>, icon: <Palette className="w-4 h-4" /> },
-        { key: "assets", label: <Trans>Assets</Trans>, icon: <ImageIcon className="w-4 h-4" /> },
-        { key: "legal", label: <Trans>Legal</Trans>, icon: <Scale className="w-4 h-4" /> },
-      ]}
-      activeTab={activeTab}
-      onTabChange={(key) => setActiveTab(key as "instance" | "registration" | "theme" | "assets" | "legal")}
     >
       {error && <InlineError message={error} className="mb-4" />}
 
