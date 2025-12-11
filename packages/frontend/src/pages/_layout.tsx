@@ -4,6 +4,87 @@ import { AppProviders } from "../components/AppProviders.js";
 import { ToastContainer } from "../components/ui/Toast";
 
 /**
+ * Inline CSS for PWA splash screen.
+ * This is injected directly into the HTML to ensure it's available immediately,
+ * before any CSS files are loaded, preventing flash of unstyled content.
+ */
+const splashScreenStyles = `
+#rox-splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+#rox-splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#rox-splash-screen .splash-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: splash-bounce 1s ease-in-out infinite;
+}
+#rox-splash-screen .splash-icon img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+#rox-splash-screen .splash-icon svg {
+  width: 48px;
+  height: 48px;
+  color: #4f46e5;
+}
+#rox-splash-screen .splash-title {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+#rox-splash-screen .splash-subtitle {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+#rox-splash-screen .splash-loader {
+  width: 40px;
+  height: 40px;
+  margin-top: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: splash-spin 0.8s linear infinite;
+}
+@keyframes splash-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes splash-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+/* Only show splash screen in PWA standalone mode */
+@media not all and (display-mode: standalone) {
+  #rox-splash-screen {
+    display: none;
+  }
+}
+`;
+
+/**
  * Blocking script to apply UI settings from localStorage before React hydration.
  *
  * IMPORTANT: This script MUST NOT modify any DOM elements that React hydrates (html, head, body).
@@ -120,6 +201,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <>
       <meta charSet="utf-8" />
+      {/* Splash screen styles - must be inline for immediate availability */}
+      <style dangerouslySetInnerHTML={{ __html: splashScreenStyles }} />
       {/* Blocking script to prevent UI flash - must run before any rendering */}
       <script dangerouslySetInnerHTML={{ __html: uiSettingsScript }} />
       {/* Viewport with maximum-scale=1 prevents iOS zoom on input focus */}
@@ -144,6 +227,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
       {/* Favicon */}
       <link rel="icon" type="image/png" href="/favicon.png" />
+
+      {/* PWA Splash Screen - shown only in standalone mode until app loads */}
+      <div id="rox-splash-screen">
+        <div className="splash-icon">
+          <img src="/api/instance/apple-touch-icon.png" alt="" />
+        </div>
+        <div className="splash-title">Rox</div>
+        <div className="splash-subtitle">Loading...</div>
+        <div className="splash-loader" />
+      </div>
 
       <AppProviders>
         {children}

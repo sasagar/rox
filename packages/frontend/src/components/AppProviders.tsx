@@ -63,6 +63,25 @@ export function AppProviders({ children }: AppProvidersProps) {
     fetchTheme();
   }, []);
 
+  // Hide PWA splash screen when app is loaded
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    // Small delay to ensure content is rendered
+    const timer = setTimeout(() => {
+      const splash = document.getElementById("rox-splash-screen");
+      if (splash) {
+        splash.classList.add("hidden");
+        // Remove from DOM after transition completes
+        setTimeout(() => {
+          splash.remove();
+        }, 300);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoaded]);
+
   // Show nothing until theme is loaded to prevent flash
   // But still render children to avoid layout shift
   return (
