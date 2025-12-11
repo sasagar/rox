@@ -613,8 +613,12 @@ export class ActivityDeliveryQueue {
     try {
       await this.deliveryService.deliver(data.activity, data.inboxUrl, data.keyId, data.privateKey);
       logger.debug({ inboxUrl: data.inboxUrl }, "Delivered successfully");
+      // Record success metric for sync delivery
+      this.recordMetric(data.inboxUrl, "success");
     } catch (error) {
       logger.error({ err: error, inboxUrl: data.inboxUrl }, "Failed to deliver");
+      // Record failure metric for sync delivery
+      this.recordMetric(data.inboxUrl, "failure");
       // In sync mode, we don't retry - just log the error
     }
   }

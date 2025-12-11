@@ -809,7 +809,7 @@ msgstr "データを管理し、誰が投稿を見るかを選択できます"
 
 #: src/components/pages/MessageThreadPageClient.tsx:374
 msgid "Conversation"
-msgstr ""
+msgstr "会話"
 
 #: src/components/pages/NoteDetailPageClient.tsx:120
 msgid "Conversation thread"
@@ -1811,7 +1811,7 @@ msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピ�
 
 #: src/pages/admin/settings.tsx:887
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
-msgstr ""
+msgstr "セーフゾーンを考慮した高解像度PWA用マスカブルアイコン、512x512ピクセル (最大2MB)。"
 
 #: src/components/layout/Sidebar.tsx:91
 #: src/components/note/NoteComposer.tsx:656
@@ -2260,15 +2260,15 @@ msgstr "{0}人のユーザーを削除済みにしました"
 
 #: src/pages/admin/settings.tsx:876
 msgid "Maskable icon for PWA with safe zone padding, 192x192 pixels (max 1MB)."
-msgstr ""
+msgstr "セーフゾーンを考慮したPWA用マスカブルアイコン、192x192ピクセル (最大1MB)。"
 
 #: src/pages/admin/settings.tsx:862
 msgid "Maskable Icons (Optional)"
-msgstr ""
+msgstr "マスカブルアイコン（任意）"
 
 #: src/pages/admin/settings.tsx:865
 msgid "Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.). These should have important content within a \"safe zone\" (centered 80% of the icon). If not set, only standard icons will be used."
-msgstr ""
+msgstr "マスカブルアイコンは、OSによって様々な形状（円形、角丸など）に切り抜かれることを想定しています。重要なコンテンツはアイコン中央の80%の「セーフゾーン」内に配置してください。未設定の場合は通常のアイコンのみが使用されます。"
 
 #: src/pages/admin/invitations.tsx:276
 msgid "Max Uses"
@@ -2972,11 +2972,11 @@ msgstr "PWAアイコン (512x512)"
 
 #: src/pages/admin/settings.tsx:875
 msgid "PWA Maskable Icon (192x192)"
-msgstr ""
+msgstr "PWAマスカブルアイコン (192x192)"
 
 #: src/pages/admin/settings.tsx:886
 msgid "PWA Maskable Icon (512x512)"
-msgstr ""
+msgstr "PWAマスカブルアイコン (512x512)"
 
 #: src/pages/admin/queue.tsx:365
 msgid "Queue Health"
