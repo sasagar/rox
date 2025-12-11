@@ -525,7 +525,7 @@ msgstr "お問い合わせに戻る"
 msgid "Back to list"
 msgstr "一覧に戻る"
 
-#: src/components/pages/MessageThreadPageClient.tsx:337
+#: src/components/pages/MessageThreadPageClient.tsx:338
 msgid "Back to messages"
 msgstr "メッセージに戻る"
 
@@ -806,6 +806,10 @@ msgstr "コンテンツ幅"
 #: src/components/LandingPage.tsx:225
 msgid "Control your data and choose who sees your posts"
 msgstr "データを管理し、誰が投稿を見るかを選択できます"
+
+#: src/components/pages/MessageThreadPageClient.tsx:374
+msgid "Conversation"
+msgstr ""
 
 #: src/components/pages/NoteDetailPageClient.tsx:120
 msgid "Conversation thread"
@@ -1547,7 +1551,7 @@ msgstr "ロールの保存に失敗しました"
 msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
-#: src/components/pages/MessageThreadPageClient.tsx:158
+#: src/components/pages/MessageThreadPageClient.tsx:159
 msgid "Failed to send message"
 msgstr "メッセージの送信に失敗しました"
 
@@ -2483,7 +2487,7 @@ msgstr "まだメンションはありません"
 msgid "No messages yet"
 msgstr "まだメッセージはありません"
 
-#: src/components/pages/MessageThreadPageClient.tsx:421
+#: src/components/pages/MessageThreadPageClient.tsx:417
 msgid "No messages yet. Start the conversation!"
 msgstr "まだメッセージはありません。会話を始めましょう！"
 
@@ -4264,7 +4268,7 @@ msgstr "ユーザー一覧"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/pages/MessageThreadPageClient.tsx:271
+#: src/components/pages/MessageThreadPageClient.tsx:272
 #: src/components/user/UserProfile.tsx:353
 #: src/pages/interact.tsx:59
 #: src/pages/mod/users.tsx:115
@@ -4495,7 +4499,7 @@ msgstr "{0}に投稿予定"
 msgid "With Errors"
 msgstr "エラーあり"
 
-#: src/components/pages/MessageThreadPageClient.tsx:193
+#: src/components/pages/MessageThreadPageClient.tsx:194
 msgid "Write a message..."
 msgstr "メッセージを入力..."
 

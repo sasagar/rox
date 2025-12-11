@@ -70,9 +70,9 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl", header 
 
       {/* Main Content Area */}
       <main className={`min-h-screen transition-all duration-300 ${sidebarMarginClass}`}>
-        {/* Full-width header (e.g., PageHeader) */}
+        {/* Full-width header (e.g., PageHeader) - sticky for consistent navigation */}
         {header && (
-          <div className="w-full">
+          <div className="sticky top-0 z-30 w-full bg-(--bg-primary)/95 backdrop-blur-sm border-b border-(--border-color)">
             {header}
           </div>
         )}

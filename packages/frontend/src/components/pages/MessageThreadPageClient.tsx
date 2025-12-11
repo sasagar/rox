@@ -10,8 +10,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { useAtom, useAtomValue } from "jotai";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { Send, Loader2, MessageCircle } from "lucide-react";
 import { Layout } from "../layout/Layout";
+import { PageHeader } from "../ui/PageHeader";
 import { Avatar } from "../ui/Avatar";
 import { Spinner } from "../ui/Spinner";
 import { InlineError } from "../ui/ErrorMessage";
@@ -346,49 +347,44 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
     ? `@${partner.username}@${partner.host}`
     : `@${partner?.username}`;
 
-  return (
-    <Layout>
-      <div className="flex flex-col h-[calc(100vh-200px)] md:h-[calc(100vh-64px)] max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-(--border-color) bg-(--card-bg)">
-          <a
-            href="/messages"
-            className="p-2 hover:bg-(--bg-secondary) rounded-full transition-colors"
-            aria-label="Back to messages"
-          >
-            <ArrowLeft className="w-5 h-5 text-(--text-primary)" />
-          </a>
-          {partner ? (
-            <>
-              <Avatar
-                src={partner.avatarUrl}
-                alt={partnerDisplayName}
-                fallback={partnerDisplayName.charAt(0).toUpperCase()}
-                size="md"
-              />
-              <div className="flex-1 min-w-0">
-                <h1 className="font-semibold text-(--text-primary) truncate">
-                  <UserDisplayName
-                    name={partner.displayName || partner.name}
-                    username={partner.username}
-                    profileEmojis={partner.profileEmojis}
-                  />
-                </h1>
-                <p className="text-sm text-(--text-muted) truncate">{partnerHandle}</p>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1">
-              <div className="h-5 w-32 bg-(--bg-secondary) rounded animate-pulse" />
-              <div className="h-4 w-24 bg-(--bg-secondary) rounded animate-pulse mt-1" />
-            </div>
-          )}
-        </div>
+  // Build subtitle with partner info
+  const subtitle = partner ? (
+    <span className="flex items-center gap-2">
+      <Avatar
+        src={partner.avatarUrl}
+        alt={partnerDisplayName}
+        fallback={partnerDisplayName.charAt(0).toUpperCase()}
+        size="sm"
+      />
+      <span className="truncate">
+        <UserDisplayName
+          name={partner.displayName || partner.name}
+          username={partner.username}
+          profileEmojis={partner.profileEmojis}
+        />
+        <span className="text-(--text-muted) ml-1">{partnerHandle}</span>
+      </span>
+    </span>
+  ) : (
+    <span className="h-4 w-32 bg-(--bg-secondary) rounded animate-pulse inline-block" />
+  );
 
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Conversation</Trans>}
+      subtitle={subtitle}
+      icon={<MessageCircle className="w-6 h-6" />}
+      backHref="/messages"
+    />
+  );
+
+  return (
+    <Layout header={pageHeader} maxWidth="2xl">
+      <div className="flex flex-col" style={{ minHeight: "calc(100vh - 280px)" }}>
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-3"
+          className="flex-1 overflow-y-auto space-y-3 -mx-3 sm:-mx-4 px-3 sm:px-4"
         >
           {/* Load more trigger at top */}
           {hasMore && (
@@ -427,8 +423,10 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Composer */}
-        <MessageComposer partnerId={partnerId} currentUser={currentUser} onMessageSent={handleMessageSent} />
+        {/* Composer - sticky at bottom */}
+        <div className="sticky bottom-0 -mx-3 sm:-mx-4 mt-4">
+          <MessageComposer partnerId={partnerId} currentUser={currentUser} onMessageSent={handleMessageSent} />
+        </div>
       </div>
     </Layout>
   );

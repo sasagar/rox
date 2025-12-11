@@ -525,7 +525,7 @@ msgstr "Back to Contact"
 msgid "Back to list"
 msgstr "Back to list"
 
-#: src/components/pages/MessageThreadPageClient.tsx:337
+#: src/components/pages/MessageThreadPageClient.tsx:338
 msgid "Back to messages"
 msgstr "Back to messages"
 
@@ -806,6 +806,10 @@ msgstr "Content Width"
 #: src/components/LandingPage.tsx:225
 msgid "Control your data and choose who sees your posts"
 msgstr "Control your data and choose who sees your posts"
+
+#: src/components/pages/MessageThreadPageClient.tsx:374
+msgid "Conversation"
+msgstr "Conversation"
 
 #: src/components/pages/NoteDetailPageClient.tsx:120
 msgid "Conversation thread"
@@ -1547,7 +1551,7 @@ msgstr "Failed to save role"
 msgid "Failed to save UI settings"
 msgstr "Failed to save UI settings"
 
-#: src/components/pages/MessageThreadPageClient.tsx:158
+#: src/components/pages/MessageThreadPageClient.tsx:159
 msgid "Failed to send message"
 msgstr "Failed to send message"
 
@@ -2483,7 +2487,7 @@ msgstr "No mentions yet"
 msgid "No messages yet"
 msgstr "No messages yet"
 
-#: src/components/pages/MessageThreadPageClient.tsx:421
+#: src/components/pages/MessageThreadPageClient.tsx:417
 msgid "No messages yet. Start the conversation!"
 msgstr "No messages yet. Start the conversation!"
 
@@ -4264,7 +4268,7 @@ msgstr "User List"
 msgid "User Moderation"
 msgstr "User Moderation"
 
-#: src/components/pages/MessageThreadPageClient.tsx:271
+#: src/components/pages/MessageThreadPageClient.tsx:272
 #: src/components/user/UserProfile.tsx:353
 #: src/pages/interact.tsx:59
 #: src/pages/mod/users.tsx:115
@@ -4495,7 +4499,7 @@ msgstr "Will be posted at {0}"
 msgid "With Errors"
 msgstr "With Errors"
 
-#: src/components/pages/MessageThreadPageClient.tsx:193
+#: src/components/pages/MessageThreadPageClient.tsx:194
 msgid "Write a message..."
 msgstr "Write a message..."
 
