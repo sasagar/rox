@@ -27,6 +27,28 @@ export interface Activity {
 }
 
 /**
+ * Custom emoji tag for ActivityPub
+ */
+export interface EmojiTag {
+  type: "Emoji";
+  name: string;
+  icon: {
+    type: "Image";
+    mediaType: string;
+    url: string;
+  };
+}
+
+/**
+ * Mention tag for ActivityPub
+ */
+export interface MentionTag {
+  type: "Mention";
+  href: string;
+  name: string;
+}
+
+/**
  * ActivityPub Note object structure
  */
 export interface NoteObject {
@@ -39,9 +61,16 @@ export interface NoteObject {
   cc: string[];
   inReplyTo?: string | null;
   attachment?: unknown[];
-  tag?: unknown[];
+  tag?: (EmojiTag | MentionTag)[];
   sensitive?: boolean;
   summary?: string | null;
+  // Misskey extension: original MFM source text
+  _misskey_content?: string;
+  // ActivityPub source for plain text content
+  source?: {
+    content: string;
+    mediaType: string;
+  };
 }
 
 /**
@@ -161,21 +190,41 @@ export class ActivityBuilder {
 
   /**
    * Build a Create activity for a note
+   *
+   * @param note - The note to create an activity for
+   * @param author - The author of the note
+   * @param emojiTags - Optional array of custom emoji tags to include
    */
-  createNote(note: Note, author: User): Activity {
+  createNote(note: Note, author: User, emojiTags?: EmojiTag[]): Activity {
     const actorUri = this.actorUri(author.username);
     const followersUri = this.followersUri(author.username);
     const published = note.createdAt.toISOString();
+
+    // Convert MFM text to HTML for content field
+    const htmlContent = note.text ? this.textToHtml(note.text) : "";
 
     const noteObject: NoteObject = {
       id: note.uri || `${this.baseUrl}/notes/${note.id}`,
       type: "Note",
       attributedTo: actorUri,
-      content: note.text || "",
+      content: htmlContent,
       published,
       to: [AS_PUBLIC],
       cc: [followersUri],
+      // Include original MFM source for Misskey-compatible servers
+      _misskey_content: note.text || undefined,
+      source: note.text
+        ? {
+            content: note.text,
+            mediaType: "text/x.misskeymarkdown",
+          }
+        : undefined,
     };
+
+    // Add emoji tags if provided
+    if (emojiTags && emojiTags.length > 0) {
+      noteObject.tag = emojiTags;
+    }
 
     // Add optional fields
     if (note.cw) {

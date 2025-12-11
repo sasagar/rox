@@ -10,10 +10,11 @@
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
 import type { IInstanceBlockRepository } from "../../interfaces/repositories/IInstanceBlockRepository.js";
+import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
 import type { Note } from "shared";
 import type { User } from "../../db/schema/pg.js";
 import { ActivityDeliveryQueue, JobPriority } from "./ActivityDeliveryQueue.js";
-import { ActivityBuilder, type Activity, type CustomEmojiInfo } from "./delivery/ActivityBuilder.js";
+import { ActivityBuilder, type Activity, type CustomEmojiInfo, type EmojiTag } from "./delivery/ActivityBuilder.js";
 import { logger } from "../../lib/logger.js";
 
 /**
@@ -46,6 +47,7 @@ export class ActivityPubDeliveryService {
     private readonly followRepository: IFollowRepository,
     activityDeliveryQueue: ActivityDeliveryQueue,
     private readonly instanceBlockRepository?: IInstanceBlockRepository,
+    private readonly customEmojiRepository?: ICustomEmojiRepository,
   ) {
     this.queue = activityDeliveryQueue;
     this.builder = new ActivityBuilder();
@@ -146,11 +148,64 @@ export class ActivityPubDeliveryService {
       return;
     }
 
-    const activity = this.builder.createNote(note, author);
+    // Build emoji tags from note's emojis
+    const emojiTags = await this.buildEmojiTags(note.emojis);
+
+    const activity = this.builder.createNote(note, author, emojiTags);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, author);
     logger.debug({ noteId: note.id, inboxCount: inboxUrls.size }, "Enqueued Create activity");
+  }
+
+  /**
+   * Build emoji tags for ActivityPub delivery from emoji shortcodes
+   */
+  private async buildEmojiTags(emojiNames: string[]): Promise<EmojiTag[]> {
+    if (!this.customEmojiRepository || emojiNames.length === 0) {
+      return [];
+    }
+
+    const emojiTags: EmojiTag[] = [];
+    const baseUrl = process.env.URL || "http://localhost:3000";
+
+    for (const name of emojiNames) {
+      // Look up local custom emoji
+      const emoji = await this.customEmojiRepository.findByName(name);
+      if (emoji && !emoji.host) {
+        // Only include local emojis (remote emojis should not be re-shared)
+        emojiTags.push({
+          type: "Emoji",
+          name: `:${emoji.name}:`,
+          icon: {
+            type: "Image",
+            mediaType: this.getEmojiMediaType(emoji.url),
+            url: emoji.url.startsWith("http") ? emoji.url : `${baseUrl}${emoji.url}`,
+          },
+        });
+      }
+    }
+
+    return emojiTags;
+  }
+
+  /**
+   * Get media type from emoji URL
+   */
+  private getEmojiMediaType(url: string): string {
+    const ext = url.split(".").pop()?.toLowerCase();
+    switch (ext) {
+      case "png":
+        return "image/png";
+      case "gif":
+        return "image/gif";
+      case "webp":
+        return "image/webp";
+      case "svg":
+        return "image/svg+xml";
+      default:
+        return "image/png";
+    }
   }
 
   /**

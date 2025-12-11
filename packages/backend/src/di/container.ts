@@ -157,6 +157,7 @@ export function createContainer(): AppContainer {
     repositories.followRepository,
     activityDeliveryQueue,
     repositories.instanceBlockRepository,
+    repositories.customEmojiRepository,
   );
 
   // Role and Instance Settings Services

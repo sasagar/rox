@@ -46,6 +46,13 @@ interface APNote {
       url: string;
     };
   }>;
+  // Misskey extension: original MFM source text
+  _misskey_content?: string;
+  // ActivityPub source (used by some implementations)
+  source?: {
+    content?: string;
+    mediaType?: string;
+  };
 }
 
 /**
@@ -94,8 +101,41 @@ export class RemoteNoteService {
 
     const author = await actorService.resolveActor(authorUri);
 
-    // Extract text content (strip HTML tags for now)
-    const text = noteObject.content ? this.stripHtml(noteObject.content) : null;
+    // Extract text content
+    // Priority: 1. _misskey_content (MFM source), 2. source.content (MFM/plain), 3. HTML content (stripped)
+    let text: string | null = null;
+    let textSource = "none";
+    if (noteObject._misskey_content) {
+      // Misskey sends original MFM in _misskey_content
+      text = noteObject._misskey_content;
+      textSource = "_misskey_content";
+    } else if (
+      noteObject.source &&
+      typeof noteObject.source === "object" &&
+      noteObject.source.content &&
+      (noteObject.source.mediaType === "text/x.misskeymarkdown" ||
+        noteObject.source.mediaType === "text/plain")
+    ) {
+      // Some implementations use source with mediaType
+      text = noteObject.source.content;
+      textSource = `source (${noteObject.source.mediaType})`;
+    } else if (noteObject.content) {
+      // Fallback: strip HTML from content
+      text = this.stripHtml(noteObject.content);
+      textSource = "content (HTML stripped)";
+    }
+
+    logger.debug(
+      {
+        noteUri: noteObject.id,
+        textSource,
+        hasContent: !!noteObject.content,
+        hasMisskeyContent: !!noteObject._misskey_content,
+        hasSource: !!noteObject.source,
+        textLength: text?.length ?? 0,
+      },
+      "Remote note text extraction",
+    );
 
     // Extract Content Warning
     const cw = noteObject.summary || null;
