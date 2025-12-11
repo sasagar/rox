@@ -888,12 +888,12 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         </Button>
       )}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[600px] flex flex-col">
-          <Dialog className="flex flex-col h-full outline-none">
+        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[500px] flex flex-col overflow-hidden">
+          <Dialog className="flex flex-col h-full min-h-0 outline-none">
             {({ close }) => (
               <>
                 {/* Header */}
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       <Trans>Emoji Picker</Trans>
@@ -920,7 +920,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
                 {/* Category tabs */}
                 {!searchQuery && (
-                  <div className="flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                  <div className="shrink-0 flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                     {/* Custom emojis tab (if available) */}
                     {customEmojis.length > 0 && (
                       <button
@@ -972,41 +972,71 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
                 {/* Custom emoji category tabs (when custom category is selected) */}
                 {!searchQuery && isCustomCategory && customCategories.length > 0 && (
-                  <div className="flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                  <div className="shrink-0 flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                     <button
                       onClick={() => setSelectedCustomCategory(null)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                      className={`px-3 py-2 rounded-md transition-colors ${
                         selectedCustomCategory === null
-                          ? "bg-primary-500 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                          ? "bg-primary-100 dark:bg-primary-900/30"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
                       }`}
+                      title={t`All`}
+                      aria-label={t`All custom emojis`}
                     >
-                      <Trans>All</Trans>
+                      <Sparkles className="w-5 h-5" />
                     </button>
-                    {customCategories.map((category) => (
-                      <button
-                        key={category}
-                        onClick={() => setSelectedCustomCategory(category)}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
-                          selectedCustomCategory === category
-                            ? "bg-primary-500 text-white"
-                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    ))}
+                    {customCategories.map((category) => {
+                      const categoryEmojis = emojisByCategory.get(category);
+                      const firstEmoji = categoryEmojis?.[0];
+                      return (
+                        <button
+                          key={category}
+                          onClick={() => setSelectedCustomCategory(category)}
+                          className={`px-3 py-2 rounded-md transition-colors ${
+                            selectedCustomCategory === category
+                              ? "bg-primary-100 dark:bg-primary-900/30"
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                          }`}
+                          title={category}
+                          aria-label={category}
+                        >
+                          {firstEmoji ? (
+                            <img
+                              src={getProxiedImageUrl(firstEmoji.url) || ""}
+                              alt={category}
+                              className="w-5 h-5 object-contain"
+                            />
+                          ) : (
+                            <span className="text-xs">{category.slice(0, 2)}</span>
+                          )}
+                        </button>
+                      );
+                    })}
                     {/* Show uncategorized if exists */}
                     {emojisByCategory.has("") && (
                       <button
                         onClick={() => setSelectedCustomCategory("")}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap ${
+                        className={`px-3 py-2 rounded-md transition-colors ${
                           selectedCustomCategory === ""
-                            ? "bg-primary-500 text-white"
-                            : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                            ? "bg-primary-100 dark:bg-primary-900/30"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
                         }`}
+                        title={t`Uncategorized`}
+                        aria-label={t`Uncategorized emojis`}
                       >
-                        <Trans>Uncategorized</Trans>
+                        {(() => {
+                          const uncategorized = emojisByCategory.get("");
+                          const firstEmoji = uncategorized?.[0];
+                          return firstEmoji ? (
+                            <img
+                              src={getProxiedImageUrl(firstEmoji.url) || ""}
+                              alt={t`Uncategorized`}
+                              className="w-5 h-5 object-contain"
+                            />
+                          ) : (
+                            <span className="text-lg">📦</span>
+                          );
+                        })()}
                       </button>
                     )}
                   </div>
@@ -1015,7 +1045,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                 {/* Emoji grid */}
                 <div
                   ref={emojiGridRef}
-                  className="flex-1 overflow-y-auto p-4"
+                  className="flex-1 min-h-0 overflow-y-auto p-4"
                   onScroll={handleScroll}
                 >
                   {/* Loading state */}

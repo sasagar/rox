@@ -383,7 +383,7 @@ msgstr "Alias removed successfully"
 msgid "Aliases"
 msgstr "Aliases"
 
-#: src/components/ui/EmojiPicker.tsx:984
+#: src/components/ui/EmojiPicker.tsx:983
 #: src/pages/admin/federation.tsx:306
 #: src/pages/admin/reports.tsx:304
 #: src/pages/admin/users.tsx:397
@@ -399,6 +399,10 @@ msgstr "All Actions"
 #: src/pages/admin/emojis.tsx:1136
 msgid "All Categories"
 msgstr "All Categories"
+
+#: src/components/ui/EmojiPicker.tsx:984
+msgid "All custom emojis"
+msgstr "All custom emojis"
 
 #: src/pages/admin/blocks.tsx:310
 msgid "All instances can federate with this server"
@@ -885,7 +889,7 @@ msgstr "Custom CSS applied to the entire app (max 10KB)"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
-#: src/components/ui/EmojiPicker.tsx:1033
+#: src/components/ui/EmojiPicker.tsx:1063
 #: src/pages/admin/emojis.tsx:759
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
@@ -2367,7 +2371,7 @@ msgid "No drafts saved"
 msgstr "No drafts saved"
 
 #: src/components/note/NoteComposer.tsx:963
-#: src/components/ui/EmojiPicker.tsx:1102
+#: src/components/ui/EmojiPicker.tsx:1132
 msgid "No emojis found"
 msgstr "No emojis found"
 
@@ -3390,8 +3394,8 @@ msgstr "Schedule post"
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
-#: src/components/ui/EmojiPicker.tsx:1058
-#: src/components/ui/EmojiPicker.tsx:1090
+#: src/components/ui/EmojiPicker.tsx:1088
+#: src/components/ui/EmojiPicker.tsx:1120
 msgid "Scroll for more..."
 msgstr "Scroll for more..."
 
@@ -3639,7 +3643,7 @@ msgstr "Source Code URL (AGPL-3.0 Compliance)"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:1070
+#: src/components/ui/EmojiPicker.tsx:1100
 msgid "Standard Emojis"
 msgstr "Standard Emojis"
 
@@ -4027,10 +4031,15 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
-#: src/components/ui/EmojiPicker.tsx:1009
+#: src/components/ui/EmojiPicker.tsx:1024
+#: src/components/ui/EmojiPicker.tsx:1033
 #: src/pages/admin/emojis.tsx:1570
 msgid "Uncategorized"
 msgstr "Uncategorized"
+
+#: src/components/ui/EmojiPicker.tsx:1025
+msgid "Uncategorized emojis"
+msgstr "Uncategorized emojis"
 
 #: src/pages/admin/settings.tsx:894
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
