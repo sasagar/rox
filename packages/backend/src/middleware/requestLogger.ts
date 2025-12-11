@@ -10,6 +10,40 @@ import type { Context, Next } from "hono";
 import { createRequestLogger } from "../lib/logger.js";
 
 /**
+ * Paths that should always be logged at DEBUG level
+ * regardless of status code (to reduce log noise).
+ */
+const DEBUG_ONLY_PATH_PREFIXES = [
+  "/ws/",
+  "/health",
+  "/.well-known/",
+  "/nodeinfo",
+  "/favicon",
+] as const;
+
+/**
+ * Check if a path should always be logged at DEBUG level
+ *
+ * @param path - Request path
+ * @returns True if path should use DEBUG level
+ */
+function isDebugOnlyPath(path: string): boolean {
+  return DEBUG_ONLY_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
+/**
+ * Get appropriate log level based on HTTP status code
+ *
+ * @param status - HTTP status code
+ * @returns Log level: "debug" for 2xx, "warn" for 4xx, "error" for 5xx
+ */
+function getLogLevelForStatus(status: number): "debug" | "warn" | "error" {
+  if (status >= 500) return "error";
+  if (status >= 400) return "warn";
+  return "debug";
+}
+
+/**
  * Generate a unique request ID
  *
  * Uses crypto.randomUUID if available, falls back to timestamp-based ID.
@@ -78,8 +112,8 @@ export function requestLogger() {
       ip,
     });
 
-    // Log incoming request
-    reqLogger.info("Incoming request");
+    // Log incoming request (always DEBUG to reduce noise)
+    reqLogger.debug("Incoming request");
 
     try {
       await next();
@@ -89,15 +123,20 @@ export function requestLogger() {
       const duration = Date.now() - startTime;
       const status = c.res.status;
 
-      // Log completed request
-      reqLogger.info(
-        {
-          status,
-          duration,
-          ...(user && { userId: user.id }),
-        },
-        "Request completed",
-      );
+      const logData = {
+        status,
+        duration,
+        ...(user && { userId: user.id }),
+      };
+
+      // Use DEBUG level for specific paths (WebSocket, health checks, etc.)
+      // Otherwise use status-code-based log level
+      if (isDebugOnlyPath(path)) {
+        reqLogger.debug(logData, "Request completed");
+      } else {
+        const level = getLogLevelForStatus(status);
+        reqLogger[level](logData, "Request completed");
+      }
     } catch (error) {
       const duration = Date.now() - startTime;
 
