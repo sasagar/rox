@@ -299,7 +299,7 @@ function MfmRendererComponent({
               src={getProxiedImageUrl(emojiUrl) || ""}
               alt={`:${emojiName}:`}
               title={`:${emojiName}:`}
-              className="inline-block h-6 w-auto max-w-16 align-middle mx-0.5 object-contain"
+              className="inline-block h-[1.5em] w-auto max-w-[4em] align-middle mx-0.5 object-contain"
               loading="lazy"
             />
           );
