@@ -20,3 +20,4 @@ export * from "./IScheduledNoteRepository.js";
 export * from "./IPasskeyCredentialRepository.js";
 export * from "./IPasskeyChallengeRepository.js";
 export * from "./IOAuthAccountRepository.js";
+export * from "./IBlockedUsernameRepository.js";

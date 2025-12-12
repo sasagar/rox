@@ -37,6 +37,7 @@ import {
   Archive,
   Server,
   BarChart3,
+  Ban,
 } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -88,6 +89,7 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
       { href: "/admin/users", icon: UserCog, label: msg`Users` },
       { href: "/admin/roles", icon: Users, label: msg`Roles` },
       { href: "/admin/invitations", icon: Ticket, label: msg`Invitations` },
+      { href: "/admin/blocked-usernames", icon: Ban, label: msg`Blocked Usernames` },
       { href: "/admin/gone-users", icon: Ghost, label: msg`Gone Users` },
     ],
   },
