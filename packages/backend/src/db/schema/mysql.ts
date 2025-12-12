@@ -102,6 +102,8 @@ export const users = mysqlTable(
     // Soft delete fields for account deletion
     isDeleted: boolean("is_deleted").notNull().default(false),
     deletedAt: datetime("deleted_at"),
+    // System account flag (for server-level operations)
+    isSystemUser: boolean("is_system_user").notNull().default(false),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: varchar("host", { length: 256 }),

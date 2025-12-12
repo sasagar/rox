@@ -280,6 +280,22 @@ export class SqliteUserRepository implements IUserRepository {
     return (result as User) ?? null;
   }
 
+  async findSystemUser(): Promise<User | null> {
+    const [result] = this.db
+      .select()
+      .from(users)
+      .where(
+        and(
+          isNull(users.host), // Local user
+          eq(users.isSystemUser, true),
+        ),
+      )
+      .limit(1)
+      .all();
+
+    return (result as User) ?? null;
+  }
+
   /**
    * Count user registrations within a time period
    * Used for Mastodon API instance activity statistics

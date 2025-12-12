@@ -337,9 +337,9 @@ app.get("/show", optionalAuth(), async (c) => {
  * - 502: Failed to fetch remote user (network error, invalid response)
  */
 app.get("/resolve", optionalAuth(), async (c) => {
-  const userRepository = c.get("userRepository");
   const followRepository = c.get("followRepository");
   const remoteActorService = c.get("remoteActorService");
+  const systemAccountService = c.get("systemAccountService");
   const acct = c.req.query("acct");
 
   if (!acct) {
@@ -347,17 +347,10 @@ app.get("/resolve", optionalAuth(), async (c) => {
   }
 
   try {
-    // Get an instance actor (local user with private key) for HTTP Signature
-    // GoToSocial requires HTTP signatures for actor fetches
-    // Try to find 'alice' as default instance actor, or any local user
-    const instanceActor = await userRepository.findByUsername("alice", null);
-
-    const baseUrl = process.env.URL || "http://localhost:3000";
-    if (instanceActor?.privateKey) {
-      remoteActorService.setSignatureConfig({
-        keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
-        privateKey: instanceActor.privateKey,
-      });
+    // Use system account for HTTP Signature (required by GoToSocial and others)
+    const signatureConfig = await systemAccountService.getSignatureConfig();
+    if (signatureConfig) {
+      remoteActorService.setSignatureConfig(signatureConfig);
     }
 
     const user = await remoteActorService.resolveActorByAcct(acct);

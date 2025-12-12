@@ -164,6 +164,16 @@ export interface IUserRepository {
   findFirstLocalAdmin(): Promise<User | null>;
 
   /**
+   * Find the system user account
+   *
+   * Returns the local user with isSystemUser=true.
+   * Used for server-level operations requiring HTTP signatures.
+   *
+   * @returns System user if exists, null otherwise
+   */
+  findSystemUser(): Promise<User | null>;
+
+  /**
    * Count user registrations within a time period
    * Used for Mastodon API instance activity statistics
    *

@@ -69,6 +69,7 @@ import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
 import { UserDeletionService } from "../services/UserDeletionService.js";
 import { UserDataExportService } from "../services/UserDataExportService.js";
 import { BlockedUsernameService } from "../services/BlockedUsernameService.js";
+import { SystemAccountService } from "../services/SystemAccountService.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -111,6 +112,7 @@ export interface AppContainer {
   userDeletionService: UserDeletionService;
   userDataExportService: UserDataExportService;
   blockedUsernameService: BlockedUsernameService;
+  systemAccountService: SystemAccountService;
 }
 
 /**
@@ -222,6 +224,11 @@ export function createContainer(): AppContainer {
     repositories.blockedUsernameRepository,
   );
 
+  // System Account Service for server-level operations
+  const systemAccountService = new SystemAccountService(
+    repositories.userRepository,
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -239,6 +246,7 @@ export function createContainer(): AppContainer {
     userDeletionService,
     userDataExportService,
     blockedUsernameService,
+    systemAccountService,
   };
 }
 

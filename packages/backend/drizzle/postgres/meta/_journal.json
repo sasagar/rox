@@ -64,6 +64,13 @@
       "when": 1765551226315,
       "tag": "0008_zippy_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1765554551098,
+      "tag": "0009_blue_blink",
+      "breakpoints": true
     }
   ]
 }

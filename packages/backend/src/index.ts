@@ -130,6 +130,14 @@ cleanupService.start();
 
 // Start remote instance refresh service
 const container = getContainer();
+
+// Initialize system account on startup
+container.systemAccountService.ensureSystemAccount().then((systemUser) => {
+  logger.info({ userId: systemUser.id, username: systemUser.username }, "System account ready");
+}).catch((error) => {
+  logger.error({ err: error }, "Failed to initialize system account");
+});
+
 const remoteInstanceRefreshService = new RemoteInstanceRefreshService(
   container.remoteInstanceRepository,
   {

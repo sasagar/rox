@@ -67,11 +67,14 @@ actor.get("/:username", async (c: Context) => {
 
   const baseUrl = process.env.URL || "http://localhost:3000";
 
+  // Determine actor type: Application for system user, Person for regular users
+  const actorType = user.isSystemUser ? "Application" : "Person";
+
   // Build ActivityPub Actor document
   const actorDocument: Record<string, unknown> = {
     "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
     id: `${baseUrl}/users/${user.username}`,
-    type: "Person",
+    type: actorType,
     preferredUsername: user.username,
     name: user.displayName || user.username,
     summary: user.bio || "",

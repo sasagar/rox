@@ -51,6 +51,7 @@ describe("RemoteNoteService", () => {
           isBot: false,
           isDeleted: false,
           deletedAt: null,
+    isSystemUser: false,
           followingCount: 0,
           followersCount: 0,
           notesCount: 0,

@@ -125,6 +125,7 @@ export class AuthService {
       isSuspended: false,
       isDeleted: false,
       deletedAt: null,
+      isSystemUser: false,
       publicKey,
       privateKey,
       customCss: null, // Custom CSS for profile page
@@ -183,6 +184,11 @@ export class AuthService {
     const user = await this.userRepository.findByUsername(input.username);
     if (!user) {
       throw new Error("Invalid username or password");
+    }
+
+    // システムアカウントはログイン不可
+    if (user.isSystemUser) {
+      throw new Error("System account cannot be used for login");
     }
 
     // パスワード検証

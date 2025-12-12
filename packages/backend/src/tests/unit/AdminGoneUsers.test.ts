@@ -23,6 +23,7 @@ describe("Admin Gone Users API", () => {
     isAdmin: false,
     isDeleted: false,
     deletedAt: null,
+    isSystemUser: false,
     isSuspended: false,
     publicKey: null,
     privateKey: null,

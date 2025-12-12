@@ -621,6 +621,7 @@ export class OAuthService {
         isSuspended: false,
         isDeleted: false,
         deletedAt: null,
+        isSystemUser: false,
         publicKey,
         privateKey,
         customCss: null,

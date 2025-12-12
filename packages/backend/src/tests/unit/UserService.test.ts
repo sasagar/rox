@@ -35,6 +35,7 @@ describe("UserService", () => {
     isSuspended: false,
     isDeleted: false,
     deletedAt: null,
+    isSystemUser: false,
     publicKey: "mock-public-key",
     privateKey: "mock-private-key",
     inbox: "http://localhost:3000/users/testuser/inbox",

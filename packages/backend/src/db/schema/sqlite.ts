@@ -92,6 +92,8 @@ export const users = sqliteTable(
     // Soft delete fields for account deletion
     isDeleted: integer("is_deleted", { mode: "boolean" }).notNull().default(false),
     deletedAt: integer("deleted_at", { mode: "timestamp" }),
+    // System account flag (for server-level operations)
+    isSystemUser: integer("is_system_user", { mode: "boolean" }).notNull().default(false),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: text("host"),

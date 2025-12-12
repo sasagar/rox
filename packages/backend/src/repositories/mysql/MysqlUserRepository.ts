@@ -272,6 +272,27 @@ export class MysqlUserRepository implements IUserRepository {
   }
 
   /**
+   * Find the system user account
+   *
+   * Returns the local user with isSystemUser=true.
+   * Used for server-level operations requiring HTTP signatures.
+   */
+  async findSystemUser(): Promise<User | null> {
+    const [result] = await this.db
+      .select()
+      .from(users)
+      .where(
+        and(
+          isNull(users.host), // Local user
+          eq(users.isSystemUser, true),
+        ),
+      )
+      .limit(1);
+
+    return (result as User) ?? null;
+  }
+
+  /**
    * Count user registrations within a time period
    * Used for Mastodon API instance activity statistics
    */

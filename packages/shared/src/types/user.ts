@@ -23,6 +23,8 @@ export interface User extends Timestamps {
   // Soft delete fields for account deletion
   isDeleted: boolean;
   deletedAt: Date | null;
+  // System account flag (for server-level operations)
+  isSystemUser: boolean;
   publicKey: string | null;
   privateKey: string | null;
   host: string | null; // null for local users, domain for remote users

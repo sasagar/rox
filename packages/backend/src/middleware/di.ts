@@ -48,6 +48,7 @@ export function diMiddleware() {
     c.set("contactRepository", container.contactRepository);
     c.set("blockedUsernameService", container.blockedUsernameService);
     c.set("blockedUsernameRepository", container.blockedUsernameRepository);
+    c.set("systemAccountService", container.systemAccountService);
 
     // Also set the container itself for routes that need multiple services
     c.set("container", container);

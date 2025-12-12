@@ -109,6 +109,8 @@ export const users = pgTable(
     // Soft delete fields for account deletion
     isDeleted: boolean("is_deleted").notNull().default(false),
     deletedAt: timestamp("deleted_at"),
+    // System account flag (for server-level operations)
+    isSystemUser: boolean("is_system_user").notNull().default(false),
     publicKey: text("public_key"),
     privateKey: text("private_key"),
     host: text("host"), // null for local users

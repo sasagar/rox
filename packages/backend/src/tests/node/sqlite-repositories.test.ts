@@ -94,6 +94,7 @@ function createTestUser(overrides: {
     isSuspended: false,
     isDeleted: false,
     deletedAt: null,
+    isSystemUser: false,
     publicKey: null,
     privateKey: null,
     host: null,

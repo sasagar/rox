@@ -365,6 +365,7 @@ export class RemoteActorService {
         isSuspended: false,
         isDeleted: false,
         deletedAt: null,
+        isSystemUser: false,
         publicKey: actor.publicKey?.publicKeyPem || null,
         privateKey: null, // Remote users don't have private keys
         inbox: actor.inbox,
