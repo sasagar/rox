@@ -844,6 +844,53 @@ export const blockedUsernames = pgTable(
   }),
 );
 
+/**
+ * User lists table
+ * Stores user-created lists for organizing followed users (Twitter/X-like lists)
+ */
+export const userLists = pgTable(
+  "user_lists",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    isPublic: boolean("is_public").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index("user_list_user_idx").on(table.userId),
+    userNameIdx: uniqueIndex("user_list_user_name_idx").on(table.userId, table.name),
+  }),
+);
+
+/**
+ * User list members table
+ * Stores membership relationships between users and lists
+ */
+export const userListMembers = pgTable(
+  "user_list_members",
+  {
+    id: text("id").primaryKey(),
+    listId: text("list_id")
+      .notNull()
+      .references(() => userLists.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Whether to include replies from this member in list timeline
+    withReplies: boolean("with_replies").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    listUserIdx: uniqueIndex("user_list_member_list_user_idx").on(table.listId, table.userId),
+    listIdx: index("user_list_member_list_idx").on(table.listId),
+    userIdx: index("user_list_member_user_idx").on(table.userId),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -891,3 +938,7 @@ export type ContactMessage = typeof contactMessages.$inferSelect;
 export type NewContactMessage = typeof contactMessages.$inferInsert;
 export type BlockedUsername = typeof blockedUsernames.$inferSelect;
 export type NewBlockedUsername = typeof blockedUsernames.$inferInsert;
+export type UserList = typeof userLists.$inferSelect;
+export type NewUserList = typeof userLists.$inferInsert;
+export type UserListMember = typeof userListMembers.$inferSelect;
+export type NewUserListMember = typeof userListMembers.$inferInsert;

@@ -43,6 +43,7 @@ import contactRoute from "./routes/contact.js";
 import onboardingRoute from "./routes/onboarding.js";
 import mentionsRoute from "./routes/mentions.js";
 import directRoute from "./routes/direct.js";
+import listsRoute from "./routes/lists.js";
 import mastodonRoute from "./routes/mastodon.js";
 import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
@@ -98,6 +99,7 @@ app.route("/api/contact", contactRoute);
 app.route("/api/onboarding", onboardingRoute);
 app.route("/api/mentions", mentionsRoute);
 app.route("/api/direct", directRoute);
+app.route("/api/users/lists", listsRoute);
 
 // Mastodon compatible API
 app.route("/api/v1", mastodonRoute);

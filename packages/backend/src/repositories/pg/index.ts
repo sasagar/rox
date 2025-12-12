@@ -21,3 +21,4 @@ export * from "./PostgresPasskeyCredentialRepository.js";
 export * from "./PostgresPasskeyChallengeRepository.js";
 export * from "./PostgresOAuthAccountRepository.js";
 export * from "./PostgresBlockedUsernameRepository.js";
+export * from "./PostgresListRepository.js";

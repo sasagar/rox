@@ -886,6 +886,59 @@ export const contactMessages = mysqlTable(
   }),
 );
 
+/**
+ * User lists table
+ * Stores user-created lists for organizing followed users (Twitter/X-like lists)
+ */
+export const userLists = mysqlTable(
+  "user_lists",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    userId: varchar("user_id", { length: 32 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 128 }).notNull(),
+    isPublic: boolean("is_public").notNull().default(false),
+    createdAt: datetime("created_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: datetime("updated_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    userIdx: index("user_list_user_idx").on(table.userId),
+    userNameIdx: uniqueIndex("user_list_user_name_idx").on(table.userId, table.name),
+  }),
+);
+
+/**
+ * User list members table
+ * Stores membership relationships between users and lists
+ */
+export const userListMembers = mysqlTable(
+  "user_list_members",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    listId: varchar("list_id", { length: 32 })
+      .notNull()
+      .references(() => userLists.id, { onDelete: "cascade" }),
+    userId: varchar("user_id", { length: 32 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Whether to include replies from this member in list timeline
+    withReplies: boolean("with_replies").notNull().default(true),
+    createdAt: datetime("created_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    listUserIdx: uniqueIndex("user_list_member_list_user_idx").on(table.listId, table.userId),
+    listIdx: index("user_list_member_list_idx").on(table.listId),
+    userIdx: index("user_list_member_user_idx").on(table.userId),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -937,4 +990,8 @@ export type ContactThread = typeof contactThreads.$inferSelect;
 export type NewContactThread = typeof contactThreads.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type NewContactMessage = typeof contactMessages.$inferInsert;
+export type UserList = typeof userLists.$inferSelect;
+export type NewUserList = typeof userLists.$inferInsert;
+export type UserListMember = typeof userListMembers.$inferSelect;
+export type NewUserListMember = typeof userListMembers.$inferInsert;
 export type FileSource = "user" | "system";
