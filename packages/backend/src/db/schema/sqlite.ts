@@ -773,6 +773,59 @@ export const scheduledNotes = sqliteTable(
   }),
 );
 
+/**
+ * User lists table
+ * Stores user-created lists for organizing followed users (Twitter/X-like lists)
+ */
+export const userLists = sqliteTable(
+  "user_lists",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    userIdx: index("user_list_user_idx").on(table.userId),
+    userNameIdx: uniqueIndex("user_list_user_name_idx").on(table.userId, table.name),
+  }),
+);
+
+/**
+ * User list members table
+ * Stores membership relationships between users and lists
+ */
+export const userListMembers = sqliteTable(
+  "user_list_members",
+  {
+    id: text("id").primaryKey(),
+    listId: text("list_id")
+      .notNull()
+      .references(() => userLists.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Whether to include replies from this member in list timeline
+    withReplies: integer("with_replies", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    listUserIdx: uniqueIndex("user_list_member_list_user_idx").on(table.listId, table.userId),
+    listIdx: index("user_list_member_list_idx").on(table.listId),
+    userIdx: index("user_list_member_user_idx").on(table.userId),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -822,4 +875,8 @@ export type OAuthAccount = typeof oauthAccounts.$inferSelect;
 export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
 export type DriveFolder = typeof driveFolders.$inferSelect;
 export type NewDriveFolder = typeof driveFolders.$inferInsert;
+export type UserList = typeof userLists.$inferSelect;
+export type NewUserList = typeof userLists.$inferInsert;
+export type UserListMember = typeof userListMembers.$inferSelect;
+export type NewUserListMember = typeof userListMembers.$inferInsert;
 export type FileSource = "user" | "system";
