@@ -28,6 +28,88 @@ import { logger } from "../lib/logger.js";
 const publicKeyMemoryCache = new Map<string, { key: string; expires: number }>();
 
 /**
+ * In-memory cache for fetch failures to prevent repeated requests to failing servers
+ * Caches actor URLs that have failed with their error type and expiry time
+ */
+interface FetchFailureEntry {
+  errorType: "timeout" | "server_error" | "permanent_error";
+  message: string;
+  expires: number;
+}
+
+const fetchFailureCache = new Map<string, FetchFailureEntry>();
+
+/**
+ * Failure cache TTLs by error type (in milliseconds)
+ * - Timeout: Short cache (30s) - may be transient network issue
+ * - Server error: Medium cache (2min) - server may recover
+ * - Permanent error: Long cache (10min) - 404/410 unlikely to change quickly
+ */
+const FAILURE_CACHE_TTL = {
+  timeout: 30 * 1000,
+  server_error: 2 * 60 * 1000,
+  permanent_error: 10 * 60 * 1000,
+} as const;
+
+/**
+ * Check if a fetch failure is cached for this actor URL
+ */
+function getCachedFailure(actorUrl: string): FetchFailureEntry | null {
+  const cached = fetchFailureCache.get(actorUrl);
+  if (cached && cached.expires > Date.now()) {
+    return cached;
+  }
+  // Clean up expired entry
+  if (cached) {
+    fetchFailureCache.delete(actorUrl);
+  }
+  return null;
+}
+
+/**
+ * Cache a fetch failure for an actor URL
+ */
+function cacheFailure(actorUrl: string, errorType: FetchFailureEntry["errorType"], message: string): void {
+  const ttl = FAILURE_CACHE_TTL[errorType];
+  fetchFailureCache.set(actorUrl, {
+    errorType,
+    message,
+    expires: Date.now() + ttl,
+  });
+}
+
+/**
+ * Categorize fetch error into timeout, server_error, or permanent_error
+ */
+function categorizeError(error?: {
+  type?: string;
+  statusCode?: number;
+  message?: string;
+}): FetchFailureEntry["errorType"] {
+  if (!error) return "server_error";
+
+  // Timeout errors
+  if (error.type === "timeout") {
+    return "timeout";
+  }
+
+  // Permanent errors (4xx except rate limiting)
+  if (error.statusCode) {
+    // 404 Not Found, 410 Gone - actor doesn't exist or was deleted
+    if (error.statusCode === 404 || error.statusCode === 410) {
+      return "permanent_error";
+    }
+    // Other 4xx errors (except 429 rate limit) are considered permanent
+    if (error.statusCode >= 400 && error.statusCode < 500 && error.statusCode !== 429) {
+      return "permanent_error";
+    }
+  }
+
+  // Everything else (5xx, network errors, rate limits) is transient
+  return "server_error";
+}
+
+/**
  * Get signature configuration for authenticated fetches
  *
  * Uses a local admin user's credentials for signing requests to
@@ -108,6 +190,16 @@ async function fetchPublicKey(
     throw new Error("Invalid keyId format");
   }
 
+  // Check if we have a cached failure for this actor
+  const cachedFailure = getCachedFailure(actorUrl);
+  if (cachedFailure) {
+    logger.debug(
+      { actorUrl, errorType: cachedFailure.errorType, ttlRemaining: cachedFailure.expires - Date.now() },
+      "Skipping fetch due to cached failure",
+    );
+    throw new Error(`Cached failure (${cachedFailure.errorType}): ${cachedFailure.message}`);
+  }
+
   const fetchService = new RemoteFetchService();
 
   logger.debug({ keyId, actorUrl }, "Fetching public key for signature verification");
@@ -144,8 +236,20 @@ async function fetchPublicKey(
   }
 
   if (!result.success) {
-    logger.error({ err: result.error, actorUrl }, "Failed to fetch public key");
-    throw new Error(`Failed to fetch actor: ${result.error?.message}`);
+    // Categorize and cache the failure
+    const errorType = categorizeError(result.error);
+    const errorMessage = result.error?.message || "Unknown error";
+
+    cacheFailure(actorUrl, errorType, errorMessage);
+
+    // Use appropriate log level based on error type
+    if (errorType === "permanent_error") {
+      logger.warn({ err: result.error, actorUrl, errorType }, "Failed to fetch public key (permanent error)");
+    } else {
+      logger.debug({ err: result.error, actorUrl, errorType }, "Failed to fetch public key (transient error)");
+    }
+
+    throw new Error(`Failed to fetch actor: ${errorMessage}`);
   }
 
   const actor = result.data!;
@@ -282,4 +386,39 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
  */
 export function clearPublicKeyCache(): void {
   publicKeyMemoryCache.clear();
+}
+
+/**
+ * Clear fetch failure cache
+ *
+ * Utility function to clear the failure cache (e.g., for testing or manual recovery).
+ */
+export function clearFetchFailureCache(): void {
+  fetchFailureCache.clear();
+}
+
+/**
+ * Get fetch failure cache stats (for monitoring)
+ */
+export function getFetchFailureCacheStats(): {
+  size: number;
+  entries: Array<{ actorUrl: string; errorType: string; ttlRemaining: number }>;
+} {
+  const now = Date.now();
+  const entries: Array<{ actorUrl: string; errorType: string; ttlRemaining: number }> = [];
+
+  for (const [actorUrl, entry] of fetchFailureCache) {
+    if (entry.expires > now) {
+      entries.push({
+        actorUrl,
+        errorType: entry.errorType,
+        ttlRemaining: entry.expires - now,
+      });
+    }
+  }
+
+  return {
+    size: entries.length,
+    entries,
+  };
 }
