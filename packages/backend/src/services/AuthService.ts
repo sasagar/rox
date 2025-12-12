@@ -9,6 +9,7 @@
 
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
+import type { BlockedUsernameService } from "./BlockedUsernameService.js";
 import type { User, Session } from "shared";
 import { hashPassword, verifyPassword } from "../utils/password.js";
 import { generateSessionToken, calculateSessionExpiry } from "../utils/session.js";
@@ -54,6 +55,7 @@ export class AuthService {
   constructor(
     private userRepository: IUserRepository,
     private sessionRepository: ISessionRepository,
+    private blockedUsernameService?: BlockedUsernameService,
   ) {}
 
   /**
@@ -77,6 +79,14 @@ export class AuthService {
    * ```
    */
   async register(input: RegisterInput): Promise<{ user: User; session: Session }> {
+    // Check if username is blocked (reserved or custom pattern)
+    if (this.blockedUsernameService) {
+      const blockCheck = await this.blockedUsernameService.isUsernameBlocked(input.username);
+      if (blockCheck.blocked) {
+        throw new Error(blockCheck.reason || "This username is not allowed");
+      }
+    }
+
     // ユーザー名の重複チェック
     const existingUsername = await this.userRepository.findByUsername(input.username);
     if (existingUsername) {

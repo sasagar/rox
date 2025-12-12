@@ -163,7 +163,11 @@ app.post("/register", rateLimit(RateLimitPresets.register), async (c) => {
   }
 
   try {
-    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
+    const authService = new AuthService(
+      c.get("userRepository"),
+      c.get("sessionRepository"),
+      c.get("blockedUsernameService"),
+    );
     const { user, session } = await authService.register({
       username: body.username,
       email: body.email,
@@ -188,7 +192,7 @@ app.post("/register", rateLimit(RateLimitPresets.register), async (c) => {
     );
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes("already exists")) {
+      if (error.message.includes("already exists") || error.message.includes("not allowed")) {
         return c.json({ error: error.message }, 409);
       }
     }
