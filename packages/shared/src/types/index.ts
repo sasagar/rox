@@ -8,3 +8,4 @@ export * from "./uiSettings.js";
 export * from "./instance.js";
 export * from "./scheduledNote.js";
 export * from "./contact.js";
+export * from "./list.js";
