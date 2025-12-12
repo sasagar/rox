@@ -3,17 +3,22 @@
 # Usage:
 #   1. Copy .env.production.example to .env.production
 #   2. Configure your domain and secrets
-#   3. Run: docker compose -f docker/docker-compose.prod.yml up -d
+#   3. Run: docker compose -f docker/compose.yml up -d
 #
 # Services:
 #   - rox-backend: Backend API server (Hono)
 #   - rox-frontend: Frontend server (Waku)
 #   - nginx: Reverse proxy with content negotiation
-#   - postgres: PostgreSQL database
+#   - postgres: PostgreSQL database (default)
+#   - mariadb: MariaDB database (optional, use --profile mariadb)
 #   - dragonfly: Redis-compatible cache/queue
 #
 # Note: SSL termination should be handled externally (Cloudflare, Traefik, etc.)
 #       or by adding Let's Encrypt configuration to nginx.
+#
+# MariaDB Profile:
+#   To use MariaDB instead of/alongside PostgreSQL:
+#   docker compose -f docker/compose.yml --profile mariadb up -d
 
 services:
   # ============================================
@@ -202,12 +207,52 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ============================================
+  # MariaDB Database (Optional - use --profile mariadb)
+  # ============================================
+  mariadb:
+    image: mariadb:11
+    container_name: rox-mariadb
+    restart: unless-stopped
+    profiles:
+      - mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?MARIADB_ROOT_PASSWORD is required}
+      - MARIADB_DATABASE=${MARIADB_DB:-rox}
+      - MARIADB_USER=${MARIADB_USER:-rox}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD:?MARIADB_PASSWORD is required}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - rox-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 # ============================================
 # Volumes
 # ============================================
 volumes:
   postgres-data:
     name: rox-postgres-data
+  mariadb-data:
+    name: rox-mariadb-data
   dragonfly-data:
     name: rox-dragonfly-data
   rox-uploads:

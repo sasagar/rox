@@ -1,10 +1,14 @@
 # Rox Development Docker Compose Configuration
 #
 # Usage:
-#   docker compose -f docker/docker-compose.dev.yml up -d
+#   docker compose -f docker/compose.dev.yml up -d
 #
-# This starts PostgreSQL and Dragonfly for local development.
+# This starts PostgreSQL, MariaDB, and Dragonfly for local development.
 # Run the Rox backend separately with: bun run dev
+#
+# Database connection URLs:
+#   PostgreSQL: postgresql://rox:rox_dev_password@localhost:5432/rox
+#   MariaDB:    mysql://rox:rox_dev_password@localhost:3306/rox
 
 services:
   # ============================================
@@ -50,8 +54,32 @@ services:
       timeout: 5s
       retries: 3
 
+  # ============================================
+  # MariaDB Database
+  # ============================================
+  mariadb:
+    image: mariadb:11
+    container_name: rox-mariadb
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=rox_dev_password
+      - MARIADB_DATABASE=rox
+      - MARIADB_USER=rox
+      - MARIADB_PASSWORD=rox_dev_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres-data:
     name: rox-dev-postgres-data
+  mariadb-data:
+    name: rox-dev-mariadb-data
   dragonfly-data:
     name: rox-dev-dragonfly-data

@@ -98,10 +98,10 @@ ENABLE_REGISTRATION=true
 EOF
 
 # 3. Deploy
-docker compose -f docker/docker-compose.prod.yml up -d
+docker compose -f docker/compose.yml up -d
 
 # 4. Verify
-docker compose -f docker/docker-compose.prod.yml ps
+docker compose -f docker/compose.yml ps
 curl http://localhost/health
 ```
 
@@ -172,13 +172,13 @@ cat docker/.env.production
 
 ```bash
 # Start all services
-docker compose -f docker/docker-compose.prod.yml up -d
+docker compose -f docker/compose.yml up -d
 
 # Watch logs during initial startup
-docker compose -f docker/docker-compose.prod.yml logs -f
+docker compose -f docker/compose.yml logs -f
 
 # Check service status
-docker compose -f docker/docker-compose.prod.yml ps
+docker compose -f docker/compose.yml ps
 ```
 
 ### 5. Verify Deployment
@@ -230,7 +230,7 @@ After creating your admin account, disable registration:
 sed -i 's/ENABLE_REGISTRATION=true/ENABLE_REGISTRATION=false/' docker/.env.production
 
 # Restart to apply
-docker compose -f docker/docker-compose.prod.yml restart rox-backend
+docker compose -f docker/compose.yml restart rox-backend
 ```
 
 ## Nginx Configuration
@@ -266,24 +266,24 @@ Recommended minimum VPS: 2 vCPU, 2GB RAM, 40GB SSD
 
 ```bash
 # All services
-docker compose -f docker/docker-compose.prod.yml logs -f
+docker compose -f docker/compose.yml logs -f
 
 # Specific service
-docker compose -f docker/docker-compose.prod.yml logs -f rox-backend
-docker compose -f docker/docker-compose.prod.yml logs -f rox-frontend
-docker compose -f docker/docker-compose.prod.yml logs -f nginx
-docker compose -f docker/docker-compose.prod.yml logs -f postgres
+docker compose -f docker/compose.yml logs -f rox-backend
+docker compose -f docker/compose.yml logs -f rox-frontend
+docker compose -f docker/compose.yml logs -f nginx
+docker compose -f docker/compose.yml logs -f postgres
 ```
 
 ### Restart Services
 
 ```bash
 # Restart all
-docker compose -f docker/docker-compose.prod.yml restart
+docker compose -f docker/compose.yml restart
 
 # Restart specific service
-docker compose -f docker/docker-compose.prod.yml restart rox-backend
-docker compose -f docker/docker-compose.prod.yml restart nginx
+docker compose -f docker/compose.yml restart rox-backend
+docker compose -f docker/compose.yml restart nginx
 ```
 
 ### Update Deployment
@@ -293,11 +293,11 @@ docker compose -f docker/docker-compose.prod.yml restart nginx
 git pull origin main
 
 # Rebuild and restart
-docker compose -f docker/docker-compose.prod.yml build
-docker compose -f docker/docker-compose.prod.yml up -d
+docker compose -f docker/compose.yml build
+docker compose -f docker/compose.yml up -d
 
 # Or force recreate
-docker compose -f docker/docker-compose.prod.yml up -d --force-recreate
+docker compose -f docker/compose.yml up -d --force-recreate
 ```
 
 ### Database Backup
@@ -314,10 +314,10 @@ docker exec -i rox-postgres psql -U rox rox < backup_20251126_120000.sql
 
 ```bash
 # Stop all services (keeps data)
-docker compose -f docker/docker-compose.prod.yml down
+docker compose -f docker/compose.yml down
 
 # Stop and remove volumes (DESTROYS DATA)
-docker compose -f docker/docker-compose.prod.yml down -v
+docker compose -f docker/compose.yml down -v
 ```
 
 ## Monitoring
@@ -392,7 +392,7 @@ See [Troubleshooting Guide](./troubleshooting.md) for common issues and solution
 
 ```bash
 # Check all container status
-docker compose -f docker/docker-compose.prod.yml ps
+docker compose -f docker/compose.yml ps
 
 # Check resource usage
 docker stats

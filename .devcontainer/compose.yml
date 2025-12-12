@@ -1,0 +1,134 @@
+# Rox DevContainer Docker Compose Configuration
+#
+# This compose file is used by VS Code/Cursor DevContainer.
+# It provides a complete development environment with HTTPS support.
+
+services:
+  # ============================================
+  # Development Workspace
+  # ============================================
+  workspace:
+    image: mcr.microsoft.com/devcontainers/base:debian
+    container_name: rox-workspace
+    volumes:
+      - ..:/workspace:cached
+      - workspace-home:/home/vscode
+      - ../.claude:/home/vscode/.claude:cached
+      - ../.claude:/root/.claude:cached
+    command: sleep infinity
+    networks:
+      - rox-dev
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://rox:rox_dev_password@postgres:5432/rox
+      - MARIADB_URL=mysql://rox:rox_dev_password@mariadb:3306/rox
+      - DRAGONFLY_URL=redis://dragonfly:6379
+
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: rox-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=rox
+      - POSTGRES_PASSWORD=rox_dev_password
+      - POSTGRES_DB=rox
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - rox-dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rox -d rox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # MariaDB Database
+  # ============================================
+  mariadb:
+    image: mariadb:11
+    container_name: rox-mariadb
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=rox_dev_password
+      - MARIADB_DATABASE=rox
+      - MARIADB_USER=rox
+      - MARIADB_PASSWORD=rox_dev_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - rox-dev
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Dragonfly (Redis-compatible cache/queue)
+  # ============================================
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: rox-dragonfly
+    restart: unless-stopped
+    command: >
+      dragonfly
+      --maxmemory=128mb
+      --proactor_threads=1
+      --cache_mode=true
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly-data:/data
+    networks:
+      - rox-dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================
+  # Nginx Reverse Proxy (HTTPS)
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: rox-nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ../docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../docker/nginx/conf.d/https.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../docker/certs:/etc/nginx/certs:ro
+      - rox-uploads:/app/uploads:ro
+    networks:
+      - rox-dev
+    depends_on:
+      - postgres
+      - dragonfly
+
+volumes:
+  workspace-home:
+    name: rox-devcontainer-home
+  postgres-data:
+    name: rox-devcontainer-postgres-data
+  mariadb-data:
+    name: rox-devcontainer-mariadb-data
+  dragonfly-data:
+    name: rox-devcontainer-dragonfly-data
+  rox-uploads:
+    name: rox-devcontainer-uploads
+
+networks:
+  rox-dev:
+    name: rox-devcontainer-network
+    driver: bridge

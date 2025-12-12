@@ -12,6 +12,33 @@ Rox uses [Bun's built-in test runner](https://bun.sh/docs/cli/test) for all test
 - **Integration Tests**: Test API endpoints and service interactions
 - **E2E Tests**: Test full ActivityPub federation flows
 
+## Development Environment
+
+### Using DevContainer (Recommended)
+
+The easiest way to run tests is within the [DevContainer](./devcontainer.md), which provides all necessary services:
+
+1. Open project in VS Code/Cursor
+2. Reopen in Container
+3. Run tests with `bun test`
+
+All database services (PostgreSQL, MariaDB, Dragonfly) are automatically available.
+
+### Local Development
+
+If not using DevContainer, start services manually:
+
+```bash
+# Start development services
+docker compose -f docker/compose.dev.yml up -d
+
+# Wait for services to be ready
+until pg_isready -h localhost -U rox -d rox; do sleep 1; done
+
+# Run tests
+bun test
+```
+
 ## Test Structure
 
 ```
@@ -252,12 +279,32 @@ DB_TYPE=postgres
 DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 ```
 
+**In DevContainer**, these are pre-configured. The database host is `postgres` (not `localhost`):
+
+```bash
+DATABASE_URL=postgresql://rox:rox_dev_password@postgres:5432/rox
+```
+
 ### Running with Test Database
 
 For isolated test runs, you can use a separate database:
 
 ```bash
+# Local development
 DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox_test bun test
+
+# In DevContainer
+DATABASE_URL=postgresql://rox:rox_dev_password@postgres:5432/rox_test bun test
+```
+
+### Testing with MariaDB
+
+The DevContainer includes MariaDB for MySQL compatibility testing:
+
+```bash
+# Switch to MariaDB
+DB_TYPE=mysql
+DATABASE_URL=mysql://rox:rox_dev_password@mariadb:3306/rox bun test
 ```
 
 ## Continuous Integration
@@ -374,3 +421,9 @@ mock.module('./module', () => ({}));
 mock.module('./module', () => ({}));
 import { someFunction } from './module';
 ```
+
+## See Also
+
+- [DevContainer Guide](./devcontainer.md) - Development environment setup
+- [CLAUDE.md](../../CLAUDE.md) - Project guidelines and commands
+- [Deployment Guide](../deployment/vps-docker.md) - Production deployment

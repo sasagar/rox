@@ -89,8 +89,8 @@ bun install
 cp .env.example .env
 # .envファイルを編集して設定を変更
 
-# 開発サービスを起動（PostgreSQL + Dragonfly）
-docker compose up -d
+# 開発サービスを起動（PostgreSQL + MariaDB + Dragonfly）
+docker compose -f docker/compose.dev.yml up -d
 
 # データベースマイグレーションを実行
 bun run db:generate
@@ -166,11 +166,11 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 </details>
 
 <details>
-<summary><b>MySQL</b></summary>
+<summary><b>MySQL/MariaDB</b></summary>
 
 ```bash
-# MySQLサービスを起動
-docker compose --profile mysql up -d
+# MariaDBは開発用composeに含まれています
+docker compose -f docker/compose.dev.yml up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -337,9 +337,10 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 | リソース | 説明 |
 |----------|-------------|
 | [コントリビューションガイドライン](./CONTRIBUTING.ja.md) | 貢献方法 |
+| [DevContainerガイド](./docs/development/devcontainer.ja.md) | VS Code/Cursor DevContainerセットアップ |
 | [プロジェクト仕様書](./docs/project/v1.md) | 元の仕様書（日本語） |
 | [実装ガイド](./docs/implementation/README.md) | アーキテクチャ詳細 |
-| [テストガイド](./docs/development/testing.md) | テストドキュメント |
+| [テストガイド](./docs/development/testing.ja.md) | テストドキュメント |
 | [デプロイガイド](./docs/deployment/README.md) | 本番デプロイ |
 
 ---

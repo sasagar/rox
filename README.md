@@ -89,8 +89,8 @@ bun install
 cp .env.example .env
 # Edit .env with your configuration
 
-# Start development services (PostgreSQL + Dragonfly)
-docker compose up -d
+# Start development services (PostgreSQL + MariaDB + Dragonfly)
+docker compose -f docker/compose.dev.yml up -d
 
 # Run database migrations
 bun run db:generate
@@ -166,11 +166,11 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 </details>
 
 <details>
-<summary><b>MySQL</b></summary>
+<summary><b>MySQL/MariaDB</b></summary>
 
 ```bash
-# Start MySQL service
-docker compose --profile mysql up -d
+# MariaDB is included in the dev compose
+docker compose -f docker/compose.dev.yml up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -337,6 +337,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUT
 | Resource | Description |
 |----------|-------------|
 | [Contributing Guidelines](./CONTRIBUTING.md) | How to contribute |
+| [DevContainer Guide](./docs/development/devcontainer.md) | VS Code/Cursor DevContainer setup |
 | [Project Specification](./docs/project/v1.md) | Original spec (Japanese) |
 | [Implementation Guide](./docs/implementation/README.md) | Architecture details |
 | [Testing Guide](./docs/development/testing.md) | Testing documentation |

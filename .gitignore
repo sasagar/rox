@@ -79,3 +79,10 @@ packages/backend/uploads/
 
 # Database backups
 /backups/
+
+# SSL certificates (mkcert)
+docker/certs/*.pem
+docker/certs/*-key.pem
+
+# DevContainer environment
+.devcontainer/.env

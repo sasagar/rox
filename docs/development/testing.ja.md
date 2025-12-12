@@ -12,6 +12,33 @@ Roxはすべてのテストに [Bunの組み込みテストランナー](https:/
 - **インテグレーションテスト**: APIエンドポイントとサービス間の連携をテスト
 - **E2Eテスト**: 完全なActivityPub連合フローをテスト
 
+## 開発環境
+
+### DevContainerを使用（推奨）
+
+テストを実行する最も簡単な方法は、必要なサービスがすべて揃った [DevContainer](./devcontainer.ja.md) 内で行うことです：
+
+1. VS Code/Cursorでプロジェクトを開く
+2. コンテナで再度開く
+3. `bun test` でテストを実行
+
+すべてのデータベースサービス（PostgreSQL、MariaDB、Dragonfly）が自動的に利用可能です。
+
+### ローカル開発
+
+DevContainerを使用しない場合は、サービスを手動で起動します：
+
+```bash
+# 開発サービスを起動
+docker compose -f docker/compose.dev.yml up -d
+
+# サービスの準備が整うまで待機
+until pg_isready -h localhost -U rox -d rox; do sleep 1; done
+
+# テストを実行
+bun test
+```
+
 ## テスト構造
 
 ```
@@ -252,12 +279,32 @@ DB_TYPE=postgres
 DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 ```
 
+**DevContainer内**では、これらは事前設定されています。データベースホストは `localhost` ではなく `postgres` です：
+
+```bash
+DATABASE_URL=postgresql://rox:rox_dev_password@postgres:5432/rox
+```
+
 ### テストデータベースで実行
 
 分離されたテスト実行には、別のデータベースを使用できます：
 
 ```bash
+# ローカル開発
 DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox_test bun test
+
+# DevContainer内
+DATABASE_URL=postgresql://rox:rox_dev_password@postgres:5432/rox_test bun test
+```
+
+### MariaDBでテスト
+
+DevContainerにはMySQL互換性テスト用のMariaDBが含まれています：
+
+```bash
+# MariaDBに切り替え
+DB_TYPE=mysql
+DATABASE_URL=mysql://rox:rox_dev_password@mariadb:3306/rox bun test
 ```
 
 ## 継続的インテグレーション
@@ -374,3 +421,9 @@ mock.module('./module', () => ({}));
 mock.module('./module', () => ({}));
 import { someFunction } from './module';
 ```
+
+## 関連ドキュメント
+
+- [DevContainerガイド](./devcontainer.ja.md) - 開発環境のセットアップ
+- [CLAUDE.md](../../CLAUDE.md) - プロジェクトガイドラインとコマンド
+- [デプロイガイド](../deployment/vps-docker.md) - 本番デプロイ

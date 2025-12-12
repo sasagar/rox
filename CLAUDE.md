@@ -148,6 +148,80 @@ bun run lingui:extract
 bun run lingui:compile
 ```
 
+## DevContainer Development
+
+This project includes a fully configured DevContainer for VS Code and Cursor, providing a consistent development environment with all necessary services.
+
+### Quick Start with DevContainer
+
+1. Open the project in VS Code or Cursor
+2. Click "Reopen in Container" when prompted (or use Command Palette: "Dev Containers: Reopen in Container")
+3. Wait for the container to build and post-create script to complete
+4. Run `bun run dev` to start development servers
+
+### What's Included
+
+| Service | Port | Description |
+|---------|------|-------------|
+| PostgreSQL | 5432 | Primary database |
+| MariaDB | 3306 | MySQL compatibility testing |
+| Dragonfly | 6379 | Redis-compatible cache/queue |
+| Nginx | 443, 80 | HTTPS reverse proxy with mkcert |
+
+### Pre-installed Tools
+
+- **Bun** - JavaScript runtime and package manager
+- **Node.js 20** - For npm packages requiring Node
+- **Claude Code CLI** - AI-powered coding assistant
+- **mkcert** - Local HTTPS certificate generation
+
+### VS Code Extensions (Auto-installed)
+
+- oxc (formatter/linter)
+- Tailwind CSS IntelliSense
+- Docker
+- GitHub Copilot
+- GitLens
+- Error Lens
+- Path Intellisense
+- Auto Rename Tag
+- Code Spell Checker
+
+### Claude Code in DevContainer
+
+Claude Code is automatically installed in the DevContainer. Configuration and history are persisted in the project's `.claude/` directory (gitignored).
+
+**First-time setup:**
+```bash
+# Authenticate with Anthropic
+claude login
+
+# Or set API key in .devcontainer/.env (gitignored)
+echo "ANTHROPIC_API_KEY=your-key" >> .devcontainer/.env
+```
+
+**History persistence:**
+- Claude Code settings stored in `/.claude/` (project root)
+- This directory is mounted to both `/home/vscode/.claude` and `/root/.claude`
+- History persists across container rebuilds
+- Each project maintains separate Claude Code history
+
+### HTTPS Development
+
+The DevContainer includes Nginx with HTTPS support via mkcert:
+
+- Access at `https://localhost` after starting dev server
+- Certificates auto-generated on first container creation
+- Stored in `docker/certs/` (gitignored)
+
+### Docker Compose Files
+
+| File | Purpose |
+|------|---------|
+| `docker/compose.yml` | Production deployment |
+| `docker/compose.dev.yml` | Local development (without DevContainer) |
+| `.devcontainer/compose.yml` | DevContainer services |
+
 ## Development Tools & MCP Servers
 
 This project leverages **Model Context Protocol (MCP)** servers for enhanced development capabilities:
