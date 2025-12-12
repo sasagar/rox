@@ -147,6 +147,45 @@ chore: 依存関係を更新
 - `test`: テストの追加または更新
 - `chore`: メンテナンスタスク
 
+### リリースノートの自動生成
+
+コミットメッセージは、タイプのプレフィックスに基づいて自動的にリリースノートにカテゴリ分けされます。リリースノートは新しいバージョンがタグ付けされた時に生成されます。
+
+**カテゴリマッピング**:
+
+| プレフィックス | リリースノートのセクション |
+|--------------|------------------------|
+| `feat` | 🚀 New Features |
+| `fix` | 🐛 Bug Fixes |
+| `perf` | ⚡ Performance |
+| `docs` | 📚 Documentation |
+| `chore` | 🧰 Maintenance |
+| `refactor` | ♻️ Refactoring |
+| その他 | 📝 Other Changes |
+
+**リリースノートのベストプラクティス**:
+
+1. **タイププレフィックスで始める**: コミットメッセージは正しく分類されるために、タイププレフィックス（例：`feat:`、`fix:`）で始める必要があります
+2. **明確な件名を書く**: 件名はリリースノートにそのまま表示されるため、説明的に書いてください
+3. **スコープでコンテキストを追加**: オプションのスコープは影響を受ける領域を特定するのに役立ちます（例：`feat(auth):`、`fix(api):`）
+4. **あなたの名前が含まれます**: gitの作成者名が各エントリに自動的に追加されます
+
+**例**:
+
+```bash
+# 良い例 - "🚀 New Features" に表示されます
+feat(auth): add OAuth2 login support
+
+# 良い例 - "🐛 Bug Fixes" に表示されます
+fix(timeline): resolve infinite scroll issue on mobile
+
+# 良い例 - "⚡ Performance" に表示されます
+perf(db): optimize user lookup queries
+
+# 悪い例 - "📝 Other Changes" に表示されます（タイププレフィックスがない）
+added new feature for user profiles
+```
+
 ## プルリクエストプロセス
 
 1. **フィーチャーブランチを作成**: `git checkout -b feat/your-feature`

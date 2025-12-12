@@ -133,49 +133,49 @@ jobs:
             echo "## What's Changed"
             echo ""
 
-            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true)
+            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^feat" 2>/dev/null || true)
             if [ -n "$FEATURES" ]; then
               echo "### 🚀 New Features"
               echo "$FEATURES"
               echo ""
             fi
 
-            FIXES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true)
+            FIXES=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^fix" 2>/dev/null || true)
             if [ -n "$FIXES" ]; then
               echo "### 🐛 Bug Fixes"
               echo "$FIXES"
               echo ""
             fi
 
-            PERF=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^perf" 2>/dev/null || true)
+            PERF=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^perf" 2>/dev/null || true)
             if [ -n "$PERF" ]; then
               echo "### ⚡ Performance"
               echo "$PERF"
               echo ""
             fi
 
-            DOCS=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true)
+            DOCS=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^docs" 2>/dev/null || true)
             if [ -n "$DOCS" ]; then
               echo "### 📚 Documentation"
               echo "$DOCS"
               echo ""
             fi
 
-            CHORE=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^chore" 2>/dev/null || true)
+            CHORE=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^chore" 2>/dev/null || true)
             if [ -n "$CHORE" ]; then
               echo "### 🧰 Maintenance"
               echo "$CHORE"
               echo ""
             fi
 
-            REFACTOR=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^refactor" 2>/dev/null || true)
+            REFACTOR=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --grep="^refactor" 2>/dev/null || true)
             if [ -n "$REFACTOR" ]; then
               echo "### ♻️ Refactoring"
               echo "$REFACTOR"
               echo ""
             fi
 
-            OTHER=$(git log $RANGE --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
+            OTHER=$(git log $RANGE --pretty=format:"- %s (%h) @%an" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
             if [ -n "$OTHER" ]; then
               echo "### 📝 Other Changes"
               echo "$OTHER"

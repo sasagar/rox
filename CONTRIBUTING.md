@@ -147,6 +147,45 @@ chore: update dependencies
 - `test`: Adding or updating tests
 - `chore`: Maintenance tasks
 
+### Release Notes Generation
+
+Commit messages are automatically categorized in release notes based on their type prefix. The release notes are generated when a new version is tagged.
+
+**Category Mapping**:
+
+| Prefix | Release Notes Section |
+|--------|----------------------|
+| `feat` | 🚀 New Features |
+| `fix` | 🐛 Bug Fixes |
+| `perf` | ⚡ Performance |
+| `docs` | 📚 Documentation |
+| `chore` | 🧰 Maintenance |
+| `refactor` | ♻️ Refactoring |
+| Other | 📝 Other Changes |
+
+**Best Practices for Release Notes**:
+
+1. **Start with the type prefix**: Your commit message MUST start with the type prefix (e.g., `feat:`, `fix:`) to be categorized correctly
+2. **Write clear subjects**: The subject line appears directly in release notes, so make it descriptive
+3. **Use scope for context**: Optional scope helps identify the affected area (e.g., `feat(auth):`, `fix(api):`)
+4. **Your name is included**: The git author name is automatically added to each entry
+
+**Examples**:
+
+```bash
+# Good - will appear in "🚀 New Features"
+feat(auth): add OAuth2 login support
+
+# Good - will appear in "🐛 Bug Fixes"
+fix(timeline): resolve infinite scroll issue on mobile
+
+# Good - will appear in "⚡ Performance"
+perf(db): optimize user lookup queries
+
+# Bad - will appear in "📝 Other Changes" (missing type prefix)
+added new feature for user profiles
+```
+
 ## Pull Request Process
 
 1. **Create a feature branch**: `git checkout -b feat/your-feature`
