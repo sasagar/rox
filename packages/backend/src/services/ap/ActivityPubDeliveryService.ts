@@ -11,10 +11,17 @@ import type { IUserRepository } from "../../interfaces/repositories/IUserReposit
 import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
 import type { IInstanceBlockRepository } from "../../interfaces/repositories/IInstanceBlockRepository.js";
 import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
+import type { IDriveFileRepository } from "../../interfaces/repositories/IDriveFileRepository.js";
 import type { Note } from "shared";
 import type { User } from "../../db/schema/pg.js";
 import { ActivityDeliveryQueue, JobPriority } from "./ActivityDeliveryQueue.js";
-import { ActivityBuilder, type Activity, type CustomEmojiInfo, type EmojiTag } from "./delivery/ActivityBuilder.js";
+import {
+  ActivityBuilder,
+  type Activity,
+  type AttachmentObject,
+  type CustomEmojiInfo,
+  type EmojiTag,
+} from "./delivery/ActivityBuilder.js";
 import { logger } from "../../lib/logger.js";
 
 /**
@@ -48,6 +55,7 @@ export class ActivityPubDeliveryService {
     activityDeliveryQueue: ActivityDeliveryQueue,
     private readonly instanceBlockRepository?: IInstanceBlockRepository,
     private readonly customEmojiRepository?: ICustomEmojiRepository,
+    private readonly driveFileRepository?: IDriveFileRepository,
   ) {
     this.queue = activityDeliveryQueue;
     this.builder = new ActivityBuilder();
@@ -151,11 +159,17 @@ export class ActivityPubDeliveryService {
     // Build emoji tags from note's emojis
     const emojiTags = await this.buildEmojiTags(note.emojis);
 
-    const activity = this.builder.createNote(note, author, emojiTags);
+    // Build file attachments from note's fileIds
+    const attachments = await this.buildAttachments(note.fileIds);
+
+    const activity = this.builder.createNote(note, author, emojiTags, attachments);
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, author);
-    logger.debug({ noteId: note.id, inboxCount: inboxUrls.size }, "Enqueued Create activity");
+    logger.debug(
+      { noteId: note.id, inboxCount: inboxUrls.size, attachmentCount: attachments.length },
+      "Enqueued Create activity",
+    );
   }
 
   /**
@@ -206,6 +220,26 @@ export class ActivityPubDeliveryService {
       default:
         return "image/png";
     }
+  }
+
+  /**
+   * Build file attachments for ActivityPub delivery
+   *
+   * Fetches file metadata from drive_files table and converts to ActivityPub Document format.
+   */
+  private async buildAttachments(fileIds: string[]): Promise<AttachmentObject[]> {
+    if (!this.driveFileRepository || fileIds.length === 0) {
+      return [];
+    }
+
+    const files = await this.driveFileRepository.findByIds(fileIds);
+
+    return files.map((file) => ({
+      type: "Document" as const,
+      mediaType: file.type,
+      url: file.url,
+      name: file.name || undefined,
+    }));
   }
 
   /**

@@ -158,6 +158,7 @@ export function createContainer(): AppContainer {
     activityDeliveryQueue,
     repositories.instanceBlockRepository,
     repositories.customEmojiRepository,
+    repositories.driveFileRepository,
   );
 
   // Role and Instance Settings Services
