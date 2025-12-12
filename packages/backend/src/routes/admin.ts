@@ -1881,4 +1881,176 @@ app.post("/gone-users/clear", async (c) => {
   return c.json({ success: true, clearedCount });
 });
 
+// ============================================================================
+// Blocked Username Management Endpoints
+// ============================================================================
+
+/**
+ * List Blocked Usernames
+ *
+ * GET /api/admin/blocked-usernames
+ *
+ * Returns all custom blocked username patterns from the database.
+ * Note: Default reserved usernames (hardcoded) are not included in this list.
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "patterns": [
+ *     {
+ *       "id": "...",
+ *       "pattern": "badname",
+ *       "isRegex": false,
+ *       "reason": "Inappropriate",
+ *       "createdAt": "2024-01-01T00:00:00.000Z",
+ *       "createdById": "..."
+ *     }
+ *   ]
+ * }
+ * ```
+ */
+app.get("/blocked-usernames", async (c) => {
+  const blockedUsernameService = c.get("blockedUsernameService");
+  const patterns = await blockedUsernameService.getAll();
+  return c.json({ patterns });
+});
+
+/**
+ * Add Blocked Username Pattern
+ *
+ * POST /api/admin/blocked-usernames
+ *
+ * Adds a new blocked username pattern.
+ *
+ * Request Body:
+ * - pattern: The username or regex pattern to block (required)
+ * - isRegex: Whether the pattern is a regex (default: false)
+ * - reason: Optional reason for blocking
+ *
+ * Response (201):
+ * ```json
+ * {
+ *   "id": "...",
+ *   "pattern": "badname",
+ *   "isRegex": false,
+ *   "reason": "Inappropriate",
+ *   "createdAt": "2024-01-01T00:00:00.000Z",
+ *   "createdById": "..."
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: Invalid pattern or empty pattern
+ * - 409: Pattern already exists
+ */
+app.post("/blocked-usernames", async (c) => {
+  const blockedUsernameService = c.get("blockedUsernameService");
+  const adminUser = c.get("user");
+
+  const body = await c.req.json<{
+    pattern: string;
+    isRegex?: boolean;
+    reason?: string;
+  }>();
+
+  if (!body.pattern || typeof body.pattern !== "string") {
+    return errorResponse(c, "Pattern is required");
+  }
+
+  try {
+    const blocked = await blockedUsernameService.add(
+      body.pattern,
+      body.isRegex ?? false,
+      body.reason,
+      adminUser?.id,
+    );
+    return c.json(blocked, 201);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes("already exists")) {
+        return errorResponse(c, error.message, 409);
+      }
+      if (error.message.includes("Invalid") || error.message.includes("empty")) {
+        return errorResponse(c, error.message);
+      }
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Blocked Username Pattern
+ *
+ * DELETE /api/admin/blocked-usernames/:id
+ *
+ * Removes a blocked username pattern.
+ *
+ * Response (200):
+ * ```json
+ * { "success": true }
+ * ```
+ *
+ * Errors:
+ * - 404: Pattern not found
+ */
+app.delete("/blocked-usernames/:id", async (c) => {
+  const blockedUsernameService = c.get("blockedUsernameService");
+  const patternId = c.req.param("id");
+
+  const deleted = await blockedUsernameService.remove(patternId);
+  if (!deleted) {
+    return errorResponse(c, "Pattern not found", 404);
+  }
+
+  return c.json({ success: true });
+});
+
+/**
+ * Test Username Against Blocked Patterns
+ *
+ * POST /api/admin/blocked-usernames/test
+ *
+ * Tests if a username would be blocked by default or custom patterns.
+ * Useful for admin UI to preview pattern behavior.
+ *
+ * Request Body:
+ * - username: The username to test (required)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "blocked": true,
+ *   "reason": "This username is reserved by the system",
+ *   "source": "default"
+ * }
+ * ```
+ *
+ * Or:
+ * ```json
+ * {
+ *   "blocked": true,
+ *   "reason": "Not allowed",
+ *   "source": "custom",
+ *   "matchedPattern": "bad.*"
+ * }
+ * ```
+ *
+ * Or:
+ * ```json
+ * { "blocked": false }
+ * ```
+ */
+app.post("/blocked-usernames/test", async (c) => {
+  const blockedUsernameService = c.get("blockedUsernameService");
+
+  const body = await c.req.json<{ username: string }>();
+
+  if (!body.username || typeof body.username !== "string") {
+    return errorResponse(c, "Username is required");
+  }
+
+  const result = await blockedUsernameService.testUsername(body.username);
+  return c.json(result);
+});
+
 export default app;

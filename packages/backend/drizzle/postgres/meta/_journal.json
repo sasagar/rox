@@ -57,6 +57,13 @@
       "when": 1765476984157,
       "tag": "0007_cooing_silver_surfer",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765551226315,
+      "tag": "0008_zippy_wendigo",
+      "breakpoints": true
     }
   ]
 }

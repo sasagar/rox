@@ -104,6 +104,14 @@ msgstr "<0>Account information:</0> Username, email address, and password (secur
 msgid "<0>Content:</0> Posts, media uploads, and interactions (likes, shares, follows)"
 msgstr "<0>Content:</0> Posts, media uploads, and interactions (likes, shares, follows)"
 
+#: src/pages/admin/blocked-usernames.tsx:228
+msgid "<0>Custom patterns</0>: Admin-defined patterns shown below. These can be exact matches or regular expressions."
+msgstr "<0>Custom patterns</0>: Admin-defined patterns shown below. These can be exact matches or regular expressions."
+
+#: src/pages/admin/blocked-usernames.tsx:223
+msgid "<0>Default reserved names</0>: System names like \"admin\", \"api\", \"system\" are always blocked and cannot be removed."
+msgstr "<0>Default reserved names</0>: System names like \"admin\", \"api\", \"system\" are always blocked and cannot be removed."
+
 #: src/pages/legal/privacy.tsx:114
 msgid "<0>Profile information:</0> Display name, bio, avatar, and any other information you choose to provide"
 msgstr "<0>Profile information:</0> Display name, bio, avatar, and any other information you choose to provide"
@@ -289,6 +297,10 @@ msgstr "Add images"
 msgid "Add New Emoji"
 msgstr "Add New Emoji"
 
+#: src/pages/admin/blocked-usernames.tsx:317
+msgid "Add New Pattern"
+msgstr "Add New Pattern"
+
 #: src/pages/admin/reports.tsx:522
 #: src/pages/mod/reports.tsx:488
 msgid "Add notes about the action taken..."
@@ -302,6 +314,10 @@ msgstr "Add notes about this inquiry..."
 msgid "Add Passkey"
 msgstr "Add Passkey"
 
+#: src/pages/admin/blocked-usernames.tsx:369
+msgid "Add Pattern"
+msgstr "Add Pattern"
+
 #: src/components/note/NoteComposer.tsx:847
 msgid "Add recipient"
 msgstr "Add recipient"
@@ -310,6 +326,7 @@ msgstr "Add recipient"
 msgid "Add your first custom emoji to get started"
 msgstr "Add your first custom emoji to get started"
 
+#: src/pages/admin/blocked-usernames.tsx:412
 #: src/pages/admin/emojis.tsx:1487
 msgid "Added"
 msgstr "Added"
@@ -328,7 +345,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:137
+#: src/components/layout/Sidebar.tsx:164
 #: src/pages/admin/users.tsx:464
 msgid "Admin"
 msgstr "Admin"
@@ -337,7 +354,7 @@ msgstr "Admin"
 msgid "Admin Account"
 msgstr "Admin Account"
 
-#: src/components/admin/AdminLayout.tsx:299
+#: src/components/admin/AdminLayout.tsx:301
 msgid "Admin Menu"
 msgstr "Admin Menu"
 
@@ -481,7 +498,7 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 msgid "Assets"
 msgstr "Assets"
 
@@ -609,6 +626,15 @@ msgstr "Blocked Instances"
 msgid "Blocked on {0}"
 msgstr "Blocked on {0}"
 
+#: src/components/admin/AdminLayout.tsx:92
+#: src/pages/admin/blocked-usernames.tsx:205
+msgid "Blocked Usernames"
+msgstr "Blocked Usernames"
+
+#: src/pages/admin/blocked-usernames.tsx:217
+msgid "Blocked usernames prevent users from registering with certain names. There are two types:"
+msgstr "Blocked usernames prevent users from registering with certain names. There are two types:"
+
 #: src/pages/mod/instances.tsx:435
 msgid "Blocked:"
 msgstr "Blocked:"
@@ -617,7 +643,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/admin/AdminLayout.tsx:116
+#: src/components/admin/AdminLayout.tsx:118
 msgid "Blocks"
 msgstr "Blocks"
 
@@ -641,7 +667,7 @@ msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgid "Bulk Edit"
 msgstr "Bulk Edit"
 
-#: src/components/admin/AdminLayout.tsx:102
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Bulk Import"
 msgstr "Bulk Import"
 
@@ -823,11 +849,11 @@ msgstr "Contact thread details"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/admin/AdminLayout.tsx:117
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Contacts"
 msgstr "Contacts"
 
-#: src/components/admin/AdminLayout.tsx:96
+#: src/components/admin/AdminLayout.tsx:98
 msgid "Content"
 msgstr "Content"
 
@@ -924,6 +950,10 @@ msgstr "Creating account..."
 msgid "Custom"
 msgstr "Custom"
 
+#: src/pages/admin/blocked-usernames.tsx:379
+msgid "Custom Blocked Patterns"
+msgstr "Custom Blocked Patterns"
+
 #: src/pages/admin/invitations.tsx:260
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
@@ -950,6 +980,10 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 #: src/pages/admin/emojis.tsx:808
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
+
+#: src/pages/admin/blocked-usernames.tsx:288
+msgid "Custom pattern"
+msgstr "Custom pattern"
 
 #: src/components/settings/UISettingsSection.tsx:359
 msgid "Customize sounds per notification type"
@@ -990,6 +1024,10 @@ msgstr "Default Color Mode"
 #: src/pages/admin/settings.tsx:977
 msgid "Default Legal Pages"
 msgstr "Default Legal Pages"
+
+#: src/pages/admin/blocked-usernames.tsx:288
+msgid "Default reserved"
+msgstr "Default reserved"
 
 #: src/pages/admin/roles.tsx:344
 msgid "Default Roles"
@@ -1182,9 +1220,21 @@ msgstr "Drafts"
 msgid "Drop ZIP file here"
 msgstr "Drop ZIP file here"
 
+#: src/pages/admin/blocked-usernames.tsx:329
+msgid "e.g., bad.*word"
+msgstr "e.g., bad.*word"
+
+#: src/pages/admin/blocked-usernames.tsx:329
+msgid "e.g., badword"
+msgstr "e.g., badword"
+
 #: src/pages/admin/emojis.tsx:952
 msgid "e.g., CC BY 4.0"
 msgstr "e.g., CC BY 4.0"
+
+#: src/pages/admin/blocked-usernames.tsx:361
+msgid "e.g., Inappropriate content"
+msgstr "e.g., Inappropriate content"
 
 #: src/pages/admin/emojis.tsx:920
 msgid "e.g., reactions, animals"
@@ -1278,6 +1328,10 @@ msgstr "Empty folder"
 msgid "Enable"
 msgstr "Enable"
 
+#: src/pages/admin/blocked-usernames.tsx:348
+msgid "Enable if the pattern is a regex (case-insensitive)"
+msgstr "Enable if the pattern is a regex (case-insensitive)"
+
 #: src/pages/admin/settings.tsx:457
 msgid "Enable Registration"
 msgstr "Enable Registration"
@@ -1309,6 +1363,10 @@ msgstr "Enter a URL to your Terms of Service page, or leave empty to use the def
 #: src/pages/search.tsx:423
 msgid "Enter a username or display name to get started"
 msgstr "Enter a username or display name to get started"
+
+#: src/pages/admin/blocked-usernames.tsx:255
+msgid "Enter a username to test..."
+msgstr "Enter a username to test..."
 
 #: src/pages/mod/instances.tsx:278
 msgid "Enter instance hostname (e.g., spam.example.com)"
@@ -1686,7 +1744,7 @@ msgstr "Favicon URL"
 msgid "Federated"
 msgstr "Federated"
 
-#: src/components/admin/AdminLayout.tsx:112
+#: src/components/admin/AdminLayout.tsx:114
 #: src/pages/admin/federation.tsx:209
 #: src/pages/admin/federation.tsx:223
 #: src/pages/admin/federation.tsx:236
@@ -1809,7 +1867,7 @@ msgstr "Found on remote server"
 msgid "From:"
 msgstr "From:"
 
-#: src/components/admin/AdminLayout.tsx:72
+#: src/components/admin/AdminLayout.tsx:73
 msgid "General"
 msgstr "General"
 
@@ -1847,7 +1905,7 @@ msgstr "Go to Timeline"
 msgid "Gone"
 msgstr "Gone"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:93
 #: src/pages/admin/gone-users.tsx:168
 #: src/pages/admin/gone-users.tsx:181
 msgid "Gone Users"
@@ -1882,7 +1940,7 @@ msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls bac
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 msgstr "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 
-#: src/components/layout/Sidebar.tsx:91
+#: src/components/layout/Sidebar.tsx:118
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:128
 msgid "Home"
@@ -1961,7 +2019,7 @@ msgstr "In reply to"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/components/admin/AdminLayout.tsx:76
+#: src/components/admin/AdminLayout.tsx:77
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "Instance"
@@ -2080,7 +2138,7 @@ msgstr "Invitation code is required"
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:91
 msgid "Invitations"
 msgstr "Invitations"
 
@@ -2155,7 +2213,7 @@ msgstr "Leave empty for a permanent warning"
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/components/admin/AdminLayout.tsx:80
+#: src/components/admin/AdminLayout.tsx:81
 msgid "Legal"
 msgstr "Legal"
 
@@ -2229,7 +2287,7 @@ msgstr "Loading..."
 msgid "Local"
 msgstr "Local"
 
-#: src/components/admin/AdminLayout.tsx:100
+#: src/components/admin/AdminLayout.tsx:102
 msgid "Local Emojis"
 msgstr "Local Emojis"
 
@@ -2245,8 +2303,8 @@ msgstr "Log in"
 msgid "Log In"
 msgstr "Log In"
 
-#: src/components/layout/Sidebar.tsx:248
-#: src/components/layout/Sidebar.tsx:394
+#: src/components/layout/Sidebar.tsx:279
+#: src/components/layout/Sidebar.tsx:425
 #: src/pages/settings.tsx:360
 msgid "Logging out..."
 msgstr "Logging out..."
@@ -2255,8 +2313,8 @@ msgstr "Logging out..."
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
 
-#: src/components/layout/Sidebar.tsx:248
-#: src/components/layout/Sidebar.tsx:394
+#: src/components/layout/Sidebar.tsx:279
+#: src/components/layout/Sidebar.tsx:425
 #: src/pages/settings.tsx:364
 msgid "Logout"
 msgstr "Logout"
@@ -2325,6 +2383,10 @@ msgstr "Manage user accounts"
 msgid "Manage user inquiries and support requests"
 msgstr "Manage user inquiries and support requests"
 
+#: src/pages/admin/blocked-usernames.tsx:206
+msgid "Manage username restrictions for registration"
+msgstr "Manage username restrictions for registration"
+
 #: src/pages/settings.tsx:166
 msgid "Manage your account settings"
 msgstr "Manage your account settings"
@@ -2367,6 +2429,10 @@ msgstr "Maskable Icons (Optional)"
 msgid "Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.). These should have important content within a \"safe zone\" (centered 80% of the icon). If not set, only standard icons will be used."
 msgstr "Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.). These should have important content within a \"safe zone\" (centered 80% of the icon). If not set, only standard icons will be used."
 
+#: src/pages/admin/blocked-usernames.tsx:297
+msgid "Matched pattern"
+msgstr "Matched pattern"
+
 #: src/pages/admin/invitations.tsx:275
 msgid "Max Uses"
 msgstr "Max Uses"
@@ -2391,13 +2457,13 @@ msgstr "Mention"
 msgid "mentioned you"
 msgstr "mentioned you"
 
-#: src/components/layout/Sidebar.tsx:109
+#: src/components/layout/Sidebar.tsx:136
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
 msgstr "Mentions"
 
-#: src/components/admin/AdminLayout.tsx:389
+#: src/components/admin/AdminLayout.tsx:391
 msgid "Menu"
 msgstr "Menu"
 
@@ -2405,7 +2471,7 @@ msgstr "Menu"
 msgid "Message"
 msgstr "Message"
 
-#: src/components/layout/Sidebar.tsx:115
+#: src/components/layout/Sidebar.tsx:142
 #: src/pages/messages/index.tsx:140
 msgid "Messages"
 msgstr "Messages"
@@ -2534,6 +2600,10 @@ msgstr "No blocked instances"
 #: src/pages/admin/emojis.tsx:1125
 msgid "No custom emojis yet"
 msgstr "No custom emojis yet"
+
+#: src/pages/admin/blocked-usernames.tsx:388
+msgid "No custom patterns defined yet."
+msgstr "No custom patterns defined yet."
 
 #: src/pages/mod/notes.tsx:192
 msgid "No deleted notes"
@@ -2746,7 +2816,7 @@ msgstr "Notification Sound"
 msgid "Notification types"
 msgstr "Notification types"
 
-#: src/components/layout/Sidebar.tsx:103
+#: src/components/layout/Sidebar.tsx:130
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2879,6 +2949,22 @@ msgstr "Passwords do not match"
 msgid "Paste this address in your app's search to find and follow this account"
 msgstr "Paste this address in your app's search to find and follow this account"
 
+#: src/pages/admin/blocked-usernames.tsx:323
+msgid "Pattern"
+msgstr "Pattern"
+
+#: src/pages/admin/blocked-usernames.tsx:131
+msgid "Pattern added successfully"
+msgstr "Pattern added successfully"
+
+#: src/pages/admin/blocked-usernames.tsx:148
+msgid "Pattern deleted"
+msgstr "Pattern deleted"
+
+#: src/pages/admin/blocked-usernames.tsx:113
+msgid "Pattern is required"
+msgstr "Pattern is required"
+
 #: src/pages/admin/reports.tsx:304
 #: src/pages/mod/reports.tsx:289
 msgid "Pending"
@@ -2950,8 +3036,8 @@ msgstr "Please select at least one recipient for direct message"
 msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
 msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
-#: src/components/layout/Sidebar.tsx:188
-#: src/components/layout/Sidebar.tsx:315
+#: src/components/layout/Sidebar.tsx:219
+#: src/components/layout/Sidebar.tsx:346
 #: src/components/note/NoteComposer.tsx:1389
 msgid "Post"
 msgstr "Post"
@@ -3021,7 +3107,7 @@ msgstr "Privacy Policy URL"
 msgid "Process your account registration and authentication"
 msgstr "Process your account registration and authentication"
 
-#: src/components/layout/Sidebar.tsx:121
+#: src/components/layout/Sidebar.tsx:148
 #: src/pages/settings.tsx:155
 msgid "Profile"
 msgstr "Profile"
@@ -3105,11 +3191,11 @@ msgstr "Queue Health"
 msgid "Queue Not Available"
 msgstr "Queue Not Available"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:116
 msgid "Queue Overview"
 msgstr "Queue Overview"
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:117
 msgid "Queue Servers"
 msgstr "Queue Servers"
 
@@ -3163,10 +3249,12 @@ msgid "Read Full License"
 msgstr "Read Full License"
 
 #: src/components/report/ReportDialog.tsx:126
+#: src/pages/admin/blocked-usernames.tsx:292
 #: src/pages/admin/emojis.tsx:1516
 msgid "Reason"
 msgstr "Reason"
 
+#: src/pages/admin/blocked-usernames.tsx:355
 #: src/pages/admin/blocks.tsx:262
 #: src/pages/mod/instances.tsx:377
 #: src/pages/mod/users.tsx:466
@@ -3236,7 +3324,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/components/admin/AdminLayout.tsx:77
+#: src/components/admin/AdminLayout.tsx:78
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "Registration"
@@ -3259,6 +3347,10 @@ msgstr "Registration Settings"
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
+#: src/pages/admin/blocked-usernames.tsx:345
+msgid "Regular Expression"
+msgstr "Regular Expression"
+
 #: src/pages/admin/reports.tsx:553
 #: src/pages/mod/reports.tsx:519
 msgid "Reject"
@@ -3278,7 +3370,7 @@ msgstr "Rejected"
 msgid "Remote"
 msgstr "Remote"
 
-#: src/components/admin/AdminLayout.tsx:101
+#: src/components/admin/AdminLayout.tsx:103
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
 
@@ -3426,7 +3518,7 @@ msgstr "Reporter"
 msgid "Reporting"
 msgstr "Reporting"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/components/admin/AdminLayout.tsx:105
 #: src/pages/admin/reports.tsx:225
 #: src/pages/admin/reports.tsx:239
 #: src/pages/admin/reports.tsx:252
@@ -3552,7 +3644,7 @@ msgstr "Role name"
 msgid "Role updated"
 msgstr "Role updated"
 
-#: src/components/admin/AdminLayout.tsx:89
+#: src/components/admin/AdminLayout.tsx:90
 #: src/pages/admin/roles.tsx:578
 msgid "Roles"
 msgstr "Roles"
@@ -3639,7 +3731,7 @@ msgstr "Scheduled time must be in the future"
 msgid "Scroll for more..."
 msgstr "Scroll for more..."
 
-#: src/components/layout/Sidebar.tsx:97
+#: src/components/layout/Sidebar.tsx:124
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
@@ -3782,7 +3874,7 @@ msgstr "Set Category"
 msgid "Set category for {0} selected emojis"
 msgstr "Set category for {0} selected emojis"
 
-#: src/components/layout/Sidebar.tsx:127
+#: src/components/layout/Sidebar.tsx:154
 #: src/pages/admin/settings.tsx:291
 #: src/pages/settings.tsx:165
 msgid "Settings"
@@ -3876,6 +3968,10 @@ msgstr "Software"
 msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
 msgstr "Something went wrong on our end. Please try again later or contact support if the problem persists."
 
+#: src/pages/admin/blocked-usernames.tsx:288
+msgid "Source"
+msgstr "Source"
+
 #: src/pages/admin/settings.tsx:952
 msgid "Source Code URL (AGPL-3.0 Compliance)"
 msgstr "Source Code URL (AGPL-3.0 Compliance)"
@@ -3902,7 +3998,7 @@ msgstr "Status"
 msgid "Step {0} of {1}"
 msgstr "Step {0} of {1}"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:113
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
 #: src/pages/settings.tsx:158
@@ -3974,7 +4070,7 @@ msgstr "Suspended"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/components/admin/AdminLayout.tsx:108
+#: src/components/admin/AdminLayout.tsx:110
 #: src/pages/admin/settings.tsx:620
 msgid "System"
 msgstr "System"
@@ -4019,12 +4115,17 @@ msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
 #: src/components/settings/UISettingsSection.tsx:345
+#: src/pages/admin/blocked-usernames.tsx:264
 msgid "Test"
 msgstr "Test"
 
 #: src/components/settings/PushNotificationSection.tsx:339
 msgid "Test notification"
 msgstr "Test notification"
+
+#: src/pages/admin/blocked-usernames.tsx:243
+msgid "Test Username"
+msgstr "Test Username"
 
 #: src/components/note/NoteComposer.tsx:516
 msgid "Text exceeds {maxLength} characters"
@@ -4058,7 +4159,7 @@ msgstr "The server is temporarily unavailable due to maintenance or high load. P
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/components/settings/UISettingsSection.tsx:300
 msgid "Theme"
 msgstr "Theme"
@@ -4162,6 +4263,14 @@ msgstr "This thread is closed."
 #: src/components/user/UserProfile.tsx:564
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
+
+#: src/pages/admin/blocked-usernames.tsx:303
+msgid "This username is allowed"
+msgstr "This username is allowed"
+
+#: src/pages/admin/blocked-usernames.tsx:285
+msgid "This username is blocked"
+msgstr "This username is blocked"
 
 #: src/pages/timeline.tsx:122
 msgid "Timeline"
@@ -4472,6 +4581,7 @@ msgstr "Username"
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
+#: src/pages/admin/blocked-usernames.tsx:160
 #: src/pages/login.tsx:239
 #: src/pages/signup.tsx:169
 msgid "Username is required"
@@ -4481,8 +4591,8 @@ msgstr "Username is required"
 msgid "Username must be at least 3 characters"
 msgstr "Username must be at least 3 characters"
 
-#: src/components/admin/AdminLayout.tsx:85
-#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:86
+#: src/components/admin/AdminLayout.tsx:89
 #: src/pages/admin/federation.tsx:400
 #: src/pages/admin/users.tsx:293
 #: src/pages/mod/audit-logs.tsx:261

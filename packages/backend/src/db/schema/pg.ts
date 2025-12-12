@@ -818,6 +818,30 @@ export const contactMessages = pgTable(
   }),
 );
 
+/**
+ * Blocked usernames table
+ * Stores admin-configurable username restrictions (patterns or exact matches)
+ * Used in conjunction with DEFAULT_RESERVED_USERNAMES from shared constants
+ */
+export const blockedUsernames = pgTable(
+  "blocked_usernames",
+  {
+    id: text("id").primaryKey(),
+    // Username pattern (exact string or regex)
+    pattern: text("pattern").notNull(),
+    // Whether pattern is a regex (false = exact match)
+    isRegex: boolean("is_regex").notNull().default(false),
+    // Optional reason for blocking (shown in admin UI)
+    reason: text("reason"),
+    // Admin who created this block
+    createdById: text("created_by_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    patternIdx: uniqueIndex("blocked_username_pattern_idx").on(table.pattern),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -863,3 +887,5 @@ export type ContactThread = typeof contactThreads.$inferSelect;
 export type NewContactThread = typeof contactThreads.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type NewContactMessage = typeof contactMessages.$inferInsert;
+export type BlockedUsername = typeof blockedUsernames.$inferSelect;
+export type NewBlockedUsername = typeof blockedUsernames.$inferInsert;

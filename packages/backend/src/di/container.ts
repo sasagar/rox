@@ -25,6 +25,7 @@ import type {
   IOAuthAccountRepository,
 } from "../interfaces/repositories/index.js";
 import type { IContactRepository } from "../interfaces/repositories/IContactRepository.js";
+import type { IBlockedUsernameRepository } from "../interfaces/repositories/IBlockedUsernameRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import {
@@ -52,6 +53,7 @@ import {
   PostgresOAuthAccountRepository,
 } from "../repositories/pg/index.js";
 import { PostgresContactRepository } from "../repositories/pg/PostgresContactRepository.js";
+import { PostgresBlockedUsernameRepository } from "../repositories/pg/PostgresBlockedUsernameRepository.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
 import { DragonflyCacheAdapter } from "../adapters/cache/DragonflyCacheAdapter.js";
@@ -66,6 +68,7 @@ import { WebPushService } from "../services/WebPushService.js";
 import { RemoteInstanceService } from "../services/RemoteInstanceService.js";
 import { UserDeletionService } from "../services/UserDeletionService.js";
 import { UserDataExportService } from "../services/UserDataExportService.js";
+import { BlockedUsernameService } from "../services/BlockedUsernameService.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -92,6 +95,7 @@ export interface AppContainer {
   passkeyChallengeRepository: IPasskeyChallengeRepository;
   oauthAccountRepository: IOAuthAccountRepository;
   contactRepository: IContactRepository;
+  blockedUsernameRepository: IBlockedUsernameRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -106,6 +110,7 @@ export interface AppContainer {
   remoteInstanceService: RemoteInstanceService;
   userDeletionService: UserDeletionService;
   userDataExportService: UserDataExportService;
+  blockedUsernameService: BlockedUsernameService;
 }
 
 /**
@@ -212,6 +217,11 @@ export function createContainer(): AppContainer {
     repositories.notificationRepository,
   );
 
+  // Blocked Username Service for username restrictions
+  const blockedUsernameService = new BlockedUsernameService(
+    repositories.blockedUsernameRepository,
+  );
+
   return {
     ...repositories,
     fileStorage,
@@ -228,6 +238,7 @@ export function createContainer(): AppContainer {
     remoteInstanceService,
     userDeletionService,
     userDataExportService,
+    blockedUsernameService,
   };
 }
 
@@ -261,6 +272,7 @@ function createRepositories(db: any, dbType: string) {
         passkeyChallengeRepository: new PostgresPasskeyChallengeRepository(db),
         oauthAccountRepository: new PostgresOAuthAccountRepository(db),
         contactRepository: new PostgresContactRepository(db),
+        blockedUsernameRepository: new PostgresBlockedUsernameRepository(db),
       };
 
     case "mysql":
