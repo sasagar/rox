@@ -178,6 +178,7 @@ describe("SQLite Repository Integration Tests", () => {
         is_suspended INTEGER NOT NULL DEFAULT 0,
         is_deleted INTEGER NOT NULL DEFAULT 0,
         deleted_at INTEGER,
+        is_system_user INTEGER NOT NULL DEFAULT 0,
         public_key TEXT,
         private_key TEXT,
         host TEXT,
