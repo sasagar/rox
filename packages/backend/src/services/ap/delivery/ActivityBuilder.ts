@@ -49,6 +49,16 @@ export interface MentionTag {
 }
 
 /**
+ * ActivityPub attachment object structure (Document type)
+ */
+export interface AttachmentObject {
+  type: "Document";
+  mediaType: string;
+  url: string;
+  name?: string;
+}
+
+/**
  * ActivityPub Note object structure
  */
 export interface NoteObject {
@@ -60,7 +70,7 @@ export interface NoteObject {
   to: string[];
   cc: string[];
   inReplyTo?: string | null;
-  attachment?: unknown[];
+  attachment?: AttachmentObject[];
   tag?: (EmojiTag | MentionTag)[];
   sensitive?: boolean;
   summary?: string | null;
@@ -194,8 +204,14 @@ export class ActivityBuilder {
    * @param note - The note to create an activity for
    * @param author - The author of the note
    * @param emojiTags - Optional array of custom emoji tags to include
+   * @param attachments - Optional array of file attachments to include
    */
-  createNote(note: Note, author: User, emojiTags?: EmojiTag[]): Activity {
+  createNote(
+    note: Note,
+    author: User,
+    emojiTags?: EmojiTag[],
+    attachments?: AttachmentObject[],
+  ): Activity {
     const actorUri = this.actorUri(author.username);
     const followersUri = this.followersUri(author.username);
     const published = note.createdAt.toISOString();
@@ -224,6 +240,11 @@ export class ActivityBuilder {
     // Add emoji tags if provided
     if (emojiTags && emojiTags.length > 0) {
       noteObject.tag = emojiTags;
+    }
+
+    // Add file attachments if provided
+    if (attachments && attachments.length > 0) {
+      noteObject.attachment = attachments;
     }
 
     // Add optional fields

@@ -43,9 +43,9 @@ export interface ProcessOptions {
   maxWidth?: number;
   /** Maximum height for WebP conversion (preserves aspect ratio) */
   maxHeight?: number;
-  /** Thumbnail width (default: 400) */
+  /** Thumbnail width (default: 800) */
   thumbnailWidth?: number;
-  /** Thumbnail height (default: 400) */
+  /** Thumbnail height (default: 800) */
   thumbnailHeight?: number;
   /** Generate blurhash (default: true) */
   generateBlurhash?: boolean;
@@ -58,8 +58,8 @@ const DEFAULT_OPTIONS: Required<ProcessOptions> = {
   webpQuality: 80,
   maxWidth: 2048,
   maxHeight: 2048,
-  thumbnailWidth: 400,
-  thumbnailHeight: 400,
+  thumbnailWidth: 800,
+  thumbnailHeight: 800,
   generateBlurhash: true,
 };
 

@@ -469,6 +469,10 @@ msgstr "Are you sure you want to delete {0} emojis? This action cannot be undone
 msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
 msgstr "Are you sure you want to delete <0>@{0}</0>? This action will:"
 
+#: src/components/note/NoteCard.tsx:756
+msgid "Are you sure you want to delete this note? This action cannot be undone."
+msgstr "Are you sure you want to delete this note? This action cannot be undone."
+
 #: src/components/settings/AccountMigrationSection.tsx:154
 msgid "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
 msgstr "Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account."
@@ -680,6 +684,7 @@ msgstr "Can suspend users"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
+#: src/components/note/NoteCard.tsx:764
 #: src/components/note/NoteComposer.tsx:1341
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
@@ -826,7 +831,7 @@ msgstr "Contacts"
 msgid "Content"
 msgstr "Content"
 
-#: src/components/note/NoteCard.tsx:406
+#: src/components/note/NoteCard.tsx:432
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -994,6 +999,8 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
+#: src/components/note/NoteCard.tsx:704
+#: src/components/note/NoteCard.tsx:771
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:1082
 #: src/pages/admin/emojis.tsx:1225
@@ -1014,6 +1021,7 @@ msgstr "Delete code"
 msgid "Delete draft"
 msgstr "Delete draft"
 
+#: src/components/note/NoteCard.tsx:753
 #: src/pages/mod/audit-logs.tsx:244
 msgid "Delete Note"
 msgstr "Delete Note"
@@ -1070,6 +1078,7 @@ msgstr "Deleted Notes"
 msgid "Deleted: {0}"
 msgstr "Deleted: {0}"
 
+#: src/components/note/NoteCard.tsx:771
 #: src/components/settings/AccountDeletionSection.tsx:169
 msgid "Deleting..."
 msgstr "Deleting..."
@@ -1088,12 +1097,12 @@ msgstr "Description"
 msgid "Deselect"
 msgstr "Deselect"
 
-#: src/components/note/NoteCard.tsx:377
+#: src/components/note/NoteCard.tsx:403
 #: src/components/note/NoteComposer.tsx:658
 msgid "Direct"
 msgstr "Direct"
 
-#: src/components/note/NoteCard.tsx:374
+#: src/components/note/NoteCard.tsx:400
 msgid "Direct message - Only visible to specified recipients"
 msgstr "Direct message - Only visible to specified recipients"
 
@@ -1394,7 +1403,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:223
+#: src/components/note/NoteCard.tsx:225
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -1454,6 +1463,10 @@ msgstr "Failed to delete file"
 #: src/pages/admin/invitations.tsx:167
 msgid "Failed to delete invitation code"
 msgstr "Failed to delete invitation code"
+
+#: src/components/note/NoteCard.tsx:265
+msgid "Failed to delete note"
+msgstr "Failed to delete note"
 
 #: src/components/settings/PasskeySection.tsx:194
 msgid "Failed to delete passkey"
@@ -1574,7 +1587,7 @@ msgstr "Failed to remove instance"
 msgid "Failed to rename passkey"
 msgstr "Failed to rename passkey"
 
-#: src/components/note/NoteCard.tsx:241
+#: src/components/note/NoteCard.tsx:243
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -1940,7 +1953,7 @@ msgstr "Import timed out. The server may still be processing. Please check back 
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
-#: src/components/note/NoteCard.tsx:523
+#: src/components/note/NoteCard.tsx:549
 msgid "In reply to"
 msgstr "In reply to"
 
@@ -2438,7 +2451,7 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:662
+#: src/components/note/NoteCard.tsx:688
 msgid "More options"
 msgstr "More options"
 
@@ -2663,6 +2676,7 @@ msgstr "Not following anyone yet"
 msgid "Note"
 msgstr "Note"
 
+#: src/components/note/NoteCard.tsx:255
 #: src/components/pages/NoteDetailPageClient.tsx:66
 msgid "Note deleted"
 msgstr "Note deleted"
@@ -2679,7 +2693,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:235
+#: src/components/note/NoteCard.tsx:237
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -3132,7 +3146,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:216
+#: src/components/note/NoteCard.tsx:218
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -3318,7 +3332,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:397
+#: src/components/note/NoteCard.tsx:423
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -3352,7 +3366,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:677
+#: src/components/note/NoteCard.tsx:715
 msgid "Report"
 msgstr "Report"
 
@@ -3787,7 +3801,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:416
+#: src/components/note/NoteCard.tsx:442
 msgid "Show content"
 msgstr "Show content"
 
@@ -4504,7 +4518,7 @@ msgstr "Validation failed"
 msgid "Version"
 msgstr "Version"
 
-#: src/components/note/NoteCard.tsx:562
+#: src/components/note/NoteCard.tsx:588
 msgid "View"
 msgstr "View"
 

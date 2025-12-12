@@ -326,7 +326,12 @@ export class NoteService {
    * ```
    */
   async findById(noteId: string): Promise<Note | null> {
-    return await this.noteRepository.findById(noteId);
+    const note = await this.noteRepository.findById(noteId);
+    if (!note) return null;
+
+    // Hydrate file information
+    const [hydratedNote] = await this.hydrateFiles([note]);
+    return hydratedNote ?? null;
   }
 
 
@@ -347,28 +352,30 @@ export class NoteService {
     // Fetch all referenced notes in a single batch
     const referencedNotes = await Promise.all(allIds.map((id) => this.noteRepository.findById(id)));
 
+    // Hydrate files for referenced notes
+    const validNotes = referencedNotes.filter((n): n is Note => n !== null);
+    const notesWithFiles = await this.hydrateFiles(validNotes);
+
     // Create a map for quick lookup
     const noteMap = new Map<string, Note>();
-    for (const note of referencedNotes) {
-      if (note) {
-        // Fetch user info for the referenced note
-        const user = await this.userRepository.findById(note.userId);
-        if (user) {
-          noteMap.set(note.id, {
-            ...note,
-            user: {
-              id: user.id,
-              username: user.username,
-              name: user.displayName || user.username,
-              displayName: user.displayName,
-              avatarUrl: user.avatarUrl,
-              host: user.host,
-              profileEmojis: user.profileEmojis,
-            },
-          } as Note);
-        } else {
-          noteMap.set(note.id, note);
-        }
+    for (const note of notesWithFiles) {
+      // Fetch user info for the referenced note
+      const user = await this.userRepository.findById(note.userId);
+      if (user) {
+        noteMap.set(note.id, {
+          ...note,
+          user: {
+            id: user.id,
+            username: user.username,
+            name: user.displayName || user.username,
+            displayName: user.displayName,
+            avatarUrl: user.avatarUrl,
+            host: user.host,
+            profileEmojis: user.profileEmojis,
+          },
+        } as Note);
+      } else {
+        noteMap.set(note.id, note);
       }
     }
 
@@ -385,6 +392,51 @@ export class NoteService {
       }
 
       return result as Note;
+    });
+  }
+
+  /**
+   * Hydrate file metadata for notes
+   *
+   * Fetches file objects from drive_files table using fileIds.
+   * Uses batch query to avoid N+1 problem.
+   *
+   * @param notesList - List of notes to hydrate
+   * @returns Notes with files property populated
+   *
+   * @private
+   */
+  private async hydrateFiles(notesList: Note[]): Promise<Note[]> {
+    const allFileIds = [...new Set(notesList.flatMap((n) => n.fileIds || []))];
+
+    if (allFileIds.length === 0) {
+      return notesList;
+    }
+
+    const files = await this.driveFileRepository.findByIds(allFileIds);
+    const fileMap = new Map(files.map((f) => [f.id, f]));
+
+    return notesList.map((note) => {
+      if (!note.fileIds || note.fileIds.length === 0) {
+        return note;
+      }
+
+      const noteFiles = note.fileIds
+        .map((id) => fileMap.get(id))
+        .filter((f) => f !== undefined)
+        .map((f) => ({
+          id: f.id,
+          url: f.url,
+          thumbnailUrl: f.thumbnailUrl,
+          type: f.type,
+          name: f.name,
+          size: f.size,
+          blurhash: f.blurhash,
+          isSensitive: f.isSensitive,
+          comment: f.comment,
+        }));
+
+      return { ...note, files: noteFiles } as Note;
     });
   }
 
@@ -480,15 +532,16 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote information
+    // Hydrate renote and file information
     const hydratedNotes = await this.hydrateRenotes(notes);
+    const notesWithFiles = await this.hydrateFiles(hydratedNotes);
 
     // Cache first page results
     if (isFirstPage && this.cacheService?.isAvailable()) {
-      await this.cacheService.set(cacheKey, hydratedNotes, { ttl: CacheTTL.SHORT });
+      await this.cacheService.set(cacheKey, notesWithFiles, { ttl: CacheTTL.SHORT });
     }
 
-    return hydratedNotes;
+    return notesWithFiles;
   }
 
   /**
@@ -524,8 +577,9 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote information
-    return await this.hydrateRenotes(notes);
+    // Hydrate renote and file information
+    const hydratedNotes = await this.hydrateRenotes(notes);
+    return await this.hydrateFiles(hydratedNotes);
   }
 
   /**
@@ -565,8 +619,9 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote information
-    return await this.hydrateRenotes(notes);
+    // Hydrate renote and file information
+    const hydratedNotes = await this.hydrateRenotes(notes);
+    return await this.hydrateFiles(hydratedNotes);
   }
 
   /**
@@ -605,15 +660,16 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote information
+    // Hydrate renote and file information
     const hydratedNotes = await this.hydrateRenotes(notes);
+    const notesWithFiles = await this.hydrateFiles(hydratedNotes);
 
     // Cache first page results
     if (isFirstPage && this.cacheService?.isAvailable()) {
-      await this.cacheService.set(cacheKey, hydratedNotes, { ttl: CacheTTL.SHORT });
+      await this.cacheService.set(cacheKey, notesWithFiles, { ttl: CacheTTL.SHORT });
     }
 
-    return hydratedNotes;
+    return notesWithFiles;
   }
 
   /**
@@ -641,8 +697,9 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote information
-    return await this.hydrateRenotes(notes);
+    // Hydrate renote and file information
+    const hydratedNotes = await this.hydrateRenotes(notes);
+    return await this.hydrateFiles(hydratedNotes);
   }
 
 
@@ -671,8 +728,9 @@ export class NoteService {
       untilId: options.untilId,
     });
 
-    // Hydrate renote and nested reply information
-    return await this.hydrateRenotes(replies);
+    // Hydrate renote and file information
+    const hydratedNotes = await this.hydrateRenotes(replies);
+    return await this.hydrateFiles(hydratedNotes);
   }
 
   /**
@@ -904,10 +962,13 @@ export class NoteService {
     // Only push public notes from local users
     if (visibility !== "public" || author.host) return;
 
+    // Hydrate file information for the main note
+    const [noteWithFiles] = await this.hydrateFiles([note]);
+
     // Create note with user data for WebSocket push (frontend expects note.user)
     // Include both 'name' and 'displayName' for frontend compatibility
     const noteWithUser: Record<string, unknown> = {
-      ...note,
+      ...noteWithFiles,
       user: {
         id: author.id,
         username: author.username,
@@ -923,10 +984,11 @@ export class NoteService {
     if (note.replyId) {
       const replyNote = await this.noteRepository.findById(note.replyId);
       if (replyNote) {
+        const [replyNoteWithFiles] = await this.hydrateFiles([replyNote]);
         const replyUser = await this.userRepository.findById(replyNote.userId);
         if (replyUser) {
           noteWithUser.reply = {
-            ...replyNote,
+            ...replyNoteWithFiles,
             user: {
               id: replyUser.id,
               username: replyUser.username,
@@ -945,10 +1007,11 @@ export class NoteService {
     if (note.renoteId) {
       const renoteNote = await this.noteRepository.findById(note.renoteId);
       if (renoteNote) {
+        const [renoteNoteWithFiles] = await this.hydrateFiles([renoteNote]);
         const renoteUser = await this.userRepository.findById(renoteNote.userId);
         if (renoteUser) {
           noteWithUser.renote = {
-            ...renoteNote,
+            ...renoteNoteWithFiles,
             user: {
               id: renoteUser.id,
               username: renoteUser.username,

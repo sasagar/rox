@@ -5,7 +5,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe, Lock } from "lucide-react";
+import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe, Lock, Trash2 } from "lucide-react";
 import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Card, CardContent } from "../ui/Card";
 import { Avatar } from "../ui/Avatar";
@@ -68,6 +68,8 @@ function NoteCardComponent({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const token = useAtomValue(tokenAtom);
   const currentUser = useAtomValue(currentUserAtom);
   const addToast = useSetAtom(addToastAtom);
@@ -240,6 +242,30 @@ function NoteCardComponent({
         type: "error",
         message: t`Failed to renote`,
       });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await notesApi.deleteNote(note.id);
+      addToast({
+        type: "success",
+        message: t`Note deleted`,
+      });
+      setShowDeleteConfirm(false);
+      // Call the callback props to notify parent components
+      _onDelete?.();
+      _onNoteDeleted?.();
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+      addToast({
+        type: "error",
+        message: t`Failed to delete note`,
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -651,8 +677,8 @@ function NoteCardComponent({
               })}
             </div>
           )}
-          {/* More menu with report option */}
-          {currentUser && currentUser.id !== note.user.id && (
+          {/* More menu with delete/report options */}
+          {currentUser && (
             <div className="relative ml-auto">
               <Button
                 variant="ghost"
@@ -666,16 +692,29 @@ function NoteCardComponent({
               </Button>
               {showMoreMenu && (
                 <div className="absolute right-0 top-full mt-1 w-40 rounded-lg border border-(--border-color) bg-(--bg-primary) shadow-lg z-10">
-                  <button
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      setShowReportDialog(true);
-                    }}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-lg"
-                  >
-                    <Flag className="w-4 h-4" />
-                    <Trans>Report</Trans>
-                  </button>
+                  {currentUser.id === note.user.id ? (
+                    <button
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        setShowDeleteConfirm(true);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <Trans>Delete</Trans>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        setShowReportDialog(true);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-lg"
+                    >
+                      <Flag className="w-4 h-4" />
+                      <Trans>Report</Trans>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -705,6 +744,36 @@ function NoteCardComponent({
           targetUserId={note.user.id}
           targetUsername={note.user.username}
         />
+
+        {/* Delete Confirmation Dialog */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6">
+              <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
+                <Trans>Delete Note</Trans>
+              </h2>
+              <p className="mb-6 text-gray-700 dark:text-gray-300">
+                <Trans>Are you sure you want to delete this note? This action cannot be undone.</Trans>
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  onPress={() => setShowDeleteConfirm(false)}
+                  isDisabled={isDeleting}
+                >
+                  <Trans>Cancel</Trans>
+                </Button>
+                <Button
+                  variant="danger"
+                  onPress={handleDelete}
+                  isDisabled={isDeleting}
+                >
+                  {isDeleting ? <Trans>Deleting...</Trans> : <Trans>Delete</Trans>}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

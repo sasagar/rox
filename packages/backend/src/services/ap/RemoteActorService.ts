@@ -236,14 +236,34 @@ export class RemoteActorService {
     try {
       actor = await this.fetchActor(actorUri);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const isPermanentError = this.isPermanentFetchError(errorMessage);
+
       // Record fetch failure if we have an existing user
       if (existing) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         await this.userRepository.recordFetchFailure(existing.id, errorMessage);
-        logger.debug(
-          { username: existing.username, host: existing.host, error: errorMessage },
-          "Recorded fetch failure for remote user",
-        );
+
+        // Use appropriate log level based on error type
+        if (isPermanentError) {
+          logger.warn(
+            { username: existing.username, host: existing.host, error: errorMessage },
+            "Permanent fetch failure for remote user (404/410)",
+          );
+        } else {
+          logger.debug(
+            { username: existing.username, host: existing.host, error: errorMessage },
+            "Transient fetch failure for remote user",
+          );
+        }
+
+        // For transient errors with existing user, return stale data instead of failing
+        if (!isPermanentError) {
+          logger.debug(
+            { username: existing.username, host: existing.host },
+            "Returning stale user data due to transient fetch error",
+          );
+          return existing;
+        }
       }
       throw error;
     }
@@ -407,6 +427,22 @@ export class RemoteActorService {
       // Re-throw if it's not a duplicate key error or we couldn't find the user
       throw error;
     }
+  }
+
+  /**
+   * Check if an error message indicates a permanent failure (404/410)
+   *
+   * @param errorMessage - Error message to check
+   * @returns true if the error is permanent (actor gone/deleted)
+   */
+  private isPermanentFetchError(errorMessage: string): boolean {
+    // Check for HTTP 404 or 410 status codes in error message
+    return (
+      errorMessage.includes("404") ||
+      errorMessage.includes("410") ||
+      errorMessage.includes("Not Found") ||
+      errorMessage.includes("Gone")
+    );
   }
 
   /**

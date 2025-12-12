@@ -30,7 +30,7 @@ export function Skeleton({ width, height, rounded = "md", className = "" }: Skel
 
   return (
     <div
-      className={`bg-gray-200 animate-pulse ${roundedClass} ${className}`}
+      className={`bg-gray-200 dark:bg-gray-700 animate-pulse ${roundedClass} ${className}`}
       style={{ width, height }}
       aria-hidden="true"
     />
@@ -42,7 +42,7 @@ export function Skeleton({ width, height, rounded = "md", className = "" }: Skel
  */
 export function NoteCardSkeleton() {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
       {/* User info skeleton */}
       <div className="flex items-center gap-3 mb-3">
         <Skeleton width="40px" height="40px" rounded="full" />
@@ -60,7 +60,7 @@ export function NoteCardSkeleton() {
       </div>
 
       {/* Action buttons skeleton */}
-      <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
+      <div className="flex items-center gap-4 pt-3 border-t border-gray-100 dark:border-gray-700">
         <Skeleton width="60px" height="32px" rounded="lg" />
         <Skeleton width="60px" height="32px" rounded="lg" />
         <Skeleton width="60px" height="32px" rounded="lg" />

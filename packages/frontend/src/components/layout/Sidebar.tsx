@@ -22,6 +22,7 @@ import {
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
 import { openComposeModalAtom } from "../../lib/atoms/compose";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
+import { themeAtom } from "../../lib/atoms/uiSettings";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
 import { LanguageSwitcher } from "../LanguageSwitcher";
@@ -42,6 +43,32 @@ export function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedAtom);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const theme = useAtomValue(themeAtom);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Determine effective dark mode state
+  useEffect(() => {
+    const updateDarkMode = () => {
+      if (theme === "dark") {
+        setIsDarkMode(true);
+      } else if (theme === "light") {
+        setIsDarkMode(false);
+      } else {
+        // System preference
+        setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      }
+    };
+
+    updateDarkMode();
+
+    // Listen for system preference changes when theme is 'system'
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      mediaQuery.addEventListener("change", updateDarkMode);
+      return () => mediaQuery.removeEventListener("change", updateDarkMode);
+    }
+    return undefined;
+  }, [theme]);
 
   // Toggle collapsed state
   const toggleCollapsed = () => {
@@ -140,6 +167,10 @@ export function Sidebar() {
     });
   }
 
+  // Select appropriate icon based on dark mode state
+  const effectiveIconUrl =
+    isDarkMode && instanceInfo?.darkIconUrl ? instanceInfo.darkIconUrl : instanceInfo?.iconUrl;
+
   const handleNavClick = () => {
     setIsMobileMenuOpen(false);
   };
@@ -163,10 +194,10 @@ export function Sidebar() {
       <div className="p-4 border-b border-(--border-color)">
         <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
           <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
-            {instanceInfo?.iconUrl ? (
+            {effectiveIconUrl ? (
               <img
-                src={instanceInfo.iconUrl}
-                alt={instanceInfo.name || "Logo"}
+                src={effectiveIconUrl}
+                alt={instanceInfo?.name || "Logo"}
                 className="w-8 h-8 rounded-lg object-cover"
               />
             ) : null}
@@ -261,11 +292,11 @@ export function Sidebar() {
       >
         <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
           <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
-            {/* Use favicon for collapsed mode, icon for expanded */}
+            {/* Use same icon for both collapsed and expanded modes */}
             {isCollapsed ? (
-              instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
+              effectiveIconUrl ? (
                 <img
-                  src={instanceInfo.faviconUrl || instanceInfo.iconUrl || ""}
+                  src={effectiveIconUrl}
                   alt={instanceInfo?.name || "Logo"}
                   className="w-8 h-8 rounded object-cover"
                 />
@@ -274,10 +305,10 @@ export function Sidebar() {
               )
             ) : (
               <>
-                {instanceInfo?.iconUrl ? (
+                {effectiveIconUrl ? (
                   <img
-                    src={instanceInfo.iconUrl}
-                    alt={instanceInfo.name || "Logo"}
+                    src={effectiveIconUrl}
+                    alt={instanceInfo?.name || "Logo"}
                     className="w-8 h-8 rounded-lg object-cover"
                   />
                 ) : null}
@@ -429,10 +460,10 @@ export function Sidebar() {
 
         <SpaLink to="/timeline" className="flex items-center gap-2">
           <SpaLink to="/timeline" className="flex items-center gap-2">
-            {instanceInfo?.iconUrl ? (
+            {effectiveIconUrl ? (
               <img
-                src={instanceInfo.iconUrl}
-                alt={instanceInfo.name || "Logo"}
+                src={effectiveIconUrl}
+                alt={instanceInfo?.name || "Logo"}
                 className="w-7 h-7 rounded-lg object-cover"
               />
             ) : null}
