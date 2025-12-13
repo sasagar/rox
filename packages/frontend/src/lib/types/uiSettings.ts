@@ -8,7 +8,16 @@ export type FontSize = "small" | "medium" | "large" | "xlarge";
 export type LineHeight = "compact" | "normal" | "relaxed";
 export type ContentWidth = "narrow" | "normal" | "wide";
 export type Theme = "light" | "dark" | "system";
-export type NotificationSound = "none" | "default" | "soft" | "bell";
+export type NotificationSound =
+  | "none"
+  | "default"
+  | "soft"
+  | "bell"
+  | "pop"
+  | "chirp"
+  | "synth"
+  | "wood"
+  | "drop";
 
 /**
  * Notification types that can have individual sound settings
@@ -118,6 +127,11 @@ export const notificationSoundLabels: Record<NotificationSound, string> = {
   default: "Default",
   soft: "Soft",
   bell: "Bell",
+  pop: "Pop",
+  chirp: "Chirp",
+  synth: "Synth",
+  wood: "Wood",
+  drop: "Drop",
 };
 
 /**
