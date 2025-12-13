@@ -18,6 +18,7 @@ import {
   PenSquare,
   AtSign,
   Mail,
+  List,
 } from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
 import { openComposeModalAtom } from "../../lib/atoms/compose";
@@ -142,6 +143,12 @@ export function Sidebar() {
       label: <Trans>Messages</Trans>,
       href: "/messages",
       key: "messages",
+    },
+    {
+      icon: <List className="w-6 h-6" />,
+      label: <Trans>Lists</Trans>,
+      href: "/lists",
+      key: "lists",
     },
     {
       icon: <User className="w-6 h-6" />,

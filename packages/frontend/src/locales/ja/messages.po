@@ -279,7 +279,7 @@ msgstr "アクション"
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub配信は同期モードで実行されています。"
 
-#: src/components/list/AddToListModal.tsx:244
+#: src/components/list/AddToListModal.tsx:282
 msgid "Add @{username} to list"
 msgstr "@{username}をリストに追加"
 
@@ -353,7 +353,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:164
+#: src/components/layout/Sidebar.tsx:171
 #: src/pages/admin/users.tsx:464
 msgid "Admin"
 msgstr "管理"
@@ -881,7 +881,7 @@ msgstr "コンテンツ"
 msgid "Content Warning"
 msgstr "閲覧注意"
 
-#: src/components/settings/UISettingsSection.tsx:290
+#: src/components/settings/UISettingsSection.tsx:295
 msgid "Content Width"
 msgstr "コンテンツ幅"
 
@@ -923,7 +923,7 @@ msgstr "不正確なデータの訂正"
 msgid "Create"
 msgstr "作成"
 
-#: src/components/list/AddToListModal.tsx:276
+#: src/components/list/AddToListModal.tsx:314
 msgid "Create a list to organize users"
 msgstr "ユーザーを整理するリストを作成"
 
@@ -944,12 +944,12 @@ msgid "Create Invitation Code"
 msgstr "招待コードを作成"
 
 #: src/components/list/ListCreateModal.tsx:110
-#: src/pages/lists/index.tsx:131
-#: src/pages/lists/index.tsx:174
+#: src/pages/lists/index.tsx:143
+#: src/pages/lists/index.tsx:196
 msgid "Create List"
 msgstr "リストを作成"
 
-#: src/components/list/AddToListModal.tsx:302
+#: src/components/list/AddToListModal.tsx:340
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
@@ -962,7 +962,7 @@ msgstr "ロールを作成"
 msgid "Create your account"
 msgstr "アカウントを作成"
 
-#: src/pages/lists/index.tsx:166
+#: src/pages/lists/index.tsx:188
 msgid "Create your first list to organize users"
 msgstr "最初のリストを作成してユーザーを整理しましょう"
 
@@ -989,7 +989,7 @@ msgstr "アカウント作成中..."
 msgid "Creating..."
 msgstr "作成中..."
 
-#: src/components/settings/UISettingsSection.tsx:447
+#: src/components/settings/UISettingsSection.tsx:452
 msgid "Custom"
 msgstr "カスタム"
 
@@ -1005,11 +1005,11 @@ msgstr "カスタムコード（任意）"
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
-#: src/components/settings/UISettingsSection.tsx:461
+#: src/components/settings/UISettingsSection.tsx:466
 msgid "Custom CSS (App-wide)"
 msgstr "カスタムCSS（アプリ全体）"
 
-#: src/components/settings/UISettingsSection.tsx:474
+#: src/components/settings/UISettingsSection.tsx:479
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 
@@ -1028,7 +1028,7 @@ msgstr "カスタム絵文字"
 msgid "Custom pattern"
 msgstr "カスタムパターン"
 
-#: src/components/settings/UISettingsSection.tsx:359
+#: src/components/settings/UISettingsSection.tsx:364
 msgid "Customize sounds per notification type"
 msgstr "通知タイプごとにサウンドをカスタマイズ"
 
@@ -1221,7 +1221,7 @@ msgstr "破棄"
 msgid "Display Name"
 msgstr "表示名"
 
-#: src/components/settings/UISettingsSection.tsx:264
+#: src/components/settings/UISettingsSection.tsx:269
 msgid "Display Settings"
 msgstr "表示設定"
 
@@ -1897,7 +1897,7 @@ msgstr "フォローとフォロワーの関係"
 msgid "Following..."
 msgstr "フォロー中..."
 
-#: src/components/settings/UISettingsSection.tsx:270
+#: src/components/settings/UISettingsSection.tsx:275
 msgid "Font Size"
 msgstr "文字サイズ"
 
@@ -1986,7 +1986,7 @@ msgstr "インスタンスのヘッダー画像（最大5MB）"
 msgid "Healthy"
 msgstr "正常"
 
-#: src/components/settings/UISettingsSection.tsx:357
+#: src/components/settings/UISettingsSection.tsx:362
 msgid "Hide per-type settings"
 msgstr "タイプ別設定を非表示"
 
@@ -1998,7 +1998,7 @@ msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピ�
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 msgstr "セーフゾーンを考慮した高解像度PWA用マスカブルアイコン、512x512ピクセル (最大2MB)。"
 
-#: src/components/layout/Sidebar.tsx:118
+#: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:128
 msgid "Home"
@@ -2298,7 +2298,7 @@ msgstr "ライト"
 msgid "Lightweight"
 msgstr "軽量"
 
-#: src/components/settings/UISettingsSection.tsx:280
+#: src/components/settings/UISettingsSection.tsx:285
 msgid "Line Height"
 msgstr "行の高さ"
 
@@ -2314,6 +2314,10 @@ msgstr "リストが見つかりません"
 #: src/components/list/ListTimeline.tsx:213
 msgid "List timeline is empty"
 msgstr "リストのタイムラインは空です"
+
+#: src/components/layout/Sidebar.tsx:149
+msgid "Lists"
+msgstr "リスト"
 
 #. placeholder {0}: totalEmojis - emojis.length
 #: src/pages/admin/emojis.tsx:1270
@@ -2378,8 +2382,8 @@ msgstr "ログイン"
 msgid "Log In"
 msgstr "ログイン"
 
-#: src/components/layout/Sidebar.tsx:279
-#: src/components/layout/Sidebar.tsx:425
+#: src/components/layout/Sidebar.tsx:286
+#: src/components/layout/Sidebar.tsx:432
 #: src/pages/settings.tsx:360
 msgid "Logging out..."
 msgstr "ログアウト中..."
@@ -2388,8 +2392,8 @@ msgstr "ログアウト中..."
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/components/layout/Sidebar.tsx:279
-#: src/components/layout/Sidebar.tsx:425
+#: src/components/layout/Sidebar.tsx:286
+#: src/components/layout/Sidebar.tsx:432
 #: src/pages/settings.tsx:364
 msgid "Logout"
 msgstr "ログアウト"
@@ -2524,13 +2528,13 @@ msgstr "ZIPファイルの最大サイズ: 50MB"
 msgid "MB (-1 for unlimited)"
 msgstr "MB（無制限の場合は-1）"
 
-#: src/components/list/AddToListModal.tsx:78
+#: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:187
 msgid "member"
 msgstr "メンバー"
 
-#: src/components/list/AddToListModal.tsx:78
+#: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:187
 msgid "members"
@@ -2549,7 +2553,7 @@ msgstr "メンション"
 msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
-#: src/components/layout/Sidebar.tsx:136
+#: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
@@ -2563,7 +2567,7 @@ msgstr "メニュー"
 msgid "Message"
 msgstr "メッセージ"
 
-#: src/components/layout/Sidebar.tsx:142
+#: src/components/layout/Sidebar.tsx:143
 #: src/pages/messages/index.tsx:140
 msgid "Messages"
 msgstr "メッセージ"
@@ -2617,7 +2621,7 @@ msgstr "その他のオプション"
 msgid "Move to a Different Account"
 msgstr "別のアカウントに引っ越す"
 
-#: src/pages/lists/index.tsx:126
+#: src/pages/lists/index.tsx:138
 msgid "My Lists"
 msgstr "マイリスト"
 
@@ -2751,8 +2755,8 @@ msgstr "インスタンスが見つかりません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
-#: src/components/list/AddToListModal.tsx:273
-#: src/pages/lists/index.tsx:163
+#: src/components/list/AddToListModal.tsx:311
+#: src/pages/lists/index.tsx:185
 msgid "No lists yet"
 msgstr "リストはまだありません"
 
@@ -2893,7 +2897,7 @@ msgstr "注意: カスタムCSSはセキュリティのため一部のプロパ�
 msgid "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
 msgstr "注意: リモートユーザーは、このサーバーに以前キャッシュされていない限り、ユーザー名でのみ検索できます（表示名では検索できません）。"
 
-#: src/components/settings/UISettingsSection.tsx:481
+#: src/components/settings/UISettingsSection.tsx:486
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "注意: セキュリティのため一部のCSSプロパティは制限されます。"
 
@@ -2917,7 +2921,7 @@ msgstr "あなたにメンションした投稿やあなたへの返信"
 msgid "Notification history statistics"
 msgstr "通知履歴の統計"
 
-#: src/components/settings/UISettingsSection.tsx:311
+#: src/components/settings/UISettingsSection.tsx:316
 msgid "Notification Sound"
 msgstr "通知音"
 
@@ -2925,7 +2929,7 @@ msgstr "通知音"
 msgid "Notification types"
 msgstr "通知の種類"
 
-#: src/components/layout/Sidebar.tsx:130
+#: src/components/layout/Sidebar.tsx:131
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2985,7 +2989,7 @@ msgstr "または新しいカテゴリを入力"
 msgid "Overall Success Rate"
 msgstr "全体の成功率"
 
-#: src/components/settings/UISettingsSection.tsx:367
+#: src/components/settings/UISettingsSection.tsx:372
 msgid "Override the default sound for specific notification types. Leave as default to use the settings above."
 msgstr "特定の通知タイプのデフォルトサウンドを上書きします。デフォルトのままにすると、上記の設定が使用されます。"
 
@@ -3145,8 +3149,8 @@ msgstr "ダイレクトメッセージには宛先を1人以上選択してく�
 msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
 msgstr "確認のため「{CONFIRM_TEXT}」と入力してください"
 
-#: src/components/layout/Sidebar.tsx:219
-#: src/components/layout/Sidebar.tsx:346
+#: src/components/layout/Sidebar.tsx:226
+#: src/components/layout/Sidebar.tsx:353
 #: src/components/note/NoteComposer.tsx:1389
 msgid "Post"
 msgstr "投稿"
@@ -3174,7 +3178,7 @@ msgid "Powered by Rox - Lightweight ActivityPub Server"
 msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
 #: src/components/note/NoteComposer.tsx:1028
-#: src/components/settings/UISettingsSection.tsx:488
+#: src/components/settings/UISettingsSection.tsx:493
 #: src/pages/admin/emojis.tsx:975
 #: src/pages/admin/settings.tsx:739
 msgid "Preview"
@@ -3220,7 +3224,7 @@ msgstr "非公開"
 msgid "Process your account registration and authentication"
 msgstr "アカウント登録と認証の処理"
 
-#: src/components/layout/Sidebar.tsx:148
+#: src/components/layout/Sidebar.tsx:155
 #: src/pages/settings.tsx:155
 msgid "Profile"
 msgstr "プロフィール"
@@ -3667,12 +3671,12 @@ msgstr "承認が必要"
 msgid "Require invitation code"
 msgstr "招待コードを必要とする"
 
-#: src/components/settings/UISettingsSection.tsx:442
+#: src/components/settings/UISettingsSection.tsx:447
 #: src/components/ui/ImageModal.tsx:209
 msgid "Reset"
 msgstr "リセット"
 
-#: src/components/settings/UISettingsSection.tsx:531
+#: src/components/settings/UISettingsSection.tsx:536
 msgid "Reset to Default"
 msgstr "デフォルトに戻す"
 
@@ -3812,7 +3816,7 @@ msgstr "メモを保存"
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
-#: src/components/settings/UISettingsSection.tsx:527
+#: src/components/settings/UISettingsSection.tsx:532
 msgid "Save Settings"
 msgstr "設定を保存"
 
@@ -3821,7 +3825,7 @@ msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
 #: src/components/list/ListEditModal.tsx:184
-#: src/components/settings/UISettingsSection.tsx:523
+#: src/components/settings/UISettingsSection.tsx:528
 #: src/pages/settings.tsx:299
 msgid "Saving..."
 msgstr "保存中..."
@@ -3849,7 +3853,7 @@ msgstr "予約時刻は現在時刻より後に設定してください"
 msgid "Scroll for more..."
 msgstr "スクロールして続きを表示..."
 
-#: src/components/layout/Sidebar.tsx:124
+#: src/components/layout/Sidebar.tsx:125
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
@@ -3992,7 +3996,7 @@ msgstr "カテゴリを設定"
 msgid "Set category for {0} selected emojis"
 msgstr "選択した{0}個の絵文字のカテゴリを設定"
 
-#: src/components/layout/Sidebar.tsx:154
+#: src/components/layout/Sidebar.tsx:161
 #: src/pages/admin/settings.tsx:291
 #: src/pages/settings.tsx:165
 msgid "Settings"
@@ -4232,7 +4236,7 @@ msgstr "利用規約同意"
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
-#: src/components/settings/UISettingsSection.tsx:345
+#: src/components/settings/UISettingsSection.tsx:350
 #: src/pages/admin/blocked-usernames.tsx:263
 msgid "Test"
 msgstr "テスト"
@@ -4278,7 +4282,7 @@ msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
 #: src/components/admin/AdminLayout.tsx:79
-#: src/components/settings/UISettingsSection.tsx:300
+#: src/components/settings/UISettingsSection.tsx:305
 msgid "Theme"
 msgstr "テーマ"
 
@@ -4346,7 +4350,7 @@ msgstr "このインスタンスはActivityPub連合ネットワークに参加�
 msgid "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 msgstr "このインスタンスはActivityPub連合ネットワークに参加しています。公開コンテンツは他の連合インスタンスのユーザーに表示される場合があります。一度連合されたコンテンツについては、すべてのサーバーからの完全な削除を保証することはできません。"
 
-#: src/components/settings/UISettingsSection.tsx:509
+#: src/components/settings/UISettingsSection.tsx:514
 msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 msgstr "これは選択した設定でのテキスト表示のプレビューです。上のオプションを調整して、読みやすい表示にカスタマイズできます。"
 
@@ -4478,9 +4482,9 @@ msgstr "フィルターを調整してみてください"
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
 
-#: src/components/list/AddToListModal.tsx:266
+#: src/components/list/AddToListModal.tsx:304
 #: src/components/list/ListMembersModal.tsx:178
-#: src/pages/lists/index.tsx:156
+#: src/pages/lists/index.tsx:178
 msgid "Try again"
 msgstr "再試行"
 
@@ -4618,7 +4622,7 @@ msgstr "ファイルをアップロード中..."
 msgid "Uploading..."
 msgstr "アップロード中..."
 
-#: src/components/settings/UISettingsSection.tsx:440
+#: src/components/settings/UISettingsSection.tsx:445
 msgid "Use default"
 msgstr "デフォルトを使用"
 
@@ -4800,7 +4804,7 @@ msgstr "規約を見る"
 msgid "Violate intellectual property rights"
 msgstr "知的財産権を侵害する"
 
-#: src/components/settings/UISettingsSection.tsx:323
+#: src/components/settings/UISettingsSection.tsx:328
 msgid "Volume"
 msgstr "音量"
 

@@ -8,9 +8,9 @@
  * @module pages/lists
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { List as ListIcon, Plus, Loader2 } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
 import { PageHeader } from "../../components/ui/PageHeader";
@@ -35,7 +35,7 @@ import { apiClient } from "../../lib/api/client";
  */
 export default function ListsPage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
+  const [token] = useAtom(tokenAtom);
   const [lists, setLists] = useAtom(myListsAtom);
   const [loading, setLoading] = useAtom(myListsLoadingAtom);
   const [error, setError] = useAtom(myListsErrorAtom);
@@ -43,54 +43,66 @@ export default function ListsPage() {
   const updateList = useSetAtom(updateListAtom);
   const removeList = useSetAtom(removeListAtom);
 
-  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingList, setEditingList] = useState<ListWithMemberCount | null>(null);
   const [deletingList, setDeletingList] = useState<ListWithMemberCount | null>(null);
+  const [hasFetchedLists, setHasFetchedLists] = useState(false);
 
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
+      // No token at all, redirect to login
       if (!token) {
         window.location.href = "/login";
         return;
       }
 
+      // Token exists but no user data, try to restore session
       if (!currentUser) {
         try {
           apiClient.setToken(token);
           const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
-        } catch (_error) {
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Failed to restore session:", error);
+          // Token is invalid, redirect to login
           window.location.href = "/login";
           return;
         }
+      } else {
+        // Already have user data, just stop loading
+        setIsLoading(false);
       }
-      setIsAuthChecking(false);
     };
     restoreSession();
   }, [token, currentUser, setCurrentUser]);
 
-  // Fetch lists
-  const fetchLists = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const userLists = await listsApi.list();
-      setLists(userLists);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load lists");
-    } finally {
-      setLoading(false);
-    }
-  }, [setLists, setLoading, setError]);
-
-  // Load lists on mount (after auth check)
+  // Fetch lists when user is loaded (only once)
   useEffect(() => {
-    if (!isAuthChecking && currentUser) {
+    const fetchLists = async () => {
+      if (!currentUser || !token || hasFetchedLists) return;
+
+      apiClient.setToken(token);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const userLists = await listsApi.list();
+        setLists(userLists);
+        setHasFetchedLists(true);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load lists");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentUser && token && !hasFetchedLists) {
       fetchLists();
     }
-  }, [isAuthChecking, currentUser, fetchLists]);
+  }, [currentUser, token, hasFetchedLists, setLists, setLoading, setError]);
 
   // Handle list created
   const handleListCreated = (list: List) => {
@@ -113,7 +125,7 @@ export default function ListsPage() {
   };
 
   // Show loading while checking auth
-  if (isAuthChecking || !currentUser) {
+  if (isLoading || !currentUser) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-(--bg-primary)">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600" />
@@ -150,7 +162,17 @@ export default function ListsPage() {
             <p className="text-red-500 mb-4">{error}</p>
             <button
               type="button"
-              onClick={fetchLists}
+              onClick={() => {
+                if (token) {
+                  apiClient.setToken(token);
+                  setLoading(true);
+                  setError(null);
+                  listsApi.list()
+                    .then(setLists)
+                    .catch(err => setError(err instanceof Error ? err.message : "Failed to load lists"))
+                    .finally(() => setLoading(false));
+                }
+              }}
               className="text-primary-500 hover:text-primary-600"
             >
               <Trans>Try again</Trans>

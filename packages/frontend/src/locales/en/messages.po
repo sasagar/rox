@@ -279,7 +279,7 @@ msgstr "Actions"
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub delivery is running in synchronous mode."
 
-#: src/components/list/AddToListModal.tsx:244
+#: src/components/list/AddToListModal.tsx:282
 msgid "Add @{username} to list"
 msgstr "Add @{username} to list"
 
@@ -353,7 +353,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:164
+#: src/components/layout/Sidebar.tsx:171
 #: src/pages/admin/users.tsx:464
 msgid "Admin"
 msgstr "Admin"
@@ -881,7 +881,7 @@ msgstr "Content"
 msgid "Content Warning"
 msgstr "Content Warning"
 
-#: src/components/settings/UISettingsSection.tsx:290
+#: src/components/settings/UISettingsSection.tsx:295
 msgid "Content Width"
 msgstr "Content Width"
 
@@ -923,7 +923,7 @@ msgstr "Correct inaccurate data"
 msgid "Create"
 msgstr "Create"
 
-#: src/components/list/AddToListModal.tsx:276
+#: src/components/list/AddToListModal.tsx:314
 msgid "Create a list to organize users"
 msgstr "Create a list to organize users"
 
@@ -944,12 +944,12 @@ msgid "Create Invitation Code"
 msgstr "Create Invitation Code"
 
 #: src/components/list/ListCreateModal.tsx:110
-#: src/pages/lists/index.tsx:131
-#: src/pages/lists/index.tsx:174
+#: src/pages/lists/index.tsx:143
+#: src/pages/lists/index.tsx:196
 msgid "Create List"
 msgstr "Create List"
 
-#: src/components/list/AddToListModal.tsx:302
+#: src/components/list/AddToListModal.tsx:340
 msgid "Create new list"
 msgstr "Create new list"
 
@@ -962,7 +962,7 @@ msgstr "Create Role"
 msgid "Create your account"
 msgstr "Create your account"
 
-#: src/pages/lists/index.tsx:166
+#: src/pages/lists/index.tsx:188
 msgid "Create your first list to organize users"
 msgstr "Create your first list to organize users"
 
@@ -989,7 +989,7 @@ msgstr "Creating account..."
 msgid "Creating..."
 msgstr "Creating..."
 
-#: src/components/settings/UISettingsSection.tsx:447
+#: src/components/settings/UISettingsSection.tsx:452
 msgid "Custom"
 msgstr "Custom"
 
@@ -1005,11 +1005,11 @@ msgstr "Custom Code (optional)"
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
-#: src/components/settings/UISettingsSection.tsx:461
+#: src/components/settings/UISettingsSection.tsx:466
 msgid "Custom CSS (App-wide)"
 msgstr "Custom CSS (App-wide)"
 
-#: src/components/settings/UISettingsSection.tsx:474
+#: src/components/settings/UISettingsSection.tsx:479
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "Custom CSS applied to the entire app (max 10KB)"
 
@@ -1028,7 +1028,7 @@ msgstr "Custom Emojis"
 msgid "Custom pattern"
 msgstr "Custom pattern"
 
-#: src/components/settings/UISettingsSection.tsx:359
+#: src/components/settings/UISettingsSection.tsx:364
 msgid "Customize sounds per notification type"
 msgstr "Customize sounds per notification type"
 
@@ -1221,7 +1221,7 @@ msgstr "Discard"
 msgid "Display Name"
 msgstr "Display Name"
 
-#: src/components/settings/UISettingsSection.tsx:264
+#: src/components/settings/UISettingsSection.tsx:269
 msgid "Display Settings"
 msgstr "Display Settings"
 
@@ -1897,7 +1897,7 @@ msgstr "Following and follower relationships"
 msgid "Following..."
 msgstr "Following..."
 
-#: src/components/settings/UISettingsSection.tsx:270
+#: src/components/settings/UISettingsSection.tsx:275
 msgid "Font Size"
 msgstr "Font Size"
 
@@ -1986,7 +1986,7 @@ msgstr "Header image for your instance (max 5MB)"
 msgid "Healthy"
 msgstr "Healthy"
 
-#: src/components/settings/UISettingsSection.tsx:357
+#: src/components/settings/UISettingsSection.tsx:362
 msgid "Hide per-type settings"
 msgstr "Hide per-type settings"
 
@@ -1998,7 +1998,7 @@ msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls bac
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 msgstr "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 
-#: src/components/layout/Sidebar.tsx:118
+#: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:128
 msgid "Home"
@@ -2298,7 +2298,7 @@ msgstr "Light"
 msgid "Lightweight"
 msgstr "Lightweight"
 
-#: src/components/settings/UISettingsSection.tsx:280
+#: src/components/settings/UISettingsSection.tsx:285
 msgid "Line Height"
 msgstr "Line Height"
 
@@ -2314,6 +2314,10 @@ msgstr "List not found"
 #: src/components/list/ListTimeline.tsx:213
 msgid "List timeline is empty"
 msgstr "List timeline is empty"
+
+#: src/components/layout/Sidebar.tsx:149
+msgid "Lists"
+msgstr "Lists"
 
 #. placeholder {0}: totalEmojis - emojis.length
 #: src/pages/admin/emojis.tsx:1270
@@ -2378,8 +2382,8 @@ msgstr "Log in"
 msgid "Log In"
 msgstr "Log In"
 
-#: src/components/layout/Sidebar.tsx:279
-#: src/components/layout/Sidebar.tsx:425
+#: src/components/layout/Sidebar.tsx:286
+#: src/components/layout/Sidebar.tsx:432
 #: src/pages/settings.tsx:360
 msgid "Logging out..."
 msgstr "Logging out..."
@@ -2388,8 +2392,8 @@ msgstr "Logging out..."
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
 
-#: src/components/layout/Sidebar.tsx:279
-#: src/components/layout/Sidebar.tsx:425
+#: src/components/layout/Sidebar.tsx:286
+#: src/components/layout/Sidebar.tsx:432
 #: src/pages/settings.tsx:364
 msgid "Logout"
 msgstr "Logout"
@@ -2524,13 +2528,13 @@ msgstr "Maximum ZIP size: 50MB"
 msgid "MB (-1 for unlimited)"
 msgstr "MB (-1 for unlimited)"
 
-#: src/components/list/AddToListModal.tsx:78
+#: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:187
 msgid "member"
 msgstr "member"
 
-#: src/components/list/AddToListModal.tsx:78
+#: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:187
 msgid "members"
@@ -2549,7 +2553,7 @@ msgstr "Mention"
 msgid "mentioned you"
 msgstr "mentioned you"
 
-#: src/components/layout/Sidebar.tsx:136
+#: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
@@ -2563,7 +2567,7 @@ msgstr "Menu"
 msgid "Message"
 msgstr "Message"
 
-#: src/components/layout/Sidebar.tsx:142
+#: src/components/layout/Sidebar.tsx:143
 #: src/pages/messages/index.tsx:140
 msgid "Messages"
 msgstr "Messages"
@@ -2617,7 +2621,7 @@ msgstr "More options"
 msgid "Move to a Different Account"
 msgstr "Move to a Different Account"
 
-#: src/pages/lists/index.tsx:126
+#: src/pages/lists/index.tsx:138
 msgid "My Lists"
 msgstr "My Lists"
 
@@ -2751,8 +2755,8 @@ msgstr "No instances found"
 msgid "No invitation codes yet"
 msgstr "No invitation codes yet"
 
-#: src/components/list/AddToListModal.tsx:273
-#: src/pages/lists/index.tsx:163
+#: src/components/list/AddToListModal.tsx:311
+#: src/pages/lists/index.tsx:185
 msgid "No lists yet"
 msgstr "No lists yet"
 
@@ -2893,7 +2897,7 @@ msgstr "Note: Custom CSS is sanitized and some properties may be restricted for 
 msgid "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
 msgstr "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
 
-#: src/components/settings/UISettingsSection.tsx:481
+#: src/components/settings/UISettingsSection.tsx:486
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "Note: Some CSS properties may be restricted for security."
 
@@ -2917,7 +2921,7 @@ msgstr "Notes that mention you or reply to your posts"
 msgid "Notification history statistics"
 msgstr "Notification history statistics"
 
-#: src/components/settings/UISettingsSection.tsx:311
+#: src/components/settings/UISettingsSection.tsx:316
 msgid "Notification Sound"
 msgstr "Notification Sound"
 
@@ -2925,7 +2929,7 @@ msgstr "Notification Sound"
 msgid "Notification types"
 msgstr "Notification types"
 
-#: src/components/layout/Sidebar.tsx:130
+#: src/components/layout/Sidebar.tsx:131
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2985,7 +2989,7 @@ msgstr "Or enter new category"
 msgid "Overall Success Rate"
 msgstr "Overall Success Rate"
 
-#: src/components/settings/UISettingsSection.tsx:367
+#: src/components/settings/UISettingsSection.tsx:372
 msgid "Override the default sound for specific notification types. Leave as default to use the settings above."
 msgstr "Override the default sound for specific notification types. Leave as default to use the settings above."
 
@@ -3145,8 +3149,8 @@ msgstr "Please select at least one recipient for direct message"
 msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
 msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
-#: src/components/layout/Sidebar.tsx:219
-#: src/components/layout/Sidebar.tsx:346
+#: src/components/layout/Sidebar.tsx:226
+#: src/components/layout/Sidebar.tsx:353
 #: src/components/note/NoteComposer.tsx:1389
 msgid "Post"
 msgstr "Post"
@@ -3174,7 +3178,7 @@ msgid "Powered by Rox - Lightweight ActivityPub Server"
 msgstr "Powered by Rox - Lightweight ActivityPub Server"
 
 #: src/components/note/NoteComposer.tsx:1028
-#: src/components/settings/UISettingsSection.tsx:488
+#: src/components/settings/UISettingsSection.tsx:493
 #: src/pages/admin/emojis.tsx:975
 #: src/pages/admin/settings.tsx:739
 msgid "Preview"
@@ -3220,7 +3224,7 @@ msgstr "Private"
 msgid "Process your account registration and authentication"
 msgstr "Process your account registration and authentication"
 
-#: src/components/layout/Sidebar.tsx:148
+#: src/components/layout/Sidebar.tsx:155
 #: src/pages/settings.tsx:155
 msgid "Profile"
 msgstr "Profile"
@@ -3667,12 +3671,12 @@ msgstr "Require Approval"
 msgid "Require invitation code"
 msgstr "Require invitation code"
 
-#: src/components/settings/UISettingsSection.tsx:442
+#: src/components/settings/UISettingsSection.tsx:447
 #: src/components/ui/ImageModal.tsx:209
 msgid "Reset"
 msgstr "Reset"
 
-#: src/components/settings/UISettingsSection.tsx:531
+#: src/components/settings/UISettingsSection.tsx:536
 msgid "Reset to Default"
 msgstr "Reset to Default"
 
@@ -3812,7 +3816,7 @@ msgstr "Save Notes"
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
-#: src/components/settings/UISettingsSection.tsx:527
+#: src/components/settings/UISettingsSection.tsx:532
 msgid "Save Settings"
 msgstr "Save Settings"
 
@@ -3821,7 +3825,7 @@ msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
 #: src/components/list/ListEditModal.tsx:184
-#: src/components/settings/UISettingsSection.tsx:523
+#: src/components/settings/UISettingsSection.tsx:528
 #: src/pages/settings.tsx:299
 msgid "Saving..."
 msgstr "Saving..."
@@ -3849,7 +3853,7 @@ msgstr "Scheduled time must be in the future"
 msgid "Scroll for more..."
 msgstr "Scroll for more..."
 
-#: src/components/layout/Sidebar.tsx:124
+#: src/components/layout/Sidebar.tsx:125
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
@@ -3992,7 +3996,7 @@ msgstr "Set Category"
 msgid "Set category for {0} selected emojis"
 msgstr "Set category for {0} selected emojis"
 
-#: src/components/layout/Sidebar.tsx:154
+#: src/components/layout/Sidebar.tsx:161
 #: src/pages/admin/settings.tsx:291
 #: src/pages/settings.tsx:165
 msgid "Settings"
@@ -4232,7 +4236,7 @@ msgstr "Terms of Service Agreement"
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
-#: src/components/settings/UISettingsSection.tsx:345
+#: src/components/settings/UISettingsSection.tsx:350
 #: src/pages/admin/blocked-usernames.tsx:263
 msgid "Test"
 msgstr "Test"
@@ -4278,7 +4282,7 @@ msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
 #: src/components/admin/AdminLayout.tsx:79
-#: src/components/settings/UISettingsSection.tsx:300
+#: src/components/settings/UISettingsSection.tsx:305
 msgid "Theme"
 msgstr "Theme"
 
@@ -4346,7 +4350,7 @@ msgstr "This instance participates in the ActivityPub federation network. When y
 msgid "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 msgstr "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 
-#: src/components/settings/UISettingsSection.tsx:509
+#: src/components/settings/UISettingsSection.tsx:514
 msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 msgstr "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 
@@ -4478,9 +4482,9 @@ msgstr "Try adjusting your filter"
 msgid "Try adjusting your filters"
 msgstr "Try adjusting your filters"
 
-#: src/components/list/AddToListModal.tsx:266
+#: src/components/list/AddToListModal.tsx:304
 #: src/components/list/ListMembersModal.tsx:178
-#: src/pages/lists/index.tsx:156
+#: src/pages/lists/index.tsx:178
 msgid "Try again"
 msgstr "Try again"
 
@@ -4618,7 +4622,7 @@ msgstr "Uploading files..."
 msgid "Uploading..."
 msgstr "Uploading..."
 
-#: src/components/settings/UISettingsSection.tsx:440
+#: src/components/settings/UISettingsSection.tsx:445
 msgid "Use default"
 msgstr "Use default"
 
@@ -4800,7 +4804,7 @@ msgstr "View Terms"
 msgid "Violate intellectual property rights"
 msgstr "Violate intellectual property rights"
 
-#: src/components/settings/UISettingsSection.tsx:323
+#: src/components/settings/UISettingsSection.tsx:328
 msgid "Volume"
 msgstr "Volume"
 

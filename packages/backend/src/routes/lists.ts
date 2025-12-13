@@ -9,7 +9,7 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { ListService } from "../services/ListService.js";
 
@@ -175,7 +175,7 @@ lists.post("/show", async (c: Context) => {
  * @body {string} [userId] - User ID (optional, defaults to current user)
  * @returns {ListWithMemberCount[]} Lists with member counts
  */
-lists.post("/list", async (c: Context) => {
+lists.post("/list", optionalAuth(), async (c: Context) => {
   const user = c.get("user");
   const listService = getListService(c);
 
