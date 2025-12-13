@@ -134,9 +134,7 @@ cleanupService.start();
 const container = getContainer();
 
 // Initialize system account on startup
-container.systemAccountService.ensureSystemAccount().then((systemUser) => {
-  logger.info({ userId: systemUser.id, username: systemUser.username }, "System account ready");
-}).catch((error) => {
+container.systemAccountService.ensureSystemAccount().catch((error) => {
   logger.error({ err: error }, "Failed to initialize system account");
 });
 
@@ -187,6 +185,7 @@ console.log(`Database:     ${process.env.DB_TYPE || "postgres"}`);
 console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
 console.log(`Queue:        ${queueMode}`);
 console.log(`Cache:        ${cacheMode}`);
+console.log(`System:       @system (server account)`);
 console.log("══════════════════════════════════════════════════");
 
 // Graceful shutdown handler
