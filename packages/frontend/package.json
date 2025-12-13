@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "waku dev",
-    "build": "waku build",
+    "build": "lingui compile && waku build",
     "start": "bun run start.ts",
     "typecheck": "tsc --noEmit",
     "lingui:extract": "lingui extract",
