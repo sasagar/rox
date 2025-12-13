@@ -10,7 +10,7 @@
  * @module components/list/AddToListModal
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, List as ListIcon, Loader2, Plus, Check } from "lucide-react";
 import {
@@ -20,12 +20,10 @@ import {
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
 import { myListsAtom, addListAtom, updateListMemberCountAtom } from "../../lib/atoms/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
 import { Button } from "../ui/Button";
 import { ListCreateModal } from "./ListCreateModal";
 
@@ -113,7 +111,6 @@ export function AddToListModal({
   const addList = useSetAtom(addListAtom);
   const updateMemberCount = useSetAtom(updateListMemberCountAtom);
   const [, addToast] = useAtom(addToastAtom);
-  const token = useAtomValue(tokenAtom);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,18 +118,22 @@ export function AddToListModal({
   const [loadingListIds, setLoadingListIds] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Track if we've already fetched for this userId to prevent duplicate calls
+  const fetchedForUserRef = useRef<string | null>(null);
+
   // Fetch user's lists and which ones contain the target user
   const fetchData = useCallback(async () => {
-    if (!isOpen || !token) return;
+    if (!isOpen) return;
 
-    // Ensure token is set before making API calls
-    apiClient.setToken(token);
+    // Prevent duplicate fetches for the same user
+    if (fetchedForUserRef.current === userId) return;
+    fetchedForUserRef.current = userId;
 
     setLoading(true);
     setError(null);
 
     try {
-      // Fetch user's lists
+      // Fetch user's lists (apiClient token is synced via AppProviders)
       const userLists = await listsApi.list();
       setLists(userLists);
 
@@ -144,7 +145,14 @@ export function AddToListModal({
     } finally {
       setLoading(false);
     }
-  }, [isOpen, userId, setLists, token]);
+  }, [isOpen, userId, setLists]);
+
+  // Reset fetch tracking when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      fetchedForUserRef.current = null;
+    }
+  }, [isOpen]);
 
   // Load on open
   useEffect(() => {
