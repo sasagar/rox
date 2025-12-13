@@ -93,6 +93,133 @@ function playBellSound(volume: number): void {
 }
 
 /**
+ * Play a pop notification sound (short descending tone)
+ */
+function playPopSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.25;
+
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator.type = "sine";
+  // Descending pitch from 1500Hz to 800Hz
+  oscillator.frequency.setValueAtTime(1500, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.08);
+
+  gainNode.gain.setValueAtTime(vol, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.08);
+}
+
+/**
+ * Play a chirp notification sound (bird-like chirp)
+ */
+function playChirpSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.2;
+
+  const notes = [
+    { freq: 2000, delay: 0 },
+    { freq: 2400, delay: 50 },
+    { freq: 2000, delay: 100 },
+  ];
+
+  notes.forEach(({ freq, delay }) => {
+    setTimeout(() => {
+      playTone(ctx, freq, 0.05, vol, "sine");
+    }, delay);
+  });
+}
+
+/**
+ * Play a synth notification sound (electronic/modern)
+ */
+function playSynthSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.15;
+
+  // Layer sine and sawtooth for richer sound
+  const oscillator1 = ctx.createOscillator();
+  const oscillator2 = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator1.connect(gainNode);
+  oscillator2.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator1.type = "sine";
+  oscillator2.type = "sawtooth";
+  oscillator1.frequency.setValueAtTime(440, ctx.currentTime); // A4
+  oscillator2.frequency.setValueAtTime(440, ctx.currentTime);
+
+  // Envelope
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(vol, ctx.currentTime + 0.02);
+  gainNode.gain.linearRampToValueAtTime(vol * 0.6, ctx.currentTime + 0.1);
+  gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+
+  oscillator1.start(ctx.currentTime);
+  oscillator2.start(ctx.currentTime);
+  oscillator1.stop(ctx.currentTime + 0.2);
+  oscillator2.stop(ctx.currentTime + 0.2);
+}
+
+/**
+ * Play a wood notification sound (xylophone-like)
+ */
+function playWoodSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.3;
+
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+
+  // Quick attack, fast decay for wood-like sound
+  gainNode.gain.setValueAtTime(vol, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.15);
+}
+
+/**
+ * Play a drop notification sound (water drop effect)
+ */
+function playDropSound(volume: number): void {
+  const ctx = getAudioContext();
+  const vol = volume * 0.25;
+
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator.type = "sine";
+  // Rapid descending pitch for water drop effect
+  oscillator.frequency.setValueAtTime(2000, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.12);
+
+  gainNode.gain.setValueAtTime(vol, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.12);
+}
+
+/**
  * Play notification sound based on type and volume
  *
  * @param soundType - Type of notification sound
@@ -123,6 +250,21 @@ export function playNotificationSound(
         break;
       case "bell":
         playBellSound(volume);
+        break;
+      case "pop":
+        playPopSound(volume);
+        break;
+      case "chirp":
+        playChirpSound(volume);
+        break;
+      case "synth":
+        playSynthSound(volume);
+        break;
+      case "wood":
+        playWoodSound(volume);
+        break;
+      case "drop":
+        playDropSound(volume);
         break;
     }
   } catch (error) {

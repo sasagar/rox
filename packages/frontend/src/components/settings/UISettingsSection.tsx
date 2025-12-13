@@ -248,6 +248,11 @@ export function UISettingsSection() {
     { value: "default", label: notificationSoundLabels.default },
     { value: "soft", label: notificationSoundLabels.soft },
     { value: "bell", label: notificationSoundLabels.bell },
+    { value: "pop", label: notificationSoundLabels.pop },
+    { value: "chirp", label: notificationSoundLabels.chirp },
+    { value: "synth", label: notificationSoundLabels.synth },
+    { value: "wood", label: notificationSoundLabels.wood },
+    { value: "drop", label: notificationSoundLabels.drop },
   ];
 
   const handleTestSound = () => {
