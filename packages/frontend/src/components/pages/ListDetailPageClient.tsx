@@ -82,6 +82,12 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
   const fetchList = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    // Ensure token is set before API calls
+    if (token) {
+      apiClient.setToken(token);
+    }
+
     try {
       const listData = await listsApi.show(listId);
       // Get member count by fetching memberships
@@ -97,7 +103,7 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
     } finally {
       setLoading(false);
     }
-  }, [listId]);
+  }, [listId, token]);
 
   // Load list on mount (after auth check)
   useEffect(() => {
