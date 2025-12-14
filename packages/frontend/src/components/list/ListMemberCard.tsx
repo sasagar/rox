@@ -10,6 +10,7 @@
  */
 
 import { useState } from "react";
+import { Trans } from "@lingui/react/macro";
 import { MessageCircle, Trash2, Loader2 } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
@@ -154,13 +155,19 @@ export function ListMemberCard({
       {isOwner && (
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           {/* Include replies toggle */}
-          <label className="flex items-center gap-2 cursor-pointer" title="Include replies">
+          <label
+            className="flex items-center gap-2 cursor-pointer text-xs text-(--text-muted)"
+            title={membership.withReplies ? "Replies included in timeline" : "Replies excluded from timeline"}
+          >
             <MessageCircle className={`w-4 h-4 ${membership.withReplies ? "text-primary-500" : "text-(--text-muted)"}`} />
+            <span className="hidden sm:inline">
+              <Trans>Replies</Trans>
+            </span>
             <Switch
               isSelected={membership.withReplies}
               onChange={handleToggleReplies}
               isDisabled={isUpdating}
-              aria-label="Include replies"
+              aria-label="Include replies in list timeline"
             />
           </label>
 

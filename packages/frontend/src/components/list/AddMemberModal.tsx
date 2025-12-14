@@ -29,6 +29,9 @@ import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
+import { Avatar } from "../ui/Avatar";
+import { UserDisplayName } from "../user/UserDisplayName";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import type { User } from "../../lib/types/user";
 
 /**
@@ -69,23 +72,21 @@ function UserResult({ user, isMember, isLoading, onAdd }: UserResultProps) {
       className="flex items-center gap-3 p-3 w-full hover:bg-(--bg-secondary) transition-colors rounded-lg text-left disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {/* Avatar */}
-      <div className="w-10 h-10 rounded-full bg-(--bg-tertiary) overflow-hidden shrink-0">
-        {user.avatarUrl ? (
-          <img
-            src={user.avatarUrl}
-            alt={displayName}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-(--text-muted)">
-            <Users className="w-5 h-5" />
-          </div>
-        )}
-      </div>
+      <Avatar
+        src={user.avatarUrl ? getProxiedImageUrl(user.avatarUrl) : undefined}
+        alt={displayName}
+        fallback={displayName.charAt(0).toUpperCase()}
+        size="md"
+      />
 
       {/* User info */}
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-(--text-primary) truncate">{displayName}</p>
+        <p className="font-medium text-(--text-primary) truncate">
+          <UserDisplayName
+            name={user.displayName}
+            username={user.username}
+          />
+        </p>
         <p className="text-sm text-(--text-muted) truncate">{handle}</p>
       </div>
 
