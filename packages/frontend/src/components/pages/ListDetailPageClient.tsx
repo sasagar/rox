@@ -89,15 +89,9 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
     }
 
     try {
+      // The show endpoint now returns ListWithMemberCount directly
       const listData = await listsApi.show(listId);
-      // Get member count by fetching memberships
-      const members = await listsApi.getMemberships(listId, 1, 0);
-      // The show endpoint returns List, we need to add memberCount
-      // For now, we'll use a workaround - fetch the list from user's lists if owner
-      setList({
-        ...listData,
-        memberCount: members.length > 0 ? members.length : 0,
-      } as ListWithMemberCount);
+      setList(listData as ListWithMemberCount);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load list");
     } finally {

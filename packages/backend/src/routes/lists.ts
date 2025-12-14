@@ -164,15 +164,16 @@ lists.post(
 /**
  * POST /api/users/lists/show
  *
- * Get list details
+ * Get list details with member count
  *
  * @auth Optional (required for private lists)
  * @body {string} listId - List ID
- * @returns {List} List details
+ * @returns {ListWithMemberCount} List details with member count
  */
 lists.post("/show", optionalAuth(), async (c: Context) => {
   const user = c.get("user");
   const listService = getListService(c);
+  const listRepository = c.get("listRepository");
 
   const body = await c.req.json();
 
@@ -185,7 +186,10 @@ lists.post("/show", optionalAuth(), async (c: Context) => {
     if (!list) {
       return c.json({ error: "List not found" }, 404);
     }
-    return c.json(list);
+
+    // Add member count to response
+    const memberCount = await listRepository.countMembers(body.listId);
+    return c.json({ ...list, memberCount });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to get list";
     return c.json({ error: message }, 400);
