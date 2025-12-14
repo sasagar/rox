@@ -1,0 +1,1 @@
+ALTER TABLE "user_lists" ADD COLUMN "notify_level" text DEFAULT 'none' NOT NULL;

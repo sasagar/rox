@@ -439,6 +439,10 @@ msgstr "All custom emojis"
 msgid "All instances can federate with this server"
 msgstr "All instances can federate with this server"
 
+#: src/components/list/ListEditModal.tsx:225
+msgid "All posts"
+msgstr "All posts"
+
 #: src/pages/admin/emojis.tsx:1299
 msgid "All Servers"
 msgstr "All Servers"
@@ -468,7 +472,7 @@ msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
 #: src/components/list/ListCreateModal.tsx:148
-#: src/components/list/ListEditModal.tsx:164
+#: src/components/list/ListEditModal.tsx:185
 msgid "Anyone can see this list"
 msgstr "Anyone can see this list"
 
@@ -729,7 +733,7 @@ msgstr "Can suspend users"
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
-#: src/components/list/ListEditModal.tsx:174
+#: src/components/list/ListEditModal.tsx:243
 #: src/components/note/NoteCard.tsx:764
 #: src/components/note/NoteComposer.tsx:1341
 #: src/components/report/ReportDialog.tsx:170
@@ -1301,7 +1305,7 @@ msgstr "Edit"
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
-#: src/components/list/ListEditModal.tsx:126
+#: src/components/list/ListEditModal.tsx:147
 msgid "Edit List"
 msgstr "Edit List"
 
@@ -1929,6 +1933,10 @@ msgstr "From:"
 msgid "General"
 msgstr "General"
 
+#: src/components/list/ListEditModal.tsx:197
+msgid "Get notified when list members post"
+msgstr "Get notified when list members post"
+
 #: src/components/LandingPage.tsx:138
 msgid "Get Started"
 msgstr "Get Started"
@@ -2303,7 +2311,7 @@ msgid "Line Height"
 msgstr "Line Height"
 
 #: src/components/list/ListCreateModal.tsx:133
-#: src/components/list/ListEditModal.tsx:149
+#: src/components/list/ListEditModal.tsx:170
 msgid "List Name"
 msgstr "List Name"
 
@@ -2930,6 +2938,7 @@ msgid "Notification types"
 msgstr "Notification types"
 
 #: src/components/layout/Sidebar.tsx:131
+#: src/components/list/ListEditModal.tsx:194
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2947,6 +2956,10 @@ msgstr "NSFW"
 #: src/pages/legal/privacy.tsx:200
 msgid "Object to certain data processing"
 msgstr "Object to certain data processing"
+
+#: src/components/list/ListEditModal.tsx:218
+msgid "Off"
+msgstr "Off"
 
 #: src/pages/legal/privacy.tsx:167
 msgid "Once data is federated, other servers have their own copies and we cannot guarantee its removal from all locations."
@@ -2984,6 +2997,10 @@ msgstr "Or copy the address"
 #: src/pages/admin/emojis.tsx:1597
 msgid "Or enter new category"
 msgstr "Or enter new category"
+
+#: src/components/list/ListEditModal.tsx:232
+msgid "Original posts only"
+msgstr "Original posts only"
 
 #: src/pages/admin/queue.tsx:352
 msgid "Overall Success Rate"
@@ -3250,7 +3267,7 @@ msgid "Provide more context about your report..."
 msgstr "Provide more context about your report..."
 
 #: src/components/list/ListCreateModal.tsx:145
-#: src/components/list/ListEditModal.tsx:161
+#: src/components/list/ListEditModal.tsx:182
 #: src/components/note/NoteComposer.tsx:655
 #: src/components/pages/ListDetailPageClient.tsx:193
 #: src/pages/admin/roles.tsx:615
@@ -3785,7 +3802,7 @@ msgstr "Rox is open source software licensed under the AGPL-3.0 license."
 msgid "Rox License"
 msgstr "Rox License"
 
-#: src/components/list/ListEditModal.tsx:187
+#: src/components/list/ListEditModal.tsx:256
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
 msgid "Save"
@@ -3824,7 +3841,7 @@ msgstr "Save Settings"
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
-#: src/components/list/ListEditModal.tsx:184
+#: src/components/list/ListEditModal.tsx:253
 #: src/components/settings/UISettingsSection.tsx:528
 #: src/pages/settings.tsx:299
 msgid "Saving..."

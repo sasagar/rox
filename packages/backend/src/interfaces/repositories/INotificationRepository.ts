@@ -20,6 +20,7 @@ export interface INotificationRepository {
     noteId?: string;
     reaction?: string;
     warningId?: string;
+    entityId?: string;
   }): Promise<Notification>;
 
   /**

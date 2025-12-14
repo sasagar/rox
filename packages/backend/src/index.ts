@@ -158,6 +158,7 @@ const noteService = new NoteService(
   container.activityPubDeliveryService,
   container.cacheService,
   container.notificationService,
+  container.listRepository,
 );
 const scheduledNoteService = new ScheduledNoteService(
   container.scheduledNoteRepository,

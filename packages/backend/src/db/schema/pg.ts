@@ -629,7 +629,8 @@ export type NotificationType =
   | "warning"
   | "follow_request_accepted"
   | "quote"
-  | "dm";
+  | "dm"
+  | "list_note";
 
 // Notifications table
 export const notifications = pgTable(
@@ -644,6 +645,7 @@ export const notifications = pgTable(
     noteId: text("note_id").references(() => notes.id, { onDelete: "cascade" }), // Related note (for mention, reply, reaction, renote, quote)
     reaction: text("reaction"), // Reaction emoji (for reaction notifications)
     warningId: text("warning_id").references(() => userWarnings.id, { onDelete: "cascade" }), // Related warning (for warning notifications)
+    entityId: text("entity_id"), // Generic entity reference (e.g., list ID for list_note notifications)
     isRead: boolean("is_read").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
@@ -845,6 +847,12 @@ export const blockedUsernames = pgTable(
 );
 
 /**
+ * List notification level type
+ * Controls when to receive notifications for notes from list members
+ */
+export type ListNotifyLevel = "none" | "all" | "original";
+
+/**
  * User lists table
  * Stores user-created lists for organizing followed users (Twitter/X-like lists)
  */
@@ -857,6 +865,7 @@ export const userLists = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     isPublic: boolean("is_public").notNull().default(false),
+    notifyLevel: text("notify_level").notNull().default("none").$type<ListNotifyLevel>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

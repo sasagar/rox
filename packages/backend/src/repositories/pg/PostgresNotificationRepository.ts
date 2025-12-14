@@ -17,6 +17,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
     noteId?: string;
     reaction?: string;
     warningId?: string;
+    entityId?: string;
   }): Promise<Notification> {
     const [notification] = await this.db
       .insert(notifications)
@@ -28,6 +29,7 @@ export class PostgresNotificationRepository implements INotificationRepository {
         noteId: data.noteId ?? null,
         reaction: data.reaction ?? null,
         warningId: data.warningId ?? null,
+        entityId: data.entityId ?? null,
         isRead: false,
       })
       .returning();

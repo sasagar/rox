@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Bell, BellOff, BellRing } from "lucide-react";
 import {
   Dialog,
   Modal,
@@ -21,10 +21,16 @@ import {
   TextField,
   Label,
   Input,
+  Select,
+  SelectValue,
+  Popover,
+  ListBox,
+  ListBoxItem,
 } from "react-aria-components";
 import { Switch } from "../ui/Switch";
 import { Button } from "../ui/Button";
 import { listsApi, type List } from "../../lib/api/lists";
+import type { ListNotifyLevel } from "shared";
 import { useAtom } from "jotai";
 import { addToastAtom } from "../../lib/atoms/toast";
 
@@ -65,6 +71,7 @@ export interface ListEditModalProps {
 export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModalProps) {
   const [name, setName] = useState(list.name);
   const [isPublic, setIsPublic] = useState(list.isPublic);
+  const [notifyLevel, setNotifyLevel] = useState<ListNotifyLevel>(list.notifyLevel);
   const [isLoading, setIsLoading] = useState(false);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -72,18 +79,20 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
   useEffect(() => {
     setName(list.name);
     setIsPublic(list.isPublic);
+    setNotifyLevel(list.notifyLevel);
   }, [list]);
 
-  const hasChanges = name !== list.name || isPublic !== list.isPublic;
+  const hasChanges = name !== list.name || isPublic !== list.isPublic || notifyLevel !== list.notifyLevel;
 
   const handleSubmit = async () => {
     if (!name.trim() || !hasChanges) return;
 
     setIsLoading(true);
     try {
-      const updates: { name?: string; isPublic?: boolean } = {};
+      const updates: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel } = {};
       if (name !== list.name) updates.name = name.trim();
       if (isPublic !== list.isPublic) updates.isPublic = isPublic;
+      if (notifyLevel !== list.notifyLevel) updates.notifyLevel = notifyLevel;
 
       const updatedList = await listsApi.update(list.id, updates);
       addToast({
@@ -106,7 +115,19 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
     // Reset to original values
     setName(list.name);
     setIsPublic(list.isPublic);
+    setNotifyLevel(list.notifyLevel);
     onClose();
+  };
+
+  const getNotifyLevelIcon = (level: ListNotifyLevel) => {
+    switch (level) {
+      case "none":
+        return <BellOff className="w-4 h-4" />;
+      case "all":
+        return <BellRing className="w-4 h-4" />;
+      case "original":
+        return <Bell className="w-4 h-4" />;
+    }
   };
 
   return (
@@ -165,6 +186,54 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
                     </p>
                   </div>
                   <Switch isSelected={isPublic} onChange={setIsPublic} aria-label="Public list" />
+                </div>
+
+                {/* Notification level select */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-(--text-secondary)">
+                    <Trans>Notifications</Trans>
+                  </p>
+                  <p className="text-xs text-(--text-muted)">
+                    <Trans>Get notified when list members post</Trans>
+                  </p>
+                  <Select
+                    selectedKey={notifyLevel}
+                    onSelectionChange={(key) => setNotifyLevel(key as ListNotifyLevel)}
+                    className="w-full"
+                  >
+                    <AriaButton className="flex items-center justify-between w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500">
+                      <span className="flex items-center gap-2">
+                        {getNotifyLevelIcon(notifyLevel)}
+                        <SelectValue />
+                      </span>
+                      <span className="text-(--text-muted)">▼</span>
+                    </AriaButton>
+                    <Popover className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden">
+                      <ListBox className="outline-none">
+                        <ListBoxItem
+                          id="none"
+                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+                        >
+                          <BellOff className="w-4 h-4" />
+                          <Trans>Off</Trans>
+                        </ListBoxItem>
+                        <ListBoxItem
+                          id="all"
+                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+                        >
+                          <BellRing className="w-4 h-4" />
+                          <Trans>All posts</Trans>
+                        </ListBoxItem>
+                        <ListBoxItem
+                          id="original"
+                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+                        >
+                          <Bell className="w-4 h-4" />
+                          <Trans>Original posts only</Trans>
+                        </ListBoxItem>
+                      </ListBox>
+                    </Popover>
+                  </Select>
                 </div>
               </div>
 
