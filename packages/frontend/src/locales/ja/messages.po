@@ -567,6 +567,7 @@ msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
 
 #: src/components/pages/NoteDetailPageClient.tsx:109
+#: src/components/user/UserProfile.tsx:393
 #: src/pages/onboarding.tsx:463
 msgid "Back"
 msgstr "戻る"
@@ -678,7 +679,7 @@ msgstr "インスタンスをブロックすると、そのサーバーとの連
 msgid "Blocks"
 msgstr "ブロック"
 
-#: src/components/user/UserProfile.tsx:490
+#: src/components/user/UserProfile.tsx:510
 msgid "Bot"
 msgstr "Bot"
 
@@ -1319,7 +1320,7 @@ msgstr "絵文字を編集"
 msgid "Edit List"
 msgstr "リストを編集"
 
-#: src/components/user/UserProfile.tsx:422
+#: src/components/user/UserProfile.tsx:442
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -1864,7 +1865,7 @@ msgstr "初回検知"
 msgid "Folder name"
 msgstr "フォルダ名"
 
-#: src/components/user/UserProfile.tsx:454
+#: src/components/user/UserProfile.tsx:474
 #: src/pages/interact.tsx:212
 #: src/pages/notifications.tsx:231
 #: src/pages/search.tsx:498
@@ -1888,12 +1889,12 @@ msgid "followed you"
 msgstr "があなたをフォローしました"
 
 #: src/components/note/NoteComposer.tsx:657
-#: src/components/user/UserProfile.tsx:529
+#: src/components/user/UserProfile.tsx:549
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/user/UserProfile.tsx:452
-#: src/components/user/UserProfile.tsx:541
+#: src/components/user/UserProfile.tsx:472
+#: src/components/user/UserProfile.tsx:561
 #: src/pages/search.tsx:506
 #: src/pages/search.tsx:586
 msgid "Following"
@@ -1907,7 +1908,7 @@ msgstr "フォローとフォロワーの関係"
 #~ msgid "Following successfully"
 #~ msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:447
+#: src/components/user/UserProfile.tsx:467
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -2346,7 +2347,7 @@ msgstr "すべて読み込む（残り{0}件）"
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:221
-#: src/components/user/UserProfile.tsx:592
+#: src/components/user/UserProfile.tsx:612
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -2373,7 +2374,7 @@ msgstr "投稿を読み込み中..."
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:218
-#: src/components/user/UserProfile.tsx:588
+#: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
 msgid "Loading..."
 msgstr "読み込み中..."
@@ -2823,7 +2824,7 @@ msgstr "パスキーはまだ登録されていません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:568
+#: src/components/user/UserProfile.tsx:588
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -3195,8 +3196,8 @@ msgstr "違法なコンテンツの投稿や違法行為への関与"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:517
-#: src/components/user/UserProfile.tsx:551
+#: src/components/user/UserProfile.tsx:537
+#: src/components/user/UserProfile.tsx:571
 #: src/pages/admin/federation.tsx:405
 msgid "Posts"
 msgstr "投稿"
@@ -4427,7 +4428,7 @@ msgstr "このソフトウェアはGNU Affero General Public License version 3.0
 msgid "This thread is closed."
 msgstr "このスレッドは終了しました。"
 
-#: src/components/user/UserProfile.tsx:574
+#: src/components/user/UserProfile.tsx:594
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -4587,7 +4588,7 @@ msgstr "フォロー解除"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:445
+#: src/components/user/UserProfile.tsx:465
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -5043,7 +5044,7 @@ msgstr "招待コードの作成上限に達しました"
 msgid "You have the right to:"
 msgstr "以下の権利があります："
 
-#: src/components/user/UserProfile.tsx:572
+#: src/components/user/UserProfile.tsx:592
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
@@ -5068,7 +5069,7 @@ msgstr "ブラウザを閉じていても通知を受け取ることができま
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
-#: src/components/user/UserProfile.tsx:601
+#: src/components/user/UserProfile.tsx:621
 #: src/pages/mentions.tsx:148
 msgid "You've reached the end"
 msgstr "最後まで到達しました"

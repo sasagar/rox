@@ -567,6 +567,7 @@ msgid "Avg per Server"
 msgstr "Avg per Server"
 
 #: src/components/pages/NoteDetailPageClient.tsx:109
+#: src/components/user/UserProfile.tsx:393
 #: src/pages/onboarding.tsx:463
 msgid "Back"
 msgstr "Back"
@@ -678,7 +679,7 @@ msgstr "Blocking an instance will prevent all federation with that server. Users
 msgid "Blocks"
 msgstr "Blocks"
 
-#: src/components/user/UserProfile.tsx:490
+#: src/components/user/UserProfile.tsx:510
 msgid "Bot"
 msgstr "Bot"
 
@@ -1319,7 +1320,7 @@ msgstr "Edit Emoji"
 msgid "Edit List"
 msgstr "Edit List"
 
-#: src/components/user/UserProfile.tsx:422
+#: src/components/user/UserProfile.tsx:442
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -1864,7 +1865,7 @@ msgstr "First detected"
 msgid "Folder name"
 msgstr "Folder name"
 
-#: src/components/user/UserProfile.tsx:454
+#: src/components/user/UserProfile.tsx:474
 #: src/pages/interact.tsx:212
 #: src/pages/notifications.tsx:231
 #: src/pages/search.tsx:498
@@ -1888,12 +1889,12 @@ msgid "followed you"
 msgstr "followed you"
 
 #: src/components/note/NoteComposer.tsx:657
-#: src/components/user/UserProfile.tsx:529
+#: src/components/user/UserProfile.tsx:549
 msgid "Followers"
 msgstr "Followers"
 
-#: src/components/user/UserProfile.tsx:452
-#: src/components/user/UserProfile.tsx:541
+#: src/components/user/UserProfile.tsx:472
+#: src/components/user/UserProfile.tsx:561
 #: src/pages/search.tsx:506
 #: src/pages/search.tsx:586
 msgid "Following"
@@ -1907,7 +1908,7 @@ msgstr "Following and follower relationships"
 #~ msgid "Following successfully"
 #~ msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:447
+#: src/components/user/UserProfile.tsx:467
 msgid "Following..."
 msgstr "Following..."
 
@@ -2346,7 +2347,7 @@ msgstr "Load All ({0} more)"
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:221
-#: src/components/user/UserProfile.tsx:592
+#: src/components/user/UserProfile.tsx:612
 msgid "Load more"
 msgstr "Load more"
 
@@ -2373,7 +2374,7 @@ msgstr "Loading posts..."
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:218
-#: src/components/user/UserProfile.tsx:588
+#: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
 msgid "Loading..."
 msgstr "Loading..."
@@ -2823,7 +2824,7 @@ msgstr "No passkeys registered yet"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/user/UserProfile.tsx:568
+#: src/components/user/UserProfile.tsx:588
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -3195,8 +3196,8 @@ msgstr "Post illegal content or engage in illegal activities"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:517
-#: src/components/user/UserProfile.tsx:551
+#: src/components/user/UserProfile.tsx:537
+#: src/components/user/UserProfile.tsx:571
 #: src/pages/admin/federation.tsx:405
 msgid "Posts"
 msgstr "Posts"
@@ -4427,7 +4428,7 @@ msgstr "This software is licensed under the GNU Affero General Public License ve
 msgid "This thread is closed."
 msgstr "This thread is closed."
 
-#: src/components/user/UserProfile.tsx:574
+#: src/components/user/UserProfile.tsx:594
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -4587,7 +4588,7 @@ msgstr "Unfollow"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:445
+#: src/components/user/UserProfile.tsx:465
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
@@ -5043,7 +5044,7 @@ msgstr "You have reached your invitation limit"
 msgid "You have the right to:"
 msgstr "You have the right to:"
 
-#: src/components/user/UserProfile.tsx:572
+#: src/components/user/UserProfile.tsx:592
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
@@ -5068,7 +5069,7 @@ msgstr "You will receive notifications even when the browser is closed."
 msgid "You're all caught up!"
 msgstr "You're all caught up!"
 
-#: src/components/user/UserProfile.tsx:601
+#: src/components/user/UserProfile.tsx:621
 #: src/pages/mentions.tsx:148
 msgid "You've reached the end"
 msgstr "You've reached the end"
