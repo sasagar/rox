@@ -312,6 +312,40 @@ export class NotificationService {
   }
 
   /**
+   * Create a list note notification
+   *
+   * Notifies list owner when a list member posts a new note.
+   *
+   * @param listOwnerId - List owner user ID (notification recipient)
+   * @param authorId - Note author user ID (notifier)
+   * @param noteId - Note ID
+   * @param listId - List ID (stored in entityId for reference)
+   * @returns Created notification or null if self-notification
+   */
+  async createListNoteNotification(
+    listOwnerId: string,
+    authorId: string,
+    noteId: string,
+    listId: string,
+  ): Promise<Notification | null> {
+    // Don't notify yourself
+    if (listOwnerId === authorId) {
+      return null;
+    }
+
+    const notification = await this.notificationRepository.create({
+      userId: listOwnerId,
+      type: "list_note",
+      notifierId: authorId,
+      noteId,
+      entityId: listId,
+    });
+
+    await this.pushToStream(notification);
+    return notification;
+  }
+
+  /**
    * Get notifications for a user with populated user data
    *
    * @param userId - User ID

@@ -643,7 +643,8 @@ export type NotificationType =
   | "warning"
   | "follow_request_accepted"
   | "quote"
-  | "dm";
+  | "dm"
+  | "list_note";
 
 // Notifications table
 export const notifications = sqliteTable(
@@ -658,6 +659,7 @@ export const notifications = sqliteTable(
     noteId: text("note_id").references(() => notes.id, { onDelete: "cascade" }),
     reaction: text("reaction"),
     warningId: text("warning_id").references(() => userWarnings.id, { onDelete: "cascade" }),
+    entityId: text("entity_id"),
     isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
@@ -774,6 +776,12 @@ export const scheduledNotes = sqliteTable(
 );
 
 /**
+ * List notification level type
+ * Controls when to receive notifications for notes from list members
+ */
+export type ListNotifyLevel = "none" | "all" | "original";
+
+/**
  * User lists table
  * Stores user-created lists for organizing followed users (Twitter/X-like lists)
  */
@@ -786,6 +794,7 @@ export const userLists = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false),
+    notifyLevel: text("notify_level").notNull().default("none").$type<ListNotifyLevel>(),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

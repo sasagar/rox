@@ -11,6 +11,7 @@ import type { INoteRepository } from "../interfaces/repositories/INoteRepository
 import type { IDriveFileRepository } from "../interfaces/repositories/IDriveFileRepository.js";
 import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import type { Note } from "../../../shared/src/types/note.js";
 import type { User } from "../../../shared/src/types/user.js";
@@ -91,6 +92,7 @@ export class NoteService {
    * @param deliveryService - ActivityPub delivery service (injected via DI)
    * @param cacheService - Optional cache service for timeline caching
    * @param notificationService - Optional notification service for notifications
+   * @param listRepository - Optional list repository for list notifications
    */
   constructor(
     private readonly noteRepository: INoteRepository,
@@ -100,6 +102,7 @@ export class NoteService {
     private readonly deliveryService: ActivityPubDeliveryService,
     cacheService?: ICacheService,
     private readonly notificationService?: NotificationService,
+    private readonly listRepository?: IListRepository,
   ) {
     this.cacheService = cacheService ?? null;
   }
@@ -302,6 +305,15 @@ export class NoteService {
         },
       );
     }
+
+    // Create list notifications (async, non-blocking)
+    // Notify list owners who have enabled notifications for lists containing this user
+    const isPureRenoteForNotification = renoteId && !text;
+    this.createListNotifications(note, userId, !!replyId, !!isPureRenoteForNotification).catch(
+      (error) => {
+        logger.error({ err: error, noteId }, "Failed to create list notifications");
+      },
+    );
 
     // Push to timeline streams (async, non-blocking)
     this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
@@ -1042,5 +1054,53 @@ export class NoteService {
     // Push to social timelines (author + followers)
     // Social timeline = home timeline + local timeline for local users
     streamService.pushToSocialTimelines(homeTimelineUserIds, noteWithUser);
+  }
+
+  /**
+   * Create list notifications for list owners
+   *
+   * When a user posts a note, notify list owners who have enabled notifications
+   * for lists containing that user.
+   *
+   * @param note - Created note
+   * @param authorId - Note author ID
+   * @param isReply - Whether this note is a reply
+   * @param isRenote - Whether this note is a renote (without text)
+   *
+   * @private
+   */
+  private async createListNotifications(
+    note: Note,
+    authorId: string,
+    isReply: boolean,
+    isRenote: boolean,
+  ): Promise<void> {
+    if (!this.notificationService || !this.listRepository) return;
+
+    // Find all lists with notifications enabled that contain the author
+    const lists = await this.listRepository.findListsWithNotificationsForMember(authorId);
+
+    for (const list of lists) {
+      // Skip if list owner is the author (don't notify yourself)
+      if (list.userId === authorId) continue;
+
+      // Check notify level
+      if (list.notifyLevel === "original") {
+        // Skip replies and renotes for "original" level
+        if (isReply || isRenote) continue;
+      }
+      // "all" level notifies on everything
+
+      // Check if list owner is a local user
+      const listOwner = await this.userRepository.findById(list.userId);
+      if (!listOwner || listOwner.host) continue;
+
+      await this.notificationService.createListNoteNotification(
+        list.userId,
+        authorId,
+        note.id,
+        list.id,
+      );
+    }
   }
 }

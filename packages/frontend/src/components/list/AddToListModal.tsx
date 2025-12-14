@@ -10,7 +10,7 @@
  * @module components/list/AddToListModal
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, List as ListIcon, Loader2, Plus, Check } from "lucide-react";
 import {
@@ -24,6 +24,8 @@ import { useAtom, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
 import { myListsAtom, addListAtom, updateListMemberCountAtom } from "../../lib/atoms/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
 import { Button } from "../ui/Button";
 import { ListCreateModal } from "./ListCreateModal";
 
@@ -111,47 +113,79 @@ export function AddToListModal({
   const addList = useSetAtom(addListAtom);
   const updateMemberCount = useSetAtom(updateListMemberCountAtom);
   const [, addToast] = useAtom(addToastAtom);
+  const [token] = useAtom(tokenAtom);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [containingListIds, setContainingListIds] = useState<Set<string>>(new Set());
   const [loadingListIds, setLoadingListIds] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [fetchedForUserId, setFetchedForUserId] = useState<string | null>(null);
 
-  // Fetch user's lists and which ones contain the target user
-  const fetchData = useCallback(async () => {
-    if (!isOpen) return;
+  // Fetch lists when modal opens for a new user
+  useEffect(() => {
+    const fetchLists = async () => {
+      // Skip if modal is closed, no token, or already fetched for this user
+      if (!isOpen || !token || fetchedForUserId === userId) return;
+
+      setLoading(true);
+      setError(null);
+      apiClient.setToken(token);
+
+      try {
+        // Fetch user's lists
+        const userLists = await listsApi.list();
+        setLists(userLists);
+
+        // Fetch which lists contain this user
+        const containingLists = await listsApi.getContaining(userId);
+        setContainingListIds(new Set(containingLists.map((l) => l.id)));
+        setFetchedForUserId(userId);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load lists");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLists();
+  }, [isOpen, token, userId, fetchedForUserId, setLists]);
+
+  // Reset fetch state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFetchedForUserId(null);
+    }
+  }, [isOpen]);
+
+  // Manual retry function
+  const handleRetry = async () => {
+    if (!token) return;
 
     setLoading(true);
     setError(null);
+    apiClient.setToken(token);
 
     try {
-      // Fetch user's lists
       const userLists = await listsApi.list();
       setLists(userLists);
-
-      // Fetch which lists contain this user
       const containingLists = await listsApi.getContaining(userId);
       setContainingListIds(new Set(containingLists.map((l) => l.id)));
+      setFetchedForUserId(userId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load lists");
     } finally {
       setLoading(false);
     }
-  }, [isOpen, userId, setLists]);
-
-  // Load on open
-  useEffect(() => {
-    if (isOpen) {
-      fetchData();
-    }
-  }, [isOpen, fetchData]);
+  };
 
   // Handle toggle list membership
   const handleToggle = async (listId: string) => {
-    const isInList = containingListIds.has(listId);
+    if (!token) return;
 
+    const isInList = containingListIds.has(listId);
     setLoadingListIds((prev) => new Set(prev).add(listId));
+    apiClient.setToken(token);
 
     try {
       if (isInList) {
@@ -193,12 +227,16 @@ export function AddToListModal({
 
   // Handle list created
   const handleListCreated = async (newList: List) => {
+    if (!token) return;
+
     // Add to local state with memberCount: 0
     addList({ ...newList, memberCount: 0 });
     setShowCreateModal(false);
 
     // Automatically add the user to the new list
     setLoadingListIds((prev) => new Set(prev).add(newList.id));
+    apiClient.setToken(token);
+
     try {
       await listsApi.push(newList.id, userId);
       setContainingListIds((prev) => new Set(prev).add(newList.id));
@@ -262,7 +300,7 @@ export function AddToListModal({
                   ) : error ? (
                     <div className="text-center py-12">
                       <p className="text-red-500 mb-4">{error}</p>
-                      <Button variant="secondary" onPress={fetchData}>
+                      <Button variant="secondary" onPress={handleRetry}>
                         <Trans>Try again</Trans>
                       </Button>
                     </div>

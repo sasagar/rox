@@ -671,7 +671,8 @@ export type NotificationType =
   | "warning"
   | "follow_request_accepted"
   | "quote"
-  | "dm";
+  | "dm"
+  | "list_note";
 
 // Notifications table
 export const notifications = mysqlTable(
@@ -690,6 +691,7 @@ export const notifications = mysqlTable(
     warningId: varchar("warning_id", { length: 32 }).references(() => userWarnings.id, {
       onDelete: "cascade",
     }),
+    entityId: varchar("entity_id", { length: 32 }),
     isRead: boolean("is_read").notNull().default(false),
     createdAt: datetime("created_at")
       .notNull()
@@ -887,6 +889,12 @@ export const contactMessages = mysqlTable(
 );
 
 /**
+ * List notification level type
+ * Controls when to receive notifications for notes from list members
+ */
+export type ListNotifyLevel = "none" | "all" | "original";
+
+/**
  * User lists table
  * Stores user-created lists for organizing followed users (Twitter/X-like lists)
  */
@@ -899,6 +907,7 @@ export const userLists = mysqlTable(
       .references(() => users.id, { onDelete: "cascade" }),
     name: varchar("name", { length: 128 }).notNull(),
     isPublic: boolean("is_public").notNull().default(false),
+    notifyLevel: varchar("notify_level", { length: 16 }).notNull().default("none").$type<ListNotifyLevel>(),
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),

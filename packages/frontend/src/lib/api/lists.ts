@@ -7,10 +7,10 @@
  */
 
 import { apiClient } from "./client";
-import type { List, ListWithMemberCount, ListMember, ListMembership } from "shared";
+import type { List, ListWithMemberCount, ListMember, ListMembership, ListNotifyLevel } from "shared";
 import type { Note } from "../types/note";
 
-export type { List, ListWithMemberCount, ListMember, ListMembership };
+export type { List, ListWithMemberCount, ListMember, ListMembership, ListNotifyLevel };
 
 /**
  * Timeline fetch options for list timeline
@@ -53,7 +53,7 @@ export const listsApi = {
    * @param data - Fields to update
    * @returns Updated list
    */
-  async update(listId: string, data: { name?: string; isPublic?: boolean }): Promise<List> {
+  async update(listId: string, data: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel }): Promise<List> {
     return apiClient.post<List>("/api/users/lists/update", { listId, ...data });
   },
 

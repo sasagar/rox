@@ -38,7 +38,7 @@ export interface IListRepository {
   /**
    * Update list
    */
-  update(id: string, data: Partial<Pick<List, "name" | "isPublic">>): Promise<List>;
+  update(id: string, data: Partial<Pick<List, "name" | "isPublic" | "notifyLevel">>): Promise<List>;
 
   /**
    * Delete list
@@ -93,4 +93,13 @@ export interface IListRepository {
    * Get lists that contain a specific user (owned by the requester)
    */
   findListsContainingUser(userId: string, ownerId: string): Promise<List[]>;
+
+  /**
+   * Find lists with notifications enabled that contain a specific user as member
+   * Used to send notifications when the user posts a new note
+   *
+   * @param memberUserId - The user ID of the list member who posted
+   * @returns Lists with notifyLevel !== "none" that contain the member
+   */
+  findListsWithNotificationsForMember(memberUserId: string): Promise<List[]>;
 }

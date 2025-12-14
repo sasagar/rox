@@ -7,7 +7,7 @@
  * @module repositories/pg/PostgresListRepository
  */
 
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, ne } from "drizzle-orm";
 import type { Database } from "../../db/index.js";
 import { userLists, userListMembers, users } from "../../db/schema/pg.js";
 import type { IListRepository } from "../../interfaces/repositories/IListRepository.js";
@@ -88,7 +88,7 @@ export class PostgresListRepository implements IListRepository {
     return result !== undefined;
   }
 
-  async update(id: string, data: Partial<Pick<List, "name" | "isPublic">>): Promise<List> {
+  async update(id: string, data: Partial<Pick<List, "name" | "isPublic" | "notifyLevel">>): Promise<List> {
     const [result] = await this.db
       .update(userLists)
       .set({ ...data, updatedAt: new Date() })
@@ -210,6 +210,16 @@ export class PostgresListRepository implements IListRepository {
       .from(userLists)
       .innerJoin(userListMembers, eq(userLists.id, userListMembers.listId))
       .where(and(eq(userListMembers.userId, userId), eq(userLists.userId, ownerId)));
+
+    return results.map((r) => r.list) as List[];
+  }
+
+  async findListsWithNotificationsForMember(memberUserId: string): Promise<List[]> {
+    const results = await this.db
+      .select({ list: userLists })
+      .from(userLists)
+      .innerJoin(userListMembers, eq(userLists.id, userListMembers.listId))
+      .where(and(eq(userListMembers.userId, memberUserId), ne(userLists.notifyLevel, "none")));
 
     return results.map((r) => r.list) as List[];
   }

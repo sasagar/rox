@@ -7,6 +7,15 @@
 import type { ID, Timestamps } from "./common.js";
 
 /**
+ * Notification level for list updates
+ *
+ * - "none": No notifications (default)
+ * - "all": Notify on all posts from list members
+ * - "original": Notify only on original posts (excludes replies and renotes)
+ */
+export type ListNotifyLevel = "none" | "all" | "original";
+
+/**
  * User list entity
  *
  * Represents a list created by a user to organize followed users
@@ -19,6 +28,8 @@ export interface List extends Timestamps {
   name: string;
   /** Whether the list is publicly visible */
   isPublic: boolean;
+  /** Notification level for posts from list members */
+  notifyLevel: ListNotifyLevel;
 }
 
 /**
