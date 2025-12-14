@@ -68,6 +68,7 @@ describe("NotificationService", () => {
     noteId: null,
     reaction: null,
     warningId: null,
+    entityId: null,
     isRead: false,
     createdAt: new Date(),
     ...overrides,

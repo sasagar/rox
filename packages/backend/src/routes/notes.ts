@@ -44,6 +44,7 @@ notes.post(
     const deliveryService = c.get("activityPubDeliveryService");
     const cacheService = c.get("cacheService");
     const notificationService = c.get("notificationService");
+    const listRepository = c.get("listRepository");
 
     const followRepository = c.get("followRepository");
     const noteService = new NoteService(
@@ -54,6 +55,7 @@ notes.post(
       deliveryService,
       cacheService,
       notificationService,
+      listRepository,
     );
 
     const body = await c.req.json();

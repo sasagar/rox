@@ -101,6 +101,7 @@ lists.post(
  * @body {string} listId - List ID to update
  * @body {string} [name] - New list name
  * @body {boolean} [isPublic] - New visibility setting
+ * @body {string} [notifyLevel] - Notification level ("none" | "all" | "original")
  * @returns {List} Updated list
  */
 lists.post(
@@ -117,9 +118,18 @@ lists.post(
       return c.json({ error: "listId is required" }, 400);
     }
 
-    const updateData: { name?: string; isPublic?: boolean } = {};
+    // Validate notifyLevel if provided
+    if (body.notifyLevel !== undefined) {
+      const validLevels = ["none", "all", "original"];
+      if (!validLevels.includes(body.notifyLevel)) {
+        return c.json({ error: "notifyLevel must be one of: none, all, original" }, 400);
+      }
+    }
+
+    const updateData: { name?: string; isPublic?: boolean; notifyLevel?: "none" | "all" | "original" } = {};
     if (body.name !== undefined) updateData.name = body.name;
     if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
+    if (body.notifyLevel !== undefined) updateData.notifyLevel = body.notifyLevel;
 
     if (Object.keys(updateData).length === 0) {
       return c.json({ error: "At least one field to update is required" }, 400);

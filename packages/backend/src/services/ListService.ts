@@ -11,7 +11,7 @@
 import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { INoteRepository, TimelineOptions } from "../interfaces/repositories/INoteRepository.js";
-import type { List, ListMember, ListWithMemberCount, ListMembership } from "shared";
+import type { List, ListMember, ListWithMemberCount, ListMembership, ListNotifyLevel } from "shared";
 import type { Note } from "shared";
 import { generateId } from "../../../shared/src/utils/id.js";
 
@@ -76,6 +76,7 @@ export class ListService {
       userId,
       name,
       isPublic,
+      notifyLevel: "none",
     });
   }
 
@@ -146,7 +147,7 @@ export class ListService {
   async updateList(
     listId: string,
     ownerId: string,
-    data: { name?: string; isPublic?: boolean },
+    data: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel },
   ): Promise<List> {
     const list = await this.listRepository.findById(listId);
     if (!list) {
