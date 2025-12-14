@@ -302,7 +302,7 @@ msgid "Add member"
 msgstr "メンバーを追加"
 
 #. placeholder {0}: list.name
-#: src/components/list/AddMemberModal.tsx:282
+#: src/components/list/AddMemberModal.tsx:283
 msgid "Add member to \"{0}\""
 msgstr "「{0}」にメンバーを追加"
 
@@ -343,7 +343,7 @@ msgstr "プロフィールからこのリストにユーザーを追加してく
 msgid "Add your first custom emoji to get started"
 msgstr "最初のカスタム絵文字を追加して始めましょう"
 
-#: src/components/list/AddMemberModal.tsx:101
+#: src/components/list/AddMemberModal.tsx:102
 #: src/pages/admin/blocked-usernames.tsx:411
 #: src/pages/admin/emojis.tsx:1487
 msgid "Added"
@@ -2858,7 +2858,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
-#: src/components/list/AddMemberModal.tsx:333
+#: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:424
@@ -3592,7 +3592,7 @@ msgstr "リノート"
 msgid "replied to your note"
 msgstr "があなたの投稿に返信しました"
 
-#: src/components/list/ListMemberCard.tsx:164
+#: src/components/list/ListMemberCard.tsx:165
 #: src/components/settings/PushNotificationSection.tsx:69
 msgid "Replies"
 msgstr "返信"
@@ -3909,7 +3909,7 @@ msgstr "ユーザーを検索"
 msgid "Search for users and manage suspensions"
 msgstr "ユーザーを検索して停止を管理"
 
-#: src/components/list/AddMemberModal.tsx:322
+#: src/components/list/AddMemberModal.tsx:323
 msgid "Search for users to add to this list"
 msgstr "このリストに追加するユーザーを検索"
 
@@ -3921,7 +3921,7 @@ msgstr "検索対象:"
 msgid "Search User"
 msgstr "ユーザーを検索"
 
-#: src/components/list/AddMemberModal.tsx:298
+#: src/components/list/AddMemberModal.tsx:299
 msgid "Search users"
 msgstr "ユーザーを検索"
 
