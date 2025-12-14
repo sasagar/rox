@@ -297,6 +297,15 @@ msgstr "Add Emoji"
 msgid "Add images"
 msgstr "Add images"
 
+#: src/components/list/ListMembersModal.tsx:244
+msgid "Add member"
+msgstr "Add member"
+
+#. placeholder {0}: list.name
+#: src/components/list/AddMemberModal.tsx:281
+msgid "Add member to \"{0}\""
+msgstr "Add member to \"{0}\""
+
 #: src/pages/admin/emojis.tsx:827
 msgid "Add New Emoji"
 msgstr "Add New Emoji"
@@ -326,7 +335,7 @@ msgstr "Add Pattern"
 msgid "Add recipient"
 msgstr "Add recipient"
 
-#: src/components/list/ListMembersModal.tsx:188
+#: src/components/list/ListMembersModal.tsx:195
 msgid "Add users to this list from their profile"
 msgstr "Add users to this list from their profile"
 
@@ -334,6 +343,7 @@ msgstr "Add users to this list from their profile"
 msgid "Add your first custom emoji to get started"
 msgstr "Add your first custom emoji to get started"
 
+#: src/components/list/AddMemberModal.tsx:100
 #: src/pages/admin/blocked-usernames.tsx:411
 #: src/pages/admin/emojis.tsx:1487
 msgid "Added"
@@ -439,7 +449,7 @@ msgstr "All custom emojis"
 msgid "All instances can federate with this server"
 msgstr "All instances can federate with this server"
 
-#: src/components/list/ListEditModal.tsx:225
+#: src/components/list/ListEditModal.tsx:211
 msgid "All posts"
 msgstr "All posts"
 
@@ -472,7 +482,7 @@ msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
 #: src/components/list/ListCreateModal.tsx:148
-#: src/components/list/ListEditModal.tsx:185
+#: src/components/list/ListEditModal.tsx:174
 msgid "Anyone can see this list"
 msgstr "Anyone can see this list"
 
@@ -570,7 +580,7 @@ msgstr "Back to Contact"
 msgid "Back to list"
 msgstr "Back to list"
 
-#: src/components/pages/ListDetailPageClient.tsx:155
+#: src/components/pages/ListDetailPageClient.tsx:157
 msgid "Back to lists"
 msgstr "Back to lists"
 
@@ -733,7 +743,7 @@ msgstr "Can suspend users"
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
-#: src/components/list/ListEditModal.tsx:243
+#: src/components/list/ListEditModal.tsx:229
 #: src/components/note/NoteCard.tsx:764
 #: src/components/note/NoteComposer.tsx:1341
 #: src/components/report/ReportDialog.tsx:170
@@ -1084,11 +1094,11 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
-#: src/components/list/ListCard.tsx:136
+#: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
 #: src/components/note/NoteCard.tsx:771
-#: src/components/pages/ListDetailPageClient.tsx:174
+#: src/components/pages/ListDetailPageClient.tsx:191
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:1082
 #: src/pages/admin/emojis.tsx:1225
@@ -1295,8 +1305,8 @@ msgstr "e.g., Inappropriate content"
 msgid "e.g., reactions, animals"
 msgstr "e.g., reactions, animals"
 
-#: src/components/list/ListCard.tsx:129
-#: src/components/pages/ListDetailPageClient.tsx:167
+#: src/components/list/ListCard.tsx:145
+#: src/components/pages/ListDetailPageClient.tsx:184
 #: src/pages/admin/emojis.tsx:1215
 msgid "Edit"
 msgstr "Edit"
@@ -1305,7 +1315,7 @@ msgstr "Edit"
 msgid "Edit Emoji"
 msgstr "Edit Emoji"
 
-#: src/components/list/ListEditModal.tsx:147
+#: src/components/list/ListEditModal.tsx:136
 msgid "Edit List"
 msgstr "Edit List"
 
@@ -1933,7 +1943,7 @@ msgstr "From:"
 msgid "General"
 msgstr "General"
 
-#: src/components/list/ListEditModal.tsx:197
+#: src/components/list/ListEditModal.tsx:186
 msgid "Get notified when list members post"
 msgstr "Get notified when list members post"
 
@@ -2311,11 +2321,11 @@ msgid "Line Height"
 msgstr "Line Height"
 
 #: src/components/list/ListCreateModal.tsx:133
-#: src/components/list/ListEditModal.tsx:170
+#: src/components/list/ListEditModal.tsx:159
 msgid "List Name"
 msgstr "List Name"
 
-#: src/components/pages/ListDetailPageClient.tsx:150
+#: src/components/pages/ListDetailPageClient.tsx:152
 msgid "List not found"
 msgstr "List not found"
 
@@ -2333,7 +2343,7 @@ msgid "Load All ({0} more)"
 msgstr "Load All ({0} more)"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
-#: src/components/list/ListMembersModal.tsx:219
+#: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:221
 #: src/components/user/UserProfile.tsx:592
@@ -2359,7 +2369,7 @@ msgid "Loading posts..."
 msgstr "Loading posts..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/list/ListMembersModal.tsx:216
+#: src/components/list/ListMembersModal.tsx:223
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:218
@@ -2538,18 +2548,22 @@ msgstr "MB (-1 for unlimited)"
 
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
-#: src/components/pages/ListDetailPageClient.tsx:187
+#: src/components/pages/ListDetailPageClient.tsx:205
 msgid "member"
 msgstr "member"
 
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
-#: src/components/pages/ListDetailPageClient.tsx:187
+#: src/components/pages/ListDetailPageClient.tsx:205
 msgid "members"
 msgstr "members"
 
+#: src/components/pages/ListDetailPageClient.tsx:175
+msgid "Members"
+msgstr "Members"
+
 #. placeholder {0}: list.name
-#: src/components/list/ListMembersModal.tsx:153
+#: src/components/list/ListMembersModal.tsx:160
 msgid "Members of \"{0}\""
 msgstr "Members of \"{0}\""
 
@@ -2772,7 +2786,7 @@ msgstr "No lists yet"
 msgid "No matching notifications"
 msgstr "No matching notifications"
 
-#: src/components/list/ListMembersModal.tsx:185
+#: src/components/list/ListMembersModal.tsx:192
 msgid "No members yet"
 msgstr "No members yet"
 
@@ -2844,6 +2858,7 @@ msgstr "No system files"
 msgid "No text content"
 msgstr "No text content"
 
+#: src/components/list/AddMemberModal.tsx:332
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:424
@@ -2938,7 +2953,7 @@ msgid "Notification types"
 msgstr "Notification types"
 
 #: src/components/layout/Sidebar.tsx:131
-#: src/components/list/ListEditModal.tsx:194
+#: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2957,7 +2972,7 @@ msgstr "NSFW"
 msgid "Object to certain data processing"
 msgstr "Object to certain data processing"
 
-#: src/components/list/ListEditModal.tsx:218
+#: src/components/list/ListEditModal.tsx:204
 msgid "Off"
 msgstr "Off"
 
@@ -2998,7 +3013,7 @@ msgstr "Or copy the address"
 msgid "Or enter new category"
 msgstr "Or enter new category"
 
-#: src/components/list/ListEditModal.tsx:232
+#: src/components/list/ListEditModal.tsx:218
 msgid "Original posts only"
 msgstr "Original posts only"
 
@@ -3233,7 +3248,7 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/components/pages/ListDetailPageClient.tsx:198
+#: src/components/pages/ListDetailPageClient.tsx:216
 msgid "Private"
 msgstr "Private"
 
@@ -3267,9 +3282,9 @@ msgid "Provide more context about your report..."
 msgstr "Provide more context about your report..."
 
 #: src/components/list/ListCreateModal.tsx:145
-#: src/components/list/ListEditModal.tsx:182
+#: src/components/list/ListEditModal.tsx:171
 #: src/components/note/NoteComposer.tsx:655
-#: src/components/pages/ListDetailPageClient.tsx:193
+#: src/components/pages/ListDetailPageClient.tsx:211
 #: src/pages/admin/roles.tsx:615
 msgid "Public"
 msgstr "Public"
@@ -3802,7 +3817,7 @@ msgstr "Rox is open source software licensed under the AGPL-3.0 license."
 msgid "Rox License"
 msgstr "Rox License"
 
-#: src/components/list/ListEditModal.tsx:256
+#: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
 msgid "Save"
@@ -3841,7 +3856,7 @@ msgstr "Save Settings"
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
-#: src/components/list/ListEditModal.tsx:253
+#: src/components/list/ListEditModal.tsx:239
 #: src/components/settings/UISettingsSection.tsx:528
 #: src/pages/settings.tsx:299
 msgid "Saving..."
@@ -3893,6 +3908,10 @@ msgstr "Search for users"
 msgid "Search for users and manage suspensions"
 msgstr "Search for users and manage suspensions"
 
+#: src/components/list/AddMemberModal.tsx:321
+msgid "Search for users to add to this list"
+msgstr "Search for users to add to this list"
+
 #: src/pages/search.tsx:363
 msgid "Search in:"
 msgstr "Search in:"
@@ -3900,6 +3919,10 @@ msgstr "Search in:"
 #: src/pages/mod/users.tsx:277
 msgid "Search User"
 msgstr "Search User"
+
+#: src/components/list/AddMemberModal.tsx:297
+msgid "Search users"
+msgstr "Search users"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
@@ -4500,7 +4523,7 @@ msgid "Try adjusting your filters"
 msgstr "Try adjusting your filters"
 
 #: src/components/list/AddToListModal.tsx:304
-#: src/components/list/ListMembersModal.tsx:178
+#: src/components/list/ListMembersModal.tsx:185
 #: src/pages/lists/index.tsx:178
 msgid "Try again"
 msgstr "Try again"

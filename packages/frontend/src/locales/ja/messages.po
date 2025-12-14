@@ -297,6 +297,15 @@ msgstr "絵文字を追加"
 msgid "Add images"
 msgstr "画像を追加"
 
+#: src/components/list/ListMembersModal.tsx:244
+msgid "Add member"
+msgstr "メンバーを追加"
+
+#. placeholder {0}: list.name
+#: src/components/list/AddMemberModal.tsx:281
+msgid "Add member to \"{0}\""
+msgstr "「{0}」にメンバーを追加"
+
 #: src/pages/admin/emojis.tsx:827
 msgid "Add New Emoji"
 msgstr "新しい絵文字を追加"
@@ -326,7 +335,7 @@ msgstr "パターンを追加"
 msgid "Add recipient"
 msgstr "宛先を追加"
 
-#: src/components/list/ListMembersModal.tsx:188
+#: src/components/list/ListMembersModal.tsx:195
 msgid "Add users to this list from their profile"
 msgstr "プロフィールからこのリストにユーザーを追加してください"
 
@@ -334,6 +343,7 @@ msgstr "プロフィールからこのリストにユーザーを追加してく
 msgid "Add your first custom emoji to get started"
 msgstr "最初のカスタム絵文字を追加して始めましょう"
 
+#: src/components/list/AddMemberModal.tsx:100
 #: src/pages/admin/blocked-usernames.tsx:411
 #: src/pages/admin/emojis.tsx:1487
 msgid "Added"
@@ -439,7 +449,7 @@ msgstr "すべてのカスタム絵文字"
 msgid "All instances can federate with this server"
 msgstr "すべてのインスタンスがこのサーバーと連携できます"
 
-#: src/components/list/ListEditModal.tsx:225
+#: src/components/list/ListEditModal.tsx:211
 msgid "All posts"
 msgstr "すべての投稿"
 
@@ -472,7 +482,7 @@ msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
 #: src/components/list/ListCreateModal.tsx:148
-#: src/components/list/ListEditModal.tsx:185
+#: src/components/list/ListEditModal.tsx:174
 msgid "Anyone can see this list"
 msgstr "誰でもこのリストを見ることができます"
 
@@ -570,7 +580,7 @@ msgstr "お問い合わせに戻る"
 msgid "Back to list"
 msgstr "一覧に戻る"
 
-#: src/components/pages/ListDetailPageClient.tsx:155
+#: src/components/pages/ListDetailPageClient.tsx:157
 msgid "Back to lists"
 msgstr "リストに戻る"
 
@@ -733,7 +743,7 @@ msgstr "ユーザーを凍結可能"
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
-#: src/components/list/ListEditModal.tsx:243
+#: src/components/list/ListEditModal.tsx:229
 #: src/components/note/NoteCard.tsx:764
 #: src/components/note/NoteComposer.tsx:1341
 #: src/components/report/ReportDialog.tsx:170
@@ -1084,11 +1094,11 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/list/ListCard.tsx:136
+#: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
 #: src/components/note/NoteCard.tsx:771
-#: src/components/pages/ListDetailPageClient.tsx:174
+#: src/components/pages/ListDetailPageClient.tsx:191
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:1082
 #: src/pages/admin/emojis.tsx:1225
@@ -1295,8 +1305,8 @@ msgstr "例: 不適切なコンテンツ"
 msgid "e.g., reactions, animals"
 msgstr "例: リアクション、動物"
 
-#: src/components/list/ListCard.tsx:129
-#: src/components/pages/ListDetailPageClient.tsx:167
+#: src/components/list/ListCard.tsx:145
+#: src/components/pages/ListDetailPageClient.tsx:184
 #: src/pages/admin/emojis.tsx:1215
 msgid "Edit"
 msgstr "編集"
@@ -1305,7 +1315,7 @@ msgstr "編集"
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
-#: src/components/list/ListEditModal.tsx:147
+#: src/components/list/ListEditModal.tsx:136
 msgid "Edit List"
 msgstr "リストを編集"
 
@@ -1933,7 +1943,7 @@ msgstr "送信者:"
 msgid "General"
 msgstr "全般"
 
-#: src/components/list/ListEditModal.tsx:197
+#: src/components/list/ListEditModal.tsx:186
 msgid "Get notified when list members post"
 msgstr "リストメンバーが投稿したときに通知を受け取る"
 
@@ -2311,11 +2321,11 @@ msgid "Line Height"
 msgstr "行の高さ"
 
 #: src/components/list/ListCreateModal.tsx:133
-#: src/components/list/ListEditModal.tsx:170
+#: src/components/list/ListEditModal.tsx:159
 msgid "List Name"
 msgstr "リスト名"
 
-#: src/components/pages/ListDetailPageClient.tsx:150
+#: src/components/pages/ListDetailPageClient.tsx:152
 msgid "List not found"
 msgstr "リストが見つかりません"
 
@@ -2333,7 +2343,7 @@ msgid "Load All ({0} more)"
 msgstr "すべて読み込む（残り{0}件）"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
-#: src/components/list/ListMembersModal.tsx:219
+#: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
 #: src/components/user/FollowListModal.tsx:221
 #: src/components/user/UserProfile.tsx:592
@@ -2359,7 +2369,7 @@ msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/list/ListMembersModal.tsx:216
+#: src/components/list/ListMembersModal.tsx:223
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
 #: src/components/user/FollowListModal.tsx:218
@@ -2538,18 +2548,22 @@ msgstr "MB（無制限の場合は-1）"
 
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
-#: src/components/pages/ListDetailPageClient.tsx:187
+#: src/components/pages/ListDetailPageClient.tsx:205
 msgid "member"
 msgstr "メンバー"
 
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
-#: src/components/pages/ListDetailPageClient.tsx:187
+#: src/components/pages/ListDetailPageClient.tsx:205
 msgid "members"
 msgstr "メンバー"
 
+#: src/components/pages/ListDetailPageClient.tsx:175
+msgid "Members"
+msgstr "メンバー"
+
 #. placeholder {0}: list.name
-#: src/components/list/ListMembersModal.tsx:153
+#: src/components/list/ListMembersModal.tsx:160
 msgid "Members of \"{0}\""
 msgstr "「{0}」のメンバー"
 
@@ -2772,7 +2786,7 @@ msgstr "リストはまだありません"
 msgid "No matching notifications"
 msgstr "一致する通知がありません"
 
-#: src/components/list/ListMembersModal.tsx:185
+#: src/components/list/ListMembersModal.tsx:192
 msgid "No members yet"
 msgstr "メンバーはまだいません"
 
@@ -2844,6 +2858,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
+#: src/components/list/AddMemberModal.tsx:332
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:424
@@ -2938,7 +2953,7 @@ msgid "Notification types"
 msgstr "通知の種類"
 
 #: src/components/layout/Sidebar.tsx:131
-#: src/components/list/ListEditModal.tsx:194
+#: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
 #: src/pages/settings.tsx:157
@@ -2957,7 +2972,7 @@ msgstr "NSFW"
 msgid "Object to certain data processing"
 msgstr "特定のデータ処理への異議申し立て"
 
-#: src/components/list/ListEditModal.tsx:218
+#: src/components/list/ListEditModal.tsx:204
 msgid "Off"
 msgstr "オフ"
 
@@ -2998,7 +3013,7 @@ msgstr "またはアドレスをコピー"
 msgid "Or enter new category"
 msgstr "または新しいカテゴリを入力"
 
-#: src/components/list/ListEditModal.tsx:232
+#: src/components/list/ListEditModal.tsx:218
 msgid "Original posts only"
 msgstr "オリジナル投稿のみ"
 
@@ -3233,7 +3248,7 @@ msgstr "プライバシーポリシー"
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/pages/ListDetailPageClient.tsx:198
+#: src/components/pages/ListDetailPageClient.tsx:216
 msgid "Private"
 msgstr "非公開"
 
@@ -3267,9 +3282,9 @@ msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
 #: src/components/list/ListCreateModal.tsx:145
-#: src/components/list/ListEditModal.tsx:182
+#: src/components/list/ListEditModal.tsx:171
 #: src/components/note/NoteComposer.tsx:655
-#: src/components/pages/ListDetailPageClient.tsx:193
+#: src/components/pages/ListDetailPageClient.tsx:211
 #: src/pages/admin/roles.tsx:615
 msgid "Public"
 msgstr "公開"
@@ -3802,7 +3817,7 @@ msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープン�
 msgid "Rox License"
 msgstr "Roxライセンス"
 
-#: src/components/list/ListEditModal.tsx:256
+#: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
 msgid "Save"
@@ -3841,7 +3856,7 @@ msgstr "設定を保存"
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
-#: src/components/list/ListEditModal.tsx:253
+#: src/components/list/ListEditModal.tsx:239
 #: src/components/settings/UISettingsSection.tsx:528
 #: src/pages/settings.tsx:299
 msgid "Saving..."
@@ -3893,12 +3908,20 @@ msgstr "ユーザーを検索"
 msgid "Search for users and manage suspensions"
 msgstr "ユーザーを検索して停止を管理"
 
+#: src/components/list/AddMemberModal.tsx:321
+msgid "Search for users to add to this list"
+msgstr "このリストに追加するユーザーを検索"
+
 #: src/pages/search.tsx:363
 msgid "Search in:"
 msgstr "検索対象:"
 
 #: src/pages/mod/users.tsx:277
 msgid "Search User"
+msgstr "ユーザーを検索"
+
+#: src/components/list/AddMemberModal.tsx:297
+msgid "Search users"
 msgstr "ユーザーを検索"
 
 #: src/components/note/NoteComposer.tsx:789
@@ -4500,7 +4523,7 @@ msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
 
 #: src/components/list/AddToListModal.tsx:304
-#: src/components/list/ListMembersModal.tsx:178
+#: src/components/list/ListMembersModal.tsx:185
 #: src/pages/lists/index.tsx:178
 msgid "Try again"
 msgstr "再試行"
