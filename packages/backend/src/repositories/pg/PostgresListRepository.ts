@@ -45,8 +45,8 @@ export class PostgresListRepository implements IListRepository {
       .select({
         list: userLists,
         memberCount: sql<number>`(
-          SELECT COUNT(*)::int FROM ${userListMembers}
-          WHERE ${userListMembers.listId} = ${userLists.id}
+          SELECT COUNT(*)::int FROM user_list_members
+          WHERE user_list_members.list_id = ${userLists.id}
         )`,
       })
       .from(userLists)
@@ -64,8 +64,8 @@ export class PostgresListRepository implements IListRepository {
       .select({
         list: userLists,
         memberCount: sql<number>`(
-          SELECT COUNT(*)::int FROM ${userListMembers}
-          WHERE ${userListMembers.listId} = ${userLists.id}
+          SELECT COUNT(*)::int FROM user_list_members
+          WHERE user_list_members.list_id = ${userLists.id}
         )`,
       })
       .from(userLists)

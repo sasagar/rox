@@ -154,7 +154,7 @@ lists.post(
  * @body {string} listId - List ID
  * @returns {List} List details
  */
-lists.post("/show", async (c: Context) => {
+lists.post("/show", optionalAuth(), async (c: Context) => {
   const user = c.get("user");
   const listService = getListService(c);
 
