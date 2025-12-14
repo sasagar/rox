@@ -8,7 +8,7 @@ import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient, ApiError } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Flag, QrCode, ListPlus } from "lucide-react";
+import { Flag, QrCode, ListPlus, ArrowLeft } from "lucide-react";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -374,19 +374,39 @@ export function UserProfile({ username, host }: UserProfileProps) {
       <div id={profileContainerId} className="user-profile-container">
         {/* Profile Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-          {/* Banner */}
-          {user.bannerUrl && (
-            <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600">
-              <img
-                src={getProxiedImageUrl(user.bannerUrl) || ""}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          {!user.bannerUrl && (
-            <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600" />
-          )}
+          {/* Banner with back button */}
+          <div className="relative">
+            {/* Back button - positioned on top of banner */}
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  router.push("/timeline");
+                }
+              }}
+              className="absolute top-3 left-3 z-10 flex items-center gap-1 px-3 py-1.5 bg-black/40 hover:bg-black/60 text-white rounded-full text-sm font-medium transition-colors backdrop-blur-sm"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline"><Trans>Back</Trans></span>
+            </button>
+
+            {/* Banner */}
+            {user.bannerUrl && (
+              <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600">
+                <img
+                  src={getProxiedImageUrl(user.bannerUrl) || ""}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            {!user.bannerUrl && (
+              <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600" />
+            )}
+          </div>
 
           {/* Profile Info */}
           <div className="p-4 sm:p-6">
