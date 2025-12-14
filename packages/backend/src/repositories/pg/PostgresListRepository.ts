@@ -163,6 +163,7 @@ export class PostgresListRepository implements IListRepository {
             displayName: r.user.displayName,
             avatarUrl: r.user.avatarUrl,
             host: r.user.host,
+            profileEmojis: r.user.profileEmojis,
           }
         : undefined,
     })) as ListMembership[];

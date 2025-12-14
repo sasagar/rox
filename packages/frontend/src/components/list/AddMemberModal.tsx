@@ -85,6 +85,7 @@ function UserResult({ user, isMember, isLoading, onAdd }: UserResultProps) {
           <UserDisplayName
             name={user.displayName}
             username={user.username}
+            profileEmojis={user.profileEmojis}
           />
         </p>
         <p className="text-sm text-(--text-muted) truncate">{handle}</p>

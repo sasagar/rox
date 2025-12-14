@@ -5,6 +5,7 @@
  */
 
 import type { ID, Timestamps } from "./common.js";
+import type { ProfileEmoji } from "./user.js";
 
 /**
  * Notification level for list updates
@@ -69,5 +70,6 @@ export interface ListMembership extends ListMember {
     displayName: string | null;
     avatarUrl: string | null;
     host: string | null;
+    profileEmojis?: ProfileEmoji[] | null;
   };
 }
