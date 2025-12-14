@@ -10,7 +10,7 @@
  */
 
 import { Trans } from "@lingui/react/macro";
-import { Lock, Globe, Users, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Lock, Globe, Users, MoreHorizontal, Pencil, Trash2, Bell, BellRing } from "lucide-react";
 import { Card } from "../ui/Card";
 import { SpaLink } from "../ui/SpaLink";
 import { Button } from "../ui/Button";
@@ -75,8 +75,24 @@ export function ListCard({ list, isOwner, onEdit, onDelete, showActions }: ListC
           </div>
         </div>
 
-        {/* Visibility indicator */}
+        {/* Status indicators */}
         <div className="flex items-center gap-2 ml-4">
+          {/* Notification indicator */}
+          {list.notifyLevel !== "none" && (
+            <span
+              className="text-primary-500"
+              title={list.notifyLevel === "all" ? "Notifications: All posts" : "Notifications: Original posts only"}
+              aria-label={list.notifyLevel === "all" ? "Notifications enabled for all posts" : "Notifications enabled for original posts"}
+            >
+              {list.notifyLevel === "all" ? (
+                <BellRing className="w-4 h-4" />
+              ) : (
+                <Bell className="w-4 h-4" />
+              )}
+            </span>
+          )}
+
+          {/* Visibility indicator */}
           {list.isPublic ? (
             <span
               className="text-gray-400 dark:text-gray-500"
