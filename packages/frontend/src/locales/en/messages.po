@@ -302,7 +302,7 @@ msgid "Add member"
 msgstr "Add member"
 
 #. placeholder {0}: list.name
-#: src/components/list/AddMemberModal.tsx:281
+#: src/components/list/AddMemberModal.tsx:282
 msgid "Add member to \"{0}\""
 msgstr "Add member to \"{0}\""
 
@@ -343,7 +343,7 @@ msgstr "Add users to this list from their profile"
 msgid "Add your first custom emoji to get started"
 msgstr "Add your first custom emoji to get started"
 
-#: src/components/list/AddMemberModal.tsx:100
+#: src/components/list/AddMemberModal.tsx:101
 #: src/pages/admin/blocked-usernames.tsx:411
 #: src/pages/admin/emojis.tsx:1487
 msgid "Added"
@@ -2858,7 +2858,7 @@ msgstr "No system files"
 msgid "No text content"
 msgstr "No text content"
 
-#: src/components/list/AddMemberModal.tsx:332
+#: src/components/list/AddMemberModal.tsx:333
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:424
@@ -3592,6 +3592,7 @@ msgstr "Renotes"
 msgid "replied to your note"
 msgstr "replied to your note"
 
+#: src/components/list/ListMemberCard.tsx:164
 #: src/components/settings/PushNotificationSection.tsx:69
 msgid "Replies"
 msgstr "Replies"
@@ -3908,7 +3909,7 @@ msgstr "Search for users"
 msgid "Search for users and manage suspensions"
 msgstr "Search for users and manage suspensions"
 
-#: src/components/list/AddMemberModal.tsx:321
+#: src/components/list/AddMemberModal.tsx:322
 msgid "Search for users to add to this list"
 msgstr "Search for users to add to this list"
 
@@ -3920,7 +3921,7 @@ msgstr "Search in:"
 msgid "Search User"
 msgstr "Search User"
 
-#: src/components/list/AddMemberModal.tsx:297
+#: src/components/list/AddMemberModal.tsx:298
 msgid "Search users"
 msgstr "Search users"
 
