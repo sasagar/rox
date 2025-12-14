@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
-import { X, Users, Loader2 } from "lucide-react";
+import { X, Users, Loader2, UserPlus } from "lucide-react";
 import {
   Dialog,
   Modal,
@@ -22,6 +22,7 @@ import {
 import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
 import { Button } from "../ui/Button";
 import { ListMemberCard } from "./ListMemberCard";
+import { AddMemberModal } from "./AddMemberModal";
 
 /**
  * Props for ListMembersModal component
@@ -72,6 +73,7 @@ export function ListMembersModal({
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [showAddMember, setShowAddMember] = useState(false);
 
   const limit = 20;
 
@@ -129,6 +131,11 @@ export function ListMembersModal({
     setMembers((prev) =>
       prev.map((m) => (m.id === updated.id ? updated : m)),
     );
+  };
+
+  // Handle member added from AddMemberModal
+  const handleMemberAdded = (membership: ListMembership) => {
+    setMembers((prev) => [membership, ...prev]);
   };
 
   return (
@@ -224,10 +231,35 @@ export function ListMembersModal({
                   </div>
                 )}
               </div>
+
+              {/* Footer with add member button (owner only) */}
+              {isOwner && (
+                <div className="p-4 border-t border-(--border-color)">
+                  <Button
+                    variant="secondary"
+                    onPress={() => setShowAddMember(true)}
+                    className="w-full"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    <Trans>Add member</Trans>
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </Dialog>
       </Modal>
+
+      {/* Add Member Modal */}
+      {isOwner && (
+        <AddMemberModal
+          isOpen={showAddMember}
+          onClose={() => setShowAddMember(false)}
+          list={list}
+          onMemberAdded={handleMemberAdded}
+          onMemberCountChanged={onMemberCountChanged}
+        />
+      )}
     </ModalOverlay>
   );
 }
