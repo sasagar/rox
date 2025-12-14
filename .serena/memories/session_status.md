@@ -1,102 +1,44 @@
-# Session Status - 2025-12-12 (Updated)
+# Session Status - 2025-12-14 (Updated)
 
-## Release Readiness Assessment (v2025.12.0-rc.10)
+## Current Release: v2025.12.2
 
-### Overall Status: ✅ READY FOR RELEASE
+### Overall Status: ✅ STABLE RELEASE
 
 | Check | Status | Notes |
 |-------|--------|-------|
 | TypeScript type check | ✅ Pass | All packages pass |
 | Linting (oxlint) | ✅ Pass | 0 warnings, 0 errors |
-| Unit tests | ✅ Pass | 841 tests passing |
+| Unit tests | ✅ Pass | 841+ tests passing |
 | Build | ✅ Pass | Backend and frontend build successfully |
-| Translations | ✅ Complete | 1110 strings, 0 missing in Japanese |
+| Translations | ✅ Complete | 1173 strings, 0 missing in Japanese |
 | Docker configs | ✅ Ready | compose.yml, compose.dev.yml configured |
 | DevContainer | ✅ Ready | Full setup with HTTPS, Claude Code |
-| Documentation | ✅ Updated | DevContainer guide, Testing guide updated |
 
-### Docker Reorganization Completed
-- Renamed `docker-compose.prod.yml` → `compose.yml`
-- Renamed `docker-compose.dev.yml` → `compose.dev.yml`
-- Deleted deprecated `/compose.yml` (root) and `/docker/caddy-deprecated/`
-- Added MariaDB service for MySQL compatibility testing
-- Created DevContainer with HTTPS support via mkcert
-- Claude Code CLI auto-installed in DevContainer
-- Claude Code history persisted in project root `/.claude/`
+### Package Versions
+- Root: `2025.12.2` (CalVer)
+- packages/backend: `1.1.0` (SemVer)
+- packages/frontend: `1.1.0` (SemVer)
+- packages/shared: `1.1.0` (SemVer)
 
-### Recent Bug Fix
-- Fixed `FollowService.test.ts` mock type error (missing increment/decrement methods)
+## Recent Changes (v2025.12.2)
 
-## Current Status
+### List Member Management (PR #71, merged)
+- **AddMemberModal**: New modal for searching and adding users to lists
+- **ListMembersModal**: Extended with "Add member" button
+- **MFM Emoji Support**: User display names now render custom emojis
+- **Sidebar Navigation**: Lists sidebar with "Back to lists" link
 
-### Recently Completed Features
+### Bug Fixes
+- **Lingui SSG Warning Fix**: Added `@lingui/message-utils` with `setMessagesCompiler()` to suppress "Uncompiled message detected" warnings during Waku static site generation
+- **User Profile Back Button**: Added back navigation button on profile banner
 
-#### Admin Layout & README Updates (Latest - 2025-12-12)
-- **Admin navigation mobile support**
-  - Added hamburger menu button visible only on mobile (`lg:hidden`)
-  - Extended `PageHeaderAction` interface with `className` prop
-  - Mobile menu triggers existing `MobileAdminNav` component
-  - Added Japanese translation for "Menu" → "メニュー"
-  
-- **Admin contact management fixes**
-  - Fixed 401 error by adding `apiClient.setToken(token)` in contacts page
-  - Fixed admin permission check in `requireContactManagement` middleware
-  
-- **README badge and icon updates**
-  - Updated test badge from `342+` to `800+`
-  - Replaced external SVG icons with emojis for better compatibility
-
-#### Server Onboarding Wizard (2025-12-10)
-- **Complete onboarding flow for new server setup**
-  - Added `onboarding.completed` setting key to `IInstanceSettingsRepository`
-  - Added `isOnboardingCompleted()` and `setOnboardingCompleted()` methods to `InstanceSettingsService`
-  - Created `/api/onboarding` API routes:
-    - `GET /api/onboarding/status` - Check if onboarding is needed
-    - `POST /api/onboarding/complete` - Create admin user and configure instance
-  - Created frontend onboarding wizard (`/onboarding`) with 4 steps:
-    1. Admin account creation
-    2. Instance settings
-    3. Registration settings
-    4. Review and confirm
-  - Added automatic redirect to onboarding from home page when needed
-  - Added Japanese translations for all onboarding UI strings
-  - Files:
-    - `packages/backend/src/interfaces/repositories/IInstanceSettingsRepository.ts`
-    - `packages/backend/src/services/InstanceSettingsService.ts`
-    - `packages/backend/src/routes/onboarding.ts`
-    - `packages/frontend/src/pages/onboarding.tsx`
-    - `packages/frontend/src/pages/index.tsx`
-
-#### Web Push Notifications (2025-12-09)
-- **Full Web Push implementation**
-  - Backend: `WebPushService.ts` with VAPID key generation
-  - Service Worker: `sw.js` with push event handling
-  - API routes: `/api/push/*` (subscribe, unsubscribe, test, status)
-  - Frontend hook: `usePushNotifications.ts`
-
-#### Plugin Architecture Design (2025-12-10)
-- **Design document created** (not implemented yet)
-  - EventBus for decoupled communication
-  - Plugin interface and lifecycle management
-  - Plugin Loader for dynamic loading
-  - Slot system for UI extensions
-  - Distribution via Git repos/direct downloads (not npm)
-  - See memory: `plugin_architecture_design`
-
-#### Production Bug Fixes (2025-12-09)
-- **Media Proxy for External Images**: External images from remote servers now load through `/api/proxy`
-- **canManageCustomEmojis Permission Fix**: Added legacy `isAdmin` fallback
-- **optionalAuth Middleware for Emojis Route**: Fixed 401/403 errors on `/api/emojis/remote`
-
-### Test Status
-- All unit tests passing (800+ tests)
-- TypeScript type checking passes
-- Linting passes (0 errors, 0 warnings)
-
-## Pending Tasks
-- Performance optimization
-- Add more repository tests
-- Plugin architecture implementation (design complete)
+### Files Changed in v2025.12.2
+- `packages/frontend/src/components/list/AddMemberModal.tsx` (new)
+- `packages/frontend/src/components/list/ListMembersModal.tsx` (updated)
+- `packages/frontend/src/components/list/ListMemberCard.tsx` (updated)
+- `packages/frontend/src/components/user/UserProfile.tsx` (back button added)
+- `packages/frontend/src/lib/i18n/index.ts` (message compiler)
+- `packages/frontend/package.json` (`@lingui/message-utils` added)
 
 ## Development Environment
 
@@ -116,12 +58,24 @@ cd packages/frontend
 bun run dev  # Runs on port 3001
 ```
 
-## Known Issues / In Progress
-- **React Hydration Error #418**: May be related to old cached builds
-- **WebSocket 1006 errors**: Connection closing before established
+## Key Features
+
+- ActivityPub federation (Follow, Create, Like, Announce, Delete, Move)
+- Misskey-compatible API endpoints
+- Multi-database support (PostgreSQL, MySQL, SQLite/D1)
+- S3-compatible storage support
+- Redis/Dragonfly caching
+- BullMQ job queue for async delivery
+- Role-based access control (Admin, Moderator)
+- User moderation (warnings, suspensions, reports)
+- Account migration support (Move activity)
+- Custom emoji management
+- MFM (Misskey Flavored Markdown) support
+- List feature (create, manage, timeline)
+- Web Push notifications
 
 ## Potential Next Steps
 1. Performance optimizations (query caching, response optimization)
-2. Additional repository tests (SQLite tests added)
-3. Plugin architecture implementation
-4. Image optimization improvements
+2. Plugin architecture implementation (design complete in memory)
+3. Image optimization improvements
+4. Mobile UX refinements
