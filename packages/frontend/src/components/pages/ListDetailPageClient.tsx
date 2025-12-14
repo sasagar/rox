@@ -20,6 +20,7 @@ import { ErrorMessage } from "../ui/ErrorMessage";
 import { ListTimeline } from "../list/ListTimeline";
 import { ListEditModal } from "../list/ListEditModal";
 import { ListDeleteConfirmDialog } from "../list/ListDeleteConfirmDialog";
+import { ListMembersModal } from "../list/ListMembersModal";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { listsApi, type List, type ListWithMemberCount } from "../../lib/api/lists";
 import { apiClient } from "../../lib/api/client";
@@ -54,6 +55,7 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showMembersModal, setShowMembersModal] = useState(false);
 
   // Restore user session on mount
   useEffect(() => {
@@ -159,25 +161,41 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
     );
   }
 
-  // Build actions for owner
-  const headerActions = isOwner
-    ? [
-        {
-          key: "edit",
-          label: <Trans>Edit</Trans>,
-          icon: <Pencil className="w-4 h-4" />,
-          onPress: () => setShowEditModal(true),
-          variant: "secondary" as const,
-        },
-        {
-          key: "delete",
-          label: <Trans>Delete</Trans>,
-          icon: <Trash2 className="w-4 h-4" />,
-          onPress: () => setShowDeleteDialog(true),
-          variant: "danger" as const,
-        },
-      ]
-    : [];
+  // Handle member count changed
+  const handleMemberCountChanged = (delta: number) => {
+    setList((prev) =>
+      prev ? { ...prev, memberCount: prev.memberCount + delta } : null,
+    );
+  };
+
+  // Build actions - Members button for all users, Edit/Delete for owner only
+  const headerActions = [
+    {
+      key: "members",
+      label: <Trans>Members</Trans>,
+      icon: <Users className="w-4 h-4" />,
+      onPress: () => setShowMembersModal(true),
+      variant: "secondary" as const,
+    },
+    ...(isOwner
+      ? [
+          {
+            key: "edit",
+            label: <Trans>Edit</Trans>,
+            icon: <Pencil className="w-4 h-4" />,
+            onPress: () => setShowEditModal(true),
+            variant: "secondary" as const,
+          },
+          {
+            key: "delete",
+            label: <Trans>Delete</Trans>,
+            icon: <Trash2 className="w-4 h-4" />,
+            onPress: () => setShowDeleteDialog(true),
+            variant: "danger" as const,
+          },
+        ]
+      : []),
+  ];
 
   // Build subtitle with member count and visibility
   const subtitle = (
@@ -238,6 +256,15 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
           onDeleted={handleListDeleted}
         />
       )}
+
+      {/* Members Modal */}
+      <ListMembersModal
+        isOpen={showMembersModal}
+        onClose={() => setShowMembersModal(false)}
+        list={list}
+        isOwner={!!isOwner}
+        onMemberCountChanged={handleMemberCountChanged}
+      />
     </Layout>
   );
 }
