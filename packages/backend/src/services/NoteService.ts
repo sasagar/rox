@@ -453,6 +453,20 @@ export class NoteService {
   }
 
   /**
+   * Hydrate notes with renote, reply, and file information
+   *
+   * This is a public method that can be used by other services (like ListService)
+   * to hydrate timeline notes with full renote/reply and file data.
+   *
+   * @param notesList - List of notes to hydrate
+   * @returns Notes with renote, reply, and files populated
+   */
+  async hydrateNotesForTimeline(notesList: Note[]): Promise<Note[]> {
+    const hydratedNotes = await this.hydrateRenotes(notesList);
+    return await this.hydrateFiles(hydratedNotes);
+  }
+
+  /**
    * Delete a note
    *
    * Verifies ownership before deletion.

@@ -14,6 +14,7 @@ import type { INoteRepository, TimelineOptions } from "../interfaces/repositorie
 import type { List, ListMember, ListWithMemberCount, ListMembership, ListNotifyLevel } from "shared";
 import type { Note } from "shared";
 import { generateId } from "../../../shared/src/utils/id.js";
+import type { NoteService } from "./NoteService.js";
 
 /**
  * List Service
@@ -36,11 +37,13 @@ export class ListService {
    * @param listRepository - List repository
    * @param userRepository - User repository
    * @param noteRepository - Note repository
+   * @param noteService - Note service for hydrating notes
    */
   constructor(
     private readonly listRepository: IListRepository,
     private readonly userRepository: IUserRepository,
     private readonly noteRepository: INoteRepository,
+    private readonly noteService?: NoteService,
   ) {}
 
   /**
@@ -381,10 +384,17 @@ export class ListService {
     }
 
     // Get timeline for those users
-    return await this.noteRepository.getTimeline({
+    const notes = await this.noteRepository.getTimeline({
       ...options,
       userIds: memberUserIds,
     });
+
+    // Hydrate renote and file information if noteService is available
+    if (this.noteService) {
+      return await this.noteService.hydrateNotesForTimeline(notes);
+    }
+
+    return notes;
   }
 
   /**

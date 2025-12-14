@@ -12,6 +12,7 @@ import type { Context } from "hono";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { ListService } from "../services/ListService.js";
+import { NoteService } from "../services/NoteService.js";
 
 const lists = new Hono();
 
@@ -22,7 +23,22 @@ function getListService(c: Context): ListService {
   const listRepository = c.get("listRepository");
   const userRepository = c.get("userRepository");
   const noteRepository = c.get("noteRepository");
-  return new ListService(listRepository, userRepository, noteRepository);
+  const driveFileRepository = c.get("driveFileRepository");
+  const followRepository = c.get("followRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  // Create NoteService for hydrating notes in list timeline
+  const noteService = new NoteService(
+    noteRepository,
+    driveFileRepository,
+    followRepository,
+    userRepository,
+    deliveryService,
+    cacheService,
+  );
+
+  return new ListService(listRepository, userRepository, noteRepository, noteService);
 }
 
 /**
