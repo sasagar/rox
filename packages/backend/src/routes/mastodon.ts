@@ -12,6 +12,7 @@ import type { Context } from "hono";
 import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
+import type { IRemoteInstanceRepository } from "../interfaces/repositories/IRemoteInstanceRepository.js";
 
 const app = new Hono();
 
@@ -176,6 +177,29 @@ app.get("/directory", async (c: Context) => {
   // "active" order is already handled by the query if supported
 
   return c.json(accounts);
+});
+
+
+/**
+ * Get Instance Peers
+ *
+ * GET /api/v1/instance/peers
+ *
+ * Returns an array of domain names that this instance has federated with.
+ * This endpoint is used by federation monitoring tools (fediverse.observer, etc.)
+ *
+ * Response: Array of domain strings
+ */
+app.get("/instance/peers", async (c: Context) => {
+  const remoteInstanceRepository = c.get("remoteInstanceRepository") as IRemoteInstanceRepository;
+
+  // Get all known remote instances
+  const instances = await remoteInstanceRepository.findAll();
+
+  // Extract just the host domains
+  const peers = instances.map((instance) => instance.host);
+
+  return c.json(peers);
 });
 
 export default app;
