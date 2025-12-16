@@ -455,7 +455,7 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile Header Bar */}
-      <header className="lg:hidden fixed fixed-top-safe left-0 right-0 z-40 bg-(--card-bg) border-b border-(--border-color) px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden fixed fixed-top-with-safe-area-bg left-0 right-0 z-40 bg-(--card-bg) border-b border-(--border-color) px-4 py-3 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen(true)}
