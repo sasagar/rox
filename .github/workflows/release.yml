@@ -127,6 +127,42 @@ jobs:
             RANGE="${CURRENT_TAG}"
           fi
 
+          # Function to extract GitHub username from email or use email prefix
+          # GitHub noreply emails: username@users.noreply.github.com or ID+username@users.noreply.github.com
+          extract_username() {
+            local email="$1"
+            if [[ "$email" == *"@users.noreply.github.com" ]]; then
+              # Extract username from GitHub noreply email
+              local prefix="${email%%@*}"
+              # Handle ID+username format
+              if [[ "$prefix" == *"+"* ]]; then
+                echo "${prefix#*+}"
+              else
+                echo "$prefix"
+              fi
+            else
+              # Use email prefix as fallback
+              echo "${email%%@*}"
+            fi
+          }
+
+          # Function to format commits with proper GitHub username mentions
+          format_commits() {
+            local grep_pattern="$1"
+            local invert="${2:-false}"
+
+            if [ "$invert" = "true" ]; then
+              git log $RANGE --pretty=format:"%s|%h|%ae" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true
+            else
+              git log $RANGE --pretty=format:"%s|%h|%ae" --grep="$grep_pattern" 2>/dev/null || true
+            fi | while IFS='|' read -r subject hash email; do
+              if [ -n "$subject" ]; then
+                username=$(extract_username "$email")
+                echo "- $subject ($hash) @$username"
+              fi
+            done
+          }
+
           # Create changelog sections based on conventional commits
           {
             echo "## Version Information"
@@ -142,7 +178,7 @@ jobs:
             echo ""
 
             # Features
-            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true)
+            FEATURES=$(format_commits "^feat")
             if [ -n "$FEATURES" ]; then
               echo "### 🚀 New Features"
               echo "$FEATURES"
@@ -150,7 +186,7 @@ jobs:
             fi
 
             # Bug fixes
-            FIXES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true)
+            FIXES=$(format_commits "^fix")
             if [ -n "$FIXES" ]; then
               echo "### 🐛 Bug Fixes"
               echo "$FIXES"
@@ -158,7 +194,7 @@ jobs:
             fi
 
             # Performance
-            PERF=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^perf" 2>/dev/null || true)
+            PERF=$(format_commits "^perf")
             if [ -n "$PERF" ]; then
               echo "### ⚡ Performance"
               echo "$PERF"
@@ -166,7 +202,7 @@ jobs:
             fi
 
             # Documentation
-            DOCS=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true)
+            DOCS=$(format_commits "^docs")
             if [ -n "$DOCS" ]; then
               echo "### 📚 Documentation"
               echo "$DOCS"
@@ -174,7 +210,7 @@ jobs:
             fi
 
             # Chore/Maintenance
-            CHORE=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^chore" 2>/dev/null || true)
+            CHORE=$(format_commits "^chore")
             if [ -n "$CHORE" ]; then
               echo "### 🧰 Maintenance"
               echo "$CHORE"
@@ -182,7 +218,7 @@ jobs:
             fi
 
             # Refactor
-            REFACTOR=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^refactor" 2>/dev/null || true)
+            REFACTOR=$(format_commits "^refactor")
             if [ -n "$REFACTOR" ]; then
               echo "### ♻️ Refactoring"
               echo "$REFACTOR"
@@ -190,7 +226,7 @@ jobs:
             fi
 
             # Other commits (not matching conventional patterns)
-            OTHER=$(git log $RANGE --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
+            OTHER=$(format_commits "" "true")
             if [ -n "$OTHER" ]; then
               echo "### 📝 Other Changes"
               echo "$OTHER"
