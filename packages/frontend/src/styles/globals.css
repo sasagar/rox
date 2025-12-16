@@ -253,11 +253,11 @@ body {
 }
 
 /* Mobile sticky header below fixed header (for PageHeader in Layout)
- * Accounts for fixed header height (64px/4rem) plus safe area inset
+ * Accounts for fixed header height (64px/4rem). Safe area is handled by the header itself.
  * Only applied on mobile (< lg breakpoint)
  */
 .sticky-below-mobile-header {
-  top: calc(4rem + env(safe-area-inset-top, 0px));
+  top: 4rem;
 }
 
 @media (min-width: 1024px) {
@@ -267,10 +267,10 @@ body {
 }
 
 /* Mobile content padding below fixed header
- * Accounts for fixed header height (64px/4rem) plus safe area inset
+ * Accounts for fixed header height (64px/4rem). Safe area is handled by the header itself.
  */
 .pt-mobile-header {
-  padding-top: calc(4rem + env(safe-area-inset-top, 0px));
+  padding-top: 4rem;
 }
 
 @media (min-width: 1024px) {
