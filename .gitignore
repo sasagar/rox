@@ -86,3 +86,7 @@ docker/certs/*-key.pem
 
 # DevContainer environment
 .devcontainer/.env
+
+# cipher data
+cipherdata/
+cipher.yml

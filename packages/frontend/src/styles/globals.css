@@ -189,8 +189,9 @@ body {
 }
 
 /* PWA Safe Area Support
- * Handles notched devices (iPhone X+) and standalone PWA mode.
+ * Handles notched devices (iPhone X+, Dynamic Island) and standalone PWA mode.
  * Uses env() for safe-area-inset values with fallbacks.
+ * Reference: https://webkit.org/blog/7929/designing-websites-for-iphone-x/
  */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -198,6 +199,18 @@ body {
 
 .safe-area-inset-top {
   padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Fixed/sticky header support for notched devices (Dynamic Island, notch, status bar)
+ * For elements positioned with `fixed top-0` or `sticky top-0`, use these classes
+ * to position content below the safe area.
+ */
+.fixed-top-safe {
+  top: env(safe-area-inset-top, 0px);
+}
+
+.sticky-top-safe {
+  top: env(safe-area-inset-top, 0px);
 }
 
 /* PWA standalone mode specific adjustments */
@@ -209,6 +222,15 @@ body {
 
   .safe-area-inset-top {
     padding-top: max(env(safe-area-inset-top, 0px), 8px);
+  }
+
+  /* Fixed/sticky headers in PWA mode need top offset for notch/Dynamic Island */
+  .fixed-top-safe {
+    top: env(safe-area-inset-top, 0px);
+  }
+
+  .sticky-top-safe {
+    top: env(safe-area-inset-top, 0px);
   }
 }
 
@@ -227,5 +249,32 @@ body {
       min-height: 100dvh;
       overscroll-behavior: contain;
     }
+  }
+}
+
+/* Mobile sticky header below fixed header (for PageHeader in Layout)
+ * Accounts for fixed header height (64px/4rem) plus safe area inset
+ * Only applied on mobile (< lg breakpoint)
+ */
+.sticky-below-mobile-header {
+  top: calc(4rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 1024px) {
+  .sticky-below-mobile-header {
+    top: 0;
+  }
+}
+
+/* Mobile content padding below fixed header
+ * Accounts for fixed header height (64px/4rem) plus safe area inset
+ */
+.pt-mobile-header {
+  padding-top: calc(4rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 1024px) {
+  .pt-mobile-header {
+    padding-top: 0;
   }
 }
