@@ -504,12 +504,12 @@ export function Sidebar() {
 
       {/* Mobile Slide-in Menu */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 h-screen w-72 max-w-[85vw] bg-(--card-bg) border-r border-(--border-color) flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed left-0 top-0 h-screen w-72 max-w-[85vw] bg-(--card-bg) border-r border-(--border-color) flex flex-col z-50 transform transition-transform duration-300 ease-in-out pt-[env(safe-area-inset-top)] ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Close button */}
-        <div className="absolute top-3 right-3">
+        {/* Close button - positioned below safe area */}
+        <div className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-3">
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
