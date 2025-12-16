@@ -278,3 +278,27 @@ body {
     padding-top: 0;
   }
 }
+
+/* Fixed header with safe area padding (covers entire top area including notch/Dynamic Island)
+ * Use this for headers that should have their background extend into the safe area.
+ * Unlike fixed-top-safe which positions below the safe area, this class positions
+ * at top: 0 and adds padding to push content below the safe area while the
+ * background color fills the entire area.
+ */
+.fixed-top-with-safe-area-bg {
+  top: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Scroll to top button positioning for PWA
+ * Accounts for bottom navigation bar (5rem/80px) plus safe area inset for home indicator
+ */
+.scroll-to-top-safe {
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .scroll-to-top-safe {
+    bottom: 1.5rem;
+  }
+}

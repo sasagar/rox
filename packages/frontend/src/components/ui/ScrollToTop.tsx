@@ -52,7 +52,7 @@ export function ScrollToTop({ threshold = 400 }: ScrollToTopProps) {
   return (
     <Button
       onPress={scrollToTop}
-      className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-30 p-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+      className="fixed scroll-to-top-safe right-4 lg:right-6 z-30 p-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-110 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
       aria-label="Scroll to top"
     >
       <ArrowUp className="w-5 h-5" />
