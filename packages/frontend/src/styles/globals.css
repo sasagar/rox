@@ -269,10 +269,12 @@ body {
 }
 
 /* Mobile content padding below fixed header
- * Accounts for fixed header height (64px/4rem). Safe area is handled by the header itself.
+ * Accounts for fixed header height (64px/4rem) + safe area inset.
+ * The header has padding-top for safe area, so content must also account for
+ * the header's full visual height (4rem + safe-area-inset-top).
  */
 .pt-mobile-header {
-  padding-top: 4rem;
+  padding-top: calc(4rem + env(safe-area-inset-top, 0px));
 }
 
 @media (min-width: 1024px) {
