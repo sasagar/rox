@@ -59,8 +59,8 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl", header 
   // Also add bottom padding on mobile for the AppBar (pb-16 = 4rem = 64px)
   const sidebarMarginClass = shouldShowSidebar
     ? isCollapsed
-      ? "lg:ml-16 pt-16 lg:pt-0 pb-16 lg:pb-0"
-      : "lg:ml-64 pt-16 lg:pt-0 pb-16 lg:pb-0"
+      ? "lg:ml-16 pt-mobile-header pb-16 lg:pb-0"
+      : "lg:ml-64 pt-mobile-header pb-16 lg:pb-0"
     : "";
 
   return (
@@ -72,7 +72,7 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl", header 
       <main className={`min-h-screen transition-all duration-300 ${sidebarMarginClass}`}>
         {/* Full-width header (e.g., PageHeader) - sticky for consistent navigation */}
         {header && (
-          <div className="sticky top-0 z-30 w-full bg-(--bg-primary)/95 backdrop-blur-sm border-b border-(--border-color)">
+          <div className="sticky sticky-below-mobile-header z-30 w-full bg-(--bg-primary)/95 backdrop-blur-sm border-b border-(--border-color)">
             {header}
           </div>
         )}
