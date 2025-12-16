@@ -243,7 +243,7 @@ app.get("/:width/:height", async (c: Context) => {
     // Generate PNG
     const pngBuffer = await image.png().toBuffer();
 
-    return new Response(pngBuffer, {
+    return new Response(new Uint8Array(pngBuffer), {
       headers: {
         "Content-Type": "image/png",
         "Cache-Control": "public, max-age=86400", // Cache for 24 hours
