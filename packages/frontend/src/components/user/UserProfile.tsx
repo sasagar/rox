@@ -412,7 +412,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
           <div className="p-4 sm:p-6">
             <div className="flex items-start gap-3 sm:gap-4">
               {/* Avatar */}
-              <div className="-mt-12 sm:-mt-16">
+              <div className="relative z-10 -mt-12 sm:-mt-16">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                   {user.avatarUrl && (
                     <img
