@@ -288,10 +288,11 @@ body {
  * Unlike fixed-top-safe which positions below the safe area, this class positions
  * at top: 0 and adds padding to push content below the safe area while the
  * background color fills the entire area.
+ * Includes 0.75rem (py-3 equivalent) padding for content spacing.
  */
 .fixed-top-with-safe-area-bg {
   top: 0;
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
 }
 
 /* Scroll to top button positioning for PWA
