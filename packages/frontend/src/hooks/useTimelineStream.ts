@@ -20,7 +20,7 @@ import type { Note } from "../lib/types/note";
 /**
  * Timeline type
  */
-export type TimelineType = "home" | "local" | "social";
+export type TimelineType = "home" | "local" | "social" | "global";
 
 // --- Module-level connection state management ---
 // This avoids Jotai atom re-renders that were causing performance issues
@@ -43,6 +43,7 @@ const timelineConnections: Record<TimelineType, TimelineWSConnection> = {
   home: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
   local: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
   social: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
+  global: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
 };
 
 // Subscribers for connection state changes (for React state sync)
@@ -51,6 +52,7 @@ const connectionListeners: Record<TimelineType, Set<ConnectionStateListener>> = 
   home: new Set(),
   local: new Set(),
   social: new Set(),
+  global: new Set(),
 };
 
 function notifyConnectionChange(timelineType: TimelineType, connected: boolean) {
@@ -76,6 +78,8 @@ function getTimelineWSUrl(timelineType: TimelineType, token: string | null): str
       return token
         ? `${protocol}//${host}/ws/social-timeline?token=${encodeURIComponent(token)}`
         : `${protocol}//${host}/ws/social-timeline`;
+    case "global":
+      return `${protocol}//${host}/ws/global-timeline`;
     default:
       return `${protocol}//${host}/ws/local-timeline`;
   }

@@ -79,7 +79,9 @@ export function TimelineColumnContent({
       ? "home"
       : timelineType === "social"
         ? "social"
-        : "local";
+        : timelineType === "global"
+          ? "global"
+          : "local";
 
   // Enable real-time updates
   useTimelineStream(streamType, { enabled: true, onNewNote: handleNewNote });

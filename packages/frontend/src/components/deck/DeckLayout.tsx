@@ -238,7 +238,7 @@ export function DeckLayout({
         )}
 
         {/* Desktop: Horizontal scrolling columns */}
-        <div className="hidden lg:block h-[calc(100vh-theme(spacing.12))] overflow-hidden">
+        <div className="hidden lg:block h-[calc(100vh-12*var(--spacing))] overflow-hidden">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -256,7 +256,7 @@ export function DeckLayout({
                 {columns.map((column) => (
                   <div
                     key={column.id}
-                    className={`flex-shrink-0 ${getColumnWidthClass(column.width)} snap-start`}
+                    className={`shrink-0 ${getColumnWidthClass(column.width)} snap-start`}
                   >
                     <DeckColumn column={column} />
                   </div>
@@ -264,7 +264,7 @@ export function DeckLayout({
 
                 {/* Add Column Button */}
                 {showAddColumn && (
-                  <div className="flex-shrink-0 w-16 snap-start flex items-center justify-center">
+                  <div className="shrink-0 w-16 snap-start flex items-center justify-center">
                     <AddColumnButton />
                   </div>
                 )}
@@ -275,7 +275,7 @@ export function DeckLayout({
 
         {/* Mobile: Single column with swipe */}
         <div
-          className="lg:hidden h-[calc(100vh-theme(spacing.32))] overflow-hidden"
+          className="lg:hidden h-[calc(100vh-32*var(--spacing))] overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}

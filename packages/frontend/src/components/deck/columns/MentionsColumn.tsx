@@ -44,35 +44,35 @@ export function MentionsColumnContent({
 
   const { notes, loading, error, hasMore, cursor } = state;
 
-  // Load initial data
+  // Load initial data function (reusable)
+  const loadInitialData = useCallback(async () => {
+    updateState({ loading: true, error: null });
+
+    try {
+      const data = await mentionsApi.getMentions({ limit: 20 });
+      const lastNote = data[data.length - 1];
+
+      updateState({
+        notes: data,
+        loading: false,
+        hasMore: data.length >= 20,
+        cursor: lastNote?.id ?? null,
+      });
+    } catch (err) {
+      updateState({
+        loading: false,
+        error:
+          err instanceof Error ? err.message : "Failed to load mentions",
+      });
+    }
+  }, [updateState]);
+
+  // Load initial data on mount
   useEffect(() => {
     if (hasLoadedRef.current || !currentUser) return;
     hasLoadedRef.current = true;
-
-    const loadInitialData = async () => {
-      updateState({ loading: true, error: null });
-
-      try {
-        const data = await mentionsApi.getMentions({ limit: 20 });
-        const lastNote = data[data.length - 1];
-
-        updateState({
-          notes: data,
-          loading: false,
-          hasMore: data.length >= 20,
-          cursor: lastNote?.id ?? null,
-        });
-      } catch (err) {
-        updateState({
-          loading: false,
-          error:
-            err instanceof Error ? err.message : "Failed to load mentions",
-        });
-      }
-    };
-
     loadInitialData();
-  }, [currentUser, updateState]);
+  }, [currentUser, loadInitialData]);
 
   // Load more
   const loadMore = useCallback(async () => {
@@ -126,13 +126,13 @@ export function MentionsColumnContent({
   // Retry
   const handleRetry = useCallback(() => {
     updateState({ error: null });
-    // For initial load failures, reset and reload from scratch
+    // For initial load failures, directly trigger initial load
     if (notes.length === 0) {
-      hasLoadedRef.current = false;
-      updateState({ hasMore: true });
+      loadInitialData();
+      return;
     }
     loadMore();
-  }, [loadMore, updateState, notes.length]);
+  }, [loadMore, loadInitialData, updateState, notes.length]);
 
   if (!currentUser) {
     return (
