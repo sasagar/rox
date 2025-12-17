@@ -68,24 +68,6 @@ function getColumnIcon(column: DeckColumnType): React.ReactNode {
 }
 
 /**
- * Get title for column (returns translation key)
- */
-function getColumnTitleKey(column: DeckColumnType): string {
-  switch (column.config.type) {
-    case "timeline":
-      return column.config.timelineType;
-    case "notifications":
-      return "notifications";
-    case "mentions":
-      return "mentions";
-    case "list":
-      return column.config.listName || "list";
-    default:
-      return "column";
-  }
-}
-
-/**
  * Render the content component based on column type
  */
 function renderColumnContent(column: DeckColumnType) {
@@ -145,17 +127,21 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
 
   // Get translated column title
   const columnTitle = useMemo(() => {
-    const titleKey = getColumnTitleKey(column);
     // For list columns, use the list name directly
     if (column.config.type === "list" && column.config.listName) {
       return column.config.listName;
     }
+    // For timeline columns, translate based on timeline type
+    if (column.config.type === "timeline") {
+      switch (column.config.timelineType) {
+        case "home": return t`Home`;
+        case "local": return t`Local`;
+        case "social": return t`Social`;
+        case "global": return t`Global`;
+      }
+    }
     // For other types, translate
-    switch (titleKey) {
-      case "home": return t`Home`;
-      case "local": return t`Local`;
-      case "social": return t`Social`;
-      case "global": return t`Global`;
+    switch (column.config.type) {
       case "notifications": return t`Notifications`;
       case "mentions": return t`Mentions`;
       case "list": return t`List`;
