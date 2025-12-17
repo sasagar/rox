@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   DndContext,
@@ -127,15 +127,59 @@ export function DeckLayout({
     [mobileColumnIndex, columns.length, setMobileColumn]
   );
 
-  // Mobile touch handling
+  // Mobile touch handling with visual feedback
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Reset swipe offset when column index changes
+  useEffect(() => {
+    setSwipeOffset(0);
+  }, [mobileColumnIndex]);
+
+  // Ensure mobile index stays within bounds when columns change
+  useEffect(() => {
+    if (columns.length > 0 && mobileColumnIndex >= columns.length) {
+      setMobileColumnIndex(columns.length - 1);
+    }
+  }, [columns.length, mobileColumnIndex, setMobileColumnIndex]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const touch = e.touches[0];
     if (touch) {
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      setIsTransitioning(false);
     }
   }, []);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!touchStartRef.current) return;
+
+      const touch = e.touches[0];
+      if (!touch) return;
+
+      const deltaX = touch.clientX - touchStartRef.current.x;
+      const deltaY = touch.clientY - touchStartRef.current.y;
+
+      // Only handle horizontal swipes (with some tolerance)
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Limit swipe offset at edges
+        const canSwipeLeft = mobileColumnIndex < columns.length - 1;
+        const canSwipeRight = mobileColumnIndex > 0;
+
+        let offset = deltaX;
+        if (deltaX < 0 && !canSwipeLeft) {
+          offset = deltaX * 0.2; // Resistance at edge
+        } else if (deltaX > 0 && !canSwipeRight) {
+          offset = deltaX * 0.2; // Resistance at edge
+        }
+
+        setSwipeOffset(offset);
+      }
+    },
+    [mobileColumnIndex, columns.length]
+  );
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
@@ -149,9 +193,12 @@ export function DeckLayout({
 
       // Only handle horizontal swipes
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        setIsTransitioning(true);
         handleMobileSwipe(deltaX > 0 ? "right" : "left");
       }
 
+      // Reset offset with animation
+      setSwipeOffset(0);
       touchStartRef.current = null;
     },
     [handleMobileSwipe]
@@ -230,29 +277,53 @@ export function DeckLayout({
         <div
           className="lg:hidden h-[calc(100vh-theme(spacing.32))] overflow-hidden"
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {columns.length > 0 && columns[mobileColumnIndex] && (
-            <div className="h-full">
+          {columns.length > 0 && columns[mobileColumnIndex] ? (
+            <div
+              className={`h-full ${isTransitioning ? "transition-transform duration-200 ease-out" : ""}`}
+              style={{ transform: `translateX(${swipeOffset}px)` }}
+            >
               <DeckColumn column={columns[mobileColumnIndex]} isMobile />
+            </div>
+          ) : (
+            /* Empty state when no columns */
+            <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-4">
+              <div className="text-4xl mb-4">📊</div>
+              <p className="text-center mb-4">
+                <Trans>No columns yet. Add your first column to get started.</Trans>
+              </p>
+              <AddColumnButton />
             </div>
           )}
 
           {/* Mobile Column Indicators */}
           {columns.length > 1 && (
-            <div className="fixed bottom-20 left-0 right-0 flex justify-center gap-2 pb-2">
+            <div className="fixed bottom-20 left-0 right-0 flex justify-center gap-2 pb-2 z-10">
               {columns.map((col, index) => (
                 <button
                   key={col.id}
                   onClick={() => setMobileColumnIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                     index === mobileColumnIndex
-                      ? "bg-(--accent-color)"
-                      : "bg-gray-400 dark:bg-gray-600"
+                      ? "bg-(--accent-color) scale-110"
+                      : "bg-gray-400 dark:bg-gray-600 hover:bg-gray-500 dark:hover:bg-gray-500"
                   }`}
                   aria-label={`Go to column ${index + 1}`}
                 />
               ))}
+            </div>
+          )}
+
+          {/* Swipe hint for first-time users */}
+          {columns.length > 1 && mobileColumnIndex === 0 && (
+            <div className="fixed bottom-28 left-0 right-0 flex justify-center pointer-events-none">
+              <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                <span>←</span>
+                <Trans>Swipe to navigate</Trans>
+                <span>→</span>
+              </div>
             </div>
           )}
         </div>
