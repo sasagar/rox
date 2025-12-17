@@ -85,7 +85,6 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [selectedTimeline, setSelectedTimeline] =
     useState<TimelineType>("home");
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
-  const [hasFetchedLists, setHasFetchedLists] = useState(false);
 
   // Translated column types
   const columnTypes: ColumnTypeOption[] = useMemo(() => [
@@ -123,30 +122,30 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     { type: "global", label: t`Global`, icon: <Globe className="w-4 h-4" /> },
   ], [t]);
 
-  // Fetch lists when dialog opens and list type is selected
+  // Fetch lists function - shared between initial load and retry
+  const fetchLists = useCallback(async () => {
+    if (!currentUser || !token || listsLoading) return;
+
+    apiClient.setToken(token);
+    setListsLoading(true);
+    setListsError(null);
+
+    try {
+      const userLists = await listsApi.list();
+      setMyLists(userLists);
+    } catch (err) {
+      setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
+    } finally {
+      setListsLoading(false);
+    }
+  }, [currentUser, token, listsLoading, setListsLoading, setListsError, setMyLists, t]);
+
+  // Auto-fetch lists when dialog opens with list type selected
   useEffect(() => {
-    const fetchLists = async () => {
-      if (!currentUser || !token || hasFetchedLists || myLists.length > 0) return;
-
-      apiClient.setToken(token);
-      setListsLoading(true);
-      setListsError(null);
-
-      try {
-        const userLists = await listsApi.list();
-        setMyLists(userLists);
-        setHasFetchedLists(true);
-      } catch (err) {
-        setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
-      } finally {
-        setListsLoading(false);
-      }
-    };
-
-    if (isOpen && selectedType === "list" && myLists.length === 0 && !hasFetchedLists) {
+    if (isOpen && selectedType === "list" && myLists.length === 0 && !listsLoading && !listsError) {
       fetchLists();
     }
-  }, [isOpen, selectedType, currentUser, token, hasFetchedLists, myLists.length, setMyLists, setListsLoading, setListsError, t]);
+  }, [isOpen, selectedType, myLists.length, listsLoading, listsError, fetchLists]);
 
   const handleClose = useCallback(() => {
     setSelectedType(null);
@@ -241,6 +240,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     </p>
                     {columnTypes.map((option) => (
                       <button
+                        type="button"
                         key={option.type}
                         onClick={() => setSelectedType(option.type)}
                         className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
@@ -263,6 +263,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                   /* Step 2a: Select timeline type */
                   <div className="space-y-2">
                     <button
+                      type="button"
                       onClick={() => setSelectedType(null)}
                       className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
                     >
@@ -274,6 +275,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     <div className="grid grid-cols-2 gap-2">
                       {timelineOptions.map((option) => (
                         <button
+                          type="button"
                           key={option.type}
                           onClick={() => setSelectedTimeline(option.type)}
                           className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
@@ -292,6 +294,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                   /* Step 2b: Select list */
                   <div className="space-y-2">
                     <button
+                      type="button"
                       onClick={() => setSelectedType(null)}
                       className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
                     >
@@ -308,7 +311,8 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                       <div className="text-center py-4">
                         <p className="text-sm text-red-500 mb-2">{listsError}</p>
                         <button
-                          onClick={() => setHasFetchedLists(false)}
+                          type="button"
+                          onClick={fetchLists}
                           className="text-sm text-primary-500 hover:text-primary-600"
                         >
                           <Trans>Try again</Trans>
@@ -322,6 +326,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                       <div className="space-y-2">
                         {myLists.map((list) => (
                           <button
+                            type="button"
                             key={list.id}
                             onClick={() => setSelectedListId(list.id)}
                             className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
@@ -349,6 +354,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                   /* Step 2c: Confirmation for other types */
                   <div className="space-y-2">
                     <button
+                      type="button"
                       onClick={() => setSelectedType(null)}
                       className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
                     >

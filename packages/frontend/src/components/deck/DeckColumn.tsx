@@ -265,6 +265,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
             <div className="flex gap-1">
               {widthOptions.map((option) => (
                 <button
+                  type="button"
                   key={option.value}
                   onClick={() => handleWidthChange(option.value)}
                   className={`px-2 py-1 text-xs rounded transition-colors ${
