@@ -283,17 +283,20 @@ msgstr "ActivityPub配信は同期モードで実行されています。"
 msgid "Add @{username} to list"
 msgstr "@{username}をリストに追加"
 
-#. placeholder {0}: COLUMN_TYPES.find((t) => t.type === selectedType)?.label
 #: src/components/deck/AddColumnDialog.tsx:305
-msgid "Add a {0} column?"
-msgstr "{0}カラムを追加しますか？"
+#~ msgid "Add a {0} column?"
+#~ msgstr "{0}カラムを追加しますか？"
+
+#: src/components/deck/AddColumnDialog.tsx:359
+msgid "Add a {selectedTypeLabel} column?"
+msgstr "{selectedTypeLabel}カラムを追加しますか？"
 
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "他のサーバーのアカウントとリンクするためにエイリアスを追加します。これにより、それらのアカウントのフォロワーがここであなたを見つけることができます。"
 
-#: src/components/deck/AddColumnDialog.tsx:182
-#: src/components/deck/AddColumnDialog.tsx:324
+#: src/components/deck/AddColumnDialog.tsx:222
+#: src/components/deck/AddColumnDialog.tsx:378
 msgid "Add Column"
 msgstr "カラムを追加"
 
@@ -513,6 +516,11 @@ msgstr "本当に削除しますか？"
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
+#. placeholder {0}: profileToDelete.name
+#: src/components/deck/DeckProfileSwitcher.tsx:294
+msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
+msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
+
 #. placeholder {0}: selectedEmojis.size
 #: src/pages/admin/emojis.tsx:616
 msgid "Are you sure you want to delete {0} emojis? This action cannot be undone."
@@ -576,9 +584,9 @@ msgstr "アバターを更新しました"
 msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
 
-#: src/components/deck/AddColumnDialog.tsx:229
-#: src/components/deck/AddColumnDialog.tsx:258
-#: src/components/deck/AddColumnDialog.tsx:301
+#: src/components/deck/AddColumnDialog.tsx:269
+#: src/components/deck/AddColumnDialog.tsx:298
+#: src/components/deck/AddColumnDialog.tsx:355
 #: src/components/pages/NoteDetailPageClient.tsx:109
 #: src/components/user/UserProfile.tsx:393
 #: src/pages/onboarding.tsx:463
@@ -753,9 +761,10 @@ msgstr "通報を管理可能"
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
-#: src/components/deck/AddColumnDialog.tsx:317
-#: src/components/deck/DeckProfileSwitcher.tsx:112
-#: src/components/deck/DeckProfileSwitcher.tsx:231
+#: src/components/deck/AddColumnDialog.tsx:371
+#: src/components/deck/DeckProfileSwitcher.tsx:138
+#: src/components/deck/DeckProfileSwitcher.tsx:264
+#: src/components/deck/DeckProfileSwitcher.tsx:306
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -849,6 +858,10 @@ msgstr "コードをクリップボードにコピーしました"
 #: src/pages/admin/roles.tsx:374
 msgid "Color"
 msgstr "カラー"
+
+#: src/components/deck/DeckColumn.tsx:162
+msgid "Column"
+msgstr "カラム"
 
 #: src/pages/admin/emojis.tsx:939
 msgid "comma, separated, aliases"
@@ -949,8 +962,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:103
-#: src/components/deck/DeckProfileSwitcher.tsx:219
+#: src/components/deck/DeckProfileSwitcher.tsx:125
+#: src/components/deck/DeckProfileSwitcher.tsx:251
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -986,7 +999,7 @@ msgstr "リストを作成"
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:118
+#: src/components/deck/DeckProfileSwitcher.tsx:149
 msgid "Create Profile"
 msgstr "プロファイルを作成"
 
@@ -1125,6 +1138,7 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:316
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1146,7 +1160,7 @@ msgstr "アカウントを削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:171
+#: src/components/deck/DeckProfileSwitcher.tsx:202
 msgid "Delete Current Profile"
 msgstr "現在のプロファイルを削除"
 
@@ -1162,6 +1176,10 @@ msgstr "ノートを削除"
 #: src/pages/admin/roles.tsx:635
 msgid "Delete Notes"
 msgstr "ノート削除"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:288
+msgid "Delete Profile"
+msgstr "プロファイルを削除"
 
 #: src/pages/admin/roles.tsx:663
 msgid "Delete role"
@@ -1466,7 +1484,7 @@ msgstr "有効 - マルチカラムで表示"
 msgid "End of list"
 msgstr "リストの終わり"
 
-#: src/components/deck/columns/TimelineColumn.tsx:243
+#: src/components/deck/columns/TimelineColumn.tsx:245
 msgid "End of timeline"
 msgstr "タイムラインの終わり"
 
@@ -1530,7 +1548,7 @@ msgstr "メンションの読み込みエラー"
 msgid "Error loading notifications"
 msgstr "通知の読み込みエラー"
 
-#: src/components/deck/columns/TimelineColumn.tsx:204
+#: src/components/deck/columns/TimelineColumn.tsx:206
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -1710,6 +1728,10 @@ msgstr "ファイルの読み込みに失敗しました"
 #: src/pages/legal/terms.tsx:49
 msgid "Failed to load instance information"
 msgstr "インスタンス情報の読み込みに失敗しました"
+
+#: src/components/deck/AddColumnDialog.tsx:140
+msgid "Failed to load lists"
+msgstr "リストの読み込みに失敗しました"
 
 #: src/components/pages/NoteDetailPageClient.tsx:49
 msgid "Failed to load note"
@@ -2015,6 +2037,8 @@ msgstr "リストメンバーが投稿したときに通知を受け取る"
 msgid "Get Started"
 msgstr "始める"
 
+#: src/components/deck/AddColumnDialog.tsx:123
+#: src/components/deck/DeckColumn.tsx:158
 #: src/pages/timeline.tsx:128
 msgid "Global"
 msgstr "グローバル"
@@ -2080,6 +2104,8 @@ msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピ�
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 msgstr "セーフゾーンを考慮した高解像度PWA用マスカブルアイコン、512x512ピクセル (最大2MB)。"
 
+#: src/components/deck/AddColumnDialog.tsx:120
+#: src/components/deck/DeckColumn.tsx:155
 #: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:129
@@ -2384,6 +2410,11 @@ msgstr "軽量"
 msgid "Line Height"
 msgstr "行の高さ"
 
+#: src/components/deck/AddColumnDialog.tsx:112
+#: src/components/deck/DeckColumn.tsx:161
+msgid "List"
+msgstr "リスト"
+
 #: src/components/list/ListCreateModal.tsx:133
 #: src/components/list/ListEditModal.tsx:159
 msgid "List Name"
@@ -2409,7 +2440,7 @@ msgstr "すべて読み込む（残り{0}件）"
 #: src/components/deck/columns/ListColumn.tsx:230
 #: src/components/deck/columns/MentionsColumn.tsx:205
 #: src/components/deck/columns/NotificationsColumn.tsx:196
-#: src/components/deck/columns/TimelineColumn.tsx:259
+#: src/components/deck/columns/TimelineColumn.tsx:261
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2436,7 +2467,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:70
+#: src/components/deck/DeckProfileSwitcher.tsx:88
 msgid "Loading profiles..."
 msgstr "プロファイルを読み込み中..."
 
@@ -2450,6 +2481,8 @@ msgstr "プロファイルを読み込み中..."
 msgid "Loading..."
 msgstr "読み込み中..."
 
+#: src/components/deck/AddColumnDialog.tsx:121
+#: src/components/deck/DeckColumn.tsx:156
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
@@ -2624,7 +2657,7 @@ msgstr "MB（無制限の場合は-1）"
 msgid "member"
 msgstr "メンバー"
 
-#: src/components/deck/AddColumnDialog.tsx:286
+#: src/components/deck/AddColumnDialog.tsx:340
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:205
@@ -2648,6 +2681,8 @@ msgstr "メンション"
 msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
+#: src/components/deck/AddColumnDialog.tsx:106
+#: src/components/deck/DeckColumn.tsx:160
 #: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
@@ -2731,6 +2766,10 @@ msgstr "マイRoxサーバー"
 msgid "Name"
 msgstr "名前"
 
+#: src/components/deck/DeckColumn.tsx:141
+msgid "Narrow"
+msgstr "狭い"
+
 #: src/components/settings/PasskeySection.tsx:205
 #: src/pages/admin/invitations.tsx:301
 msgid "Never"
@@ -2770,7 +2809,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:185
+#: src/components/deck/DeckProfileSwitcher.tsx:216
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -2904,7 +2943,7 @@ msgstr "これ以上の通知はありません"
 msgid "No notes in this list"
 msgstr "このリストにはノートがありません"
 
-#: src/components/deck/columns/TimelineColumn.tsx:251
+#: src/components/deck/columns/TimelineColumn.tsx:253
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
@@ -2972,6 +3011,10 @@ msgstr "ユーザーが見つかりませんでした"
 #: src/pages/admin/gone-users.tsx:211
 msgid "No users with fetch errors found"
 msgstr "取得エラーのあるユーザーはいません"
+
+#: src/components/deck/DeckColumn.tsx:142
+msgid "Normal"
+msgstr "標準"
 
 #: src/components/user/FollowListModal.tsx:198
 msgid "Not following anyone yet"
@@ -3055,6 +3098,8 @@ msgstr "通知音"
 msgid "Notification types"
 msgstr "通知の種類"
 
+#: src/components/deck/AddColumnDialog.tsx:100
+#: src/components/deck/DeckColumn.tsx:159
 #: src/components/layout/Sidebar.tsx:131
 #: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
@@ -4070,11 +4115,11 @@ msgstr "セキュリティ"
 msgid "Select"
 msgstr "選択する"
 
-#: src/components/deck/AddColumnDialog.tsx:200
+#: src/components/deck/AddColumnDialog.tsx:240
 msgid "Select a column type to add:"
 msgstr "追加するカラムの種類を選択:"
 
-#: src/components/deck/AddColumnDialog.tsx:261
+#: src/components/deck/AddColumnDialog.tsx:301
 msgid "Select a list:"
 msgstr "リストを選択:"
 
@@ -4096,7 +4141,7 @@ msgstr "ドライブから選択"
 msgid "Select from Drive"
 msgstr "ドライブから選択"
 
-#: src/components/deck/AddColumnDialog.tsx:232
+#: src/components/deck/AddColumnDialog.tsx:272
 msgid "Select timeline type:"
 msgstr "タイムラインの種類を選択:"
 
@@ -4250,6 +4295,8 @@ msgstr "サインイン中..."
 msgid "Skipped"
 msgstr "スキップ"
 
+#: src/components/deck/AddColumnDialog.tsx:122
+#: src/components/deck/DeckColumn.tsx:157
 #: src/pages/timeline.tsx:127
 msgid "Social"
 msgstr "ソーシャル"
@@ -4574,6 +4621,7 @@ msgstr "このユーザー名は使用可能です"
 msgid "This username is blocked"
 msgstr "このユーザー名はブロックされています"
 
+#: src/components/deck/AddColumnDialog.tsx:94
 #: src/pages/timeline.tsx:123
 msgid "Timeline"
 msgstr "タイムライン"
@@ -4658,6 +4706,7 @@ msgstr "フィルターを調整してみてください"
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
 
+#: src/components/deck/AddColumnDialog.tsx:314
 #: src/components/list/AddToListModal.tsx:304
 #: src/components/list/ListMembersModal.tsx:185
 #: src/pages/lists/index.tsx:178
@@ -4730,7 +4779,7 @@ msgstr "フォロー解除中..."
 msgid "Unknown"
 msgstr "不明"
 
-#: src/components/deck/DeckColumn.tsx:125
+#: src/components/deck/DeckColumn.tsx:114
 msgid "Unknown column type"
 msgstr "不明なカラムタイプ"
 
@@ -4972,6 +5021,18 @@ msgstr "オープンソースライセンスを表示"
 msgid "View Policy"
 msgstr "ポリシーを見る"
 
+#: src/components/deck/AddColumnDialog.tsx:114
+msgid "View posts from a list"
+msgstr "リストの投稿を表示"
+
+#: src/components/deck/AddColumnDialog.tsx:96
+msgid "View posts from a timeline"
+msgstr "タイムラインの投稿を表示"
+
+#: src/components/deck/AddColumnDialog.tsx:108
+msgid "View posts mentioning you"
+msgstr "あなたへのメンションを表示"
+
 #: src/pages/legal/licenses.tsx:124
 msgid "View Source Code"
 msgstr "ソースコードを表示"
@@ -4979,6 +5040,10 @@ msgstr "ソースコードを表示"
 #: src/components/LandingPage.tsx:296
 msgid "View Terms"
 msgstr "規約を見る"
+
+#: src/components/deck/AddColumnDialog.tsx:102
+msgid "View your notifications"
+msgstr "通知を表示"
 
 #: src/pages/legal/terms.tsx:142
 msgid "Violate intellectual property rights"
@@ -5109,7 +5174,11 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
-#: src/components/deck/DeckColumn.tsx:247
+#: src/components/deck/DeckColumn.tsx:143
+msgid "Wide"
+msgstr "広い"
+
+#: src/components/deck/DeckColumn.tsx:263
 msgid "Width:"
 msgstr "幅:"
 
@@ -5162,7 +5231,7 @@ msgstr "いつでも個人データのコピーをダウンロードできます
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "アカウントがなくてもお問い合わせを送信できます。お問い合わせ履歴を追跡するには、ログインしてください。"
 
-#: src/components/deck/AddColumnDialog.tsx:265
+#: src/components/deck/AddColumnDialog.tsx:319
 msgid "You don't have any lists yet."
 msgstr "まだリストを作成していません。"
 
