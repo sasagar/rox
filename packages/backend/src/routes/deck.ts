@@ -101,7 +101,12 @@ deck.post(
     const user = c.get("user")!;
     const repository = getDeckProfileRepository(c);
 
-    const body = (await c.req.json()) as CreateDeckProfileInput;
+    let body: CreateDeckProfileInput;
+    try {
+      body = (await c.req.json()) as CreateDeckProfileInput;
+    } catch {
+      return c.json({ error: "Invalid JSON body" }, 400);
+    }
 
     if (!body.name?.trim()) {
       return c.json({ error: "name is required" }, 400);
@@ -163,7 +168,12 @@ deck.patch(
     const repository = getDeckProfileRepository(c);
     const profileId = c.req.param("id");
 
-    const body = (await c.req.json()) as UpdateDeckProfileInput;
+    let body: UpdateDeckProfileInput;
+    try {
+      body = (await c.req.json()) as UpdateDeckProfileInput;
+    } catch {
+      return c.json({ error: "Invalid JSON body" }, 400);
+    }
 
     try {
       // Verify ownership
@@ -246,7 +256,11 @@ deck.delete(
       if (existing.isDefault) {
         const remainingProfiles = await repository.findByUserId(user.id);
         if (remainingProfiles.length > 0 && remainingProfiles[0]) {
-          await repository.update(remainingProfiles[0].id, { isDefault: true });
+          try {
+            await repository.update(remainingProfiles[0].id, { isDefault: true });
+          } catch {
+            // Profile may have been deleted concurrently; ignore
+          }
         }
       }
 
