@@ -194,26 +194,25 @@ describe("Deck API Integration", () => {
         }),
       });
 
-      if (res1.status === 201) {
-        const profile1 = (await res1.json()) as DeckProfile;
-        createdProfileIds.push(profile1.id);
+      expect(res1.status).toBe(201);
+      const profile1 = (await res1.json()) as DeckProfile;
+      createdProfileIds.push(profile1.id);
 
-        // Second profile with same name
-        const res2 = await fetch(`${BASE_URL}/api/deck/profiles`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: JSON.stringify({
-            name: "Duplicate Name",
-            columns: [],
-            isDefault: false,
-          }),
-        });
+      // Second profile with same name
+      const res2 = await fetch(`${BASE_URL}/api/deck/profiles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          name: "Duplicate Name",
+          columns: [],
+          isDefault: false,
+        }),
+      });
 
-        expect(res2.status).toBe(409);
-      }
+      expect(res2.status).toBe(409);
     });
 
     test("should require authentication", async () => {
