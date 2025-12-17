@@ -7,6 +7,7 @@ import { Timeline } from "../components/timeline/Timeline";
 import { NoteComposer } from "../components/note/NoteComposer";
 import { Layout } from "../components/layout/Layout";
 import { PageHeader } from "../components/ui/PageHeader";
+import { DeckModeWrapper } from "../components/deck/DeckModeWrapper";
 import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
 import { timelineNotesAtom } from "../lib/atoms/timeline";
 import { apiClient } from "../lib/api/client";
@@ -136,14 +137,16 @@ export default function TimelinePage() {
   );
 
   return (
-    <Layout header={pageHeader}>
-      {/* Note Composer */}
-      <NoteComposer onNoteCreated={handleNoteCreated} />
+    <DeckModeWrapper>
+      <Layout header={pageHeader}>
+        {/* Note Composer */}
+        <NoteComposer onNoteCreated={handleNoteCreated} />
 
-      {/* Timeline */}
-      <div id="timeline-content" role="tabpanel" aria-labelledby={`tab-${timelineType}`}>
-        <Timeline key={timelineType} type={timelineType} />
-      </div>
-    </Layout>
+        {/* Timeline */}
+        <div id="timeline-content" role="tabpanel" aria-labelledby={`tab-${timelineType}`}>
+          <Timeline key={timelineType} type={timelineType} />
+        </div>
+      </Layout>
+    </DeckModeWrapper>
   );
 }

@@ -110,6 +110,13 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     useState<TimelineType>("home");
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
 
+  const handleClose = useCallback(() => {
+    setSelectedType(null);
+    setSelectedTimeline("home");
+    setSelectedListId(null);
+    onClose();
+  }, [onClose]);
+
   const handleAddColumn = useCallback(() => {
     if (!selectedType) return;
 
@@ -125,7 +132,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
       case "mentions":
         config = { type: "mentions" };
         break;
-      case "list":
+      case "list": {
         if (!selectedListId) return;
         const list = myLists.find((l) => l.id === selectedListId);
         config = {
@@ -134,6 +141,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
           listName: list?.name,
         };
         break;
+      }
       default:
         return;
     }
@@ -146,14 +154,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
 
     addColumn(column);
     handleClose();
-  }, [selectedType, selectedTimeline, selectedListId, myLists, addColumn]);
-
-  const handleClose = useCallback(() => {
-    setSelectedType(null);
-    setSelectedTimeline("home");
-    setSelectedListId(null);
-    onClose();
-  }, [onClose]);
+  }, [selectedType, selectedTimeline, selectedListId, myLists, addColumn, handleClose]);
 
   const canAdd =
     selectedType &&
