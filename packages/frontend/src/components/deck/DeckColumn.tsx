@@ -138,6 +138,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
         case "local": return t`Local`;
         case "social": return t`Social`;
         case "global": return t`Global`;
+        default: return t`Timeline`;
       }
     }
     // For other types, translate

@@ -30,6 +30,7 @@
   <img src="https://img.shields.io/badge/Misskey_API-Compatible-86b300?logo=misskey" alt="Misskey Compatible" />
   <img src="https://img.shields.io/badge/PostgreSQL-Supported-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white" alt="Docker" />
+  ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Love-Rox/rox?utm_source=oss&utm_medium=github&utm_campaign=Love-Rox%2Frox&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 </p>
 
 <p align="center">

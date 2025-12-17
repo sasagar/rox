@@ -25,7 +25,6 @@ import { Button } from "../ui/Button";
 import { myListsAtom, myListsLoadingAtom, myListsErrorAtom } from "../../lib/atoms/lists";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { listsApi } from "../../lib/api/lists";
-import { apiClient } from "../../lib/api/client";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import type {
   DeckColumn,
@@ -85,6 +84,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [selectedTimeline, setSelectedTimeline] =
     useState<TimelineType>("home");
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [hasFetchedLists, setHasFetchedLists] = useState(false);
 
   // Translated column types
   const columnTypes: ColumnTypeOption[] = useMemo(() => [
@@ -126,13 +126,13 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const fetchLists = useCallback(async () => {
     if (!currentUser || !token || listsLoading) return;
 
-    apiClient.setToken(token);
     setListsLoading(true);
     setListsError(null);
 
     try {
       const userLists = await listsApi.list();
       setMyLists(userLists);
+      setHasFetchedLists(true);
     } catch (err) {
       setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
     } finally {
@@ -142,10 +142,38 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
 
   // Auto-fetch lists when dialog opens with list type selected
   useEffect(() => {
-    if (isOpen && selectedType === "list" && myLists.length === 0 && !listsLoading && !listsError) {
-      fetchLists();
+    let cancelled = false;
+
+    if (isOpen && selectedType === "list" && !hasFetchedLists && !listsLoading) {
+      const doFetch = async () => {
+        if (!currentUser || !token) return;
+
+        setListsLoading(true);
+        setListsError(null);
+
+        try {
+          const userLists = await listsApi.list();
+          if (!cancelled) {
+            setMyLists(userLists);
+            setHasFetchedLists(true);
+          }
+        } catch (err) {
+          if (!cancelled) {
+            setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
+          }
+        } finally {
+          if (!cancelled) {
+            setListsLoading(false);
+          }
+        }
+      };
+      doFetch();
     }
-  }, [isOpen, selectedType, myLists.length, listsLoading, listsError, fetchLists]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, selectedType, hasFetchedLists, listsLoading, currentUser, token, setListsLoading, setListsError, setMyLists, t]);
 
   const handleClose = useCallback(() => {
     setSelectedType(null);
