@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useAtomValue } from "jotai";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useAtom, useAtomValue } from "jotai";
 import {
   Dialog,
   Modal,
@@ -18,10 +18,14 @@ import {
   Users,
   Radio,
   X,
+  Loader2,
 } from "lucide-react";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
-import { myListsAtom } from "../../lib/atoms/lists";
+import { myListsAtom, myListsLoadingAtom, myListsErrorAtom } from "../../lib/atoms/lists";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { listsApi } from "../../lib/api/lists";
+import { apiClient } from "../../lib/api/client";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import type {
   DeckColumn,
@@ -56,40 +60,6 @@ interface TimelineOption {
   icon: React.ReactNode;
 }
 
-const COLUMN_TYPES: ColumnTypeOption[] = [
-  {
-    type: "timeline",
-    label: "Timeline",
-    icon: <LayoutGrid className="w-5 h-5" />,
-    description: "View posts from a timeline",
-  },
-  {
-    type: "notifications",
-    label: "Notifications",
-    icon: <Bell className="w-5 h-5" />,
-    description: "View your notifications",
-  },
-  {
-    type: "mentions",
-    label: "Mentions",
-    icon: <AtSign className="w-5 h-5" />,
-    description: "View posts mentioning you",
-  },
-  {
-    type: "list",
-    label: "List",
-    icon: <ListIcon className="w-5 h-5" />,
-    description: "View posts from a list",
-  },
-];
-
-const TIMELINE_OPTIONS: TimelineOption[] = [
-  { type: "home", label: "Home", icon: <Home className="w-4 h-4" /> },
-  { type: "local", label: "Local", icon: <Users className="w-4 h-4" /> },
-  { type: "social", label: "Social", icon: <Radio className="w-4 h-4" /> },
-  { type: "global", label: "Global", icon: <Globe className="w-4 h-4" /> },
-];
-
 /**
  * Generate a unique column ID
  */
@@ -101,8 +71,13 @@ function generateColumnId(): string {
  * Dialog for adding a new column to the deck
  */
 export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
+  const { t } = useLingui();
   const { activeProfile, updateActiveColumns } = useDeckProfiles();
-  const myLists = useAtomValue(myListsAtom);
+  const [myLists, setMyLists] = useAtom(myListsAtom);
+  const [listsLoading, setListsLoading] = useAtom(myListsLoadingAtom);
+  const [listsError, setListsError] = useAtom(myListsErrorAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const token = useAtomValue(tokenAtom);
   const columns = activeProfile?.columns ?? [];
   const [selectedType, setSelectedType] = useState<
     DeckColumnConfig["type"] | null
@@ -110,6 +85,68 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [selectedTimeline, setSelectedTimeline] =
     useState<TimelineType>("home");
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [hasFetchedLists, setHasFetchedLists] = useState(false);
+
+  // Translated column types
+  const columnTypes: ColumnTypeOption[] = useMemo(() => [
+    {
+      type: "timeline",
+      label: t`Timeline`,
+      icon: <LayoutGrid className="w-5 h-5" />,
+      description: t`View posts from a timeline`,
+    },
+    {
+      type: "notifications",
+      label: t`Notifications`,
+      icon: <Bell className="w-5 h-5" />,
+      description: t`View your notifications`,
+    },
+    {
+      type: "mentions",
+      label: t`Mentions`,
+      icon: <AtSign className="w-5 h-5" />,
+      description: t`View posts mentioning you`,
+    },
+    {
+      type: "list",
+      label: t`List`,
+      icon: <ListIcon className="w-5 h-5" />,
+      description: t`View posts from a list`,
+    },
+  ], [t]);
+
+  // Translated timeline options
+  const timelineOptions: TimelineOption[] = useMemo(() => [
+    { type: "home", label: t`Home`, icon: <Home className="w-4 h-4" /> },
+    { type: "local", label: t`Local`, icon: <Users className="w-4 h-4" /> },
+    { type: "social", label: t`Social`, icon: <Radio className="w-4 h-4" /> },
+    { type: "global", label: t`Global`, icon: <Globe className="w-4 h-4" /> },
+  ], [t]);
+
+  // Fetch lists when dialog opens and list type is selected
+  useEffect(() => {
+    const fetchLists = async () => {
+      if (!currentUser || !token || hasFetchedLists || myLists.length > 0) return;
+
+      apiClient.setToken(token);
+      setListsLoading(true);
+      setListsError(null);
+
+      try {
+        const userLists = await listsApi.list();
+        setMyLists(userLists);
+        setHasFetchedLists(true);
+      } catch (err) {
+        setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
+      } finally {
+        setListsLoading(false);
+      }
+    };
+
+    if (isOpen && selectedType === "list" && myLists.length === 0 && !hasFetchedLists) {
+      fetchLists();
+    }
+  }, [isOpen, selectedType, currentUser, token, hasFetchedLists, myLists.length, setMyLists, setListsLoading, setListsError, t]);
 
   const handleClose = useCallback(() => {
     setSelectedType(null);
@@ -162,6 +199,9 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     selectedType &&
     (selectedType !== "list" || selectedListId);
 
+  // Get selected column type label for confirmation
+  const selectedTypeLabel = columnTypes.find((ct) => ct.type === selectedType)?.label;
+
   return (
     <ModalOverlay
       isOpen={isOpen}
@@ -199,7 +239,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <Trans>Select a column type to add:</Trans>
                     </p>
-                    {COLUMN_TYPES.map((option) => (
+                    {columnTypes.map((option) => (
                       <button
                         key={option.type}
                         onClick={() => setSelectedType(option.type)}
@@ -232,7 +272,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                       <Trans>Select timeline type:</Trans>
                     </p>
                     <div className="grid grid-cols-2 gap-2">
-                      {TIMELINE_OPTIONS.map((option) => (
+                      {timelineOptions.map((option) => (
                         <button
                           key={option.type}
                           onClick={() => setSelectedTimeline(option.type)}
@@ -260,7 +300,21 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <Trans>Select a list:</Trans>
                     </p>
-                    {myLists.length === 0 ? (
+                    {listsLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                      </div>
+                    ) : listsError ? (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-red-500 mb-2">{listsError}</p>
+                        <button
+                          onClick={() => setHasFetchedLists(false)}
+                          className="text-sm text-primary-500 hover:text-primary-600"
+                        >
+                          <Trans>Try again</Trans>
+                        </button>
+                      </div>
+                    ) : myLists.length === 0 ? (
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
                         <Trans>You don't have any lists yet.</Trans>
                       </p>
@@ -303,7 +357,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     <div className="text-center py-4">
                       <p className="text-gray-600 dark:text-gray-400">
                         <Trans>
-                          Add a {COLUMN_TYPES.find((t) => t.type === selectedType)?.label} column?
+                          Add a {selectedTypeLabel} column?
                         </Trans>
                       </p>
                     </div>

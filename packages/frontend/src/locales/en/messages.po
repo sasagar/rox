@@ -283,17 +283,20 @@ msgstr "ActivityPub delivery is running in synchronous mode."
 msgid "Add @{username} to list"
 msgstr "Add @{username} to list"
 
-#. placeholder {0}: COLUMN_TYPES.find((t) => t.type === selectedType)?.label
 #: src/components/deck/AddColumnDialog.tsx:305
-msgid "Add a {0} column?"
-msgstr "Add a {0} column?"
+#~ msgid "Add a {0} column?"
+#~ msgstr "Add a {0} column?"
+
+#: src/components/deck/AddColumnDialog.tsx:359
+msgid "Add a {selectedTypeLabel} column?"
+msgstr "Add a {selectedTypeLabel} column?"
 
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 
-#: src/components/deck/AddColumnDialog.tsx:182
-#: src/components/deck/AddColumnDialog.tsx:324
+#: src/components/deck/AddColumnDialog.tsx:222
+#: src/components/deck/AddColumnDialog.tsx:378
 msgid "Add Column"
 msgstr "Add Column"
 
@@ -513,6 +516,11 @@ msgstr "Are you absolutely sure?"
 msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
+#. placeholder {0}: profileToDelete.name
+#: src/components/deck/DeckProfileSwitcher.tsx:294
+msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
+msgstr "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
+
 #. placeholder {0}: selectedEmojis.size
 #: src/pages/admin/emojis.tsx:616
 msgid "Are you sure you want to delete {0} emojis? This action cannot be undone."
@@ -576,9 +584,9 @@ msgstr "Avatar updated successfully"
 msgid "Avg per Server"
 msgstr "Avg per Server"
 
-#: src/components/deck/AddColumnDialog.tsx:229
-#: src/components/deck/AddColumnDialog.tsx:258
-#: src/components/deck/AddColumnDialog.tsx:301
+#: src/components/deck/AddColumnDialog.tsx:269
+#: src/components/deck/AddColumnDialog.tsx:298
+#: src/components/deck/AddColumnDialog.tsx:355
 #: src/components/pages/NoteDetailPageClient.tsx:109
 #: src/components/user/UserProfile.tsx:393
 #: src/pages/onboarding.tsx:463
@@ -753,9 +761,10 @@ msgstr "Can manage reports"
 msgid "Can suspend users"
 msgstr "Can suspend users"
 
-#: src/components/deck/AddColumnDialog.tsx:317
-#: src/components/deck/DeckProfileSwitcher.tsx:112
-#: src/components/deck/DeckProfileSwitcher.tsx:231
+#: src/components/deck/AddColumnDialog.tsx:371
+#: src/components/deck/DeckProfileSwitcher.tsx:138
+#: src/components/deck/DeckProfileSwitcher.tsx:264
+#: src/components/deck/DeckProfileSwitcher.tsx:306
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -849,6 +858,10 @@ msgstr "Code copied to clipboard"
 #: src/pages/admin/roles.tsx:374
 msgid "Color"
 msgstr "Color"
+
+#: src/components/deck/DeckColumn.tsx:162
+msgid "Column"
+msgstr "Column"
 
 #: src/pages/admin/emojis.tsx:939
 msgid "comma, separated, aliases"
@@ -949,8 +962,8 @@ msgstr "Copy link"
 msgid "Correct inaccurate data"
 msgstr "Correct inaccurate data"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:103
-#: src/components/deck/DeckProfileSwitcher.tsx:219
+#: src/components/deck/DeckProfileSwitcher.tsx:125
+#: src/components/deck/DeckProfileSwitcher.tsx:251
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -986,7 +999,7 @@ msgstr "Create List"
 msgid "Create new list"
 msgstr "Create new list"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:118
+#: src/components/deck/DeckProfileSwitcher.tsx:149
 msgid "Create Profile"
 msgstr "Create Profile"
 
@@ -1125,6 +1138,7 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
+#: src/components/deck/DeckProfileSwitcher.tsx:316
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1146,7 +1160,7 @@ msgstr "Delete Account"
 msgid "Delete code"
 msgstr "Delete code"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:171
+#: src/components/deck/DeckProfileSwitcher.tsx:202
 msgid "Delete Current Profile"
 msgstr "Delete Current Profile"
 
@@ -1162,6 +1176,10 @@ msgstr "Delete Note"
 #: src/pages/admin/roles.tsx:635
 msgid "Delete Notes"
 msgstr "Delete Notes"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:288
+msgid "Delete Profile"
+msgstr "Delete Profile"
 
 #: src/pages/admin/roles.tsx:663
 msgid "Delete role"
@@ -1466,7 +1484,7 @@ msgstr "Enabled - View multiple columns side by side"
 msgid "End of list"
 msgstr "End of list"
 
-#: src/components/deck/columns/TimelineColumn.tsx:243
+#: src/components/deck/columns/TimelineColumn.tsx:245
 msgid "End of timeline"
 msgstr "End of timeline"
 
@@ -1530,7 +1548,7 @@ msgstr "Error loading mentions"
 msgid "Error loading notifications"
 msgstr "Error loading notifications"
 
-#: src/components/deck/columns/TimelineColumn.tsx:204
+#: src/components/deck/columns/TimelineColumn.tsx:206
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -1710,6 +1728,10 @@ msgstr "Failed to load files"
 #: src/pages/legal/terms.tsx:49
 msgid "Failed to load instance information"
 msgstr "Failed to load instance information"
+
+#: src/components/deck/AddColumnDialog.tsx:140
+msgid "Failed to load lists"
+msgstr "Failed to load lists"
 
 #: src/components/pages/NoteDetailPageClient.tsx:49
 msgid "Failed to load note"
@@ -2015,6 +2037,8 @@ msgstr "Get notified when list members post"
 msgid "Get Started"
 msgstr "Get Started"
 
+#: src/components/deck/AddColumnDialog.tsx:123
+#: src/components/deck/DeckColumn.tsx:158
 #: src/pages/timeline.tsx:128
 msgid "Global"
 msgstr "Global"
@@ -2080,6 +2104,8 @@ msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls bac
 msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 msgstr "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 
+#: src/components/deck/AddColumnDialog.tsx:120
+#: src/components/deck/DeckColumn.tsx:155
 #: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:129
@@ -2384,6 +2410,11 @@ msgstr "Lightweight"
 msgid "Line Height"
 msgstr "Line Height"
 
+#: src/components/deck/AddColumnDialog.tsx:112
+#: src/components/deck/DeckColumn.tsx:161
+msgid "List"
+msgstr "List"
+
 #: src/components/list/ListCreateModal.tsx:133
 #: src/components/list/ListEditModal.tsx:159
 msgid "List Name"
@@ -2409,7 +2440,7 @@ msgstr "Load All ({0} more)"
 #: src/components/deck/columns/ListColumn.tsx:230
 #: src/components/deck/columns/MentionsColumn.tsx:205
 #: src/components/deck/columns/NotificationsColumn.tsx:196
-#: src/components/deck/columns/TimelineColumn.tsx:259
+#: src/components/deck/columns/TimelineColumn.tsx:261
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2436,7 +2467,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:70
+#: src/components/deck/DeckProfileSwitcher.tsx:88
 msgid "Loading profiles..."
 msgstr "Loading profiles..."
 
@@ -2450,6 +2481,8 @@ msgstr "Loading profiles..."
 msgid "Loading..."
 msgstr "Loading..."
 
+#: src/components/deck/AddColumnDialog.tsx:121
+#: src/components/deck/DeckColumn.tsx:156
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
@@ -2624,7 +2657,7 @@ msgstr "MB (-1 for unlimited)"
 msgid "member"
 msgstr "member"
 
-#: src/components/deck/AddColumnDialog.tsx:286
+#: src/components/deck/AddColumnDialog.tsx:340
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:205
@@ -2648,6 +2681,8 @@ msgstr "Mention"
 msgid "mentioned you"
 msgstr "mentioned you"
 
+#: src/components/deck/AddColumnDialog.tsx:106
+#: src/components/deck/DeckColumn.tsx:160
 #: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
@@ -2731,6 +2766,10 @@ msgstr "My Rox Server"
 msgid "Name"
 msgstr "Name"
 
+#: src/components/deck/DeckColumn.tsx:141
+msgid "Narrow"
+msgstr "Narrow"
+
 #: src/components/settings/PasskeySection.tsx:205
 #: src/pages/admin/invitations.tsx:301
 msgid "Never"
@@ -2770,7 +2809,7 @@ msgstr "New Note"
 msgid "New notification"
 msgstr "New notification"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:185
+#: src/components/deck/DeckProfileSwitcher.tsx:216
 msgid "New Profile"
 msgstr "New Profile"
 
@@ -2904,7 +2943,7 @@ msgstr "No more notifications"
 msgid "No notes in this list"
 msgstr "No notes in this list"
 
-#: src/components/deck/columns/TimelineColumn.tsx:251
+#: src/components/deck/columns/TimelineColumn.tsx:253
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "No notes yet"
@@ -2972,6 +3011,10 @@ msgstr "No users found"
 #: src/pages/admin/gone-users.tsx:211
 msgid "No users with fetch errors found"
 msgstr "No users with fetch errors found"
+
+#: src/components/deck/DeckColumn.tsx:142
+msgid "Normal"
+msgstr "Normal"
 
 #: src/components/user/FollowListModal.tsx:198
 msgid "Not following anyone yet"
@@ -3055,6 +3098,8 @@ msgstr "Notification Sound"
 msgid "Notification types"
 msgstr "Notification types"
 
+#: src/components/deck/AddColumnDialog.tsx:100
+#: src/components/deck/DeckColumn.tsx:159
 #: src/components/layout/Sidebar.tsx:131
 #: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
@@ -4070,11 +4115,11 @@ msgstr "Security"
 msgid "Select"
 msgstr "Select"
 
-#: src/components/deck/AddColumnDialog.tsx:200
+#: src/components/deck/AddColumnDialog.tsx:240
 msgid "Select a column type to add:"
 msgstr "Select a column type to add:"
 
-#: src/components/deck/AddColumnDialog.tsx:261
+#: src/components/deck/AddColumnDialog.tsx:301
 msgid "Select a list:"
 msgstr "Select a list:"
 
@@ -4096,7 +4141,7 @@ msgstr "Select from drive"
 msgid "Select from Drive"
 msgstr "Select from Drive"
 
-#: src/components/deck/AddColumnDialog.tsx:232
+#: src/components/deck/AddColumnDialog.tsx:272
 msgid "Select timeline type:"
 msgstr "Select timeline type:"
 
@@ -4250,6 +4295,8 @@ msgstr "Signing in..."
 msgid "Skipped"
 msgstr "Skipped"
 
+#: src/components/deck/AddColumnDialog.tsx:122
+#: src/components/deck/DeckColumn.tsx:157
 #: src/pages/timeline.tsx:127
 msgid "Social"
 msgstr "Social"
@@ -4574,6 +4621,7 @@ msgstr "This username is allowed"
 msgid "This username is blocked"
 msgstr "This username is blocked"
 
+#: src/components/deck/AddColumnDialog.tsx:94
 #: src/pages/timeline.tsx:123
 msgid "Timeline"
 msgstr "Timeline"
@@ -4658,6 +4706,7 @@ msgstr "Try adjusting your filter"
 msgid "Try adjusting your filters"
 msgstr "Try adjusting your filters"
 
+#: src/components/deck/AddColumnDialog.tsx:314
 #: src/components/list/AddToListModal.tsx:304
 #: src/components/list/ListMembersModal.tsx:185
 #: src/pages/lists/index.tsx:178
@@ -4730,7 +4779,7 @@ msgstr "Unfollowing..."
 msgid "Unknown"
 msgstr "Unknown"
 
-#: src/components/deck/DeckColumn.tsx:125
+#: src/components/deck/DeckColumn.tsx:114
 msgid "Unknown column type"
 msgstr "Unknown column type"
 
@@ -4972,6 +5021,18 @@ msgstr "View Open Source Licenses"
 msgid "View Policy"
 msgstr "View Policy"
 
+#: src/components/deck/AddColumnDialog.tsx:114
+msgid "View posts from a list"
+msgstr "View posts from a list"
+
+#: src/components/deck/AddColumnDialog.tsx:96
+msgid "View posts from a timeline"
+msgstr "View posts from a timeline"
+
+#: src/components/deck/AddColumnDialog.tsx:108
+msgid "View posts mentioning you"
+msgstr "View posts mentioning you"
+
 #: src/pages/legal/licenses.tsx:124
 msgid "View Source Code"
 msgstr "View Source Code"
@@ -4979,6 +5040,10 @@ msgstr "View Source Code"
 #: src/components/LandingPage.tsx:296
 msgid "View Terms"
 msgstr "View Terms"
+
+#: src/components/deck/AddColumnDialog.tsx:102
+msgid "View your notifications"
+msgstr "View your notifications"
 
 #: src/pages/legal/terms.tsx:142
 msgid "Violate intellectual property rights"
@@ -5109,7 +5174,11 @@ msgstr "Why is this instance being blocked?"
 msgid "Why Join?"
 msgstr "Why Join?"
 
-#: src/components/deck/DeckColumn.tsx:247
+#: src/components/deck/DeckColumn.tsx:143
+msgid "Wide"
+msgstr "Wide"
+
+#: src/components/deck/DeckColumn.tsx:263
 msgid "Width:"
 msgstr "Width:"
 
@@ -5162,7 +5231,7 @@ msgstr "You can download a copy of your personal data at any time. This includes
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "You can submit an inquiry without an account. To track your inquiry history, please log in."
 
-#: src/components/deck/AddColumnDialog.tsx:265
+#: src/components/deck/AddColumnDialog.tsx:319
 msgid "You don't have any lists yet."
 msgstr "You don't have any lists yet."
 
