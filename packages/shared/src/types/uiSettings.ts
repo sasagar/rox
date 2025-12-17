@@ -15,4 +15,6 @@ export interface UISettings {
   contentWidth?: ContentWidth;
   theme?: Theme;
   appCustomCss?: string;
+  /** Enable deck mode (multi-column view) */
+  deckEnabled?: boolean;
 }

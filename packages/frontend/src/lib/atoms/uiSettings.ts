@@ -74,3 +74,15 @@ export const notificationSoundAtom = atom(
 export const notificationVolumeAtom = atom(
   (get) => get(uiSettingsAtom).notificationVolume ?? defaultUISettings.notificationVolume,
 );
+
+/**
+ * Deck mode enabled atom (derived from UI settings)
+ * Defaults to false if not set
+ */
+export const deckEnabledAtom = atom(
+  (get) => get(uiSettingsAtom).deckEnabled ?? false,
+  (get, set, enabled: boolean) => {
+    const current = get(uiSettingsAtom);
+    set(uiSettingsAtom, { ...current, deckEnabled: enabled });
+  },
+);

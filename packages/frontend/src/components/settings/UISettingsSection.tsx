@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2 } from "lucide-react";
+import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2, LayoutGrid } from "lucide-react";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
 import { uiSettingsAtom } from "../../lib/atoms/uiSettings";
 import { apiClient } from "../../lib/api/client";
@@ -117,6 +117,7 @@ export function UISettingsSection() {
       localSettings.lineHeight !== uiSettings.lineHeight ||
       localSettings.contentWidth !== uiSettings.contentWidth ||
       localSettings.theme !== uiSettings.theme ||
+      localSettings.deckEnabled !== uiSettings.deckEnabled ||
       localSettings.notificationSound !== uiSettings.notificationSound ||
       localSettings.notificationVolume !== uiSettings.notificationVolume ||
       JSON.stringify(localSettings.notificationSoundsByType) !==
@@ -309,6 +310,46 @@ export function UISettingsSection() {
           onChange={(value) => handleSettingChange("theme", value)}
           disabled={isSaving}
         />
+
+        {/* Deck Mode */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <LayoutGrid className="w-4 h-4" />
+            <Trans>Deck Mode</Trans>
+          </label>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => handleSettingChange("deckEnabled", !localSettings.deckEnabled)}
+              disabled={isSaving}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                localSettings.deckEnabled
+                  ? "bg-primary-500"
+                  : "bg-gray-300 dark:bg-gray-600"
+              } ${isSaving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              role="switch"
+              aria-checked={localSettings.deckEnabled}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  localSettings.deckEnabled ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {localSettings.deckEnabled ? (
+                <Trans>Enabled - View multiple columns side by side</Trans>
+              ) : (
+                <Trans>Disabled - Standard single-column view</Trans>
+              )}
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            <Trans>
+              Deck mode displays timelines, notifications, and lists in a multi-column layout.
+            </Trans>
+          </p>
+        </div>
 
         {/* Notification Sound */}
         <div className="space-y-3">

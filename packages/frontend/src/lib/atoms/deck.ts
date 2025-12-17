@@ -7,16 +7,9 @@ import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import type { DeckProfile, DeckColumn } from "../types/deck";
 
-/**
- * Whether deck mode is enabled for the current user.
- * Stored in localStorage for immediate UI updates, but should sync with server settings.
- */
-export const deckEnabledAtom = atomWithStorage<boolean>(
-  "rox_deck_enabled",
-  false,
-  undefined,
-  { getOnInit: true }
-);
+// Re-export deckEnabledAtom from uiSettings for convenience
+// This atom is synced with server settings via UISettings
+export { deckEnabledAtom } from "./uiSettings";
 
 /**
  * All deck profiles for the current user

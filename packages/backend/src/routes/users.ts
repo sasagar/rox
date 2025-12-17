@@ -586,6 +586,11 @@ app.patch("/@me", requireAuth(), async (c) => {
       uiSettings.disabledPushNotificationTypes = validDisabledTypes;
     }
 
+    // Deck mode enabled
+    if (typeof body.uiSettings.deckEnabled === "boolean") {
+      uiSettings.deckEnabled = body.uiSettings.deckEnabled;
+    }
+
     updateData.uiSettings = uiSettings;
   }
 

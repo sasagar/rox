@@ -53,14 +53,17 @@ export interface UISettings {
   notificationVolume?: number; // 0-100
   /** Per-notification-type sound settings (overrides default) */
   notificationSoundsByType?: NotificationSoundsByType;
+  /** Enable deck mode (multi-column view) */
+  deckEnabled?: boolean;
 }
 
 /**
  * Default UI settings
  */
-export const defaultUISettings: Required<Omit<UISettings, "appCustomCss" | "notificationSoundsByType">> & {
+export const defaultUISettings: Required<Omit<UISettings, "appCustomCss" | "notificationSoundsByType" | "deckEnabled">> & {
   appCustomCss: string;
   notificationSoundsByType: NotificationSoundsByType | undefined;
+  deckEnabled: boolean;
 } = {
   fontSize: "medium",
   lineHeight: "normal",
@@ -70,6 +73,7 @@ export const defaultUISettings: Required<Omit<UISettings, "appCustomCss" | "noti
   notificationSound: "default",
   notificationVolume: 50,
   notificationSoundsByType: undefined,
+  deckEnabled: false,
 };
 
 /**

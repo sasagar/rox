@@ -40,6 +40,8 @@ export interface UISettings {
   language?: "en" | "ja";
   /** Disabled push notification types (empty = all enabled) */
   disabledPushNotificationTypes?: NotificationType[];
+  /** Enable deck mode (multi-column view) */
+  deckEnabled?: boolean;
 }
 
 /**

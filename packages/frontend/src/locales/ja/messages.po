@@ -283,9 +283,19 @@ msgstr "ActivityPub配信は同期モードで実行されています。"
 msgid "Add @{username} to list"
 msgstr "@{username}をリストに追加"
 
+#. placeholder {0}: COLUMN_TYPES.find((t) => t.type === selectedType)?.label
+#: src/components/deck/AddColumnDialog.tsx:302
+msgid "Add a {0} column?"
+msgstr ""
+
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "他のサーバーのアカウントとリンクするためにエイリアスを追加します。これにより、それらのアカウントのフォロワーがここであなたを見つけることができます。"
+
+#: src/components/deck/AddColumnDialog.tsx:179
+#: src/components/deck/AddColumnDialog.tsx:321
+msgid "Add Column"
+msgstr ""
 
 #: src/pages/admin/emojis.tsx:786
 #: src/pages/admin/emojis.tsx:1004
@@ -566,6 +576,9 @@ msgstr "アバターを更新しました"
 msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
 
+#: src/components/deck/AddColumnDialog.tsx:226
+#: src/components/deck/AddColumnDialog.tsx:255
+#: src/components/deck/AddColumnDialog.tsx:298
 #: src/components/pages/NoteDetailPageClient.tsx:109
 #: src/components/user/UserProfile.tsx:393
 #: src/pages/onboarding.tsx:463
@@ -740,6 +753,9 @@ msgstr "通報を管理可能"
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
+#: src/components/deck/AddColumnDialog.tsx:314
+#: src/components/deck/DeckProfileSwitcher.tsx:97
+#: src/components/deck/DeckProfileSwitcher.tsx:203
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -896,7 +912,7 @@ msgstr "コンテンツ"
 msgid "Content Warning"
 msgstr "閲覧注意"
 
-#: src/components/settings/UISettingsSection.tsx:295
+#: src/components/settings/UISettingsSection.tsx:296
 msgid "Content Width"
 msgstr "コンテンツ幅"
 
@@ -933,6 +949,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:90
+#: src/components/deck/DeckProfileSwitcher.tsx:193
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -967,6 +985,10 @@ msgstr "リストを作成"
 #: src/components/list/AddToListModal.tsx:340
 msgid "Create new list"
 msgstr "新しいリストを作成"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:103
+msgid "Create Profile"
+msgstr ""
 
 #: src/pages/admin/roles.tsx:354
 #: src/pages/admin/roles.tsx:561
@@ -1004,7 +1026,7 @@ msgstr "アカウント作成中..."
 msgid "Creating..."
 msgstr "作成中..."
 
-#: src/components/settings/UISettingsSection.tsx:452
+#: src/components/settings/UISettingsSection.tsx:493
 msgid "Custom"
 msgstr "カスタム"
 
@@ -1020,11 +1042,11 @@ msgstr "カスタムコード（任意）"
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
-#: src/components/settings/UISettingsSection.tsx:466
+#: src/components/settings/UISettingsSection.tsx:507
 msgid "Custom CSS (App-wide)"
 msgstr "カスタムCSS（アプリ全体）"
 
-#: src/components/settings/UISettingsSection.tsx:479
+#: src/components/settings/UISettingsSection.tsx:520
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 
@@ -1043,7 +1065,7 @@ msgstr "カスタム絵文字"
 msgid "Custom pattern"
 msgstr "カスタムパターン"
 
-#: src/components/settings/UISettingsSection.tsx:364
+#: src/components/settings/UISettingsSection.tsx:405
 msgid "Customize sounds per notification type"
 msgstr "通知タイプごとにサウンドをカスタマイズ"
 
@@ -1066,6 +1088,14 @@ msgstr "データエクスポート"
 #: src/components/settings/DataExportSection.tsx:59
 msgid "Data exported successfully"
 msgstr "データをエクスポートしました"
+
+#: src/components/settings/UISettingsSection.tsx:318
+msgid "Deck Mode"
+msgstr ""
+
+#: src/components/settings/UISettingsSection.tsx:348
+msgid "Deck mode displays timelines, notifications, and lists in a multi-column layout."
+msgstr ""
 
 #: src/pages/admin/roles.tsx:610
 msgid "Default"
@@ -1226,6 +1256,10 @@ msgstr "無効にする"
 msgid "Disabled"
 msgstr "無効"
 
+#: src/components/settings/UISettingsSection.tsx:343
+msgid "Disabled - Standard single-column view"
+msgstr ""
+
 #: src/components/note/NoteComposer.tsx:714
 msgid "Discard"
 msgstr "破棄"
@@ -1236,7 +1270,7 @@ msgstr "破棄"
 msgid "Display Name"
 msgstr "表示名"
 
-#: src/components/settings/UISettingsSection.tsx:269
+#: src/components/settings/UISettingsSection.tsx:270
 msgid "Display Settings"
 msgstr "表示設定"
 
@@ -1420,6 +1454,18 @@ msgstr "ユーザー登録を有効にする"
 msgid "Enabled"
 msgstr "有効"
 
+#: src/components/settings/UISettingsSection.tsx:341
+msgid "Enabled - View multiple columns side by side"
+msgstr ""
+
+#: src/components/deck/columns/ListColumn.tsx:214
+msgid "End of list"
+msgstr ""
+
+#: src/components/deck/columns/TimelineColumn.tsx:238
+msgid "End of timeline"
+msgstr ""
+
 #: src/pages/legal/privacy.tsx:146
 msgid "Ensure security and prevent abuse"
 msgstr "セキュリティの確保と不正使用の防止"
@@ -1468,6 +1514,19 @@ msgstr "パスワードを入力してください"
 msgid "Enter your server to follow"
 msgstr "フォローするにはあなたのサーバーを入力"
 
+#: src/components/deck/columns/ListColumn.tsx:175
+msgid "Error loading list"
+msgstr ""
+
+#: src/components/deck/columns/MentionsColumn.tsx:145
+msgid "Error loading mentions"
+msgstr ""
+
+#: src/components/deck/columns/NotificationsColumn.tsx:137
+msgid "Error loading notifications"
+msgstr ""
+
+#: src/components/deck/columns/TimelineColumn.tsx:199
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -1730,7 +1789,7 @@ msgstr "ノートの復元に失敗しました"
 msgid "Failed to save role"
 msgstr "ロールの保存に失敗しました"
 
-#: src/components/settings/UISettingsSection.tsx:208
+#: src/components/settings/UISettingsSection.tsx:209
 msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
@@ -1912,7 +1971,7 @@ msgstr "フォローとフォロワーの関係"
 msgid "Following..."
 msgstr "フォロー中..."
 
-#: src/components/settings/UISettingsSection.tsx:275
+#: src/components/settings/UISettingsSection.tsx:276
 msgid "Font Size"
 msgstr "文字サイズ"
 
@@ -2005,7 +2064,7 @@ msgstr "インスタンスのヘッダー画像（最大5MB）"
 msgid "Healthy"
 msgstr "正常"
 
-#: src/components/settings/UISettingsSection.tsx:362
+#: src/components/settings/UISettingsSection.tsx:403
 msgid "Hide per-type settings"
 msgstr "タイプ別設定を非表示"
 
@@ -2317,7 +2376,7 @@ msgstr "ライト"
 msgid "Lightweight"
 msgstr "軽量"
 
-#: src/components/settings/UISettingsSection.tsx:285
+#: src/components/settings/UISettingsSection.tsx:286
 msgid "Line Height"
 msgstr "行の高さ"
 
@@ -2343,6 +2402,10 @@ msgstr "リスト"
 msgid "Load All ({0} more)"
 msgstr "すべて読み込む（残り{0}件）"
 
+#: src/components/deck/columns/ListColumn.tsx:230
+#: src/components/deck/columns/MentionsColumn.tsx:200
+#: src/components/deck/columns/NotificationsColumn.tsx:191
+#: src/components/deck/columns/TimelineColumn.tsx:254
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2553,6 +2616,7 @@ msgstr "MB（無制限の場合は-1）"
 msgid "member"
 msgstr "メンバー"
 
+#: src/components/deck/AddColumnDialog.tsx:283
 #: src/components/list/AddToListModal.tsx:80
 #: src/components/list/ListCard.tsx:73
 #: src/components/pages/ListDetailPageClient.tsx:205
@@ -2698,6 +2762,10 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:168
+msgid "New Profile"
+msgstr ""
+
 #: src/pages/admin/contacts.tsx:614
 #: src/pages/admin/federation.tsx:483
 #: src/pages/onboarding.tsx:475
@@ -2778,6 +2846,10 @@ msgstr "インスタンスが見つかりません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
+#: src/components/deck/columns/ListColumn.tsx:165
+msgid "No list selected"
+msgstr ""
+
 #: src/components/list/AddToListModal.tsx:311
 #: src/pages/lists/index.tsx:185
 msgid "No lists yet"
@@ -2791,6 +2863,7 @@ msgstr "一致する通知がありません"
 msgid "No members yet"
 msgstr "メンバーはまだいません"
 
+#: src/components/deck/columns/MentionsColumn.tsx:192
 #: src/pages/mentions.tsx:158
 msgid "No mentions yet"
 msgstr "まだメンションはありません"
@@ -2807,6 +2880,19 @@ msgstr "まだメッセージはありません。会話を始めましょう！
 msgid "No metrics available"
 msgstr "メトリクスがありません"
 
+#: src/components/deck/columns/MentionsColumn.tsx:184
+msgid "No more mentions"
+msgstr ""
+
+#: src/components/deck/columns/NotificationsColumn.tsx:175
+msgid "No more notifications"
+msgstr ""
+
+#: src/components/deck/columns/ListColumn.tsx:222
+msgid "No notes in this list"
+msgstr ""
+
+#: src/components/deck/columns/TimelineColumn.tsx:246
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
@@ -2815,6 +2901,10 @@ msgstr "まだ投稿がありません"
 #: src/pages/notifications.tsx:268
 msgid "No notifications"
 msgstr "通知はありません"
+
+#: src/components/deck/columns/NotificationsColumn.tsx:183
+msgid "No notifications yet"
+msgstr ""
 
 #: src/components/settings/PasskeySection.tsx:371
 msgid "No passkeys registered yet"
@@ -2921,7 +3011,7 @@ msgstr "注意: カスタムCSSはセキュリティのため一部のプロパ�
 msgid "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
 msgstr "注意: リモートユーザーは、このサーバーに以前キャッシュされていない限り、ユーザー名でのみ検索できます（表示名では検索できません）。"
 
-#: src/components/settings/UISettingsSection.tsx:486
+#: src/components/settings/UISettingsSection.tsx:527
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "注意: セキュリティのため一部のCSSプロパティは制限されます。"
 
@@ -2945,7 +3035,7 @@ msgstr "あなたにメンションした投稿やあなたへの返信"
 msgid "Notification history statistics"
 msgstr "通知履歴の統計"
 
-#: src/components/settings/UISettingsSection.tsx:316
+#: src/components/settings/UISettingsSection.tsx:357
 msgid "Notification Sound"
 msgstr "通知音"
 
@@ -3022,7 +3112,7 @@ msgstr "オリジナル投稿のみ"
 msgid "Overall Success Rate"
 msgstr "全体の成功率"
 
-#: src/components/settings/UISettingsSection.tsx:372
+#: src/components/settings/UISettingsSection.tsx:413
 msgid "Override the default sound for specific notification types. Leave as default to use the settings above."
 msgstr "特定の通知タイプのデフォルトサウンドを上書きします。デフォルトのままにすると、上記の設定が使用されます。"
 
@@ -3161,6 +3251,22 @@ msgstr "パスワードを入力してください"
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
+#: src/components/deck/DeckLayout.tsx:164
+msgid "Please log in to use the deck."
+msgstr ""
+
+#: src/components/deck/columns/ListColumn.tsx:157
+msgid "Please log in to view list"
+msgstr ""
+
+#: src/components/deck/columns/MentionsColumn.tsx:135
+msgid "Please log in to view mentions"
+msgstr ""
+
+#: src/components/deck/columns/NotificationsColumn.tsx:127
+msgid "Please log in to view notifications"
+msgstr ""
+
 #: src/components/pages/ContactThreadPageClient.tsx:147
 msgid "Please log in to view your inquiries."
 msgstr "お問い合わせを表示するにはログインしてください。"
@@ -3211,7 +3317,7 @@ msgid "Powered by Rox - Lightweight ActivityPub Server"
 msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
 #: src/components/note/NoteComposer.tsx:1028
-#: src/components/settings/UISettingsSection.tsx:493
+#: src/components/settings/UISettingsSection.tsx:534
 #: src/pages/admin/emojis.tsx:975
 #: src/pages/admin/settings.tsx:739
 msgid "Preview"
@@ -3705,12 +3811,12 @@ msgstr "承認が必要"
 msgid "Require invitation code"
 msgstr "招待コードを必要とする"
 
-#: src/components/settings/UISettingsSection.tsx:447
+#: src/components/settings/UISettingsSection.tsx:488
 #: src/components/ui/ImageModal.tsx:209
 msgid "Reset"
 msgstr "リセット"
 
-#: src/components/settings/UISettingsSection.tsx:536
+#: src/components/settings/UISettingsSection.tsx:577
 msgid "Reset to Default"
 msgstr "デフォルトに戻す"
 
@@ -3850,7 +3956,7 @@ msgstr "メモを保存"
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
-#: src/components/settings/UISettingsSection.tsx:532
+#: src/components/settings/UISettingsSection.tsx:573
 msgid "Save Settings"
 msgstr "設定を保存"
 
@@ -3859,7 +3965,7 @@ msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
 #: src/components/list/ListEditModal.tsx:239
-#: src/components/settings/UISettingsSection.tsx:528
+#: src/components/settings/UISettingsSection.tsx:569
 #: src/pages/settings.tsx:299
 msgid "Saving..."
 msgstr "保存中..."
@@ -3952,6 +4058,14 @@ msgstr "セキュリティ"
 msgid "Select"
 msgstr "選択する"
 
+#: src/components/deck/AddColumnDialog.tsx:197
+msgid "Select a column type to add:"
+msgstr ""
+
+#: src/components/deck/AddColumnDialog.tsx:258
+msgid "Select a list:"
+msgstr ""
+
 #: src/pages/admin/emojis.tsx:1054
 #: src/pages/admin/gone-users.tsx:229
 msgid "Select All"
@@ -3969,6 +4083,10 @@ msgstr "ドライブから選択"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "ドライブから選択"
+
+#: src/components/deck/AddColumnDialog.tsx:229
+msgid "Select timeline type:"
+msgstr ""
 
 #. placeholder {0}: filteredEmojis.length
 #: src/pages/admin/emojis.tsx:1033
@@ -4278,7 +4396,7 @@ msgstr "利用規約同意"
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
-#: src/components/settings/UISettingsSection.tsx:350
+#: src/components/settings/UISettingsSection.tsx:391
 #: src/pages/admin/blocked-usernames.tsx:263
 msgid "Test"
 msgstr "テスト"
@@ -4324,7 +4442,7 @@ msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
 #: src/components/admin/AdminLayout.tsx:79
-#: src/components/settings/UISettingsSection.tsx:305
+#: src/components/settings/UISettingsSection.tsx:306
 msgid "Theme"
 msgstr "テーマ"
 
@@ -4392,7 +4510,7 @@ msgstr "このインスタンスはActivityPub連合ネットワークに参加�
 msgid "This instance participates in the ActivityPub federation network. Your public content may be visible to users on other federated instances. Once content is federated, we cannot guarantee its complete removal from all servers."
 msgstr "このインスタンスはActivityPub連合ネットワークに参加しています。公開コンテンツは他の連合インスタンスのユーザーに表示される場合があります。一度連合されたコンテンツについては、すべてのサーバーからの完全な削除を保証することはできません。"
 
-#: src/components/settings/UISettingsSection.tsx:514
+#: src/components/settings/UISettingsSection.tsx:555
 msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 msgstr "これは選択した設定でのテキスト表示のプレビューです。上のオプションを調整して、読みやすい表示にカスタマイズできます。"
 
@@ -4554,7 +4672,7 @@ msgstr "返信を入力..."
 msgid "UI settings and preferences"
 msgstr "UI設定と環境設定"
 
-#: src/components/settings/UISettingsSection.tsx:203
+#: src/components/settings/UISettingsSection.tsx:204
 msgid "UI settings saved"
 msgstr "表示設定を保存しました"
 
@@ -4595,6 +4713,10 @@ msgstr "フォロー解除中..."
 #: src/pages/admin/reports.tsx:429
 msgid "Unknown"
 msgstr "不明"
+
+#: src/components/deck/DeckColumn.tsx:129
+msgid "Unknown column type"
+msgstr ""
 
 #: src/pages/mod/notes.tsx:225
 msgid "Unknown User"
@@ -4664,7 +4786,7 @@ msgstr "ファイルをアップロード中..."
 msgid "Uploading..."
 msgstr "アップロード中..."
 
-#: src/components/settings/UISettingsSection.tsx:445
+#: src/components/settings/UISettingsSection.tsx:486
 msgid "Use default"
 msgstr "デフォルトを使用"
 
@@ -4846,7 +4968,7 @@ msgstr "規約を見る"
 msgid "Violate intellectual property rights"
 msgstr "知的財産権を侵害する"
 
-#: src/components/settings/UISettingsSection.tsx:328
+#: src/components/settings/UISettingsSection.tsx:369
 msgid "Volume"
 msgstr "音量"
 
@@ -4971,6 +5093,10 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
+#: src/components/deck/DeckColumn.tsx:247
+msgid "Width:"
+msgstr ""
+
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
 #: src/components/note/NoteComposer.tsx:1326
 msgid "Will be posted at {0}"
@@ -5019,6 +5145,10 @@ msgstr "いつでも個人データのコピーをダウンロードできます
 #: src/pages/contact/index.tsx:346
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "アカウントがなくてもお問い合わせを送信できます。お問い合わせ履歴を追跡するには、ログインしてください。"
+
+#: src/components/deck/AddColumnDialog.tsx:262
+msgid "You don't have any lists yet."
+msgstr ""
 
 #: src/pages/403.tsx:15
 msgid "You don't have permission to access this page or resource."
