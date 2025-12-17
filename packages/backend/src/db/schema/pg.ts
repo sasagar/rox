@@ -8,6 +8,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import type { DeckColumn } from "shared";
 
 /**
@@ -925,6 +926,10 @@ export const deckProfiles = pgTable(
   (table) => ({
     userIdx: index("deck_profile_user_idx").on(table.userId),
     userNameIdx: uniqueIndex("deck_profile_user_name_idx").on(table.userId, table.name),
+    // Ensure only one default profile per user (partial unique index)
+    userDefaultIdx: uniqueIndex("deck_profile_user_default_idx")
+      .on(table.userId)
+      .where(sql`${table.isDefault} = true`),
   }),
 );
 

@@ -18,12 +18,11 @@ import {
 } from "@dnd-kit/sortable";
 import { Trans } from "@lingui/react/macro";
 import {
-  activeDeckColumnsAtom,
-  reorderDeckColumnsAtom,
   mobileActiveColumnIndexAtom,
   setMobileActiveColumnAtom,
 } from "../../lib/atoms/deck";
 import { currentUserAtom } from "../../lib/atoms/auth";
+import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Sidebar } from "../layout/Sidebar";
 import { MobileAppBar } from "../layout/MobileAppBar";
@@ -70,8 +69,8 @@ export function DeckLayout({
 }: DeckLayoutProps) {
   const currentUser = useAtomValue(currentUserAtom);
   const isCollapsed = useAtomValue(sidebarCollapsedAtom);
-  const columns = useAtomValue(activeDeckColumnsAtom);
-  const reorderColumns = useSetAtom(reorderDeckColumnsAtom);
+  const { activeProfile, updateActiveColumns } = useDeckProfiles();
+  const columns = activeProfile?.columns ?? [];
   const [mobileColumnIndex, setMobileColumnIndex] = useAtom(
     mobileActiveColumnIndexAtom
   );
@@ -102,10 +101,18 @@ export function DeckLayout({
       if (over && active.id !== over.id) {
         const oldIndex = columns.findIndex((col) => col.id === active.id);
         const newIndex = columns.findIndex((col) => col.id === over.id);
-        reorderColumns(oldIndex, newIndex);
+
+        // Reorder columns array
+        const newColumns = [...columns];
+        const [removed] = newColumns.splice(oldIndex, 1);
+        if (removed) {
+          newColumns.splice(newIndex, 0, removed);
+          // Sync to server (optimistic update handled in hook)
+          updateActiveColumns(newColumns);
+        }
       }
     },
-    [columns, reorderColumns]
+    [columns, updateActiveColumns]
   );
 
   // Handle mobile swipe

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useSetAtom } from "jotai";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -19,10 +18,7 @@ import {
 } from "lucide-react";
 import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
-import {
-  removeDeckColumnAtom,
-  updateDeckColumnAtom,
-} from "../../lib/atoms/deck";
+import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import type { DeckColumn as DeckColumnType, DeckColumnWidth } from "../../lib/types/deck";
 
 // Column content components (to be implemented)
@@ -147,8 +143,8 @@ const WIDTH_OPTIONS: { value: DeckColumnWidth; label: string }[] = [
  * Supports drag-and-drop reordering, width adjustment, and removal.
  */
 export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
-  const removeColumn = useSetAtom(removeDeckColumnAtom);
-  const updateColumn = useSetAtom(updateDeckColumnAtom);
+  const { activeProfile, updateActiveColumns } = useDeckProfiles();
+  const columns = activeProfile?.columns ?? [];
   const [showSettings, setShowSettings] = useState(false);
 
   // Sortable setup for drag-and-drop
@@ -171,15 +167,19 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
   };
 
   const handleRemove = useCallback(() => {
-    removeColumn(column.id);
-  }, [column.id, removeColumn]);
+    const newColumns = columns.filter((c) => c.id !== column.id);
+    updateActiveColumns(newColumns);
+  }, [column.id, columns, updateActiveColumns]);
 
   const handleWidthChange = useCallback(
     (width: DeckColumnWidth) => {
-      updateColumn(column.id, { width });
+      const newColumns = columns.map((c) =>
+        c.id === column.id ? { ...c, width } : c
+      );
+      updateActiveColumns(newColumns);
       setShowSettings(false);
     },
-    [column.id, updateColumn]
+    [column.id, columns, updateActiveColumns]
   );
 
   return (

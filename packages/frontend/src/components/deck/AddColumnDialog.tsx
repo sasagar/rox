@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSetAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import {
   Dialog,
   Modal,
@@ -21,8 +21,8 @@ import {
 } from "lucide-react";
 import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
-import { addDeckColumnAtom } from "../../lib/atoms/deck";
 import { myListsAtom } from "../../lib/atoms/lists";
+import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import type {
   DeckColumn,
   DeckColumnConfig,
@@ -101,8 +101,9 @@ function generateColumnId(): string {
  * Dialog for adding a new column to the deck
  */
 export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
-  const addColumn = useSetAtom(addDeckColumnAtom);
+  const { activeProfile, updateActiveColumns } = useDeckProfiles();
   const myLists = useAtomValue(myListsAtom);
+  const columns = activeProfile?.columns ?? [];
   const [selectedType, setSelectedType] = useState<
     DeckColumnConfig["type"] | null
   >(null);
@@ -152,9 +153,10 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
       width: "normal",
     };
 
-    addColumn(column);
+    // Add column to the active profile and sync to server
+    updateActiveColumns([...columns, column]);
     handleClose();
-  }, [selectedType, selectedTimeline, selectedListId, myLists, addColumn, handleClose]);
+  }, [selectedType, selectedTimeline, selectedListId, myLists, columns, updateActiveColumns, handleClose]);
 
   const canAdd =
     selectedType &&
