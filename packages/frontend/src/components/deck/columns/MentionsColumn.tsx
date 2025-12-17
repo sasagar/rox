@@ -126,8 +126,13 @@ export function MentionsColumnContent({
   // Retry
   const handleRetry = useCallback(() => {
     updateState({ error: null });
+    // For initial load failures, reset and reload from scratch
+    if (notes.length === 0) {
+      hasLoadedRef.current = false;
+      updateState({ hasMore: true });
+    }
     loadMore();
-  }, [loadMore, updateState]);
+  }, [loadMore, updateState, notes.length]);
 
   if (!currentUser) {
     return (

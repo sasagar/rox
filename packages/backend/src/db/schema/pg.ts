@@ -8,6 +8,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import type { DeckColumn } from "shared";
 
 /**
  * Profile emoji structure
@@ -902,6 +903,31 @@ export const userListMembers = pgTable(
   }),
 );
 
+/**
+ * Deck profiles table
+ * Stores user deck layouts (multi-column view configurations)
+ */
+export const deckProfiles = pgTable(
+  "deck_profiles",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    /** Columns configuration stored as JSON */
+    columns: jsonb("columns").notNull().$type<DeckColumn[]>().default([]),
+    /** Whether this is the user's default profile */
+    isDefault: boolean("is_default").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdx: index("deck_profile_user_idx").on(table.userId),
+    userNameIdx: uniqueIndex("deck_profile_user_name_idx").on(table.userId, table.name),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -953,3 +979,5 @@ export type UserList = typeof userLists.$inferSelect;
 export type NewUserList = typeof userLists.$inferInsert;
 export type UserListMember = typeof userListMembers.$inferSelect;
 export type NewUserListMember = typeof userListMembers.$inferInsert;
+export type DeckProfileRow = typeof deckProfiles.$inferSelect;
+export type NewDeckProfile = typeof deckProfiles.$inferInsert;

@@ -24,6 +24,7 @@ import type {
   IPasskeyChallengeRepository,
   IOAuthAccountRepository,
   IListRepository,
+  IDeckProfileRepository,
 } from "../interfaces/repositories/index.js";
 import type { IContactRepository } from "../interfaces/repositories/IContactRepository.js";
 import type { IBlockedUsernameRepository } from "../interfaces/repositories/IBlockedUsernameRepository.js";
@@ -53,6 +54,7 @@ import {
   PostgresPasskeyChallengeRepository,
   PostgresOAuthAccountRepository,
   PostgresListRepository,
+  PostgresDeckProfileRepository,
 } from "../repositories/pg/index.js";
 import { PostgresContactRepository } from "../repositories/pg/PostgresContactRepository.js";
 import { PostgresBlockedUsernameRepository } from "../repositories/pg/PostgresBlockedUsernameRepository.js";
@@ -100,6 +102,7 @@ export interface AppContainer {
   contactRepository: IContactRepository;
   blockedUsernameRepository: IBlockedUsernameRepository;
   listRepository: IListRepository;
+  deckProfileRepository: IDeckProfileRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -285,6 +288,7 @@ function createRepositories(db: any, dbType: string) {
         contactRepository: new PostgresContactRepository(db),
         blockedUsernameRepository: new PostgresBlockedUsernameRepository(db),
         listRepository: new PostgresListRepository(db),
+        deckProfileRepository: new PostgresDeckProfileRepository(db),
       };
 
     case "mysql":

@@ -83,6 +83,8 @@ export interface DeckColumn {
 export interface DeckProfile {
   /** Unique profile identifier */
   id: string;
+  /** Owner user ID */
+  userId: string;
   /** User-defined profile name */
   name: string;
   /** Columns in this profile */

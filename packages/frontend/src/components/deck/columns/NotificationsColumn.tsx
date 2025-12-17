@@ -118,8 +118,13 @@ export function NotificationsColumnContent({
   // Retry
   const handleRetry = useCallback(() => {
     updateState({ error: null });
+    // For initial load failures, reset and reload from scratch
+    if (notifications.length === 0) {
+      hasLoadedRef.current = false;
+      updateState({ hasMore: true });
+    }
     loadMore();
-  }, [loadMore, updateState]);
+  }, [loadMore, updateState, notifications.length]);
 
   if (!currentUser) {
     return (

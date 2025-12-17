@@ -19,6 +19,7 @@ import {
   addDeckProfileAtom,
   removeDeckProfileAtom,
 } from "../../lib/atoms/deck";
+import { currentUserAtom } from "../../lib/atoms/auth";
 import type { DeckProfile } from "../../lib/types/deck";
 
 /**
@@ -35,6 +36,7 @@ function generateProfileId(): string {
  * create new profiles, and delete existing ones.
  */
 export function DeckProfileSwitcher() {
+  const currentUser = useAtomValue(currentUserAtom);
   const profiles = useAtomValue(deckProfilesAtom);
   const activeProfile = useAtomValue(activeDeckProfileAtom);
   const setActiveProfile = useSetAtom(setActiveDeckProfileAtom);
@@ -45,10 +47,11 @@ export function DeckProfileSwitcher() {
   const [newProfileName, setNewProfileName] = useState("");
 
   const handleCreateProfile = useCallback(() => {
-    if (!newProfileName.trim()) return;
+    if (!newProfileName.trim() || !currentUser) return;
 
     const newProfile: DeckProfile = {
       id: generateProfileId(),
+      userId: currentUser.id,
       name: newProfileName.trim(),
       columns: [],
       isDefault: profiles.length === 0,
@@ -58,7 +61,7 @@ export function DeckProfileSwitcher() {
     setActiveProfile(newProfile.id);
     setNewProfileName("");
     setIsCreating(false);
-  }, [newProfileName, profiles.length, addProfile, setActiveProfile]);
+  }, [newProfileName, currentUser, profiles.length, addProfile, setActiveProfile]);
 
   const handleDeleteProfile = useCallback(
     (profileId: string) => {
@@ -122,7 +125,7 @@ export function DeckProfileSwitcher() {
               <MenuItem
                 key={profile.id}
                 onAction={() => setActiveProfile(profile.id)}
-                className="flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 outline-none"
+                className="flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 outline-none group"
               >
                 <span className="flex items-center gap-2">
                   {activeProfile?.id === profile.id && (
@@ -141,20 +144,22 @@ export function DeckProfileSwitcher() {
                     <span className="text-xs text-gray-400">(default)</span>
                   )}
                 </span>
-                {profiles.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteProfile(profile.id);
-                    }}
-                    className="p-1 text-gray-400 hover:text-red-500 rounded"
-                    aria-label={`Delete ${profile.name}`}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </MenuItem>
             ))}
+
+            {/* Delete action as separate menu item for accessibility */}
+            {profiles.length > 1 && activeProfile && (
+              <>
+                <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+                <MenuItem
+                  onAction={() => handleDeleteProfile(activeProfile.id)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 outline-none text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <Trans>Delete Current Profile</Trans>
+                </MenuItem>
+              </>
+            )}
 
             {/* Separator */}
             <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
