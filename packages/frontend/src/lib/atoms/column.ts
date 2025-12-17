@@ -235,7 +235,7 @@ export const resetColumnStateAtomFamily = atomFamily((columnId: string) =>
  * Action atom family: Update a note in the column (e.g., reactions update)
  */
 export const updateColumnNoteAtomFamily = atomFamily((columnId: string) =>
-  atom(null, (get, set, noteId: string, updates: Partial<Note>) => {
+  atom(null, (get, set, { noteId, updates }: { noteId: string; updates: Partial<Note> }) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), {
       ...state,
