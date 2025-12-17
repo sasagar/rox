@@ -18,20 +18,32 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
 
   async create(profile: Omit<DeckProfile, "createdAt" | "updatedAt">): Promise<DeckProfile> {
     const now = new Date();
-    const [result] = await this.db
-      .insert(deckProfiles)
-      .values({
-        ...profile,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .returning();
 
-    if (!result) {
-      throw new Error("Failed to create deck profile");
-    }
+    // Use transaction to atomically clear defaults and insert new profile
+    return await this.db.transaction(async (tx) => {
+      // If setting as default, clear other defaults first
+      if (profile.isDefault) {
+        await tx
+          .update(deckProfiles)
+          .set({ isDefault: false })
+          .where(eq(deckProfiles.userId, profile.userId));
+      }
 
-    return this.toSharedProfile(result);
+      const [result] = await tx
+        .insert(deckProfiles)
+        .values({
+          ...profile,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning();
+
+      if (!result) {
+        throw new Error("Failed to create deck profile");
+      }
+
+      return this.toSharedProfile(result);
+    });
   }
 
   async findById(id: string): Promise<DeckProfile | null> {
@@ -78,17 +90,36 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
     id: string,
     data: Partial<Pick<DeckProfile, "name" | "columns" | "isDefault">>,
   ): Promise<DeckProfile> {
-    const [result] = await this.db
-      .update(deckProfiles)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(deckProfiles.id, id))
-      .returning();
+    // Use transaction to atomically clear defaults and update profile
+    return await this.db.transaction(async (tx) => {
+      // If setting as default, get the profile's userId first and clear other defaults
+      if (data.isDefault) {
+        const [profile] = await tx
+          .select({ userId: deckProfiles.userId })
+          .from(deckProfiles)
+          .where(eq(deckProfiles.id, id))
+          .limit(1);
 
-    if (!result) {
-      throw new Error("Failed to update deck profile");
-    }
+        if (profile) {
+          await tx
+            .update(deckProfiles)
+            .set({ isDefault: false })
+            .where(eq(deckProfiles.userId, profile.userId));
+        }
+      }
 
-    return this.toSharedProfile(result);
+      const [result] = await tx
+        .update(deckProfiles)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(deckProfiles.id, id))
+        .returning();
+
+      if (!result) {
+        throw new Error("Failed to update deck profile");
+      }
+
+      return this.toSharedProfile(result);
+    });
   }
 
   async delete(id: string): Promise<void> {
@@ -123,10 +154,10 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
       id: row.id,
       userId: row.userId,
       name: row.name,
-      columns: row.columns as DeckColumn[],
+      columns: Array.isArray(row.columns) ? (row.columns as DeckColumn[]) : [],
       isDefault: row.isDefault,
-      createdAt: row.createdAt?.toISOString(),
-      updatedAt: row.updatedAt?.toISOString(),
+      createdAt: row.createdAt?.toISOString() ?? new Date().toISOString(),
+      updatedAt: row.updatedAt?.toISOString() ?? new Date().toISOString(),
     };
   }
 }

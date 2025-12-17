@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
 import {
   Menu,
   MenuItem,
@@ -9,67 +8,69 @@ import {
   Popover,
   Button as AriaButton,
 } from "react-aria-components";
-import { ChevronDown, Plus, Trash2, Check } from "lucide-react";
+import { ChevronDown, Plus, Trash2, Check, Loader2 } from "lucide-react";
 import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
-import {
-  deckProfilesAtom,
-  activeDeckProfileAtom,
-  setActiveDeckProfileAtom,
-  addDeckProfileAtom,
-  removeDeckProfileAtom,
-} from "../../lib/atoms/deck";
-import { currentUserAtom } from "../../lib/atoms/auth";
-import type { DeckProfile } from "../../lib/types/deck";
-
-/**
- * Generate a unique profile ID
- */
-function generateProfileId(): string {
-  return `profile_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-}
+import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 
 /**
  * Profile switcher component for the deck header
  *
  * Allows users to switch between saved deck profiles,
  * create new profiles, and delete existing ones.
+ * Syncs with server-side storage.
  */
 export function DeckProfileSwitcher() {
-  const currentUser = useAtomValue(currentUserAtom);
-  const profiles = useAtomValue(deckProfilesAtom);
-  const activeProfile = useAtomValue(activeDeckProfileAtom);
-  const setActiveProfile = useSetAtom(setActiveDeckProfileAtom);
-  const addProfile = useSetAtom(addDeckProfileAtom);
-  const removeProfile = useSetAtom(removeDeckProfileAtom);
+  const {
+    profiles,
+    activeProfile,
+    loading,
+    createProfile,
+    deleteProfile,
+    setActiveProfile,
+  } = useDeckProfiles();
 
   const [isCreating, setIsCreating] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCreateProfile = useCallback(() => {
-    if (!newProfileName.trim() || !currentUser) return;
+  const handleCreateProfile = useCallback(async () => {
+    if (!newProfileName.trim() || isSubmitting) return;
 
-    const newProfile: DeckProfile = {
-      id: generateProfileId(),
-      userId: currentUser.id,
-      name: newProfileName.trim(),
-      columns: [],
-      isDefault: profiles.length === 0,
-    };
+    setIsSubmitting(true);
+    try {
+      const newProfile = await createProfile({
+        name: newProfileName.trim(),
+        columns: [],
+        isDefault: profiles.length === 0,
+      });
 
-    addProfile(newProfile);
-    setActiveProfile(newProfile.id);
-    setNewProfileName("");
-    setIsCreating(false);
-  }, [newProfileName, currentUser, profiles.length, addProfile, setActiveProfile]);
+      if (newProfile) {
+        setNewProfileName("");
+        setIsCreating(false);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [newProfileName, isSubmitting, profiles.length, createProfile]);
 
   const handleDeleteProfile = useCallback(
-    (profileId: string) => {
-      if (profiles.length <= 1) return; // Don't delete the last profile
-      removeProfile(profileId);
+    async (profileId: string) => {
+      if (profiles.length <= 1) return;
+      await deleteProfile(profileId);
     },
-    [profiles.length, removeProfile]
+    [profiles.length, deleteProfile]
   );
+
+  // Show loading state
+  if (loading && profiles.length === 0) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <Trans>Loading profiles...</Trans>
+      </div>
+    );
+  }
 
   // If no profiles exist, show create prompt
   if (profiles.length === 0) {
@@ -84,18 +85,29 @@ export function DeckProfileSwitcher() {
               placeholder="Profile name"
               className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               autoFocus
+              disabled={isSubmitting}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleCreateProfile();
                 if (e.key === "Escape") setIsCreating(false);
               }}
             />
-            <Button variant="primary" size="sm" onPress={handleCreateProfile}>
-              <Trans>Create</Trans>
+            <Button
+              variant="primary"
+              size="sm"
+              onPress={handleCreateProfile}
+              isDisabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Trans>Create</Trans>
+              )}
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onPress={() => setIsCreating(false)}
+              isDisabled={isSubmitting}
             >
               <Trans>Cancel</Trans>
             </Button>
@@ -186,6 +198,7 @@ export function DeckProfileSwitcher() {
             placeholder="Profile name"
             className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             autoFocus
+            disabled={isSubmitting}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleCreateProfile();
               if (e.key === "Escape") {
@@ -194,8 +207,17 @@ export function DeckProfileSwitcher() {
               }
             }}
           />
-          <Button variant="primary" size="sm" onPress={handleCreateProfile}>
-            <Trans>Create</Trans>
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={handleCreateProfile}
+            isDisabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Trans>Create</Trans>
+            )}
           </Button>
           <Button
             variant="ghost"
@@ -204,6 +226,7 @@ export function DeckProfileSwitcher() {
               setIsCreating(false);
               setNewProfileName("");
             }}
+            isDisabled={isSubmitting}
           >
             <Trans>Cancel</Trans>
           </Button>
