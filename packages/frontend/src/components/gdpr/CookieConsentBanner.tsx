@@ -17,6 +17,7 @@ import { Trans } from "@lingui/react/macro";
 import { Cookie, X, Settings, Check } from "lucide-react";
 import { Button } from "../ui/Button";
 import { SpaLink } from "../ui/SpaLink";
+import { Switch } from "../ui/Switch";
 
 /**
  * Cookie consent preferences
@@ -220,24 +221,13 @@ export function CookieConsentBanner() {
                     </Trans>
                   </p>
                 </div>
-                <button
-                  onClick={() =>
-                    setPreferences((p) => ({ ...p, functional: !p.functional }))
+                <Switch
+                  isSelected={preferences.functional}
+                  onChange={(isSelected) =>
+                    setPreferences((p) => ({ ...p, functional: isSelected }))
                   }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    preferences.functional
-                      ? "bg-primary-500"
-                      : "bg-gray-300 dark:bg-gray-600"
-                  }`}
-                  role="switch"
-                  aria-checked={preferences.functional}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.functional ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
+                  aria-label="Functional Cookies"
+                />
               </div>
 
               {/* Analytics cookies */}
@@ -252,24 +242,13 @@ export function CookieConsentBanner() {
                     </Trans>
                   </p>
                 </div>
-                <button
-                  onClick={() =>
-                    setPreferences((p) => ({ ...p, analytics: !p.analytics }))
+                <Switch
+                  isSelected={preferences.analytics}
+                  onChange={(isSelected) =>
+                    setPreferences((p) => ({ ...p, analytics: isSelected }))
                   }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    preferences.analytics
-                      ? "bg-primary-500"
-                      : "bg-gray-300 dark:bg-gray-600"
-                  }`}
-                  role="switch"
-                  aria-checked={preferences.analytics}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.analytics ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
+                  aria-label="Analytics Cookies"
+                />
               </div>
             </div>
 

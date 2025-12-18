@@ -22,15 +22,9 @@ import { useInstanceInfo } from "../hooks/useInstanceInfo";
 import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
 import { addToastAtom } from "../lib/atoms/toast";
 import { apiClient } from "../lib/api/client";
+import type { ContactCategory, ContactCategoryOption } from "shared";
 
-type ContactCategory =
-  | "general"
-  | "gdpr"
-  | "report"
-  | "technical"
-  | "other";
-
-const CATEGORIES: { value: ContactCategory; label: string }[] = [
+const CATEGORIES: ContactCategoryOption[] = [
   { value: "general", label: "General Inquiry" },
   { value: "gdpr", label: "Privacy / GDPR Request" },
   { value: "report", label: "Report an Issue" },
