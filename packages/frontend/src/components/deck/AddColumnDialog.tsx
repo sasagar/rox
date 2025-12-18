@@ -323,13 +323,13 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     ) : listsError ? (
                       <div className="text-center py-4">
                         <p className="text-sm text-red-500 mb-2">{listsError}</p>
-                        <button
-                          type="button"
-                          onClick={() => fetchLists()}
+                        <Button
+                          variant="ghost"
+                          onPress={() => fetchLists()}
                           className="text-sm text-primary-500 hover:text-primary-600"
                         >
                           <Trans>Try again</Trans>
-                        </button>
+                        </Button>
                       </div>
                     ) : myLists.length === 0 ? (
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
