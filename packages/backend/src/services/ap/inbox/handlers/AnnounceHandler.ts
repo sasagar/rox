@@ -105,9 +105,13 @@ export class AnnounceHandler extends BaseHandler {
         }
 
         if (!result.success) {
-          logger.warn(
+          // 404 errors are common (deleted notes) - log at debug level
+          // Other errors (network issues, auth failures) are logged at warn level
+          const is404 = result.error?.statusCode === 404;
+          const logLevel = is404 ? "debug" : "warn";
+          logger[logLevel](
             { noteUri: objectUri, err: result.error },
-            "Failed to fetch remote note",
+            is404 ? "Remote note not found (possibly deleted)" : "Failed to fetch remote note",
           );
           return this.failure(`Failed to fetch remote note: ${objectUri}`);
         }

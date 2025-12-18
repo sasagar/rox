@@ -248,6 +248,13 @@ export class RemoteLikesService {
       return null;
     }
 
+    // Skip fetching for direct messages (specified visibility)
+    // These are private and will return 404 from remote servers
+    if (note.visibility === "specified") {
+      logger.debug({ noteId }, "Skipping remote fetch for direct message");
+      return this.reactionRepository.countByNoteIdWithEmojis(noteId);
+    }
+
     // Extract host from note URI for rate limiting
     let host: string;
     try {
@@ -274,7 +281,13 @@ export class RemoteLikesService {
 
     if (!noteResult.success || !noteResult.data) {
       this.recordFailure(host);
-      logger.warn({ noteUri: note.uri, err: noteResult.error }, "Failed to fetch remote note");
+      // 404 errors are common (deleted notes) - log at debug level
+      const is404 = noteResult.error?.statusCode === 404;
+      const logLevel = is404 ? "debug" : "warn";
+      logger[logLevel](
+        { noteUri: note.uri, err: noteResult.error },
+        is404 ? "Remote note not found (possibly deleted)" : "Failed to fetch remote note",
+      );
       // Return local counts on failure instead of null
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
     }
