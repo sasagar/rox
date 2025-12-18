@@ -236,7 +236,7 @@ msgstr "About"
 msgid "About This Instance"
 msgstr "About This Instance"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:172
+#: src/components/gdpr/CookieConsentBanner.tsx:173
 msgid "Accept all"
 msgstr "Accept all"
 
@@ -502,7 +502,7 @@ msgstr "Already have an account? Sign in"
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:247
+#: src/components/gdpr/CookieConsentBanner.tsx:237
 #: src/pages/legal/privacy.tsx:257
 msgid "Analytics Cookies"
 msgstr "Analytics Cookies"
@@ -717,7 +717,7 @@ msgstr "Blocks"
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/contact.tsx:284
+#: src/pages/contact.tsx:279
 #: src/pages/contact/index.tsx:237
 msgid "Brief description of your inquiry"
 msgstr "Brief description of your inquiry"
@@ -807,7 +807,7 @@ msgstr "Cannot save empty draft"
 
 #: src/pages/admin/emojis.tsx:914
 #: src/pages/admin/emojis.tsx:1578
-#: src/pages/contact.tsx:176
+#: src/pages/contact.tsx:171
 #: src/pages/contact/index.tsx:211
 msgid "Category"
 msgstr "Category"
@@ -865,7 +865,7 @@ msgstr "Click to upload (PNG, GIF, WebP, max 256KB)"
 msgid "Close"
 msgstr "Close"
 
-#: src/components/settings/AboutSection.tsx:124
+#: src/components/settings/AboutSection.tsx:130
 msgid "Closed"
 msgstr "Closed"
 
@@ -929,7 +929,7 @@ msgstr "Contact Inquiries"
 msgid "Contact thread details"
 msgstr "Contact thread details"
 
-#: src/pages/contact.tsx:112
+#: src/pages/contact.tsx:107
 #: src/pages/contact/index.tsx:141
 msgid "Contact Us"
 msgstr "Contact Us"
@@ -962,7 +962,7 @@ msgstr "Conversation"
 msgid "Conversation thread"
 msgstr "Conversation thread"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:182
+#: src/components/gdpr/CookieConsentBanner.tsx:183
 msgid "Cookie Preferences"
 msgstr "Cookie Preferences"
 
@@ -1103,7 +1103,7 @@ msgstr "Custom Emojis"
 msgid "Custom pattern"
 msgstr "Custom pattern"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:161
+#: src/components/gdpr/CookieConsentBanner.tsx:162
 msgid "Customize"
 msgstr "Customize"
 
@@ -1421,7 +1421,7 @@ msgstr "Edit role"
 msgid "Edit Role"
 msgstr "Edit Role"
 
-#: src/pages/contact.tsx:248
+#: src/pages/contact.tsx:243
 #: src/pages/contact/index.tsx:193
 #: src/pages/onboarding.tsx:282
 #: src/pages/signup.tsx:174
@@ -1592,12 +1592,12 @@ msgstr "Error loading timeline"
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:198
+#: src/components/gdpr/CookieConsentBanner.tsx:199
 #: src/pages/legal/privacy.tsx:233
 msgid "Essential Cookies"
 msgstr "Essential Cookies"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:168
+#: src/components/gdpr/CookieConsentBanner.tsx:169
 msgid "Essential only"
 msgstr "Essential only"
 
@@ -1864,7 +1864,7 @@ msgid "Failed to save UI settings"
 msgstr "Failed to save UI settings"
 
 #: src/components/pages/MessageThreadPageClient.tsx:159
-#: src/pages/contact.tsx:89
+#: src/pages/contact.tsx:84
 msgid "Failed to send message"
 msgstr "Failed to send message"
 
@@ -2046,7 +2046,7 @@ msgstr "Following..."
 msgid "Font Size"
 msgstr "Font Size"
 
-#: src/pages/contact.tsx:203
+#: src/pages/contact.tsx:198
 msgid "For data access, correction, or deletion requests, please include your username and specify what data you're requesting. You can also export your data directly from Settings → Account → Data Export."
 msgstr "For data access, correction, or deletion requests, please include your username and specify what data you're requesting. You can also export your data directly from Settings → Account → Data Export."
 
@@ -2074,18 +2074,22 @@ msgstr "Found on remote server"
 msgid "From:"
 msgstr "From:"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:215
+#: src/components/gdpr/CookieConsentBanner.tsx:216
 #: src/pages/legal/privacy.tsx:245
 msgid "Functional Cookies"
 msgstr "Functional Cookies"
 
-#: src/pages/contact.tsx:200
+#: src/pages/contact.tsx:195
 msgid "GDPR Data Requests"
 msgstr "GDPR Data Requests"
 
 #: src/components/admin/AdminLayout.tsx:73
 msgid "General"
 msgstr "General"
+
+#: src/pages/contact.tsx:28
+msgid "General Inquiry"
+msgstr "General Inquiry"
 
 #: src/components/list/ListEditModal.tsx:186
 msgid "Get notified when list members post"
@@ -2154,7 +2158,7 @@ msgstr "Healthy"
 msgid "Help us understand how visitors use the service. This data is anonymized and used only to improve the service. These are optional."
 msgstr "Help us understand how visitors use the service. This data is anonymized and used only to improve the service. These are optional."
 
-#: src/components/gdpr/CookieConsentBanner.tsx:250
+#: src/components/gdpr/CookieConsentBanner.tsx:240
 msgid "Help us understand how you use the service to improve it."
 msgstr "Help us understand how you use the service to improve it."
 
@@ -2383,7 +2387,7 @@ msgstr "Invite"
 msgid "Invite limit:"
 msgstr "Invite limit:"
 
-#: src/components/settings/AboutSection.tsx:115
+#: src/components/settings/AboutSection.tsx:121
 #: src/pages/onboarding.tsx:436
 msgid "Invite only"
 msgstr "Invite only"
@@ -2439,7 +2443,7 @@ msgstr "Last updated: {0}"
 msgid "Last used {0}"
 msgstr "Last used {0}"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:150
+#: src/components/gdpr/CookieConsentBanner.tsx:151
 msgid "Learn more about our cookie policy"
 msgstr "Learn more about our cookie policy"
 
@@ -2770,12 +2774,12 @@ msgstr "Mentions"
 msgid "Menu"
 msgstr "Menu"
 
-#: src/pages/contact.tsx:297
+#: src/pages/contact.tsx:292
 #: src/pages/contact/index.tsx:243
 msgid "Message"
 msgstr "Message"
 
-#: src/pages/contact.tsx:148
+#: src/pages/contact.tsx:143
 msgid "Message Sent"
 msgstr "Message Sent"
 
@@ -2846,7 +2850,7 @@ msgstr "My Rox Server"
 #: src/pages/admin/emojis.tsx:1150
 #: src/pages/admin/emojis.tsx:1331
 #: src/pages/admin/roles.tsx:361
-#: src/pages/contact.tsx:221
+#: src/pages/contact.tsx:216
 msgid "Name"
 msgstr "Name"
 
@@ -3220,7 +3224,7 @@ msgstr "Once you delete your account, there is no going back. This action is per
 msgid "Only visible to staff"
 msgstr "Only visible to staff"
 
-#: src/components/settings/AboutSection.tsx:119
+#: src/components/settings/AboutSection.tsx:125
 msgid "Open"
 msgstr "Open"
 
@@ -3232,8 +3236,8 @@ msgstr "Open Registration"
 msgid "Open Source Licenses"
 msgstr "Open Source Licenses"
 
-#: src/pages/contact.tsx:223
-#: src/pages/contact.tsx:276
+#: src/pages/contact.tsx:218
+#: src/pages/contact.tsx:271
 msgid "optional"
 msgstr "optional"
 
@@ -3242,7 +3246,7 @@ msgstr "optional"
 msgid "Optional"
 msgstr "Optional"
 
-#: src/pages/contact.tsx:250
+#: src/pages/contact.tsx:245
 msgid "optional, for reply"
 msgstr "optional, for reply"
 
@@ -3261,6 +3265,10 @@ msgstr "Or enter new category"
 #: src/components/list/ListEditModal.tsx:218
 msgid "Original posts only"
 msgstr "Original posts only"
+
+#: src/pages/contact.tsx:32
+msgid "Other"
+msgstr "Other"
 
 #: src/pages/admin/queue.tsx:352
 msgid "Overall Success Rate"
@@ -3381,7 +3389,7 @@ msgstr "Permission Denied"
 msgid "Permissions"
 msgstr "Permissions"
 
-#: src/pages/contact.tsx:304
+#: src/pages/contact.tsx:299
 #: src/pages/contact/index.tsx:252
 msgid "Please describe your inquiry in detail..."
 msgstr "Please describe your inquiry in detail..."
@@ -3390,7 +3398,7 @@ msgstr "Please describe your inquiry in detail..."
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "Please enable notifications in your browser settings to receive push notifications."
 
-#: src/pages/contact.tsx:61
+#: src/pages/contact.tsx:56
 msgid "Please enter a message"
 msgstr "Please enter a message"
 
@@ -3499,6 +3507,10 @@ msgstr "Primary Color"
 #: src/components/layout/Layout.tsx:104
 msgid "Privacy"
 msgstr "Privacy"
+
+#: src/pages/contact.tsx:29
+msgid "Privacy / GDPR Request"
+msgstr "Privacy / GDPR Request"
 
 #: src/components/LandingPage.tsx:222
 msgid "Privacy First"
@@ -3743,7 +3755,7 @@ msgid "Registering..."
 msgstr "Registering..."
 
 #: src/components/admin/AdminLayout.tsx:78
-#: src/components/settings/AboutSection.tsx:109
+#: src/components/settings/AboutSection.tsx:115
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "Registration"
@@ -3775,7 +3787,7 @@ msgstr "Regular Expression"
 msgid "Reject"
 msgstr "Reject"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:278
+#: src/components/gdpr/CookieConsentBanner.tsx:257
 msgid "Reject all optional"
 msgstr "Reject all optional"
 
@@ -3788,7 +3800,7 @@ msgstr "Reject Report"
 msgid "Rejected"
 msgstr "Rejected"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:218
+#: src/components/gdpr/CookieConsentBanner.tsx:219
 msgid "Remember your preferences and settings for a better experience."
 msgstr "Remember your preferences and settings for a better experience."
 
@@ -3894,6 +3906,10 @@ msgstr "Replying to"
 msgid "Report"
 msgstr "Report"
 
+#: src/pages/contact.tsx:30
+msgid "Report an Issue"
+msgstr "Report an Issue"
+
 #: src/pages/admin/reports.tsx:381
 #: src/pages/mod/reports.tsx:359
 msgid "Report Details"
@@ -3983,7 +3999,7 @@ msgstr "Require Approval"
 msgid "Require invitation code"
 msgstr "Require invitation code"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:207
+#: src/components/gdpr/CookieConsentBanner.tsx:208
 msgid "Required"
 msgstr "Required"
 
@@ -3991,7 +4007,7 @@ msgstr "Required"
 msgid "Required for the website to function properly. These include authentication tokens and session management. They cannot be disabled."
 msgstr "Required for the website to function properly. These include authentication tokens and session management. They cannot be disabled."
 
-#: src/components/gdpr/CookieConsentBanner.tsx:201
+#: src/components/gdpr/CookieConsentBanner.tsx:202
 msgid "Required for the website to function. These cannot be disabled."
 msgstr "Required for the website to function. These cannot be disabled."
 
@@ -4136,7 +4152,7 @@ msgstr "Save Legal Settings"
 msgid "Save Notes"
 msgstr "Save Notes"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:281
+#: src/components/gdpr/CookieConsentBanner.tsx:260
 msgid "Save preferences"
 msgstr "Save preferences"
 
@@ -4286,7 +4302,7 @@ msgstr "Select Visible ({0})"
 msgid "Send"
 msgstr "Send"
 
-#: src/pages/contact.tsx:165
+#: src/pages/contact.tsx:160
 msgid "Send a Message"
 msgstr "Send a Message"
 
@@ -4294,7 +4310,7 @@ msgstr "Send a Message"
 msgid "Send a test notification to verify your setup."
 msgstr "Send a test notification to verify your setup."
 
-#: src/pages/contact.tsx:156
+#: src/pages/contact.tsx:151
 msgid "Send Another Message"
 msgstr "Send Another Message"
 
@@ -4302,7 +4318,7 @@ msgstr "Send Another Message"
 msgid "Send Delete activity to remote followers"
 msgstr "Send Delete activity to remote followers"
 
-#: src/pages/contact.tsx:338
+#: src/pages/contact.tsx:333
 msgid "Send Message"
 msgstr "Send Message"
 
@@ -4315,11 +4331,11 @@ msgid "Send test"
 msgstr "Send test"
 
 #. placeholder {0}: currentUser.username
-#: src/pages/contact.tsx:319
+#: src/pages/contact.tsx:314
 msgid "Sending as <0>@{0}</0>. We'll respond to your account's registered email if needed."
 msgstr "Sending as <0>@{0}</0>. We'll respond to your account's registered email if needed."
 
-#: src/pages/contact.tsx:332
+#: src/pages/contact.tsx:327
 msgid "Sending..."
 msgstr "Sending..."
 
@@ -4508,7 +4524,7 @@ msgstr "Storage Management"
 msgid "Storage Usage"
 msgstr "Storage Usage"
 
-#: src/pages/contact.tsx:274
+#: src/pages/contact.tsx:269
 #: src/pages/contact/index.tsx:228
 msgid "Subject"
 msgstr "Subject"
@@ -4590,6 +4606,10 @@ msgstr "Target Account URI"
 msgid "Target ID:"
 msgstr "Target ID:"
 
+#: src/pages/contact.tsx:31
+msgid "Technical Support"
+msgstr "Technical Support"
+
 #: src/pages/settings.tsx:220
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
@@ -4629,7 +4649,7 @@ msgstr "Test Username"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
-#: src/pages/contact.tsx:151
+#: src/pages/contact.tsx:146
 msgid "Thank you for contacting us. We'll get back to you as soon as possible."
 msgstr "Thank you for contacting us. We'll get back to you as soon as possible."
 
@@ -5276,7 +5296,7 @@ msgstr "We use collected information to:"
 msgid "We use cookies and local storage to provide and improve our service. You can manage your cookie preferences at any time."
 msgstr "We use cookies and local storage to provide and improve our service. You can manage your cookie preferences at any time."
 
-#: src/components/gdpr/CookieConsentBanner.tsx:141
+#: src/components/gdpr/CookieConsentBanner.tsx:142
 msgid "We use cookies to improve your experience. Essential cookies are required for the service to function. You can customize your preferences or accept all cookies."
 msgstr "We use cookies to improve your experience. Essential cookies are required for the service to function. You can customize your preferences or accept all cookies."
 
@@ -5383,7 +5403,7 @@ msgstr "You are responsible for maintaining the confidentiality of your account 
 msgid "You are using {0}% of your storage. Consider deleting unused files."
 msgstr "You are using {0}% of your storage. Consider deleting unused files."
 
-#: src/pages/contact.tsx:127
+#: src/pages/contact.tsx:122
 msgid "You can also reach us directly at:"
 msgstr "You can also reach us directly at:"
 
@@ -5511,11 +5531,11 @@ msgstr "Your Inquiries"
 msgid "Your inquiry has been submitted successfully!"
 msgstr "Your inquiry has been submitted successfully!"
 
-#: src/pages/contact.tsx:84
+#: src/pages/contact.tsx:79
 msgid "Your message has been sent"
 msgstr "Your message has been sent"
 
-#: src/pages/contact.tsx:233
+#: src/pages/contact.tsx:228
 msgid "Your name"
 msgstr "Your name"
 
@@ -5539,7 +5559,7 @@ msgstr "Your server (e.g., mastodon.social)"
 msgid "Your storage is full. Delete some files to upload more."
 msgstr "Your storage is full. Delete some files to upload more."
 
-#: src/pages/contact.tsx:260
+#: src/pages/contact.tsx:255
 #: src/pages/contact/index.tsx:201
 msgid "your@email.com"
 msgstr "your@email.com"

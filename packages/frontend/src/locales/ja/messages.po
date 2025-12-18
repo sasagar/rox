@@ -236,7 +236,7 @@ msgstr "概要"
 msgid "About This Instance"
 msgstr "このインスタンスについて"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:172
+#: src/components/gdpr/CookieConsentBanner.tsx:173
 msgid "Accept all"
 msgstr "すべて許可"
 
@@ -502,7 +502,7 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:247
+#: src/components/gdpr/CookieConsentBanner.tsx:237
 #: src/pages/legal/privacy.tsx:257
 msgid "Analytics Cookies"
 msgstr "分析Cookie"
@@ -717,7 +717,7 @@ msgstr "ブロック"
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/contact.tsx:284
+#: src/pages/contact.tsx:279
 #: src/pages/contact/index.tsx:237
 msgid "Brief description of your inquiry"
 msgstr "お問い合わせの簡単な説明"
@@ -807,7 +807,7 @@ msgstr "空の下書きは保存できません"
 
 #: src/pages/admin/emojis.tsx:914
 #: src/pages/admin/emojis.tsx:1578
-#: src/pages/contact.tsx:176
+#: src/pages/contact.tsx:171
 #: src/pages/contact/index.tsx:211
 msgid "Category"
 msgstr "カテゴリ"
@@ -865,7 +865,7 @@ msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）
 msgid "Close"
 msgstr "閉じる"
 
-#: src/components/settings/AboutSection.tsx:124
+#: src/components/settings/AboutSection.tsx:130
 msgid "Closed"
 msgstr "停止中"
 
@@ -929,7 +929,7 @@ msgstr "お問い合わせ一覧"
 msgid "Contact thread details"
 msgstr "お問い合わせスレッドの詳細"
 
-#: src/pages/contact.tsx:112
+#: src/pages/contact.tsx:107
 #: src/pages/contact/index.tsx:141
 msgid "Contact Us"
 msgstr "お問い合わせ"
@@ -962,7 +962,7 @@ msgstr "会話"
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:182
+#: src/components/gdpr/CookieConsentBanner.tsx:183
 msgid "Cookie Preferences"
 msgstr "Cookie設定"
 
@@ -1103,7 +1103,7 @@ msgstr "カスタム絵文字"
 msgid "Custom pattern"
 msgstr "カスタムパターン"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:161
+#: src/components/gdpr/CookieConsentBanner.tsx:162
 msgid "Customize"
 msgstr "カスタマイズ"
 
@@ -1421,7 +1421,7 @@ msgstr "ロールを編集"
 msgid "Edit Role"
 msgstr "ロールを編集"
 
-#: src/pages/contact.tsx:248
+#: src/pages/contact.tsx:243
 #: src/pages/contact/index.tsx:193
 #: src/pages/onboarding.tsx:282
 #: src/pages/signup.tsx:174
@@ -1592,12 +1592,12 @@ msgstr "タイムラインの読み込みに失敗しました"
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:198
+#: src/components/gdpr/CookieConsentBanner.tsx:199
 #: src/pages/legal/privacy.tsx:233
 msgid "Essential Cookies"
 msgstr "必須Cookie"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:168
+#: src/components/gdpr/CookieConsentBanner.tsx:169
 msgid "Essential only"
 msgstr "必須のみ"
 
@@ -1864,7 +1864,7 @@ msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
 #: src/components/pages/MessageThreadPageClient.tsx:159
-#: src/pages/contact.tsx:89
+#: src/pages/contact.tsx:84
 msgid "Failed to send message"
 msgstr "メッセージの送信に失敗しました"
 
@@ -2046,7 +2046,7 @@ msgstr "フォロー中..."
 msgid "Font Size"
 msgstr "文字サイズ"
 
-#: src/pages/contact.tsx:203
+#: src/pages/contact.tsx:198
 msgid "For data access, correction, or deletion requests, please include your username and specify what data you're requesting. You can also export your data directly from Settings → Account → Data Export."
 msgstr "データへのアクセス、訂正、削除のリクエストには、ユーザー名と対象データを明記してください。設定→アカウント→データエクスポートから直接データをエクスポートすることもできます。"
 
@@ -2074,18 +2074,22 @@ msgstr "リモートサーバーで見つかりました"
 msgid "From:"
 msgstr "送信者:"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:215
+#: src/components/gdpr/CookieConsentBanner.tsx:216
 #: src/pages/legal/privacy.tsx:245
 msgid "Functional Cookies"
 msgstr "機能Cookie"
 
-#: src/pages/contact.tsx:200
+#: src/pages/contact.tsx:195
 msgid "GDPR Data Requests"
 msgstr "GDPRデータリクエスト"
 
 #: src/components/admin/AdminLayout.tsx:73
 msgid "General"
 msgstr "全般"
+
+#: src/pages/contact.tsx:28
+msgid "General Inquiry"
+msgstr "一般的なお問い合わせ"
 
 #: src/components/list/ListEditModal.tsx:186
 msgid "Get notified when list members post"
@@ -2154,7 +2158,7 @@ msgstr "正常"
 msgid "Help us understand how visitors use the service. This data is anonymized and used only to improve the service. These are optional."
 msgstr "サービスの利用状況を把握し、改善に役立てます。データは匿名化されています。これらはオプションです。"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:250
+#: src/components/gdpr/CookieConsentBanner.tsx:240
 msgid "Help us understand how you use the service to improve it."
 msgstr "サービス改善のため、利用状況の把握に役立てます。"
 
@@ -2383,7 +2387,7 @@ msgstr "招待"
 msgid "Invite limit:"
 msgstr "招待上限:"
 
-#: src/components/settings/AboutSection.tsx:115
+#: src/components/settings/AboutSection.tsx:121
 #: src/pages/onboarding.tsx:436
 msgid "Invite only"
 msgstr "招待制"
@@ -2439,7 +2443,7 @@ msgstr "最終更新日: {0}"
 msgid "Last used {0}"
 msgstr "最終使用: {0}"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:150
+#: src/components/gdpr/CookieConsentBanner.tsx:151
 msgid "Learn more about our cookie policy"
 msgstr "Cookieポリシーの詳細"
 
@@ -2770,12 +2774,12 @@ msgstr "メンション"
 msgid "Menu"
 msgstr "メニュー"
 
-#: src/pages/contact.tsx:297
+#: src/pages/contact.tsx:292
 #: src/pages/contact/index.tsx:243
 msgid "Message"
 msgstr "メッセージ"
 
-#: src/pages/contact.tsx:148
+#: src/pages/contact.tsx:143
 msgid "Message Sent"
 msgstr "メッセージ送信完了"
 
@@ -2846,7 +2850,7 @@ msgstr "マイRoxサーバー"
 #: src/pages/admin/emojis.tsx:1150
 #: src/pages/admin/emojis.tsx:1331
 #: src/pages/admin/roles.tsx:361
-#: src/pages/contact.tsx:221
+#: src/pages/contact.tsx:216
 msgid "Name"
 msgstr "名前"
 
@@ -3220,7 +3224,7 @@ msgstr "アカウントを削除すると、元に戻すことはできません
 msgid "Only visible to staff"
 msgstr "スタッフのみ閲覧可能"
 
-#: src/components/settings/AboutSection.tsx:119
+#: src/components/settings/AboutSection.tsx:125
 msgid "Open"
 msgstr "オープン"
 
@@ -3232,8 +3236,8 @@ msgstr "登録受付中"
 msgid "Open Source Licenses"
 msgstr "オープンソースライセンス"
 
-#: src/pages/contact.tsx:223
-#: src/pages/contact.tsx:276
+#: src/pages/contact.tsx:218
+#: src/pages/contact.tsx:271
 msgid "optional"
 msgstr "任意"
 
@@ -3242,7 +3246,7 @@ msgstr "任意"
 msgid "Optional"
 msgstr "任意"
 
-#: src/pages/contact.tsx:250
+#: src/pages/contact.tsx:245
 msgid "optional, for reply"
 msgstr "任意、返信用"
 
@@ -3261,6 +3265,10 @@ msgstr "または新しいカテゴリを入力"
 #: src/components/list/ListEditModal.tsx:218
 msgid "Original posts only"
 msgstr "オリジナル投稿のみ"
+
+#: src/pages/contact.tsx:32
+msgid "Other"
+msgstr "その他"
 
 #: src/pages/admin/queue.tsx:352
 msgid "Overall Success Rate"
@@ -3381,7 +3389,7 @@ msgstr "権限がありません"
 msgid "Permissions"
 msgstr "権限"
 
-#: src/pages/contact.tsx:304
+#: src/pages/contact.tsx:299
 #: src/pages/contact/index.tsx:252
 msgid "Please describe your inquiry in detail..."
 msgstr "お問い合わせ内容を詳しくご記入ください..."
@@ -3390,7 +3398,7 @@ msgstr "お問い合わせ内容を詳しくご記入ください..."
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
-#: src/pages/contact.tsx:61
+#: src/pages/contact.tsx:56
 msgid "Please enter a message"
 msgstr "メッセージを入力してください"
 
@@ -3499,6 +3507,10 @@ msgstr "テーマカラー"
 #: src/components/layout/Layout.tsx:104
 msgid "Privacy"
 msgstr "プライバシー"
+
+#: src/pages/contact.tsx:29
+msgid "Privacy / GDPR Request"
+msgstr "プライバシー / GDPRリクエスト"
 
 #: src/components/LandingPage.tsx:222
 msgid "Privacy First"
@@ -3743,7 +3755,7 @@ msgid "Registering..."
 msgstr "登録中..."
 
 #: src/components/admin/AdminLayout.tsx:78
-#: src/components/settings/AboutSection.tsx:109
+#: src/components/settings/AboutSection.tsx:115
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "登録"
@@ -3775,7 +3787,7 @@ msgstr "正規表現"
 msgid "Reject"
 msgstr "却下"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:278
+#: src/components/gdpr/CookieConsentBanner.tsx:257
 msgid "Reject all optional"
 msgstr "オプションをすべて拒否"
 
@@ -3788,7 +3800,7 @@ msgstr "通報を却下"
 msgid "Rejected"
 msgstr "却下済み"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:218
+#: src/components/gdpr/CookieConsentBanner.tsx:219
 msgid "Remember your preferences and settings for a better experience."
 msgstr "設定を記憶し、より良い体験を提供します。"
 
@@ -3894,6 +3906,10 @@ msgstr "返信先:"
 msgid "Report"
 msgstr "報告"
 
+#: src/pages/contact.tsx:30
+msgid "Report an Issue"
+msgstr "問題を報告"
+
 #: src/pages/admin/reports.tsx:381
 #: src/pages/mod/reports.tsx:359
 msgid "Report Details"
@@ -3983,7 +3999,7 @@ msgstr "承認が必要"
 msgid "Require invitation code"
 msgstr "招待コードを必要とする"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:207
+#: src/components/gdpr/CookieConsentBanner.tsx:208
 msgid "Required"
 msgstr "必須"
 
@@ -3991,7 +4007,7 @@ msgstr "必須"
 msgid "Required for the website to function properly. These include authentication tokens and session management. They cannot be disabled."
 msgstr "ウェブサイトの正常な動作に必要です。認証トークンやセッション管理が含まれます。無効にできません。"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:201
+#: src/components/gdpr/CookieConsentBanner.tsx:202
 msgid "Required for the website to function. These cannot be disabled."
 msgstr "ウェブサイトの動作に必要です。無効にできません。"
 
@@ -4136,7 +4152,7 @@ msgstr "法的設定を保存"
 msgid "Save Notes"
 msgstr "メモを保存"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:281
+#: src/components/gdpr/CookieConsentBanner.tsx:260
 msgid "Save preferences"
 msgstr "設定を保存"
 
@@ -4286,7 +4302,7 @@ msgstr "表示中を選択（{0}件）"
 msgid "Send"
 msgstr "送信"
 
-#: src/pages/contact.tsx:165
+#: src/pages/contact.tsx:160
 msgid "Send a Message"
 msgstr "メッセージを送信"
 
@@ -4294,7 +4310,7 @@ msgstr "メッセージを送信"
 msgid "Send a test notification to verify your setup."
 msgstr "テスト通知を送信して、設定を確認します。"
 
-#: src/pages/contact.tsx:156
+#: src/pages/contact.tsx:151
 msgid "Send Another Message"
 msgstr "別のメッセージを送信"
 
@@ -4302,7 +4318,7 @@ msgstr "別のメッセージを送信"
 msgid "Send Delete activity to remote followers"
 msgstr "リモートフォロワーにDelete Activityを送信"
 
-#: src/pages/contact.tsx:338
+#: src/pages/contact.tsx:333
 msgid "Send Message"
 msgstr "メッセージを送信"
 
@@ -4315,11 +4331,11 @@ msgid "Send test"
 msgstr "テスト送信"
 
 #. placeholder {0}: currentUser.username
-#: src/pages/contact.tsx:319
+#: src/pages/contact.tsx:314
 msgid "Sending as <0>@{0}</0>. We'll respond to your account's registered email if needed."
 msgstr "<0>@{0}</0>として送信します。必要に応じて、アカウントに登録されたメールアドレスに返信します。"
 
-#: src/pages/contact.tsx:332
+#: src/pages/contact.tsx:327
 msgid "Sending..."
 msgstr "送信中..."
 
@@ -4508,7 +4524,7 @@ msgstr "ストレージ管理"
 msgid "Storage Usage"
 msgstr "ストレージ使用量"
 
-#: src/pages/contact.tsx:274
+#: src/pages/contact.tsx:269
 #: src/pages/contact/index.tsx:228
 msgid "Subject"
 msgstr "件名"
@@ -4590,6 +4606,10 @@ msgstr "移行先アカウントURI"
 msgid "Target ID:"
 msgstr "対象ID:"
 
+#: src/pages/contact.tsx:31
+msgid "Technical Support"
+msgstr "技術サポート"
+
 #: src/pages/settings.tsx:220
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
@@ -4629,7 +4649,7 @@ msgstr "ユーザー名をテスト"
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
-#: src/pages/contact.tsx:151
+#: src/pages/contact.tsx:146
 msgid "Thank you for contacting us. We'll get back to you as soon as possible."
 msgstr "お問い合わせありがとうございます。できるだけ早くご返信いたします。"
 
@@ -5276,7 +5296,7 @@ msgstr "収集した情報は以下の目的で使用されます："
 msgid "We use cookies and local storage to provide and improve our service. You can manage your cookie preferences at any time."
 msgstr "サービスの提供と改善のため、Cookieとローカルストレージを使用しています。Cookie設定はいつでも変更できます。"
 
-#: src/components/gdpr/CookieConsentBanner.tsx:141
+#: src/components/gdpr/CookieConsentBanner.tsx:142
 msgid "We use cookies to improve your experience. Essential cookies are required for the service to function. You can customize your preferences or accept all cookies."
 msgstr "体験向上のためCookieを使用しています。必須Cookieはサービスの動作に必要です。設定をカスタマイズするか、すべてのCookieを許可できます。"
 
@@ -5383,7 +5403,7 @@ msgstr "お客様はアカウント資格情報の機密性を維持し、アカ
 msgid "You are using {0}% of your storage. Consider deleting unused files."
 msgstr "ストレージを{0}%使用しています。不要なファイルの削除をご検討ください。"
 
-#: src/pages/contact.tsx:127
+#: src/pages/contact.tsx:122
 msgid "You can also reach us directly at:"
 msgstr "こちらから直接連絡することもできます:"
 
@@ -5511,11 +5531,11 @@ msgstr "お問い合わせ履歴"
 msgid "Your inquiry has been submitted successfully!"
 msgstr "お問い合わせを送信しました！"
 
-#: src/pages/contact.tsx:84
+#: src/pages/contact.tsx:79
 msgid "Your message has been sent"
 msgstr "メッセージが送信されました"
 
-#: src/pages/contact.tsx:233
+#: src/pages/contact.tsx:228
 msgid "Your name"
 msgstr "お名前"
 
@@ -5539,7 +5559,7 @@ msgstr "あなたのサーバー（例: mastodon.social）"
 msgid "Your storage is full. Delete some files to upload more."
 msgstr "ストレージがいっぱいです。アップロードするにはファイルを削除してください。"
 
-#: src/pages/contact.tsx:260
+#: src/pages/contact.tsx:255
 #: src/pages/contact/index.tsx:201
 msgid "your@email.com"
 msgstr "your@email.com"
