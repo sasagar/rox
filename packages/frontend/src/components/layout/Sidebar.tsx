@@ -472,7 +472,7 @@ export function Sidebar() {
             className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
             title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
           >
-            {isCollapsed ? `v${instanceInfo.software.version.split(".")[0]}` : `v${instanceInfo.software.version}`}
+            {isCollapsed ? `v${instanceInfo.software.version.split(".")[0] || instanceInfo.software.version}` : `v${instanceInfo.software.version}`}
           </SpaLink>
         </div>
       )}

@@ -98,7 +98,13 @@ export function AboutSection() {
                         <Trans>Domain</Trans>
                       </dt>
                       <dd className="text-gray-900 dark:text-gray-100">
-                        {new URL(instanceInfo.url).hostname}
+                        {(() => {
+                          try {
+                            return new URL(instanceInfo.url).hostname;
+                          } catch {
+                            return instanceInfo.url;
+                          }
+                        })()}
                       </dd>
                     </div>
                   )}

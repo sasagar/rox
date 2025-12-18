@@ -12,6 +12,9 @@ export type ContactCategory =
   | "feature_request"
   | "account"
   | "abuse"
+  | "gdpr"
+  | "report"
+  | "technical"
   | "other";
 
 /**
