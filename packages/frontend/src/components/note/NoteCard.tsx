@@ -27,6 +27,7 @@ import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
 import { MfmRenderer } from "../mfm/MfmRenderer";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { PluginSlot } from "../../lib/plugins/PluginSlot";
 
 /**
  * Props for the NoteCard component
@@ -417,6 +418,12 @@ function NoteCardComponent({
           </div>
         </div>
 
+        {/* Plugin Slot: Note Header */}
+        <PluginSlot
+          slot="note:header"
+          props={{ noteId: note.id, userId: note.user.id }}
+        />
+
         {/* Renote Indicator */}
         {note.renote && (
           <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
@@ -594,6 +601,13 @@ function NoteCardComponent({
           </>
         )}
 
+        {/* Plugin Slot: Note Footer */}
+        <PluginSlot
+          slot="note:footer"
+          props={{ noteId: note.id, userId: note.user.id }}
+          className="mb-3"
+        />
+
         {/* Interaction Buttons */}
         <div
           className="flex items-center gap-1 sm:gap-2 flex-wrap border-t border-gray-100 dark:border-gray-700 pt-3"
@@ -626,6 +640,11 @@ function NoteCardComponent({
             onReactionSelect={handleReaction}
             selectedReactions={myReactions}
             isDisabled={isReacting}
+          />
+          {/* Plugin Slot: Note Actions */}
+          <PluginSlot
+            slot="note:actions"
+            props={{ noteId: note.id, userId: note.user.id }}
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
