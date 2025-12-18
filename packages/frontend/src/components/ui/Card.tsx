@@ -1,5 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { forwardRef, type ReactNode, type Ref } from "react";
+import { forwardRef, type ReactNode } from "react";
+import {
+  Button as AriaButton,
+  composeRenderProps,
+  type ButtonProps as AriaButtonProps,
+} from "react-aria-components";
 
 /**
  * Card variant styles using Class Variance Authority
@@ -35,15 +40,13 @@ const cardVariants = cva(
 );
 
 /**
- * Props for the Card component
+ * Props for the static Card component (non-interactive)
  */
 export interface CardProps extends VariantProps<typeof cardVariants> {
   /** Card content */
   children: ReactNode;
   /** Additional CSS class names */
   className?: string;
-  /** Click handler */
-  onClick?: () => void;
   /** ARIA role attribute */
   role?: string;
   /** ARIA label for accessibility */
@@ -53,27 +56,36 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
 }
 
 /**
+ * Props for the interactive Card component (with click handler)
+ */
+export interface InteractiveCardProps
+  extends VariantProps<typeof cardVariants>,
+    Omit<AriaButtonProps, "children" | "className" | "style"> {
+  /** Card content */
+  children: ReactNode;
+  /** Additional CSS class names */
+  className?: string;
+}
+
+/**
  * Card component for containing and organizing content
  * Provides consistent styling with customizable padding, shadow, and hover effects
+ *
+ * For static content display, this component renders a semantic div element.
+ * For interactive cards with click handlers, use InteractiveCard instead.
  *
  * @param children - Content to display inside the card
  * @param padding - Padding size: 'none' | 'sm' | 'md' | 'lg' (default: 'md')
  * @param shadow - Shadow depth: 'none' | 'sm' | 'md' | 'lg' (default: 'sm')
  * @param hover - Enable hover effect (default: false)
  * @param className - Additional CSS classes
- * @param onClick - Click handler (makes card interactive)
  *
  * @example
  * ```tsx
- * // Basic card
+ * // Basic card (static content)
  * <Card>
  *   <h2>Title</h2>
  *   <p>Content</p>
- * </Card>
- *
- * // Interactive card with hover effect
- * <Card hover onClick={() => console.log('clicked')}>
- *   <p>Click me!</p>
  * </Card>
  *
  * // Card with custom padding and shadow
@@ -89,29 +101,84 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     shadow,
     hover,
     className,
-    onClick,
     role,
     "aria-label": ariaLabel,
     tabIndex,
   },
   ref,
 ) {
-  const Component = onClick ? "button" : "div";
-
   return (
-    <Component
-      ref={ref as Ref<HTMLDivElement> & Ref<HTMLButtonElement>}
+    <div
+      ref={ref}
       className={cardVariants({ padding, shadow, hover, className })}
-      onClick={onClick}
-      type={onClick ? "button" : undefined}
       role={role}
       aria-label={ariaLabel}
       tabIndex={tabIndex}
     >
       {children}
-    </Component>
+    </div>
   );
 });
+
+/**
+ * Interactive Card component using React Aria Button
+ * Use this for cards that have click handlers or navigation behavior.
+ *
+ * This component wraps React Aria's Button to provide:
+ * - Proper keyboard navigation (Enter/Space to activate)
+ * - Focus management and focus ring styling
+ * - Screen reader announcements
+ * - Touch and pointer event handling
+ *
+ * @param children - Content to display inside the card
+ * @param padding - Padding size: 'none' | 'sm' | 'md' | 'lg' (default: 'md')
+ * @param shadow - Shadow depth: 'none' | 'sm' | 'md' | 'lg' (default: 'sm')
+ * @param hover - Enable hover effect (default: true for interactive cards)
+ * @param className - Additional CSS classes
+ * @param onPress - Handler called when the card is pressed
+ *
+ * @example
+ * ```tsx
+ * // Interactive card with press handler
+ * <InteractiveCard hover onPress={() => console.log('clicked')}>
+ *   <p>Click me!</p>
+ * </InteractiveCard>
+ *
+ * // Disabled interactive card
+ * <InteractiveCard isDisabled onPress={() => {}}>
+ *   <p>Cannot click</p>
+ * </InteractiveCard>
+ * ```
+ */
+export const InteractiveCard = forwardRef<HTMLButtonElement, InteractiveCardProps>(
+  function InteractiveCard(
+    { children, padding, shadow, hover = true, className, ...ariaProps },
+    ref,
+  ) {
+    return (
+      <AriaButton
+        ref={ref}
+        {...ariaProps}
+        className={composeRenderProps(className, (className, renderProps) =>
+          cardVariants({
+            padding,
+            shadow,
+            hover,
+            className: `${className || ""} ${
+              renderProps.isFocusVisible
+                ? "outline-none ring-2 ring-primary-500 ring-offset-2"
+                : ""
+            } ${renderProps.isPressed ? "scale-[0.98]" : ""} ${
+              renderProps.isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            }`.trim(),
+          }),
+        )}
+      >
+        {children}
+      </AriaButton>
+    );
+  },
+);
 
 /**
  * CardHeader component for card titles and headers
@@ -152,4 +219,3 @@ export function CardDescription({
 export function CardContent({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={className || ""}>{children}</div>;
 }
-
