@@ -16,6 +16,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { InvitationCodeSection } from "../components/settings/InvitationCodeSection";
 import { UISettingsSection } from "../components/settings/UISettingsSection";
 import { AccountMigrationSection } from "../components/settings/AccountMigrationSection";
+import { AboutSection } from "../components/settings/AboutSection";
 import { PushNotificationSection } from "../components/settings/PushNotificationSection";
 import { StorageSection } from "../components/settings/StorageSection";
 import { ProfileImageSection } from "../components/settings/ProfileImageSection";
@@ -393,6 +394,11 @@ export default function SettingsPage() {
           {/* Invitation Codes Section - only shown if user has permission */}
           <div className="mt-6">
             <InvitationCodeSection />
+          </div>
+
+          {/* About Section */}
+          <div className="mt-6">
+            <AboutSection />
           </div>
         </>
       )}

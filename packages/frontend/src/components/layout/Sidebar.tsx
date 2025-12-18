@@ -287,6 +287,20 @@ export function Sidebar() {
           </span>
         </button>
       </div>
+
+      {/* Version display */}
+      {instanceInfo?.software && (
+        <div className="px-3 py-2 border-t border-(--border-color)">
+          <SpaLink
+            to="/settings?tab=advanced"
+            onClick={handleNavClick}
+            className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
+          >
+            v{instanceInfo.software.version}
+          </SpaLink>
+        </div>
+      )}
     </>
   );
 
@@ -447,6 +461,19 @@ export function Sidebar() {
           >
             <PanelLeft className="w-5 h-5" />
           </button>
+        </div>
+      )}
+
+      {/* Version display */}
+      {instanceInfo?.software && (
+        <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2 flex justify-center" : "px-4 py-2"}`}>
+          <SpaLink
+            to="/settings?tab=advanced"
+            className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
+          >
+            {isCollapsed ? `v${instanceInfo.software.version.split(".")[0]}` : `v${instanceInfo.software.version}`}
+          </SpaLink>
         </div>
       )}
     </>
