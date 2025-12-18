@@ -1,0 +1,10 @@
+{
+  "id": "activity-logger",
+  "name": "Activity Logger",
+  "version": "1.0.0",
+  "description": "Logs all note and user activity for debugging and analytics",
+  "author": "Rox Team",
+  "minRoxVersion": "2025.12.0",
+  "permissions": ["note:read", "user:read"],
+  "backend": "index.ts"
+}
