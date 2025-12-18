@@ -285,7 +285,7 @@ export function DeckLayout({
         {/* Mobile: Single column with swipe */}
         {/* Height: 100vh - header (4rem + safe-area) - AppBar (3.5rem) - safe-area-bottom */}
         <div
-          className="lg:hidden overflow-hidden pb-14"
+          className="lg:hidden overflow-hidden"
           style={{
             height: "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 3.5rem - env(safe-area-inset-bottom, 0px))",
           }}
@@ -314,7 +314,7 @@ export function DeckLayout({
           {/* Mobile Column Indicators - positioned above AppBar (h-14 = 3.5rem) */}
           {columns.length > 1 && (
             <div
-              className="fixed left-0 right-0 flex justify-center gap-2 pb-2 z-10"
+              className="fixed left-0 right-0 flex justify-center gap-2 pb-2 z-50"
               style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
             >
               {columns.map((col, index) => (
@@ -335,7 +335,7 @@ export function DeckLayout({
           {/* Swipe hint for first-time users - positioned above indicators */}
           {columns.length > 1 && mobileColumnIndex === 0 && (
             <div
-              className="fixed left-0 right-0 flex justify-center pointer-events-none"
+              className="fixed left-0 right-0 flex justify-center pointer-events-none z-50"
               style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)" }}
             >
               <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
