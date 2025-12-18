@@ -165,7 +165,7 @@ describe("FrontendPluginRegistry", () => {
 
       const enabledPlugins = pluginRegistry.getEnabledPlugins();
       expect(enabledPlugins.length).toBe(1);
-      expect(enabledPlugins[0].id).toBe("plugin-2");
+      expect(enabledPlugins[0]?.id).toBe("plugin-2");
     });
   });
 

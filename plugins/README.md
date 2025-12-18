@@ -131,3 +131,131 @@ const all = await config.getAll();
 ## Environment Variables
 
 - `PLUGIN_DIRECTORY` - Directory to load plugins from (default: `./plugins`)
+
+---
+
+## Frontend Plugins
+
+Plugins can also extend the Rox frontend by injecting React components into predefined slots.
+
+### Plugin Structure with Frontend
+
+```
+plugins/
+└── my-plugin/
+    ├── plugin.json    # Plugin manifest
+    ├── index.ts       # Backend plugin entry
+    └── frontend.tsx   # Frontend plugin entry
+```
+
+### Available Slots
+
+| Slot Name | Location | Props |
+|-----------|----------|-------|
+| `note:header` | Before note header content | `noteId`, `userId` |
+| `note:footer` | After note content, before reactions | `noteId`, `userId` |
+| `note:actions` | Additional note action buttons | `noteId`, `userId` |
+| `compose:toolbar` | Additional compose toolbar items | `text`, `insertText`, `replyToId` |
+| `compose:footer` | Below compose textarea | `text`, `insertText`, `replyToId` |
+| `profile:header` | Additional profile header content | `userId`, `username`, `isOwnProfile` |
+| `profile:tabs` | Additional profile tabs | `userId`, `username`, `isOwnProfile` |
+| `settings:tabs` | Additional settings tabs | `userId` |
+| `admin:sidebar` | Additional admin sidebar items | `isAdmin` |
+| `admin:dashboard` | Additional dashboard widgets | `isAdmin` |
+| `sidebar:bottom` | Before sidebar footer | `isCollapsed` |
+
+### Frontend Plugin Example
+
+```typescript
+import type { FrontendPlugin, NoteSlotProps } from "../packages/frontend/src/lib/plugins/types";
+
+// Component for the note:footer slot
+function MyNoteFooter({ noteId, pluginId }: NoteSlotProps) {
+  return (
+    <div className="text-xs text-gray-500">
+      Plugin: {pluginId} | Note: {noteId}
+    </div>
+  );
+}
+
+const myFrontendPlugin: FrontendPlugin = {
+  id: "my-plugin",
+  name: "My Plugin",
+  version: "1.0.0",
+
+  slots: {
+    "note:footer": MyNoteFooter,
+  },
+
+  onLoad() {
+    console.log("Frontend plugin loaded");
+  },
+};
+
+export default myFrontendPlugin;
+```
+
+### Registering Frontend Plugins
+
+```typescript
+import { pluginRegistry } from "@/lib/plugins";
+import myFrontendPlugin from "./plugins/my-plugin/frontend";
+
+// Register the plugin
+await pluginRegistry.register(myFrontendPlugin);
+
+// Enable/disable
+pluginRegistry.disable("my-plugin");
+pluginRegistry.enable("my-plugin");
+
+// Unregister
+await pluginRegistry.unregister("my-plugin");
+```
+
+### Using PluginSlot in Components
+
+```tsx
+import { PluginSlot } from "@/lib/plugins";
+
+function MyComponent({ note }) {
+  return (
+    <div>
+      <PluginSlot
+        slot="note:header"
+        props={{ noteId: note.id, userId: note.userId }}
+      />
+      <div>{note.content}</div>
+      <PluginSlot
+        slot="note:footer"
+        props={{ noteId: note.id, userId: note.userId }}
+        className="mt-2"
+      />
+    </div>
+  );
+}
+```
+
+### Frontend Plugin Hooks
+
+```typescript
+import {
+  usePlugins,
+  useEnabledPlugins,
+  useHasSlotPlugins,
+  usePluginRegistry,
+} from "@/lib/plugins";
+
+function PluginManager() {
+  const plugins = usePlugins();
+  const enabledPlugins = useEnabledPlugins();
+  const hasNoteFooterPlugins = useHasSlotPlugins("note:footer");
+  const { register, unregister, enable, disable } = usePluginRegistry();
+
+  return (
+    <div>
+      <p>Total plugins: {plugins.length}</p>
+      <p>Enabled: {enabledPlugins.length}</p>
+      {hasNoteFooterPlugins && <p>Note footer plugins available</p>}
+    </div>
+  );
+}
