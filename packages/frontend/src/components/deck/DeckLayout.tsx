@@ -144,6 +144,15 @@ export function DeckLayout({
     }
   }, [columns.length, mobileColumnIndex, setMobileColumnIndex]);
 
+  // Reset scroll position to start when profile changes or on initial load
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+    // Also reset mobile column index to first column
+    setMobileColumnIndex(0);
+  }, [activeProfile?.id, setMobileColumnIndex]);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const touch = e.touches[0];
     if (touch) {
@@ -274,8 +283,12 @@ export function DeckLayout({
         </div>
 
         {/* Mobile: Single column with swipe */}
+        {/* Height: 100vh - header (4rem + safe-area) - AppBar (3.5rem) - safe-area-bottom */}
         <div
-          className="lg:hidden h-[calc(100vh-32*var(--spacing))] overflow-hidden"
+          className="lg:hidden overflow-hidden pb-14"
+          style={{
+            height: "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 3.5rem - env(safe-area-inset-bottom, 0px))",
+          }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -298,9 +311,12 @@ export function DeckLayout({
             </div>
           )}
 
-          {/* Mobile Column Indicators */}
+          {/* Mobile Column Indicators - positioned above AppBar (h-14 = 3.5rem) */}
           {columns.length > 1 && (
-            <div className="fixed bottom-20 left-0 right-0 flex justify-center gap-2 pb-2 z-10">
+            <div
+              className="fixed left-0 right-0 flex justify-center gap-2 pb-2 z-10"
+              style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
+            >
               {columns.map((col, index) => (
                 <button
                   key={col.id}
@@ -316,9 +332,12 @@ export function DeckLayout({
             </div>
           )}
 
-          {/* Swipe hint for first-time users */}
+          {/* Swipe hint for first-time users - positioned above indicators */}
           {columns.length > 1 && mobileColumnIndex === 0 && (
-            <div className="fixed bottom-28 left-0 right-0 flex justify-center pointer-events-none">
+            <div
+              className="fixed left-0 right-0 flex justify-center pointer-events-none"
+              style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)" }}
+            >
               <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
                 <span>←</span>
                 <Trans>Swipe to navigate</Trans>
