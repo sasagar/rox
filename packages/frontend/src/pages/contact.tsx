@@ -10,8 +10,8 @@
  */
 
 import { useState } from "react";
-import { Trans } from "@lingui/react/macro";
-import { t } from "@lingui/core/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
+import { t, msg } from "@lingui/core/macro";
 import { useAtom } from "jotai";
 import { Mail, Send, User, MessageSquare, AlertCircle } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
@@ -22,17 +22,18 @@ import { useInstanceInfo } from "../hooks/useInstanceInfo";
 import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
 import { addToastAtom } from "../lib/atoms/toast";
 import { apiClient } from "../lib/api/client";
-import type { ContactCategory, ContactCategoryOption } from "shared";
+import type { ContactCategory } from "shared";
 
-const CATEGORIES: ContactCategoryOption[] = [
-  { value: "general", label: "General Inquiry" },
-  { value: "gdpr", label: "Privacy / GDPR Request" },
-  { value: "report", label: "Report an Issue" },
-  { value: "technical", label: "Technical Support" },
-  { value: "other", label: "Other" },
+const CATEGORIES = [
+  { value: "general" as const, label: msg`General Inquiry` },
+  { value: "gdpr" as const, label: msg`Privacy / GDPR Request` },
+  { value: "report" as const, label: msg`Report an Issue` },
+  { value: "technical" as const, label: msg`Technical Support` },
+  { value: "other" as const, label: msg`Other` },
 ];
 
 export default function ContactPage() {
+  const { t: i18n } = useLingui();
   const { instanceInfo, isLoading: isLoadingInstance } = useInstanceInfo();
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
@@ -178,7 +179,7 @@ export default function ContactPage() {
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.value} value={cat.value}>
-                        {cat.label}
+                        {i18n(cat.label)}
                       </option>
                     ))}
                   </select>
