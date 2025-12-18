@@ -317,8 +317,9 @@ ws.get(
  * WebSocket endpoint for global timeline
  *
  * Public endpoint, no authentication required.
- * Streams all public notes (local and remote).
- * Currently uses the same stream as local timeline.
+ * Streams public notes.
+ * Note: Currently limited to local public notes only.
+ * Remote note streaming will be implemented in a future update.
  */
 ws.get(
   "/global-timeline",
