@@ -519,8 +519,95 @@ const analyticsPlugin: RoxPlugin = {
 
 ---
 
+## Implementation Status
+
+### Phase 1: EventBus Foundation ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `a72bfff`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/types/events.ts` - Event type definitions
+- `packages/backend/src/plugins/EventBus.ts` - EventBus implementation
+- `packages/backend/src/plugins/index.ts` - Plugin exports
+- `packages/backend/src/interfaces/IEventBus.ts` - IEventBus interface
+- `packages/backend/src/tests/unit/EventBus.test.ts` - Unit tests (all passing)
+
+**Integrated Services**:
+- `NoteService` - beforeCreate/afterCreate/beforeDelete/afterDelete
+- `AuthService` - beforeRegister/afterRegister
+- `DIコンテナ` - EventBus instance available via container
+
+**Event Types**:
+```typescript
+type RoxEvent =
+  | NoteBeforeCreateEvent   // Cancellable, modifiable
+  | NoteAfterCreateEvent    // Notification only
+  | NoteBeforeDeleteEvent   // Cancellable
+  | NoteAfterDeleteEvent    // Notification only
+  | UserBeforeRegisterEvent // Cancellable, modifiable
+  | UserAfterRegisterEvent  // Notification only
+```
+
+**API**:
+- `eventBus.on(type, handler)` - Subscribe to after events
+- `eventBus.onBefore(type, handler)` - Subscribe to before events
+- `eventBus.emit(type, data)` - Emit after events (parallel)
+- `eventBus.emitBefore(type, data)` - Emit before events (sequential, cancellable)
+
+---
+
+### Phase 2: Plugin Loader & Integration ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/types/plugin.ts` - RoxPlugin, PluginContext, PluginManifest interfaces
+- `packages/backend/src/plugins/PluginLoader.ts` - Plugin discovery, loading, and lifecycle management
+- `packages/backend/src/plugins/PluginConfigStorage.ts` - File-based and in-memory config storage
+- `packages/backend/src/tests/unit/PluginLoader.test.ts` - Unit tests (all passing)
+
+**Updated Files**:
+- `packages/backend/src/plugins/index.ts` - Export PluginLoader and config storage
+- `packages/backend/src/index.ts` - Integrated PluginLoader into app startup and shutdown
+
+**Key Features**:
+- **RoxPlugin Interface**: Complete plugin definition with id, name, version, lifecycle hooks
+- **PluginContext**: Provides plugins with events, logger, config storage, scheduled tasks
+- **PluginLoader**: Loads plugins from directory, validates dependencies, version compatibility
+- **Plugin Routes**: Plugins can register routes under `/api/x/{pluginId}/`
+- **Scheduled Tasks**: Plugins can register recurring tasks with cron-like or ms intervals
+- **Graceful Shutdown**: Plugins are properly unloaded during server shutdown
+
+**Environment Variable**:
+- `PLUGIN_DIRECTORY`: Directory to load plugins from (default: `./plugins`)
+
+**Example Plugin**:
+```typescript
+const myPlugin: RoxPlugin = {
+  id: 'my-plugin',
+  name: 'My Plugin',
+  version: '1.0.0',
+
+  onLoad({ events, logger, config }) {
+    events.on('note:afterCreate', ({ note }) => {
+      logger.info({ noteId: note.id }, 'Note created');
+    });
+  },
+
+  routes(app) {
+    app.get('/status', (c) => c.json({ status: 'ok' }));
+  }
+};
+
+export default myPlugin;
+```
+
+---
+
 ## Notes
 
 - Recorded: 2025-12-10
-- Status: Design phase (not yet implemented)
+- Updated: 2025-12-19 (Phase 2 completed)
+- Status: Phase 1 & 2 complete, ready for Phase 3 (Frontend Plugin System)
 - This design prioritizes gradual implementation without breaking changes

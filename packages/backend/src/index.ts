@@ -55,6 +55,7 @@ import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
 import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
+import { PluginLoader } from "./plugins/PluginLoader.js";
 
 const app = new Hono();
 
@@ -175,6 +176,37 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Initialize plugin loader
+const pluginLoader = new PluginLoader(container.eventBus, app, {
+  pluginDirectory: process.env.PLUGIN_DIRECTORY || "./plugins",
+  roxVersion: packageJson.version,
+  baseUrl: process.env.URL || "http://localhost:3000",
+});
+
+// Load plugins (non-blocking)
+pluginLoader.loadFromDirectory().then((results) => {
+  const loaded = results.filter((r) => r.success);
+  const failed = results.filter((r) => !r.success);
+
+  if (loaded.length > 0) {
+    logger.info(
+      { plugins: loaded.map((r) => r.pluginId) },
+      `Loaded ${loaded.length} plugin(s)`,
+    );
+  }
+
+  if (failed.length > 0) {
+    for (const result of failed) {
+      logger.warn(
+        { pluginId: result.pluginId, error: result.error },
+        "Failed to load plugin",
+      );
+    }
+  }
+}).catch((error) => {
+  logger.error({ err: error }, "Failed to initialize plugins");
+});
+
 // Print startup banner (plain text for systemd/console compatibility)
 const env = process.env.NODE_ENV || "development";
 const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
@@ -220,6 +252,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
+
+    // Unload all plugins
+    logger.info("Unloading plugins");
+    await pluginLoader.unloadAll();
 
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");
