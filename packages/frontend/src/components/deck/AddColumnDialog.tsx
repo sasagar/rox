@@ -87,8 +87,12 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [hasFetchedLists, setHasFetchedLists] = useState(false);
 
+  // AbortController for auto-fetch to cancel ongoing requests on dialog close or type change
+  const autoFetchControllerRef = useRef<AbortController | null>(null);
   // AbortController for retry button to cancel ongoing requests on dialog close
   const retryControllerRef = useRef<AbortController | null>(null);
+  // Track if we're currently fetching to avoid re-triggering useEffect
+  const isFetchingRef = useRef(false);
 
   // Translated column types
   const columnTypes: ColumnTypeOption[] = useMemo(() => [
@@ -129,7 +133,9 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   // Fetch lists function with optional abort signal support
   const fetchLists = useCallback(async (signal?: AbortSignal) => {
     if (!currentUser || !token) return;
+    if (isFetchingRef.current) return;
 
+    isFetchingRef.current = true;
     apiClient.setToken(token);
     setListsLoading(true);
     setListsError(null);
@@ -143,6 +149,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
       if (signal?.aborted) return;
       setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
     } finally {
+      isFetchingRef.current = false;
       if (!signal?.aborted) {
         setListsLoading(false);
       }
@@ -151,19 +158,24 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
 
   // Auto-fetch lists when dialog opens with list type selected
   useEffect(() => {
-    const controller = new AbortController();
-
-    if (isOpen && selectedType === "list" && !hasFetchedLists && !listsLoading) {
-      fetchLists(controller.signal);
+    // Only trigger fetch when conditions are met, using ref to avoid re-triggering
+    if (isOpen && selectedType === "list" && !hasFetchedLists && !isFetchingRef.current) {
+      // Abort any previous auto-fetch
+      autoFetchControllerRef.current?.abort();
+      autoFetchControllerRef.current = new AbortController();
+      fetchLists(autoFetchControllerRef.current.signal);
     }
 
     return () => {
-      controller.abort();
+      // Cleanup on unmount or when dependencies change
+      autoFetchControllerRef.current?.abort();
     };
-  }, [isOpen, selectedType, hasFetchedLists, listsLoading, fetchLists]);
+  }, [isOpen, selectedType, hasFetchedLists, fetchLists]);
 
   const handleClose = useCallback(() => {
-    // Abort any ongoing retry fetch
+    // Abort any ongoing fetch requests
+    autoFetchControllerRef.current?.abort();
+    autoFetchControllerRef.current = null;
     retryControllerRef.current?.abort();
     retryControllerRef.current = null;
 
