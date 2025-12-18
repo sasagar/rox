@@ -122,58 +122,40 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     { type: "global", label: t`Global`, icon: <Globe className="w-4 h-4" /> },
   ], [t]);
 
-  // Fetch lists function - shared between initial load and retry
-  const fetchLists = useCallback(async () => {
-    if (!currentUser || !token || listsLoading) return;
+  // Fetch lists function with optional abort signal support
+  const fetchLists = useCallback(async (signal?: AbortSignal) => {
+    if (!currentUser || !token) return;
 
     setListsLoading(true);
     setListsError(null);
 
     try {
       const userLists = await listsApi.list();
+      if (signal?.aborted) return;
       setMyLists(userLists);
       setHasFetchedLists(true);
     } catch (err) {
+      if (signal?.aborted) return;
       setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
     } finally {
-      setListsLoading(false);
+      if (!signal?.aborted) {
+        setListsLoading(false);
+      }
     }
-  }, [currentUser, token, listsLoading, setListsLoading, setListsError, setMyLists, t]);
+  }, [currentUser, token, setListsLoading, setListsError, setMyLists, t]);
 
   // Auto-fetch lists when dialog opens with list type selected
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     if (isOpen && selectedType === "list" && !hasFetchedLists && !listsLoading) {
-      const doFetch = async () => {
-        if (!currentUser || !token) return;
-
-        setListsLoading(true);
-        setListsError(null);
-
-        try {
-          const userLists = await listsApi.list();
-          if (!cancelled) {
-            setMyLists(userLists);
-            setHasFetchedLists(true);
-          }
-        } catch (err) {
-          if (!cancelled) {
-            setListsError(err instanceof Error ? err.message : t`Failed to load lists`);
-          }
-        } finally {
-          if (!cancelled) {
-            setListsLoading(false);
-          }
-        }
-      };
-      doFetch();
+      fetchLists(controller.signal);
     }
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
-  }, [isOpen, selectedType, hasFetchedLists, listsLoading, currentUser, token, setListsLoading, setListsError, setMyLists, t]);
+  }, [isOpen, selectedType, hasFetchedLists, listsLoading, fetchLists]);
 
   const handleClose = useCallback(() => {
     setSelectedType(null);
@@ -340,7 +322,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                         <p className="text-sm text-red-500 mb-2">{listsError}</p>
                         <button
                           type="button"
-                          onClick={fetchLists}
+                          onClick={() => fetchLists()}
                           className="text-sm text-primary-500 hover:text-primary-600"
                         >
                           <Trans>Try again</Trans>

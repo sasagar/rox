@@ -148,7 +148,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
       case "list": return t`List`;
       default: return t`Column`;
     }
-  }, [column, t]);
+  }, [column.config, t]);
 
   // Sortable setup for drag-and-drop
   const {
