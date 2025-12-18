@@ -4,13 +4,13 @@
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@types/bun": "latest",
-    "bun-types": "^1.3.2",
-    "oxfmt": "^0.16.0",
-    "oxlint": "^0.15.15",
+    "@types/bun": "^1.3.4",
+    "bun-types": "^1.3.5",
+    "oxfmt": "^0.18.0",
+    "oxlint": "^1.33.0",
     "playwright": "^1.57.0",
-    "typedoc": "^0.28.14",
-    "typescript": "^5.7.2"
+    "typedoc": "^0.28.15",
+    "typescript": "^5.9.3"
   },
   "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
   "engines": {
