@@ -214,7 +214,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     (selectedType !== "list" || selectedListId);
 
   // Get selected column type label for confirmation
-  const selectedTypeLabel = columnTypes.find((ct) => ct.type === selectedType)?.label;
+  const selectedTypeLabel = columnTypes.find((ct) => ct.type === selectedType)?.label ?? t`Column`;
 
   return (
     <ModalOverlay
