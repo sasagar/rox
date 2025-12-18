@@ -25,6 +25,7 @@ import { Button } from "../ui/Button";
 import { myListsAtom, myListsLoadingAtom, myListsErrorAtom } from "../../lib/atoms/lists";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { listsApi } from "../../lib/api/lists";
+import { apiClient } from "../../lib/api/client";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import type {
   DeckColumn,
@@ -126,6 +127,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const fetchLists = useCallback(async (signal?: AbortSignal) => {
     if (!currentUser || !token) return;
 
+    apiClient.setToken(token);
     setListsLoading(true);
     setListsError(null);
 
