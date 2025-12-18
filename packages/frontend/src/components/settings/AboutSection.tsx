@@ -11,6 +11,7 @@
 
 import { Trans } from "@lingui/react/macro";
 import { Info, Github, Server, Globe } from "lucide-react";
+import { Link } from "react-aria-components";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 
@@ -70,10 +71,9 @@ export function AboutSection() {
                 </div>
 
                 {instanceInfo.software.repository && (
-                  <a
+                  <Link
                     href={instanceInfo.software.repository}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                   >
                     <Github className="w-4 h-4" />
@@ -81,7 +81,7 @@ export function AboutSection() {
                     <span className="sr-only">
                       <Trans>(opens in new window)</Trans>
                     </span>
-                  </a>
+                  </Link>
                 )}
               </div>
             )}
