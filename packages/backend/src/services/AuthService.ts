@@ -9,6 +9,7 @@
 
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
+import type { IEventBus } from "../interfaces/IEventBus.js";
 import type { BlockedUsernameService } from "./BlockedUsernameService.js";
 import type { User, Session } from "shared";
 import { hashPassword, verifyPassword } from "../utils/password.js";
@@ -46,17 +47,24 @@ export interface LoginInput {
  * Provides business logic related to user authentication.
  */
 export class AuthService {
+  private readonly eventBus: IEventBus | null;
+
   /**
    * AuthService Constructor
    *
    * @param userRepository - User repository
    * @param sessionRepository - Session repository
+   * @param blockedUsernameService - Optional blocked username service
+   * @param eventBus - Optional event bus for plugin hooks
    */
   constructor(
     private userRepository: IUserRepository,
     private sessionRepository: ISessionRepository,
     private blockedUsernameService?: BlockedUsernameService,
-  ) {}
+    eventBus?: IEventBus,
+  ) {
+    this.eventBus = eventBus ?? null;
+  }
 
   /**
    * Register New User
@@ -79,22 +87,42 @@ export class AuthService {
    * ```
    */
   async register(input: RegisterInput): Promise<{ user: User; session: Session }> {
+    let { username, email } = input;
+
+    // Emit beforeRegister event (allows cancellation or modification)
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("user:beforeRegister", {
+        username,
+        email,
+      });
+
+      if (beforeResult.cancelled) {
+        throw new Error(beforeResult.reason || "User registration was cancelled by a plugin");
+      }
+
+      // Apply modifications from plugins
+      if (!beforeResult.cancelled && beforeResult.data) {
+        username = beforeResult.data.username;
+        email = beforeResult.data.email ?? email;
+      }
+    }
+
     // Check if username is blocked (reserved or custom pattern)
     if (this.blockedUsernameService) {
-      const blockCheck = await this.blockedUsernameService.isUsernameBlocked(input.username);
+      const blockCheck = await this.blockedUsernameService.isUsernameBlocked(username);
       if (blockCheck.blocked) {
         throw new Error(blockCheck.reason || "This username is not allowed");
       }
     }
 
     // ユーザー名の重複チェック
-    const existingUsername = await this.userRepository.findByUsername(input.username);
+    const existingUsername = await this.userRepository.findByUsername(username);
     if (existingUsername) {
       throw new Error("Username already exists");
     }
 
     // メールアドレスの重複チェック
-    const existingEmail = await this.userRepository.findByEmail(input.email);
+    const existingEmail = await this.userRepository.findByEmail(email);
     if (existingEmail) {
       throw new Error("Email already exists");
     }
@@ -113,10 +141,10 @@ export class AuthService {
     const baseUrl = process.env.URL || "http://localhost:3000";
     const user = await this.userRepository.create({
       id: generateId(),
-      username: input.username,
-      email: input.email,
+      username,
+      email,
       passwordHash,
-      displayName: input.name || input.username,
+      displayName: input.name || username,
       host: null, // ローカルユーザー
       avatarUrl: null,
       bannerUrl: null,
@@ -131,11 +159,11 @@ export class AuthService {
       customCss: null, // Custom CSS for profile page
       uiSettings: null, // Default UI settings
       // ActivityPub fields for local users
-      inbox: `${baseUrl}/users/${input.username}/inbox`,
-      outbox: `${baseUrl}/users/${input.username}/outbox`,
-      followersUrl: `${baseUrl}/users/${input.username}/followers`,
-      followingUrl: `${baseUrl}/users/${input.username}/following`,
-      uri: `${baseUrl}/users/${input.username}`,
+      inbox: `${baseUrl}/users/${username}/inbox`,
+      outbox: `${baseUrl}/users/${username}/outbox`,
+      followersUrl: `${baseUrl}/users/${username}/followers`,
+      followingUrl: `${baseUrl}/users/${username}/following`,
+      uri: `${baseUrl}/users/${username}`,
       sharedInbox: null, // Local users don't have shared inbox
       // Account migration fields
       alsoKnownAs: [],
@@ -157,6 +185,15 @@ export class AuthService {
 
     // セッション作成
     const session = await this.createSession(user.id);
+
+    // Emit afterRegister event (notification only, fire-and-forget)
+    if (this.eventBus) {
+      this.eventBus
+        .emit("user:afterRegister", { userId: user.id, username: user.username })
+        .catch(() => {
+          // Silently ignore errors in notification-only events
+        });
+    }
 
     return { user, session };
   }
