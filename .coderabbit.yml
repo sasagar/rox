@@ -1,0 +1,8 @@
+review:
+  enabled: true
+  settings:
+    require_approval: true
+    auto_merge: false
+  auto_review:
+    enabled: true
+    base_branch: main, dev
