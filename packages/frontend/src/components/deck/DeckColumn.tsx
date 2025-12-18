@@ -251,18 +251,15 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
             </span>
             <div className="flex gap-1">
               {widthOptions.map((option) => (
-                <button
-                  type="button"
+                <Button
                   key={option.value}
-                  onClick={() => handleWidthChange(option.value)}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
-                    column.width === option.value
-                      ? "bg-primary-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                  }`}
+                  variant={column.width === option.value ? "primary" : "secondary"}
+                  size="sm"
+                  onPress={() => handleWidthChange(option.value)}
+                  className="px-2 py-1 h-auto text-xs"
                 >
                   {option.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

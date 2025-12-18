@@ -161,6 +161,9 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     setSelectedType(null);
     setSelectedTimeline("home");
     setSelectedListId(null);
+    // Reset hasFetchedLists so lists are re-fetched next time dialog opens
+    // This ensures newly created lists are visible
+    setHasFetchedLists(false);
     onClose();
   }, [onClose]);
 
