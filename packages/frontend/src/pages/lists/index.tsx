@@ -14,6 +14,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { List as ListIcon, Plus, Loader2 } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
 import { PageHeader } from "../../components/ui/PageHeader";
+import { Button } from "../../components/ui/Button";
 import { ListCard } from "../../components/list/ListCard";
 import { ListCreateModal } from "../../components/list/ListCreateModal";
 import { ListEditModal } from "../../components/list/ListEditModal";
@@ -160,9 +161,9 @@ export default function ListsPage() {
         ) : error ? (
           <div className="text-center py-12">
             <p className="text-red-500 mb-4">{error}</p>
-            <button
-              type="button"
-              onClick={() => {
+            <Button
+              variant="ghost"
+              onPress={() => {
                 if (token) {
                   apiClient.setToken(token);
                   setLoading(true);
@@ -176,7 +177,7 @@ export default function ListsPage() {
               className="text-primary-500 hover:text-primary-600"
             >
               <Trans>Try again</Trans>
-            </button>
+            </Button>
           </div>
         ) : lists.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-(--text-muted)">
@@ -187,14 +188,14 @@ export default function ListsPage() {
             <p className="text-sm mt-1 mb-4">
               <Trans>Create your first list to organize users</Trans>
             </p>
-            <button
-              type="button"
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+            <Button
+              variant="primary"
+              onPress={() => setShowCreateModal(true)}
+              className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               <Trans>Create List</Trans>
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="space-y-3">

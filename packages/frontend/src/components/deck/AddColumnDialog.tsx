@@ -252,11 +252,11 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                       <Trans>Select a column type to add:</Trans>
                     </p>
                     {columnTypes.map((option) => (
-                      <button
-                        type="button"
+                      <Button
                         key={option.type}
-                        onClick={() => setSelectedType(option.type)}
-                        className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left"
+                        variant="ghost"
+                        onPress={() => setSelectedType(option.type)}
+                        className="w-full flex items-center gap-3 p-3 h-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left justify-start"
                       >
                         <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300">
                           {option.icon}
@@ -269,29 +269,29 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                             {option.description}
                           </div>
                         </div>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 ) : selectedType === "timeline" ? (
                   /* Step 2a: Select timeline type */
                   <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedType(null)}
-                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
+                    <Button
+                      variant="ghost"
+                      onPress={() => setSelectedType(null)}
+                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1 h-auto p-0"
                     >
                       ← <Trans>Back</Trans>
-                    </button>
+                    </Button>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <Trans>Select timeline type:</Trans>
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {timelineOptions.map((option) => (
-                        <button
-                          type="button"
+                        <Button
                           key={option.type}
-                          onClick={() => setSelectedTimeline(option.type)}
-                          className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
+                          variant="ghost"
+                          onPress={() => setSelectedTimeline(option.type)}
+                          className={`flex items-center gap-2 p-3 h-auto rounded-lg border transition-colors justify-start ${
                             selectedTimeline === option.type
                               ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
                               : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
@@ -299,20 +299,20 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                         >
                           {option.icon}
                           <span className="font-medium">{option.label}</span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
                 ) : selectedType === "list" ? (
                   /* Step 2b: Select list */
                   <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedType(null)}
-                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
+                    <Button
+                      variant="ghost"
+                      onPress={() => setSelectedType(null)}
+                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1 h-auto p-0"
                     >
                       ← <Trans>Back</Trans>
-                    </button>
+                    </Button>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       <Trans>Select a list:</Trans>
                     </p>
@@ -338,11 +338,11 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                     ) : (
                       <div className="space-y-2">
                         {myLists.map((list) => (
-                          <button
-                            type="button"
+                          <Button
                             key={list.id}
-                            onClick={() => setSelectedListId(list.id)}
-                            className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                            variant="ghost"
+                            onPress={() => setSelectedListId(list.id)}
+                            className={`w-full flex items-center gap-3 p-3 h-auto rounded-lg border transition-colors text-left justify-start ${
                               selectedListId === list.id
                                 ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
                                 : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
@@ -358,7 +358,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                                 <Trans>members</Trans>
                               </div>
                             </div>
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     )}
@@ -366,13 +366,13 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                 ) : (
                   /* Step 2c: Confirmation for other types */
                   <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedType(null)}
-                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
+                    <Button
+                      variant="ghost"
+                      onPress={() => setSelectedType(null)}
+                      className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1 h-auto p-0"
                     >
                       ← <Trans>Back</Trans>
-                    </button>
+                    </Button>
                     <div className="text-center py-4">
                       <p className="text-gray-600 dark:text-gray-400">
                         <Trans>
