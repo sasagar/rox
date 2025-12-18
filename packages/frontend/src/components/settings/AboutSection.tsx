@@ -15,6 +15,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 
 /**
+ * Extract hostname from URL with fallback
+ */
+function extractDomain(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * About section for Settings page
  *
  * Shows version information, repository link, and instance details.
@@ -98,13 +109,7 @@ export function AboutSection() {
                         <Trans>Domain</Trans>
                       </dt>
                       <dd className="text-gray-900 dark:text-gray-100">
-                        {(() => {
-                          try {
-                            return new URL(instanceInfo.url).hostname;
-                          } catch {
-                            return instanceInfo.url;
-                          }
-                        })()}
+                        {extractDomain(instanceInfo.url)}
                       </dd>
                     </div>
                   )}

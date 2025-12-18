@@ -86,12 +86,11 @@ export function CookieConsentBanner() {
   // Check for existing consent on mount
   useEffect(() => {
     const consent = getStoredConsent();
-    if (!consent) {
-      // Small delay to avoid flash on page load
-      const timer = setTimeout(() => setIsVisible(true), 500);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
+    if (consent) return;
+
+    // Small delay to avoid flash on page load
+    const timer = setTimeout(() => setIsVisible(true), 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleAcceptAll = useCallback(() => {
@@ -182,13 +181,14 @@ export function CookieConsentBanner() {
                 <Cookie className="w-5 h-5" />
                 <Trans>Cookie Preferences</Trans>
               </h3>
-              <button
-                onClick={() => setShowDetails(false)}
-                className="p-1 text-(--text-muted) hover:text-(--text-primary) transition-colors"
+              <Button
+                variant="ghost"
+                size="sm"
+                onPress={() => setShowDetails(false)}
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">

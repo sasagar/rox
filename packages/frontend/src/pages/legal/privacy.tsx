@@ -345,7 +345,7 @@ export default function PrivacyPolicyPage() {
 
             <div className="pt-4 border-t border-(--border-color)">
               <p className="text-sm text-(--text-muted)">
-                <Trans>Last updated: {new Date().toLocaleDateString()}</Trans>
+                <Trans>Last updated: 2025-12-18</Trans>
               </p>
             </div>
           </CardContent>
