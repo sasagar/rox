@@ -66,6 +66,53 @@ Japanese documentation is provided in parallel to support the local community.
 | Queue | Dragonfly / BullMQ | Async job processing for ActivityPub delivery (VPS environments) |
 | Code Quality | oxc | Rust-based toolchain for linting and formatting (replaces ESLint/Prettier) |
 
+### React Aria Components Usage Guidelines
+
+React Aria Components should be used for **interactive UI elements** that require:
+
+- Keyboard navigation and focus management
+- Screen reader announcements and ARIA attributes
+- Complex interaction patterns (dialogs, menus, selects)
+- Touch and pointer event handling
+
+**When to use React Aria Components:**
+
+| Component Type | Use React Aria | Reason |
+|---------------|----------------|--------|
+| Button, Link | ✅ Yes | Keyboard/focus/press events |
+| TextField, TextArea | ✅ Yes | Input accessibility, validation |
+| Select, ComboBox | ✅ Yes | Complex keyboard navigation |
+| Dialog, Modal | ✅ Yes | Focus trapping, backdrop handling |
+| Switch, Checkbox | ✅ Yes | Toggle state announcements |
+| Menu, Popover | ✅ Yes | Focus management, dismiss handling |
+| Tabs, TabPanel | ✅ Yes | Arrow key navigation |
+
+**When simple styled containers are appropriate:**
+
+| Component Type | Use React Aria | Reason |
+|---------------|----------------|--------|
+| Card (static) | ❌ No | Visual grouping only, no interaction |
+| CardHeader, CardContent | ❌ No | Semantic HTML sufficient |
+| Layout containers | ❌ No | No user interaction |
+| Decorative elements | ❌ No | Not interactive |
+
+**Special case - Interactive Cards:**
+
+For cards that respond to user interaction (click/press), use the `InteractiveCard` component which wraps React Aria's Button for proper accessibility:
+
+```tsx
+// Static card (no click handler) - uses div
+<Card>
+  <CardHeader>Title</CardHeader>
+  <CardContent>Content</CardContent>
+</Card>
+
+// Interactive card (has press handler) - uses React Aria Button
+<InteractiveCard onPress={() => navigate('/detail')}>
+  <p>Click to view details</p>
+</InteractiveCard>
+```
+
 ## Development Commands
 
 ### Running the Application
