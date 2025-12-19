@@ -341,9 +341,8 @@ export class ListService {
     if (this.systemAccountService) {
       const remoteMembers = members.filter((m) => m.user?.host);
       if (remoteMembers.length > 0) {
-        const systemAccountService = this.systemAccountService;
         Promise.allSettled(
-          remoteMembers.map((member) => systemAccountService.ensureSystemFollow(member.userId)),
+          remoteMembers.map((member) => this.systemAccountService!.ensureSystemFollow(member.userId)),
         ).then((results) => {
           const failures = results.filter((r) => r.status === "rejected");
           if (failures.length > 0) {
