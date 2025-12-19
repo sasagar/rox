@@ -343,15 +343,19 @@ export class ListService {
       if (remoteMembers.length > 0) {
         Promise.allSettled(
           remoteMembers.map((member) => this.systemAccountService!.ensureSystemFollow(member.userId)),
-        ).then((results) => {
-          const failures = results.filter((r) => r.status === "rejected");
-          if (failures.length > 0) {
-            logger.warn(
-              { listId, failureCount: failures.length, totalRemote: remoteMembers.length },
-              "Some system follows failed during lazy initialization",
-            );
-          }
-        });
+        )
+          .then((results) => {
+            const failures = results.filter((r) => r.status === "rejected");
+            if (failures.length > 0) {
+              logger.warn(
+                { listId, failureCount: failures.length, totalRemote: remoteMembers.length },
+                "Some system follows failed during lazy initialization",
+              );
+            }
+          })
+          .catch((error) => {
+            logger.error({ listId, error }, "Unexpected error in system follow lazy initialization");
+          });
       }
     }
 
