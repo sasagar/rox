@@ -11,18 +11,34 @@ import { Hono } from "hono";
 import { requireAdmin } from "../middleware/auth.js";
 import { errorResponse } from "../lib/routeUtils.js";
 import { PluginManager } from "../plugins/PluginManager.js";
+import type { PluginLoader } from "../plugins/PluginLoader.js";
 import type { PluginSource } from "shared";
-
-const app = new Hono();
-
-// All plugin admin routes require admin authentication
-app.use("/*", requireAdmin());
 
 // Plugin directory from environment
 const PLUGIN_DIR = process.env.PLUGIN_DIRECTORY || "./plugins";
 
 // Initialize plugin manager for file-based operations
 const pluginManager = new PluginManager(PLUGIN_DIR);
+
+/**
+ * Reference to the runtime plugin loader
+ * Set via setPluginLoader() after initialization
+ */
+let runtimePluginLoader: PluginLoader | null = null;
+
+/**
+ * Set the plugin loader instance for hot reload functionality
+ *
+ * @param loader - The PluginLoader instance
+ */
+export function setPluginLoader(loader: PluginLoader): void {
+  runtimePluginLoader = loader;
+}
+
+const app = new Hono();
+
+// All plugin admin routes require admin authentication
+app.use("/*", requireAdmin());
 
 // ============================================================================
 // Plugin List and Info Endpoints
@@ -339,6 +355,117 @@ app.put("/:id/config", async (c) => {
   return c.json({
     success: true,
     config: body,
+  });
+});
+
+// ============================================================================
+// Plugin Hot Reload Endpoints (Development Only)
+// ============================================================================
+
+/**
+ * Reload Plugin
+ *
+ * POST /api/admin/plugins/:id/reload
+ *
+ * Hot reloads a plugin without restarting the server.
+ * This is useful during plugin development.
+ * Only available when pluginLoader is set in context.
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "pluginId": "my-plugin",
+ *   "message": "Plugin reloaded successfully"
+ * }
+ * ```
+ *
+ * Response (503) when hot reload is not available:
+ * ```json
+ * {
+ *   "success": false,
+ *   "error": "Hot reload not available"
+ * }
+ * ```
+ */
+app.post("/:id/reload", async (c) => {
+  const pluginId = c.req.param("id");
+
+  if (!runtimePluginLoader) {
+    return errorResponse(
+      c,
+      "Hot reload not available. Plugin loader not configured.",
+      503
+    );
+  }
+
+  if (!pluginManager.isInstalled(pluginId)) {
+    return errorResponse(c, "Plugin not found", 404);
+  }
+
+  const result = await runtimePluginLoader.reloadPlugin(pluginId);
+
+  if (!result.success) {
+    return errorResponse(c, result.error || "Failed to reload plugin");
+  }
+
+  return c.json({
+    success: true,
+    pluginId: result.pluginId,
+    message: "Plugin reloaded successfully",
+  });
+});
+
+/**
+ * Reload All Plugins
+ *
+ * POST /api/admin/plugins/reload-all
+ *
+ * Hot reloads all loaded plugins without restarting the server.
+ * Only available when pluginLoader is set in context.
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "results": [
+ *     { "pluginId": "plugin-a", "success": true },
+ *     { "pluginId": "plugin-b", "success": false, "error": "..." }
+ *   ],
+ *   "reloadedCount": 1,
+ *   "failedCount": 1
+ * }
+ * ```
+ */
+app.post("/reload-all", async (c) => {
+  if (!runtimePluginLoader) {
+    return errorResponse(
+      c,
+      "Hot reload not available. Plugin loader not configured.",
+      503
+    );
+  }
+
+  const loadedPlugins = runtimePluginLoader.getLoadedPlugins();
+  const results: Array<{ pluginId: string; success: boolean; error?: string }> = [];
+
+  for (const pluginId of loadedPlugins) {
+    const result = await runtimePluginLoader.reloadPlugin(pluginId);
+    results.push({
+      pluginId,
+      success: result.success,
+      error: result.error,
+    });
+  }
+
+  const reloadedCount = results.filter((r) => r.success).length;
+  const failedCount = results.filter((r) => !r.success).length;
+
+  return c.json({
+    success: failedCount === 0,
+    results,
+    reloadedCount,
+    failedCount,
   });
 });
 

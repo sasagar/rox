@@ -131,9 +131,10 @@ export class PluginLoader {
    * Load a single plugin from a directory path
    *
    * @param pluginPath - Path to the plugin directory
+   * @param bustCache - Whether to bust the module cache (for hot reload)
    * @returns Load result
    */
-  async loadPlugin(pluginPath: string): Promise<PluginLoadResult> {
+  async loadPlugin(pluginPath: string, bustCache = false): Promise<PluginLoadResult> {
     let pluginId = "unknown";
 
     try {
@@ -153,7 +154,7 @@ export class PluginLoader {
       }
 
       // Load the plugin module
-      const plugin = await this.loadPluginModule(pluginPath, manifest);
+      const plugin = await this.loadPluginModule(pluginPath, manifest, bustCache);
       if (!plugin) {
         return {
           success: false,
@@ -228,6 +229,7 @@ export class PluginLoader {
         enabled: true,
         unsubscribes: [],
         taskCleanups: [],
+        pluginPath,
       };
 
       // Call onLoad if defined
@@ -396,6 +398,75 @@ export class PluginLoader {
   }
 
   /**
+   * Reload a plugin by ID
+   *
+   * Unloads the plugin, clears the module cache, and reloads it from disk.
+   * This enables hot-reload functionality for plugin development.
+   *
+   * @param pluginId - Plugin identifier to reload
+   * @returns Reload result
+   */
+  async reloadPlugin(pluginId: string): Promise<PluginLoadResult> {
+    const loadedPlugin = this.plugins.get(pluginId);
+    if (!loadedPlugin) {
+      return {
+        success: false,
+        pluginId,
+        error: `Plugin not found: ${pluginId}`,
+      };
+    }
+
+    const pluginPath = loadedPlugin.pluginPath;
+    const wasEnabled = loadedPlugin.enabled;
+
+    this.logger.info({ pluginId }, "Reloading plugin...");
+
+    try {
+      // Unload the plugin
+      await this.unloadPlugin(pluginId);
+
+      // Reload the plugin with cache busting enabled
+      const result = await this.loadPlugin(pluginPath, true);
+
+      if (result.success && !wasEnabled) {
+        // Restore disabled state if plugin was previously disabled
+        await this.setEnabled(pluginId, false);
+      }
+
+      if (result.success) {
+        this.securityAuditor.log(pluginId, "reloaded", true);
+        this.logger.info({ pluginId }, "Plugin reloaded successfully");
+      }
+
+      return result;
+    } catch (error) {
+      this.securityAuditor.log(pluginId, "reload_failed", false, undefined, {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      this.logger.error({ err: error, pluginId }, "Failed to reload plugin");
+      return {
+        success: false,
+        pluginId,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
+   * Get the path of a loaded plugin
+   */
+  getPluginPath(pluginId: string): string | undefined {
+    return this.plugins.get(pluginId)?.pluginPath;
+  }
+
+  /**
+   * Get list of all loaded plugin IDs
+   */
+  getLoadedPlugins(): string[] {
+    return Array.from(this.plugins.keys());
+  }
+
+  /**
    * Load plugin manifest from plugin.json
    */
   private async loadManifest(pluginPath: string): Promise<PluginManifest | null> {
@@ -411,10 +482,15 @@ export class PluginLoader {
 
   /**
    * Load plugin module from directory
+   *
+   * @param pluginPath - Path to the plugin directory
+   * @param manifest - Plugin manifest (optional)
+   * @param bustCache - Whether to bust the module cache (for hot reload)
    */
   private async loadPluginModule(
     pluginPath: string,
     manifest: PluginManifest | null,
+    bustCache = false,
   ): Promise<RoxPlugin | null> {
     // Determine entry point
     const entryPoints = [
@@ -431,8 +507,12 @@ export class PluginLoader {
         const moduleStat = await stat(modulePath).catch(() => null);
 
         if (moduleStat?.isFile()) {
-          // Dynamic import
-          const module = await import(modulePath);
+          // Dynamic import with optional cache busting
+          // Append a timestamp query to force Bun to re-import the module
+          const importPath = bustCache
+            ? `${modulePath}?t=${Date.now()}`
+            : modulePath;
+          const module = await import(importPath);
           const plugin = module.default as RoxPlugin;
 
           if (this.isValidPlugin(plugin)) {

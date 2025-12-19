@@ -157,6 +157,9 @@ export interface LoadedPlugin {
 
   /** Scheduled task cleanup functions */
   taskCleanups: Array<() => void>;
+
+  /** Path to the plugin directory (for hot reload) */
+  pluginPath: string;
 }
 
 /**

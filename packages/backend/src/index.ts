@@ -30,7 +30,7 @@ import nodeinfoRoute from "./routes/ap/nodeinfo.js";
 import proxyRoute from "./routes/proxy.js";
 import healthRoute from "./routes/health.js";
 import adminRoute from "./routes/admin.js";
-import adminPluginsRoute from "./routes/admin-plugins.js";
+import adminPluginsRoute, { setPluginLoader } from "./routes/admin-plugins.js";
 import reportsRoute from "./routes/reports.js";
 import invitationsRoute from "./routes/invitations.js";
 import instanceRoute from "./routes/instance.js";
@@ -57,6 +57,7 @@ import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
 import { PluginLoader } from "./plugins/PluginLoader.js";
+import { PluginWatcher } from "./plugins/PluginWatcher.js";
 
 const app = new Hono();
 
@@ -185,6 +186,15 @@ const pluginLoader = new PluginLoader(container.eventBus, app, {
   baseUrl: process.env.URL || "http://localhost:3000",
 });
 
+// Make plugin loader available for admin routes (hot reload)
+setPluginLoader(pluginLoader);
+
+// Initialize plugin watcher for development hot reload
+const pluginWatcher = new PluginWatcher({
+  pluginLoader,
+  logger,
+});
+
 // Load plugins (non-blocking)
 pluginLoader.loadFromDirectory().then((results) => {
   const loaded = results.filter((r) => r.success);
@@ -205,6 +215,9 @@ pluginLoader.loadFromDirectory().then((results) => {
       );
     }
   }
+
+  // Start file watcher after plugins are loaded (development only)
+  pluginWatcher.start();
 }).catch((error) => {
   logger.error({ err: error }, "Failed to initialize plugins");
 });
@@ -255,7 +268,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
 
-    // Unload all plugins
+    // Stop plugin watcher and unload all plugins
+    logger.info("Stopping plugin watcher");
+    pluginWatcher.stop();
+
     logger.info("Unloading plugins");
     await pluginLoader.unloadAll();
 

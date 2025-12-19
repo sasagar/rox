@@ -24,7 +24,7 @@ import type {
  * Shows in note:footer when a note has an auto-applied CW
  * (This is a demonstration - actual detection would require backend data)
  */
-function AutoCWIndicator({ pluginId }: NoteSlotProps) {
+function AutoCWIndicator({ pluginId: _pluginId }: NoteSlotProps) {
   // In a real implementation, this would check if the note's CW was auto-applied
   // For demo purposes, we just show a subtle indicator
   return null; // Only render when applicable
