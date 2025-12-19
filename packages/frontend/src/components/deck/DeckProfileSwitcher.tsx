@@ -11,6 +11,8 @@ import {
   Dialog,
   ModalOverlay,
   Heading,
+  TextField,
+  Input,
 } from "react-aria-components";
 import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
 import { Trans, useLingui } from "@lingui/react/macro";
@@ -376,6 +378,15 @@ export function DeckProfileSwitcher() {
 /**
  * Reusable dialog component for profile creation and editing
  * Uses React Aria Modal/Dialog for proper accessibility
+ *
+ * @param title - Dialog title to display
+ * @param value - Current input value
+ * @param onChange - Callback when input value changes
+ * @param onSubmit - Callback when form is submitted
+ * @param onCancel - Callback when dialog is cancelled
+ * @param isSubmitting - Whether the form is currently submitting
+ * @param error - Error message to display, if any
+ * @param submitLabel - Label for the submit button
  */
 interface ProfileFormDialogProps {
   title: React.ReactNode;
@@ -420,19 +431,20 @@ function ProfileFormDialog({
             {title}
           </Heading>
           <div className="mb-6">
-            <input
-              type="text"
+            <TextField
               value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={t`Profile name`}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              onChange={onChange}
+              isDisabled={isSubmitting}
               autoFocus
-              disabled={isSubmitting}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") onSubmit();
-                if (e.key === "Escape" && !isSubmitting) onCancel();
-              }}
-            />
+            >
+              <Input
+                placeholder={t`Profile name`}
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") onSubmit();
+                }}
+              />
+            </TextField>
             {error && (
               <p className="text-sm text-red-600 dark:text-red-400 mt-2">
                 {error}
