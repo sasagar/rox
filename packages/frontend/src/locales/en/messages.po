@@ -49,7 +49,7 @@ msgid "{0} is not blocked"
 msgstr "{0} is not blocked"
 
 #. placeholder {0}: follow.listCount
-#: src/pages/admin/system-follows.tsx:458
+#: src/pages/admin/system-follows.tsx:509
 msgid "{0} lists"
 msgstr "{0} lists"
 
@@ -253,7 +253,7 @@ msgstr "Accept all"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
-#: src/pages/admin/system-follows.tsx:160
+#: src/pages/admin/system-follows.tsx:176
 msgid "Access denied"
 msgstr "Access denied"
 
@@ -453,7 +453,7 @@ msgstr "Aliases"
 
 #: src/pages/admin/federation.tsx:308
 #: src/pages/admin/reports.tsx:303
-#: src/pages/admin/system-follows.tsx:362
+#: src/pages/admin/system-follows.tsx:405
 #: src/pages/admin/users.tsx:389
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:376
@@ -564,7 +564,7 @@ msgstr "Are you sure you want to remove this instance from the cache?"
 
 #. placeholder {0}: userToUnfollow.user.username
 #. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
-#: src/pages/admin/system-follows.tsx:544
+#: src/pages/admin/system-follows.tsx:595
 msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 msgstr "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 
@@ -803,7 +803,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
-#: src/pages/admin/system-follows.tsx:582
+#: src/pages/admin/system-follows.tsx:633
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -1812,7 +1812,7 @@ msgstr "Failed to load storage data"
 msgid "Failed to load storage statistics"
 msgstr "Failed to load storage statistics"
 
-#: src/pages/admin/system-follows.tsx:127
+#: src/pages/admin/system-follows.tsx:130
 msgid "Failed to load system follows"
 msgstr "Failed to load system follows"
 
@@ -1894,7 +1894,7 @@ msgstr "Failed to suspend user"
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
 
-#: src/pages/admin/system-follows.tsx:201
+#: src/pages/admin/system-follows.tsx:233
 msgid "Failed to unfollow user"
 msgstr "Failed to unfollow user"
 
@@ -1992,6 +1992,10 @@ msgstr "File uploaded successfully"
 msgid "Filter"
 msgstr "Filter"
 
+#: src/pages/admin/system-follows.tsx:391
+msgid "Filter by account type"
+msgstr "Filter by account type"
+
 #: src/pages/notifications.tsx:201
 msgid "Filter notifications"
 msgstr "Filter notifications"
@@ -2028,7 +2032,7 @@ msgid "Follow requests accepted"
 msgstr "Follow requests accepted"
 
 #. placeholder {0}: formatDate(follow.createdAt)
-#: src/pages/admin/system-follows.tsx:479
+#: src/pages/admin/system-follows.tsx:530
 msgid "Followed {0}"
 msgstr "Followed {0}"
 
@@ -2052,7 +2056,7 @@ msgstr "Following"
 msgid "Following and follower relationships"
 msgstr "Following and follower relationships"
 
-#: src/pages/admin/system-follows.tsx:339
+#: src/pages/admin/system-follows.tsx:376
 msgid "Following List"
 msgstr "Following List"
 
@@ -2257,11 +2261,11 @@ msgstr "Import timed out. The server may still be processing. Please check back 
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
-#: src/pages/admin/system-follows.tsx:395
+#: src/pages/admin/system-follows.tsx:444
 msgid "In Lists"
 msgstr "In Lists"
 
-#: src/pages/admin/system-follows.tsx:312
+#: src/pages/admin/system-follows.tsx:349
 msgid "In Lists (loaded)"
 msgstr "In Lists (loaded)"
 
@@ -2546,10 +2550,13 @@ msgstr "Load All ({0} more)"
 msgid "Load more"
 msgstr "Load more"
 
-#. placeholder {0}: follows.length
 #: src/pages/admin/system-follows.tsx:510
-msgid "Load More ({0} / {total})"
-msgstr "Load More ({0} / {total})"
+#~ msgid "Load More ({0} / {total})"
+#~ msgstr "Load More ({0} / {total})"
+
+#: src/pages/admin/system-follows.tsx:561
+msgid "Load More ({currentCount} / {total})"
+msgstr "Load More ({currentCount} / {total})"
 
 #: src/components/deck/AddColumnDialog.tsx:351
 msgid "Loading"
@@ -2585,20 +2592,20 @@ msgstr "Loading profiles..."
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
-#: src/pages/admin/system-follows.tsx:507
+#: src/pages/admin/system-follows.tsx:558
 msgid "Loading..."
 msgstr "Loading..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
-#: src/pages/admin/system-follows.tsx:373
+#: src/pages/admin/system-follows.tsx:418
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "Local"
 
-#: src/pages/admin/system-follows.tsx:282
+#: src/pages/admin/system-follows.tsx:319
 msgid "Local (loaded)"
 msgstr "Local (loaded)"
 
@@ -2651,7 +2658,7 @@ msgstr "Maintainer Email"
 msgid "Make admin"
 msgstr "Make admin"
 
-#: src/pages/admin/system-follows.tsx:252
+#: src/pages/admin/system-follows.tsx:289
 msgid "Manage accounts followed by the system account"
 msgstr "Manage accounts followed by the system account"
 
@@ -3117,7 +3124,7 @@ msgstr "No text content"
 #: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
-#: src/pages/admin/system-follows.tsx:419
+#: src/pages/admin/system-follows.tsx:470
 #: src/pages/admin/users.tsx:424
 #: src/pages/search.tsx:434
 msgid "No users found"
@@ -3135,11 +3142,11 @@ msgstr "Normal"
 msgid "Not following anyone yet"
 msgstr "Not following anyone yet"
 
-#: src/pages/admin/system-follows.tsx:406
+#: src/pages/admin/system-follows.tsx:457
 msgid "Not in Lists"
 msgstr "Not in Lists"
 
-#: src/pages/admin/system-follows.tsx:327
+#: src/pages/admin/system-follows.tsx:364
 msgid "Not in Lists (loaded)"
 msgstr "Not in Lists (loaded)"
 
@@ -3837,13 +3844,13 @@ msgstr "Remember your preferences and settings for a better experience."
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 
-#: src/pages/admin/system-follows.tsx:384
+#: src/pages/admin/system-follows.tsx:431
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "Remote"
 
-#: src/pages/admin/system-follows.tsx:297
+#: src/pages/admin/system-follows.tsx:334
 msgid "Remote (loaded)"
 msgstr "Remote (loaded)"
 
@@ -4278,7 +4285,7 @@ msgstr "Search users"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
-#: src/pages/admin/system-follows.tsx:346
+#: src/pages/admin/system-follows.tsx:383
 #: src/pages/admin/users.tsx:373
 msgid "Search users..."
 msgstr "Search users..."
@@ -4630,7 +4637,7 @@ msgid "System Files"
 msgstr "System Files"
 
 #: src/components/admin/AdminLayout.tsx:116
-#: src/pages/admin/system-follows.tsx:251
+#: src/pages/admin/system-follows.tsx:288
 msgid "System Follows"
 msgstr "System Follows"
 
@@ -4831,7 +4838,7 @@ msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
 #. placeholder {0}: userToUnfollow.listCount
-#: src/pages/admin/system-follows.tsx:557
+#: src/pages/admin/system-follows.tsx:608
 msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
 msgstr "This user is in {0} list(s). Unfollowing won't remove them from lists."
 
@@ -4866,7 +4873,7 @@ msgid "Top Servers by Delivery"
 msgstr "Top Servers by Delivery"
 
 #: src/pages/admin/queue.tsx:425
-#: src/pages/admin/system-follows.tsx:267
+#: src/pages/admin/system-follows.tsx:304
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "Total"
@@ -4978,14 +4985,14 @@ msgstr "Uncategorized emojis"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 
-#: src/pages/admin/system-follows.tsx:488
-#: src/pages/admin/system-follows.tsx:595
+#: src/pages/admin/system-follows.tsx:539
+#: src/pages/admin/system-follows.tsx:646
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
 msgstr "Unfollow"
 
-#: src/pages/admin/system-follows.tsx:539
+#: src/pages/admin/system-follows.tsx:590
 msgid "Unfollow User"
 msgstr "Unfollow User"
 
@@ -5095,7 +5102,7 @@ msgstr "User deleted. {0} Delete activities sent to followers."
 msgid "User Details"
 msgstr "User Details"
 
-#: src/pages/admin/system-follows.tsx:193
+#: src/pages/admin/system-follows.tsx:225
 msgid "User has been unfollowed"
 msgstr "User has been unfollowed"
 

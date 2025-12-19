@@ -208,6 +208,7 @@ export default function AdminSystemFollowsPage() {
   };
 
   const hasMore = follows.length < total;
+  const currentCount = follows.length;
 
   const handleUnfollow = async () => {
     if (!token || !userToUnfollow) return;
@@ -557,7 +558,7 @@ export default function AdminSystemFollowsPage() {
                           <Trans>Loading...</Trans>
                         </>
                       ) : (
-                        <Trans>Load More ({follows.length} / {total})</Trans>
+                        <Trans>Load More ({currentCount} / {total})</Trans>
                       )}
                     </Button>
                   </div>

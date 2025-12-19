@@ -49,7 +49,7 @@ msgid "{0} is not blocked"
 msgstr "{0}はブロックされていません"
 
 #. placeholder {0}: follow.listCount
-#: src/pages/admin/system-follows.tsx:458
+#: src/pages/admin/system-follows.tsx:509
 msgid "{0} lists"
 msgstr "{0}件のリスト"
 
@@ -253,7 +253,7 @@ msgstr "すべて許可"
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
 
-#: src/pages/admin/system-follows.tsx:160
+#: src/pages/admin/system-follows.tsx:176
 msgid "Access denied"
 msgstr "アクセスが拒否されました"
 
@@ -453,7 +453,7 @@ msgstr "エイリアス"
 
 #: src/pages/admin/federation.tsx:308
 #: src/pages/admin/reports.tsx:303
-#: src/pages/admin/system-follows.tsx:362
+#: src/pages/admin/system-follows.tsx:405
 #: src/pages/admin/users.tsx:389
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:376
@@ -564,7 +564,7 @@ msgstr "このインスタンスをキャッシュから削除してもよろし
 
 #. placeholder {0}: userToUnfollow.user.username
 #. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
-#: src/pages/admin/system-follows.tsx:544
+#: src/pages/admin/system-follows.tsx:595
 msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 msgstr "<0>@{0}{1}</0> のフォローを解除しますか？"
 
@@ -803,7 +803,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
-#: src/pages/admin/system-follows.tsx:582
+#: src/pages/admin/system-follows.tsx:633
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -1812,7 +1812,7 @@ msgstr "ストレージデータの読み込みに失敗しました"
 msgid "Failed to load storage statistics"
 msgstr "ストレージ統計の読み込みに失敗しました"
 
-#: src/pages/admin/system-follows.tsx:127
+#: src/pages/admin/system-follows.tsx:130
 msgid "Failed to load system follows"
 msgstr "システムフォローの読み込みに失敗しました"
 
@@ -1894,7 +1894,7 @@ msgstr "ユーザーの停止に失敗しました"
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
-#: src/pages/admin/system-follows.tsx:201
+#: src/pages/admin/system-follows.tsx:233
 msgid "Failed to unfollow user"
 msgstr "フォロー解除に失敗しました"
 
@@ -1992,6 +1992,10 @@ msgstr "ファイルをアップロードしました"
 msgid "Filter"
 msgstr "フィルター"
 
+#: src/pages/admin/system-follows.tsx:391
+msgid "Filter by account type"
+msgstr "アカウントの種類でフィルター"
+
 #: src/pages/notifications.tsx:201
 msgid "Filter notifications"
 msgstr "通知をフィルター"
@@ -2028,7 +2032,7 @@ msgid "Follow requests accepted"
 msgstr "フォローリクエスト承認"
 
 #. placeholder {0}: formatDate(follow.createdAt)
-#: src/pages/admin/system-follows.tsx:479
+#: src/pages/admin/system-follows.tsx:530
 msgid "Followed {0}"
 msgstr "{0}にフォロー"
 
@@ -2052,7 +2056,7 @@ msgstr "フォロー中"
 msgid "Following and follower relationships"
 msgstr "フォローとフォロワーの関係"
 
-#: src/pages/admin/system-follows.tsx:339
+#: src/pages/admin/system-follows.tsx:376
 msgid "Following List"
 msgstr "フォロー一覧"
 
@@ -2257,11 +2261,11 @@ msgstr "インポートがタイムアウトしました。サーバーはまだ
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/pages/admin/system-follows.tsx:395
+#: src/pages/admin/system-follows.tsx:444
 msgid "In Lists"
 msgstr "リスト追加あり"
 
-#: src/pages/admin/system-follows.tsx:312
+#: src/pages/admin/system-follows.tsx:349
 msgid "In Lists (loaded)"
 msgstr "リスト追加あり（表示中）"
 
@@ -2546,10 +2550,13 @@ msgstr "すべて読み込む（残り{0}件）"
 msgid "Load more"
 msgstr "もっと読み込む"
 
-#. placeholder {0}: follows.length
 #: src/pages/admin/system-follows.tsx:510
-msgid "Load More ({0} / {total})"
-msgstr "もっと読み込む ({0} / {total})"
+#~ msgid "Load More ({0} / {total})"
+#~ msgstr "もっと読み込む ({0} / {total})"
+
+#: src/pages/admin/system-follows.tsx:561
+msgid "Load More ({currentCount} / {total})"
+msgstr "さらに読み込む ({currentCount} / {total})"
 
 #: src/components/deck/AddColumnDialog.tsx:351
 msgid "Loading"
@@ -2585,20 +2592,20 @@ msgstr "プロファイルを読み込み中..."
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
-#: src/pages/admin/system-follows.tsx:507
+#: src/pages/admin/system-follows.tsx:558
 msgid "Loading..."
 msgstr "読み込み中..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
-#: src/pages/admin/system-follows.tsx:373
+#: src/pages/admin/system-follows.tsx:418
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "ローカル"
 
-#: src/pages/admin/system-follows.tsx:282
+#: src/pages/admin/system-follows.tsx:319
 msgid "Local (loaded)"
 msgstr "ローカル（表示中）"
 
@@ -2651,7 +2658,7 @@ msgstr "管理者メールアドレス"
 msgid "Make admin"
 msgstr "管理者にする"
 
-#: src/pages/admin/system-follows.tsx:252
+#: src/pages/admin/system-follows.tsx:289
 msgid "Manage accounts followed by the system account"
 msgstr "システムアカウントがフォローしているアカウントを管理"
 
@@ -3117,7 +3124,7 @@ msgstr "テキストコンテンツなし"
 #: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
-#: src/pages/admin/system-follows.tsx:419
+#: src/pages/admin/system-follows.tsx:470
 #: src/pages/admin/users.tsx:424
 #: src/pages/search.tsx:434
 msgid "No users found"
@@ -3135,11 +3142,11 @@ msgstr "標準"
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
 
-#: src/pages/admin/system-follows.tsx:406
+#: src/pages/admin/system-follows.tsx:457
 msgid "Not in Lists"
 msgstr "リスト追加なし"
 
-#: src/pages/admin/system-follows.tsx:327
+#: src/pages/admin/system-follows.tsx:364
 msgid "Not in Lists (loaded)"
 msgstr "リスト追加なし（表示中）"
 
@@ -3837,13 +3844,13 @@ msgstr "設定を記憶し、より良い体験を提供します。"
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "テーマ設定、言語、UIカスタマイズなどの設定を記憶します。無効にすると、体験に影響する場合があります。"
 
-#: src/pages/admin/system-follows.tsx:384
+#: src/pages/admin/system-follows.tsx:431
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "リモート"
 
-#: src/pages/admin/system-follows.tsx:297
+#: src/pages/admin/system-follows.tsx:334
 msgid "Remote (loaded)"
 msgstr "リモート（表示中）"
 
@@ -4278,7 +4285,7 @@ msgstr "ユーザーを検索"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
-#: src/pages/admin/system-follows.tsx:346
+#: src/pages/admin/system-follows.tsx:383
 #: src/pages/admin/users.tsx:373
 msgid "Search users..."
 msgstr "ユーザーを検索..."
@@ -4630,7 +4637,7 @@ msgid "System Files"
 msgstr "システムファイル"
 
 #: src/components/admin/AdminLayout.tsx:116
-#: src/pages/admin/system-follows.tsx:251
+#: src/pages/admin/system-follows.tsx:288
 msgid "System Follows"
 msgstr "システムフォロー"
 
@@ -4831,7 +4838,7 @@ msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
 #. placeholder {0}: userToUnfollow.listCount
-#: src/pages/admin/system-follows.tsx:557
+#: src/pages/admin/system-follows.tsx:608
 msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
 msgstr "このユーザーは{0}件のリストに追加されています。フォロー解除してもリストからは削除されません。"
 
@@ -4866,7 +4873,7 @@ msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
 
 #: src/pages/admin/queue.tsx:425
-#: src/pages/admin/system-follows.tsx:267
+#: src/pages/admin/system-follows.tsx:304
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "合計"
@@ -4978,14 +4985,14 @@ msgstr "未分類の絵文字"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
 
-#: src/pages/admin/system-follows.tsx:488
-#: src/pages/admin/system-follows.tsx:595
+#: src/pages/admin/system-follows.tsx:539
+#: src/pages/admin/system-follows.tsx:646
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
 msgstr "フォロー解除"
 
-#: src/pages/admin/system-follows.tsx:539
+#: src/pages/admin/system-follows.tsx:590
 msgid "Unfollow User"
 msgstr "フォロー解除"
 
@@ -5095,7 +5102,7 @@ msgstr "ユーザーを削除しました。{0}件のDelete Activityをフォロ
 msgid "User Details"
 msgstr "ユーザー詳細"
 
-#: src/pages/admin/system-follows.tsx:193
+#: src/pages/admin/system-follows.tsx:225
 msgid "User has been unfollowed"
 msgstr "フォローを解除しました"
 
