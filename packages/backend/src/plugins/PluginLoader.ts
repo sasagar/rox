@@ -629,26 +629,31 @@ export class PluginLoader {
       });
     }
 
-    // Fallback to basic context for plugins without manifest permissions.
-    // SECURITY NOTE: Plugins without permissions have unrestricted access to
-    // the event bus and can perform any operation. This is a security risk
-    // for untrusted plugins. Production deployments should require plugins
-    // to declare permissions via plugin.json manifest file.
-    // TODO: Add configuration option to reject permission-less plugins.
+    // Fallback for plugins without manifest permissions.
+    // SECURITY: Register plugin with empty permissions and use secure context.
+    // This ensures all permission checks are enforced, and the plugin has no
+    // access to protected resources by default. This is safer than providing
+    // unrestricted access.
+    // TODO: Add configuration option to reject permission-less plugins entirely.
     this.logger.warn(
       { pluginId },
-      "Plugin loaded without permission manifest - using unrestricted context. " +
-        "This is a security risk for untrusted plugins.",
+      "Plugin loaded without permission manifest - using restricted context with no permissions. " +
+        "The plugin will have no access to protected resources.",
     );
 
-    return {
+    // Register with empty permissions to enable secure context
+    this.permissionManager.registerPlugin(pluginId, []);
+
+    return createSecurePluginContext({
+      pluginId,
       events: this.eventBus,
       logger: pluginLogger,
       config: configStorage,
       baseUrl: this.baseUrl,
       roxVersion: this.roxVersion,
-      registerScheduledTask: onRegisterTask,
-    };
+      permissionManager: this.permissionManager,
+      onRegisterTask,
+    });
   }
 
   /**
