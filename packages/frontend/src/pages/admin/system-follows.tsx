@@ -7,7 +7,7 @@
  * Shows which lists each account is in for easy management.
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -89,6 +89,7 @@ export default function AdminSystemFollowsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialLoadDone = useRef(false);
 
   // Unfollow confirmation state
   const [userToUnfollow, setUserToUnfollow] = useState<SystemFollow | null>(null);
@@ -135,8 +136,11 @@ export default function AdminSystemFollowsPage() {
     [token, userFilter, debouncedSearchQuery],
   );
 
-  // Check admin access and load follows
+  // Check admin access and perform initial load
   useEffect(() => {
+    // Skip if already loaded
+    if (isInitialLoadDone.current) return;
+
     const checkAccess = async () => {
       if (!token) {
         window.location.href = "/login";
@@ -156,7 +160,17 @@ export default function AdminSystemFollowsPage() {
         // Update currentUser atom to ensure sidebar shows
         setCurrentUser(sessionResponse.user);
 
-        await loadFollows(0);
+        // Initial load - call API directly to avoid dependency on loadFollows
+        const params = new URLSearchParams();
+        params.set("limit", String(PAGE_SIZE));
+        params.set("offset", "0");
+        const response = await apiClient.get<SystemFollowsResponse>(
+          `/api/admin/system-follows?${params}`,
+        );
+        setFollows(response.follows);
+        setTotal(response.total);
+        setIsLoading(false);
+        isInitialLoadDone.current = true;
       } catch (err) {
         console.error("Access check failed:", err);
         setError(t`Access denied`);
@@ -165,7 +179,7 @@ export default function AdminSystemFollowsPage() {
     };
 
     checkAccess();
-  }, [token, loadFollows, setCurrentUser]);
+  }, [token, setCurrentUser]);
 
   // Debounce search query
   useEffect(() => {
@@ -236,11 +250,16 @@ export default function AdminSystemFollowsPage() {
     return map;
   };
 
-  // Calculate stats
-  const localCount = follows.filter((f) => f.user.host === null).length;
-  const remoteCount = follows.filter((f) => f.user.host !== null).length;
-  const inListsCount = follows.filter((f) => f.listCount > 0).length;
-  const notInListsCount = follows.filter((f) => f.listCount === 0).length;
+  // Calculate stats (memoized to avoid recalculating on every render)
+  const { localCount, remoteCount, inListsCount, notInListsCount } = useMemo(
+    () => ({
+      localCount: follows.filter((f) => f.user.host === null).length,
+      remoteCount: follows.filter((f) => f.user.host !== null).length,
+      inListsCount: follows.filter((f) => f.listCount > 0).length,
+      notInListsCount: follows.filter((f) => f.listCount === 0).length,
+    }),
+    [follows],
+  );
 
   if (isLoading) {
     return (
@@ -366,9 +385,15 @@ export default function AdminSystemFollowsPage() {
                   className="pl-9 pr-3 py-1 text-sm border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 w-48"
                 />
               </div>
-              <div className="flex rounded-lg border border-(--border-color) overflow-hidden">
+              <div
+                role="radiogroup"
+                aria-label={t`Filter by account type`}
+                className="flex rounded-lg border border-(--border-color) overflow-hidden"
+              >
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={userFilter === "all"}
                   onClick={() => setUserFilter("all")}
                   className={`px-3 py-1 text-sm ${
                     userFilter === "all"
@@ -380,6 +405,8 @@ export default function AdminSystemFollowsPage() {
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={userFilter === "local"}
                   onClick={() => setUserFilter("local")}
                   className={`px-3 py-1 text-sm border-l border-(--border-color) ${
                     userFilter === "local"
@@ -391,6 +418,8 @@ export default function AdminSystemFollowsPage() {
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={userFilter === "remote"}
                   onClick={() => setUserFilter("remote")}
                   className={`px-3 py-1 text-sm border-l border-(--border-color) ${
                     userFilter === "remote"
@@ -402,6 +431,8 @@ export default function AdminSystemFollowsPage() {
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={userFilter === "in-lists"}
                   onClick={() => setUserFilter("in-lists")}
                   className={`px-3 py-1 text-sm border-l border-(--border-color) ${
                     userFilter === "in-lists"
@@ -413,6 +444,8 @@ export default function AdminSystemFollowsPage() {
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={userFilter === "not-in-lists"}
                   onClick={() => setUserFilter("not-in-lists")}
                   className={`px-3 py-1 text-sm border-l border-(--border-color) ${
                     userFilter === "not-in-lists"
