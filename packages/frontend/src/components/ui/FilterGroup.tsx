@@ -124,7 +124,7 @@ export function FilterGroup<T extends string = string>({
           <Radio
             key={option.value}
             value={option.value}
-            className={`group inline-flex items-center ${sizeClasses[size]} rounded-full border cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 data-selected:bg-primary-600 data-selected:text-white data-selected:border-primary-600 data-focus-visible:ring-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`group inline-flex items-center ${sizeClasses[size]} rounded-full border cursor-pointer transition-colors focus:outline-none data-focus-visible:ring-2 data-focus-visible:ring-primary-500 data-focus-visible:ring-offset-2 data-selected:bg-primary-600 data-selected:text-white data-selected:border-primary-600 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
           >
             <span>{option.label}</span>
             {option.count !== undefined && (
