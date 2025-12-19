@@ -604,7 +604,7 @@ function NoteCardComponent({
             variant="ghost"
             size="sm"
             onPress={() => setShowReplyComposer(!showReplyComposer)}
-            className="text-gray-600 dark:text-gray-400 hover:text-primary-600 min-w-[60px] flex items-center gap-1"
+            className="text-gray-600 dark:text-gray-400 hover:text-primary-600 min-w-15 flex items-center gap-1"
             aria-label={`Reply to post. ${note.repliesCount || 0} ${note.repliesCount === 1 ? "reply" : "replies"}`}
             aria-expanded={showReplyComposer}
           >
@@ -615,7 +615,7 @@ function NoteCardComponent({
             variant="ghost"
             size="sm"
             onPress={handleRenote}
-            className="text-gray-600 dark:text-gray-400 hover:text-green-600 min-w-[60px] flex items-center gap-1"
+            className="text-gray-600 dark:text-gray-400 hover:text-green-600 min-w-15 flex items-center gap-1"
             aria-label={`Renote post. ${note.renoteCount || 0} ${note.renoteCount === 1 ? "renote" : "renotes"}`}
           >
             <Repeat2 className="w-4 h-4" />

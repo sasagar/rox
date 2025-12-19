@@ -210,7 +210,7 @@ export default function ModeratorReportsPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex justify-center items-center min-h-[400px]">
+        <div className="flex justify-center items-center min-h-100">
           <Spinner size="lg" />
         </div>
       </Layout>

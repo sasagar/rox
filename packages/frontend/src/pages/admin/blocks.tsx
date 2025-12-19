@@ -170,7 +170,7 @@ export default function AdminBlocksPage() {
         title={<Trans>Instance Blocks</Trans>}
         subtitle={<Trans>Block instances from federating with this server</Trans>}
       >
-        <div className="flex justify-center items-center min-h-[400px]">
+        <div className="flex justify-center items-center min-h-100">
           <Spinner size="lg" />
         </div>
       </AdminLayout>
