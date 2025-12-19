@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useId } from "react";
 import {
   Menu,
   MenuItem,
   MenuTrigger,
   Popover,
   Button as AriaButton,
+  Modal,
+  Dialog,
+  ModalOverlay,
+  Heading,
 } from "react-aria-components";
 import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
 import { Trans, useLingui } from "@lingui/react/macro";
@@ -47,6 +51,10 @@ export function DeckProfileSwitcher() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // Unique IDs for delete dialog accessibility
+  const deleteDialogTitleId = useId();
+  const deleteDialogDescriptionId = useId();
 
   const handleOpenCreateDialog = useCallback(() => {
     setNewProfileName("");
@@ -292,60 +300,72 @@ export function DeckProfileSwitcher() {
 
       {/* Delete Confirmation Dialog */}
       {profileToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div
-            className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="delete-dialog-title"
-            aria-describedby="delete-dialog-description"
-          >
-            <h2
-              id="delete-dialog-title"
-              className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+        <ModalOverlay
+          isOpen
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setDeleteConfirmId(null);
+              setDeleteError(null);
+            }
+          }}
+          isDismissable={!isDeleting}
+          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+        >
+          <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6 outline-none">
+            <Dialog
+              role="alertdialog"
+              aria-labelledby={deleteDialogTitleId}
+              aria-describedby={deleteDialogDescriptionId}
+              className="outline-none"
             >
-              <Trans>Delete Profile</Trans>
-            </h2>
-            <p
-              id="delete-dialog-description"
-              className="text-gray-700 dark:text-gray-300 mb-6"
-            >
-              <Trans>
-                Are you sure you want to delete "{profileToDelete.name}"? This
-                will remove all columns and settings for this profile. This
-                action cannot be undone.
-              </Trans>
-            </p>
-            {deleteError && (
-              <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                {deleteError}
+              <Heading
+                slot="title"
+                id={deleteDialogTitleId}
+                className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+              >
+                <Trans>Delete Profile</Trans>
+              </Heading>
+              <p
+                id={deleteDialogDescriptionId}
+                className="text-gray-700 dark:text-gray-300 mb-6"
+              >
+                <Trans>
+                  Are you sure you want to delete "{profileToDelete.name}"? This
+                  will remove all columns and settings for this profile. This
+                  action cannot be undone.
+                </Trans>
               </p>
-            )}
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="secondary"
-                onPress={() => {
-                  setDeleteConfirmId(null);
-                  setDeleteError(null);
-                }}
-                isDisabled={isDeleting}
-              >
-                <Trans>Cancel</Trans>
-              </Button>
-              <Button
-                variant="danger"
-                onPress={() => handleDeleteProfile(profileToDelete.id)}
-                isDisabled={isDeleting}
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Trans>Delete</Trans>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+              {deleteError && (
+                <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+                  {deleteError}
+                </p>
+              )}
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  onPress={() => {
+                    setDeleteConfirmId(null);
+                    setDeleteError(null);
+                  }}
+                  isDisabled={isDeleting}
+                >
+                  <Trans>Cancel</Trans>
+                </Button>
+                <Button
+                  variant="danger"
+                  onPress={() => handleDeleteProfile(profileToDelete.id)}
+                  isDisabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trans>Delete</Trans>
+                  )}
+                </Button>
+              </div>
+            </Dialog>
+          </Modal>
+        </ModalOverlay>
       )}
     </div>
   );
@@ -353,6 +373,7 @@ export function DeckProfileSwitcher() {
 
 /**
  * Reusable dialog component for profile creation and editing
+ * Uses React Aria Modal/Dialog for proper accessibility
  */
 interface ProfileFormDialogProps {
   title: React.ReactNode;
@@ -376,61 +397,68 @@ function ProfileFormDialog({
   submitLabel,
 }: ProfileFormDialogProps) {
   const { t } = useLingui();
+  const titleId = useId();
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div
-        className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="profile-dialog-title"
-      >
-        <h2
-          id="profile-dialog-title"
-          className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
-        >
-          {title}
-        </h2>
-        <div className="mb-6">
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={t`Profile name`}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-            autoFocus
-            disabled={isSubmitting}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") onSubmit();
-              if (e.key === "Escape") onCancel();
-            }}
-          />
-          {error && (
-            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-              {error}
-            </p>
-          )}
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="secondary"
-            onPress={onCancel}
-            isDisabled={isSubmitting}
+    <ModalOverlay
+      isOpen
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onCancel();
+      }}
+      isDismissable={!isSubmitting}
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+    >
+      <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6 outline-none">
+        <Dialog aria-labelledby={titleId} className="outline-none">
+          <Heading
+            slot="title"
+            id={titleId}
+            className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
           >
-            <Trans>Cancel</Trans>
-          </Button>
-          <Button
-            variant="primary"
-            onPress={onSubmit}
-            isDisabled={isSubmitting || !value.trim()}
-          >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              submitLabel
+            {title}
+          </Heading>
+          <div className="mb-6">
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={t`Profile name`}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              autoFocus
+              disabled={isSubmitting}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onSubmit();
+                if (e.key === "Escape" && !isSubmitting) onCancel();
+              }}
+            />
+            {error && (
+              <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                {error}
+              </p>
             )}
-          </Button>
-        </div>
-      </div>
-    </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="secondary"
+              onPress={onCancel}
+              isDisabled={isSubmitting}
+            >
+              <Trans>Cancel</Trans>
+            </Button>
+            <Button
+              variant="primary"
+              onPress={onSubmit}
+              isDisabled={isSubmitting || !value.trim()}
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                submitLabel
+              )}
+            </Button>
+          </div>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }
