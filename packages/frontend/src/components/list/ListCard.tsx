@@ -131,7 +131,7 @@ export function ListCard({ list, isOwner, onEdit, onDelete, showActions }: ListC
             </Button>
             <Popover placement="bottom end">
               <Menu
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[140px]"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-35"
                 onAction={(key) => {
                   if (key === "edit") onEdit?.();
                   if (key === "delete") onDelete?.();

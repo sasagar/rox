@@ -880,7 +880,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pr-16 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full min-h-25 resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pr-16 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSubmitting}
               />
               {/* Character counter - fixed position in textarea corner */}
@@ -1270,7 +1270,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                     </span>
                     <ChevronDown className="w-3 h-3 text-gray-500 dark:text-gray-400 ml-1" />
                   </RACButton>
-                  <Popover className="mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden min-w-[140px]">
+                  <Popover className="mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden min-w-35">
                     <ListBox className="outline-none py-1">
                       {visibilityOptions.map((option) => (
                         <ListBoxItem
@@ -1376,7 +1376,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                   }
                   variant="primary"
                   size="sm"
-                  className="min-w-[72px] shrink-0"
+                  className="min-w-18 shrink-0"
                 >
                   <span className="flex items-center justify-center gap-2 whitespace-nowrap">
                     {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
