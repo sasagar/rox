@@ -363,6 +363,41 @@ export class PluginManager {
   }
 
   /**
+   * Get plugin configuration
+   */
+  getPluginConfig(pluginId: string): Record<string, unknown> {
+    const configPath = join(this.pluginDir, pluginId, "config.json");
+    try {
+      if (existsSync(configPath)) {
+        const data = readFileSync(configPath, "utf-8");
+        return JSON.parse(data);
+      }
+    } catch (error) {
+      console.error(`Failed to read plugin config for ${pluginId}:`, error);
+    }
+    return {};
+  }
+
+  /**
+   * Set plugin configuration
+   */
+  setPluginConfig(pluginId: string, config: Record<string, unknown>): boolean {
+    const pluginPath = join(this.pluginDir, pluginId);
+    if (!existsSync(pluginPath)) {
+      return false;
+    }
+
+    const configPath = join(pluginPath, "config.json");
+    try {
+      writeFileSync(configPath, JSON.stringify(config, null, 2));
+      return true;
+    } catch (error) {
+      console.error(`Failed to write plugin config for ${pluginId}:`, error);
+      return false;
+    }
+  }
+
+  /**
    * Extract repository name from Git URL
    */
   private extractRepoName(url: string): string | null {
@@ -370,7 +405,7 @@ export class PluginManager {
     // https://github.com/user/repo.git
     // https://github.com/user/repo
     // git@github.com:user/repo.git
-    const match = url.match(/\/([^\/]+?)(\.git)?$/);
+    const match = url.match(/\/([^/]+?)(\.git)?$/);
     return match?.[1] ?? null;
   }
 
