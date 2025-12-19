@@ -22,6 +22,7 @@ import {
   List,
   Loader2,
 } from "lucide-react";
+import { Dialog, Modal, ModalOverlay, Heading } from "react-aria-components";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
@@ -81,7 +82,6 @@ export default function AdminSystemFollowsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Pagination state
-  const [offset, setOffset] = useState(0);
   const PAGE_SIZE = 50;
 
   // Filter state
@@ -92,45 +92,46 @@ export default function AdminSystemFollowsPage() {
   const [userToUnfollow, setUserToUnfollow] = useState<SystemFollow | null>(null);
   const [isUnfollowing, setIsUnfollowing] = useState(false);
 
-  const loadFollows = useCallback(async (append = false) => {
-    if (!token) return;
+  const loadFollows = useCallback(
+    async (currentOffset = 0) => {
+      if (!token) return;
 
-    const currentOffset = append ? offset : 0;
+      const isAppend = currentOffset > 0;
 
-    try {
-      if (append) {
-        setIsLoadingMore(true);
-      }
-      apiClient.setToken(token);
-      const params = new URLSearchParams();
-      params.set("limit", String(PAGE_SIZE));
-      params.set("offset", String(currentOffset));
-      if (userFilter !== "all") {
-        params.set("filter", userFilter);
-      }
-      if (searchQuery) {
-        params.set("search", searchQuery);
-      }
-      const response = await apiClient.get<SystemFollowsResponse>(
-        `/api/admin/system-follows?${params}`,
-      );
+      try {
+        if (isAppend) {
+          setIsLoadingMore(true);
+        }
+        apiClient.setToken(token);
+        const params = new URLSearchParams();
+        params.set("limit", String(PAGE_SIZE));
+        params.set("offset", String(currentOffset));
+        if (userFilter !== "all") {
+          params.set("filter", userFilter);
+        }
+        if (searchQuery) {
+          params.set("search", searchQuery);
+        }
+        const response = await apiClient.get<SystemFollowsResponse>(
+          `/api/admin/system-follows?${params}`,
+        );
 
-      if (append) {
-        setFollows((prev) => [...prev, ...response.follows]);
-        setOffset(currentOffset + response.follows.length);
-      } else {
-        setFollows(response.follows);
-        setOffset(response.follows.length);
+        if (isAppend) {
+          setFollows((prev) => [...prev, ...response.follows]);
+        } else {
+          setFollows(response.follows);
+        }
+        setTotal(response.total);
+      } catch (err) {
+        console.error("Failed to load system follows:", err);
+        setError(t`Failed to load system follows`);
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
       }
-      setTotal(response.total);
-    } catch (err) {
-      console.error("Failed to load system follows:", err);
-      setError(t`Failed to load system follows`);
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [token, userFilter, searchQuery, offset]);
+    },
+    [token, userFilter, searchQuery],
+  );
 
   // Check admin access and load follows
   useEffect(() => {
@@ -153,7 +154,7 @@ export default function AdminSystemFollowsPage() {
         // Update currentUser atom to ensure sidebar shows
         setCurrentUser(sessionResponse.user);
 
-        await loadFollows();
+        await loadFollows(0);
       } catch (err) {
         console.error("Access check failed:", err);
         setError(t`Access denied`);
@@ -167,13 +168,12 @@ export default function AdminSystemFollowsPage() {
   // Reload when filter changes (reset pagination)
   useEffect(() => {
     if (!isLoading && token) {
-      setOffset(0);
-      loadFollows(false);
+      loadFollows(0);
     }
   }, [userFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLoadMore = () => {
-    loadFollows(true);
+    loadFollows(follows.length);
   };
 
   const hasMore = follows.length < total;
@@ -279,7 +279,7 @@ export default function AdminSystemFollowsPage() {
                 <div>
                   <div className="text-2xl font-bold text-(--text-primary)">{localCount}</div>
                   <div className="text-xs text-(--text-muted)">
-                    <Trans>Local</Trans>
+                    <Trans>Local (loaded)</Trans>
                   </div>
                 </div>
               </div>
@@ -294,7 +294,7 @@ export default function AdminSystemFollowsPage() {
                 <div>
                   <div className="text-2xl font-bold text-(--text-primary)">{remoteCount}</div>
                   <div className="text-xs text-(--text-muted)">
-                    <Trans>Remote</Trans>
+                    <Trans>Remote (loaded)</Trans>
                   </div>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function AdminSystemFollowsPage() {
                 <div>
                   <div className="text-2xl font-bold text-(--text-primary)">{inListsCount}</div>
                   <div className="text-xs text-(--text-muted)">
-                    <Trans>In Lists</Trans>
+                    <Trans>In Lists (loaded)</Trans>
                   </div>
                 </div>
               </div>
@@ -324,7 +324,7 @@ export default function AdminSystemFollowsPage() {
                 <div>
                   <div className="text-2xl font-bold text-(--text-primary)">{notInListsCount}</div>
                   <div className="text-xs text-(--text-muted)">
-                    <Trans>Not in Lists</Trans>
+                    <Trans>Not in Lists (loaded)</Trans>
                   </div>
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function AdminSystemFollowsPage() {
                   <Trans>Not in Lists</Trans>
                 </button>
               </div>
-              <Button variant="ghost" size="sm" onPress={() => loadFollows(false)}>
+              <Button variant="ghost" size="sm" onPress={() => loadFollows(0)}>
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>
@@ -518,79 +518,90 @@ export default function AdminSystemFollowsPage() {
         </Card>
 
         {/* Unfollow Confirmation Modal */}
-        {userToUnfollow && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-(--bg-primary) rounded-xl shadow-xl max-w-md w-full mx-4">
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30">
-                    <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
-                  </div>
-                  <h2 className="text-xl font-bold text-(--text-primary)">
-                    <Trans>Unfollow User</Trans>
-                  </h2>
-                </div>
-
-                <p className="text-(--text-secondary) mb-4">
-                  <Trans>
-                    Are you sure you want to unfollow{" "}
-                    <strong>
-                      @{userToUnfollow.user.username}
-                      {userToUnfollow.user.host && `@${userToUnfollow.user.host}`}
-                    </strong>
-                    ?
-                  </Trans>
-                </p>
-
-                {userToUnfollow.listCount > 0 && (
-                  <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-4">
-                    <p className="text-sm text-amber-800 dark:text-amber-200">
-                      <Trans>
-                        This user is in {userToUnfollow.listCount} list(s). Unfollowing won't remove
-                        them from lists.
-                      </Trans>
-                    </p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {userToUnfollow.lists.map((list) => (
-                        <span
-                          key={list.id}
-                          className="px-2 py-0.5 text-xs rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
-                        >
-                          {list.name}
-                        </span>
-                      ))}
+        <ModalOverlay
+          isOpen={userToUnfollow !== null}
+          onOpenChange={(open) => !open && setUserToUnfollow(null)}
+          isDismissable={!isUnfollowing}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        >
+          <Modal className="w-full max-w-md bg-(--card-bg) rounded-xl shadow-xl overflow-hidden outline-none">
+            <Dialog className="outline-none">
+              {userToUnfollow && (
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30">
+                      <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
                     </div>
+                    <Heading
+                      slot="title"
+                      className="text-xl font-bold text-(--text-primary)"
+                    >
+                      <Trans>Unfollow User</Trans>
+                    </Heading>
                   </div>
-                )}
 
-                <div className="flex gap-3">
-                  <Button
-                    variant="secondary"
-                    onPress={() => setUserToUnfollow(null)}
-                    className="flex-1"
-                  >
-                    <Trans>Cancel</Trans>
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onPress={handleUnfollow}
-                    isDisabled={isUnfollowing}
-                    className="flex-1"
-                  >
-                    {isUnfollowing ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        <UserMinus className="w-4 h-4 mr-2" />
-                        <Trans>Unfollow</Trans>
-                      </>
-                    )}
-                  </Button>
+                  <p className="text-(--text-secondary) mb-4">
+                    <Trans>
+                      Are you sure you want to unfollow{" "}
+                      <strong>
+                        @{userToUnfollow.user.username}
+                        {userToUnfollow.user.host && `@${userToUnfollow.user.host}`}
+                      </strong>
+                      ?
+                    </Trans>
+                  </p>
+
+                  {userToUnfollow.listCount > 0 && (
+                    <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-4">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        <Trans>
+                          This user is in {userToUnfollow.listCount} list(s). Unfollowing won't remove
+                          them from lists.
+                        </Trans>
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {userToUnfollow.lists.map((list) => (
+                          <span
+                            key={list.id}
+                            className="px-2 py-0.5 text-xs rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
+                          >
+                            {list.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <Button
+                      variant="secondary"
+                      onPress={() => setUserToUnfollow(null)}
+                      isDisabled={isUnfollowing}
+                      className="flex-1"
+                    >
+                      <Trans>Cancel</Trans>
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onPress={handleUnfollow}
+                      isDisabled={isUnfollowing}
+                      className="flex-1"
+                    >
+                      {isUnfollowing ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <UserMinus className="w-4 h-4 mr-2" />
+                          <Trans>Unfollow</Trans>
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
+              )}
+            </Dialog>
+          </Modal>
+        </ModalOverlay>
       </div>
     </AdminLayout>
   );
