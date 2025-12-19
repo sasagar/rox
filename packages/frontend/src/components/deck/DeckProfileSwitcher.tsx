@@ -9,7 +9,7 @@ import {
   Button as AriaButton,
 } from "react-aria-components";
 import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 
@@ -179,7 +179,6 @@ export function DeckProfileSwitcher() {
             isSubmitting={isSubmitting}
             error={createError}
             submitLabel={<Trans>Create</Trans>}
-            placeholder="Profile name"
           />
         )}
       </>
@@ -274,7 +273,6 @@ export function DeckProfileSwitcher() {
           isSubmitting={isSubmitting}
           error={createError}
           submitLabel={<Trans>Create</Trans>}
-          placeholder="Profile name"
         />
       )}
 
@@ -289,7 +287,6 @@ export function DeckProfileSwitcher() {
           isSubmitting={isEditing}
           error={editError}
           submitLabel={<Trans>Save</Trans>}
-          placeholder="Profile name"
         />
       )}
 
@@ -366,7 +363,6 @@ interface ProfileFormDialogProps {
   isSubmitting: boolean;
   error: string | null;
   submitLabel: React.ReactNode;
-  placeholder: string;
 }
 
 function ProfileFormDialog({
@@ -378,8 +374,8 @@ function ProfileFormDialog({
   isSubmitting,
   error,
   submitLabel,
-  placeholder,
 }: ProfileFormDialogProps) {
+  const { t } = useLingui();
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div
@@ -399,7 +395,7 @@ function ProfileFormDialog({
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
+            placeholder={t`Profile name`}
             className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             autoFocus
             disabled={isSubmitting}

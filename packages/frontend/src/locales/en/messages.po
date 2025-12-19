@@ -526,7 +526,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:316
+#: src/components/deck/DeckProfileSwitcher.tsx:313
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 
@@ -771,8 +771,8 @@ msgid "Can suspend users"
 msgstr "Can suspend users"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:336
-#: src/components/deck/DeckProfileSwitcher.tsx:423
+#: src/components/deck/DeckProfileSwitcher.tsx:333
+#: src/components/deck/DeckProfileSwitcher.tsx:419
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -980,7 +980,7 @@ msgid "Correct inaccurate data"
 msgstr "Correct inaccurate data"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:181
-#: src/components/deck/DeckProfileSwitcher.tsx:276
+#: src/components/deck/DeckProfileSwitcher.tsx:275
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1017,7 +1017,7 @@ msgid "Create new list"
 msgstr "Create new list"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:174
-#: src/components/deck/DeckProfileSwitcher.tsx:269
+#: src/components/deck/DeckProfileSwitcher.tsx:268
 msgid "Create New Profile"
 msgstr "Create New Profile"
 
@@ -1164,7 +1164,7 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:346
+#: src/components/deck/DeckProfileSwitcher.tsx:343
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1203,8 +1203,8 @@ msgstr "Delete Note"
 msgid "Delete Notes"
 msgstr "Delete Notes"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:247
-#: src/components/deck/DeckProfileSwitcher.tsx:310
+#: src/components/deck/DeckProfileSwitcher.tsx:246
+#: src/components/deck/DeckProfileSwitcher.tsx:307
 msgid "Delete Profile"
 msgstr "Delete Profile"
 
@@ -2866,7 +2866,7 @@ msgstr "New Note"
 msgid "New notification"
 msgstr "New notification"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:260
+#: src/components/deck/DeckProfileSwitcher.tsx:259
 msgid "New Profile"
 msgstr "New Profile"
 
@@ -3506,6 +3506,10 @@ msgstr "Profile Images"
 msgid "Profile information (username, display name, bio)"
 msgstr "Profile information (username, display name, bio)"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:398
+msgid "Profile name"
+msgstr "Profile name"
+
 #: src/pages/settings.tsx:120
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
@@ -3822,8 +3826,8 @@ msgstr "Remove banner"
 msgid "Rename"
 msgstr "Rename"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:236
-#: src/components/deck/DeckProfileSwitcher.tsx:284
+#: src/components/deck/DeckProfileSwitcher.tsx:235
+#: src/components/deck/DeckProfileSwitcher.tsx:282
 msgid "Rename Profile"
 msgstr "Rename Profile"
 
@@ -4089,7 +4093,7 @@ msgstr "Rox is open source software licensed under the AGPL-3.0 license."
 msgid "Rox License"
 msgstr "Rox License"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:291
+#: src/components/deck/DeckProfileSwitcher.tsx:289
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
