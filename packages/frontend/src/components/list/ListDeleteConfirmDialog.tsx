@@ -120,7 +120,7 @@ export function ListDeleteConfirmDialog({
                   variant="secondary"
                   onPress={() => close()}
                   isDisabled={isLoading}
-                  className="min-w-[100px]"
+                  className="min-w-25"
                 >
                   <Trans>Cancel</Trans>
                 </Button>
@@ -128,7 +128,7 @@ export function ListDeleteConfirmDialog({
                   variant="danger"
                   onPress={handleDelete}
                   isDisabled={isLoading}
-                  className="min-w-[100px]"
+                  className="min-w-25"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">

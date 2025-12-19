@@ -896,7 +896,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         </Button>
       )}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[500px] flex flex-col overflow-hidden">
+        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-125 flex flex-col overflow-hidden">
           <Dialog className="flex flex-col h-full min-h-0 outline-none">
             {({ close }) => (
               <>
