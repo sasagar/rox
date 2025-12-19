@@ -48,6 +48,11 @@ msgstr "{0}はブロック済みです"
 msgid "{0} is not blocked"
 msgstr "{0}はブロックされていません"
 
+#. placeholder {0}: follow.listCount
+#: src/pages/admin/system-follows.tsx:443
+msgid "{0} lists"
+msgstr "{0}件のリスト"
+
 #. placeholder {0}: selectedUser.reports.total
 #: src/pages/mod/users.tsx:369
 msgid "{0} reports against this user"
@@ -393,7 +398,7 @@ msgstr "管理"
 msgid "Admin Account"
 msgstr "管理者アカウント"
 
-#: src/components/admin/AdminLayout.tsx:301
+#: src/components/admin/AdminLayout.tsx:303
 msgid "Admin Menu"
 msgstr "管理メニュー"
 
@@ -444,6 +449,7 @@ msgstr "エイリアス"
 
 #: src/pages/admin/federation.tsx:308
 #: src/pages/admin/reports.tsx:303
+#: src/pages/admin/system-follows.tsx:347
 #: src/pages/admin/users.tsx:389
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:376
@@ -526,7 +532,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:313
+#: src/components/deck/DeckProfileSwitcher.tsx:332
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
 
@@ -552,7 +558,13 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
-#: src/components/admin/AdminLayout.tsx:80
+#. placeholder {0}: userToUnfollow.user.username
+#. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
+#: src/pages/admin/system-follows.tsx:500
+msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
+msgstr "<0>@{0}{1}</0> のフォローを解除しますか？"
+
+#: src/components/admin/AdminLayout.tsx:81
 msgid "Assets"
 msgstr "素材"
 
@@ -688,7 +700,7 @@ msgstr "ブロック中のインスタンス"
 msgid "Blocked on {0}"
 msgstr "{0}にブロック"
 
-#: src/components/admin/AdminLayout.tsx:92
+#: src/components/admin/AdminLayout.tsx:93
 #: src/pages/admin/blocked-usernames.tsx:204
 msgid "Blocked Usernames"
 msgstr "禁止ユーザー名"
@@ -705,7 +717,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/admin/AdminLayout.tsx:118
+#: src/components/admin/AdminLayout.tsx:120
 msgid "Blocks"
 msgstr "ブロック"
 
@@ -729,7 +741,7 @@ msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大51
 msgid "Bulk Edit"
 msgstr "一括編集"
 
-#: src/components/admin/AdminLayout.tsx:104
+#: src/components/admin/AdminLayout.tsx:105
 msgid "Bulk Import"
 msgstr "一括インポート"
 
@@ -771,8 +783,8 @@ msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:333
-#: src/components/deck/DeckProfileSwitcher.tsx:419
+#: src/components/deck/DeckProfileSwitcher.tsx:352
+#: src/components/deck/DeckProfileSwitcher.tsx:446
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -787,6 +799,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
+#: src/pages/admin/system-follows.tsx:537
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -926,11 +939,11 @@ msgstr "お問い合わせスレッドの詳細"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:119
+#: src/components/admin/AdminLayout.tsx:121
 msgid "Contacts"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:98
+#: src/components/admin/AdminLayout.tsx:99
 msgid "Content"
 msgstr "コンテンツ"
 
@@ -979,8 +992,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:181
-#: src/components/deck/DeckProfileSwitcher.tsx:275
+#: src/components/deck/DeckProfileSwitcher.tsx:189
+#: src/components/deck/DeckProfileSwitcher.tsx:283
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1016,12 +1029,12 @@ msgstr "リストを作成"
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:174
-#: src/components/deck/DeckProfileSwitcher.tsx:268
+#: src/components/deck/DeckProfileSwitcher.tsx:182
+#: src/components/deck/DeckProfileSwitcher.tsx:276
 msgid "Create New Profile"
 msgstr "新しいプロファイルを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:168
+#: src/components/deck/DeckProfileSwitcher.tsx:176
 msgid "Create Profile"
 msgstr "プロファイルを作成"
 
@@ -1164,7 +1177,7 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:343
+#: src/components/deck/DeckProfileSwitcher.tsx:362
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1203,8 +1216,8 @@ msgstr "ノートを削除"
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:246
-#: src/components/deck/DeckProfileSwitcher.tsx:307
+#: src/components/deck/DeckProfileSwitcher.tsx:254
+#: src/components/deck/DeckProfileSwitcher.tsx:326
 msgid "Delete Profile"
 msgstr "プロファイルを削除"
 
@@ -1873,6 +1886,10 @@ msgstr "ユーザーの停止に失敗しました"
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
+#: src/pages/admin/system-follows.tsx:175
+msgid "Failed to unfollow user"
+msgstr "フォロー解除に失敗しました"
+
 #: src/pages/mod/users.tsx:181
 msgid "Failed to unsuspend user"
 msgstr "ユーザーの停止解除に失敗しました"
@@ -1935,7 +1952,7 @@ msgstr "ファビコンURL"
 msgid "Federated"
 msgstr "分散型"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 #: src/pages/admin/federation.tsx:209
 #: src/pages/admin/federation.tsx:223
 #: src/pages/admin/federation.tsx:236
@@ -2002,6 +2019,11 @@ msgstr "@{0}をフォロー"
 msgid "Follow requests accepted"
 msgstr "フォローリクエスト承認"
 
+#. placeholder {0}: formatDate(follow.createdAt)
+#: src/pages/admin/system-follows.tsx:464
+msgid "Followed {0}"
+msgstr "{0}にフォロー"
+
 #: src/components/notification/NotificationItem.tsx:111
 msgid "followed you"
 msgstr "があなたをフォローしました"
@@ -2021,6 +2043,10 @@ msgstr "フォロー中"
 #: src/components/settings/DataExportSection.tsx:111
 msgid "Following and follower relationships"
 msgstr "フォローとフォロワーの関係"
+
+#: src/pages/admin/system-follows.tsx:324
+msgid "Following List"
+msgstr "フォロー一覧"
 
 #: src/components/user/UserProfile.tsx:467
 msgid "Following..."
@@ -2059,7 +2085,7 @@ msgstr "機能Cookie"
 #~ msgid "GDPR Data Requests"
 #~ msgstr "GDPRデータリクエスト"
 
-#: src/components/admin/AdminLayout.tsx:73
+#: src/components/admin/AdminLayout.tsx:74
 msgid "General"
 msgstr "全般"
 
@@ -2107,7 +2133,7 @@ msgstr "タイムラインへ"
 msgid "Gone"
 msgstr "削除済み"
 
-#: src/components/admin/AdminLayout.tsx:93
+#: src/components/admin/AdminLayout.tsx:94
 #: src/pages/admin/gone-users.tsx:168
 #: src/pages/admin/gone-users.tsx:181
 msgid "Gone Users"
@@ -2223,6 +2249,11 @@ msgstr "インポートがタイムアウトしました。サーバーはまだ
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
+#: src/pages/admin/system-follows.tsx:297
+#: src/pages/admin/system-follows.tsx:380
+msgid "In Lists"
+msgstr "リスト追加あり"
+
 #: src/components/note/NoteCard.tsx:549
 msgid "In reply to"
 msgstr "返信元"
@@ -2231,7 +2262,7 @@ msgstr "返信元"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/components/admin/AdminLayout.tsx:77
+#: src/components/admin/AdminLayout.tsx:78
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "インスタンス"
@@ -2351,7 +2382,7 @@ msgstr "招待コードを入力してください"
 msgid "Invitation Codes"
 msgstr "招待コード"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:92
 msgid "Invitations"
 msgstr "招待"
 
@@ -2434,7 +2465,7 @@ msgstr "永続的な警告の場合は空のままにしてください"
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/components/admin/AdminLayout.tsx:81
+#: src/components/admin/AdminLayout.tsx:82
 msgid "Legal"
 msgstr "法的文書"
 
@@ -2526,7 +2557,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:157
+#: src/components/deck/DeckProfileSwitcher.tsx:165
 msgid "Loading profiles..."
 msgstr "プロファイルを読み込み中..."
 
@@ -2543,13 +2574,15 @@ msgstr "読み込み中..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
+#: src/pages/admin/system-follows.tsx:267
+#: src/pages/admin/system-follows.tsx:358
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "ローカル"
 
-#: src/components/admin/AdminLayout.tsx:102
+#: src/components/admin/AdminLayout.tsx:103
 msgid "Local Emojis"
 msgstr "ローカル絵文字"
 
@@ -2597,6 +2630,10 @@ msgstr "管理者メールアドレス"
 #: src/pages/admin/users.tsx:498
 msgid "Make admin"
 msgstr "管理者にする"
+
+#: src/pages/admin/system-follows.tsx:237
+msgid "Manage accounts followed by the system account"
+msgstr "システムアカウントがフォローしているアカウントを管理"
 
 #: src/pages/mod/instances.tsx:237
 msgid "Manage blocked instances"
@@ -2741,7 +2778,7 @@ msgstr "があなたにメンションしました"
 msgid "Mentions"
 msgstr "メンション"
 
-#: src/components/admin/AdminLayout.tsx:391
+#: src/components/admin/AdminLayout.tsx:393
 msgid "Menu"
 msgstr "メニュー"
 
@@ -2866,7 +2903,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:259
+#: src/components/deck/DeckProfileSwitcher.tsx:267
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -3060,6 +3097,7 @@ msgstr "テキストコンテンツなし"
 #: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
+#: src/pages/admin/system-follows.tsx:404
 #: src/pages/admin/users.tsx:424
 #: src/pages/search.tsx:434
 msgid "No users found"
@@ -3076,6 +3114,11 @@ msgstr "標準"
 #: src/components/user/FollowListModal.tsx:198
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
+
+#: src/pages/admin/system-follows.tsx:312
+#: src/pages/admin/system-follows.tsx:391
+msgid "Not in Lists"
+msgstr "リスト追加なし"
 
 #: src/components/pages/NoteDetailPageClient.tsx:107
 msgid "Note"
@@ -3506,7 +3549,7 @@ msgstr "プロフィール画像"
 msgid "Profile information (username, display name, bio)"
 msgstr "プロフィール情報（ユーザー名、表示名、自己紹介）"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:398
+#: src/components/deck/DeckProfileSwitcher.tsx:425
 msgid "Profile name"
 msgstr "プロファイル名"
 
@@ -3584,11 +3627,11 @@ msgstr "キューの状態"
 msgid "Queue Not Available"
 msgstr "キューは利用できません"
 
-#: src/components/admin/AdminLayout.tsx:116
+#: src/components/admin/AdminLayout.tsx:118
 msgid "Queue Overview"
 msgstr "キュー概要"
 
-#: src/components/admin/AdminLayout.tsx:117
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Queue Servers"
 msgstr "キューサーバー"
 
@@ -3717,7 +3760,7 @@ msgstr "登録済みデバイス"
 msgid "Registering..."
 msgstr "登録中..."
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/components/settings/AboutSection.tsx:123
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
@@ -3771,12 +3814,14 @@ msgstr "設定を記憶し、より良い体験を提供します。"
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "テーマ設定、言語、UIカスタマイズなどの設定を記憶します。無効にすると、体験に影響する場合があります。"
 
+#: src/pages/admin/system-follows.tsx:282
+#: src/pages/admin/system-follows.tsx:369
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "リモート"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Remote Emojis"
 msgstr "リモート絵文字"
 
@@ -3826,8 +3871,8 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:235
-#: src/components/deck/DeckProfileSwitcher.tsx:282
+#: src/components/deck/DeckProfileSwitcher.tsx:243
+#: src/components/deck/DeckProfileSwitcher.tsx:290
 msgid "Rename Profile"
 msgstr "プロファイル名を変更"
 
@@ -3934,7 +3979,7 @@ msgstr "報告者"
 msgid "Reporting"
 msgstr "報告対象"
 
-#: src/components/admin/AdminLayout.tsx:105
+#: src/components/admin/AdminLayout.tsx:106
 #: src/pages/admin/reports.tsx:225
 #: src/pages/admin/reports.tsx:239
 #: src/pages/admin/reports.tsx:252
@@ -4072,7 +4117,7 @@ msgstr "ロール名"
 msgid "Role updated"
 msgstr "ロールを更新しました"
 
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:91
 #: src/pages/admin/roles.tsx:578
 msgid "Roles"
 msgstr "ロール"
@@ -4093,7 +4138,7 @@ msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープン�
 msgid "Rox License"
 msgstr "Roxライセンス"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:289
+#: src/components/deck/DeckProfileSwitcher.tsx:297
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4207,6 +4252,7 @@ msgstr "ユーザーを検索"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
+#: src/pages/admin/system-follows.tsx:331
 #: src/pages/admin/users.tsx:373
 msgid "Search users..."
 msgstr "ユーザーを検索..."
@@ -4471,7 +4517,7 @@ msgstr "ステータス"
 msgid "Step {0} of {1}"
 msgstr "ステップ {0} / {1}"
 
-#: src/components/admin/AdminLayout.tsx:113
+#: src/components/admin/AdminLayout.tsx:114
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
 #: src/pages/settings.tsx:159
@@ -4547,7 +4593,7 @@ msgstr "スワイプでナビゲート"
 msgid "Synced"
 msgstr "同期済み"
 
-#: src/components/admin/AdminLayout.tsx:110
+#: src/components/admin/AdminLayout.tsx:111
 #: src/pages/admin/settings.tsx:620
 msgid "System"
 msgstr "システム"
@@ -4556,6 +4602,11 @@ msgstr "システム"
 #: src/pages/admin/storage.tsx:380
 msgid "System Files"
 msgstr "システムファイル"
+
+#: src/components/admin/AdminLayout.tsx:116
+#: src/pages/admin/system-follows.tsx:236
+msgid "System Follows"
+msgstr "システムフォロー"
 
 #: src/components/settings/AccountMigrationSection.tsx:368
 msgid "Target account is valid"
@@ -4644,7 +4695,7 @@ msgstr "メンテナンスまたは高負荷のため、サーバーは一時的
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 #: src/components/settings/UISettingsSection.tsx:306
 msgid "Theme"
 msgstr "テーマ"
@@ -4753,6 +4804,11 @@ msgstr "このスレッドは終了しました。"
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
+#. placeholder {0}: userToUnfollow.listCount
+#: src/pages/admin/system-follows.tsx:513
+msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
+msgstr "このユーザーは{0}件のリストに追加されています。フォロー解除してもリストからは削除されません。"
+
 #: src/pages/admin/blocked-usernames.tsx:302
 msgid "This username is allowed"
 msgstr "このユーザー名は使用可能です"
@@ -4784,6 +4840,7 @@ msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
 
 #: src/pages/admin/queue.tsx:425
+#: src/pages/admin/system-follows.tsx:252
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "合計"
@@ -4895,9 +4952,15 @@ msgstr "未分類の絵文字"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
 
+#: src/pages/admin/system-follows.tsx:473
+#: src/pages/admin/system-follows.tsx:550
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
+msgstr "フォロー解除"
+
+#: src/pages/admin/system-follows.tsx:495
+msgid "Unfollow User"
 msgstr "フォロー解除"
 
 #: src/components/user/UserProfile.tsx:465
@@ -5006,6 +5069,10 @@ msgstr "ユーザーを削除しました。{0}件のDelete Activityをフォロ
 msgid "User Details"
 msgstr "ユーザー詳細"
 
+#: src/pages/admin/system-follows.tsx:167
+msgid "User has been unfollowed"
+msgstr "フォローを解除しました"
+
 #: src/pages/admin/users.tsx:230
 msgid "User information refreshed"
 msgstr "ユーザー情報を更新しました"
@@ -5077,8 +5144,8 @@ msgstr "ユーザー名を入力してください"
 msgid "Username must be at least 3 characters"
 msgstr "ユーザー名は3文字以上必要です"
 
-#: src/components/admin/AdminLayout.tsx:86
-#: src/components/admin/AdminLayout.tsx:89
+#: src/components/admin/AdminLayout.tsx:87
+#: src/components/admin/AdminLayout.tsx:90
 #: src/pages/admin/federation.tsx:400
 #: src/pages/admin/users.tsx:293
 #: src/pages/mod/audit-logs.tsx:261
