@@ -13,6 +13,7 @@ import {
   Heading,
   TextField,
   Input,
+  Separator,
 } from "react-aria-components";
 import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
 import { Trans, useLingui } from "@lingui/react/macro";
@@ -235,7 +236,7 @@ export function DeckProfileSwitcher() {
             ))}
 
             {/* Separator */}
-            <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+            <Separator className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
             {/* Edit current profile */}
             {activeProfile && (
@@ -260,7 +261,7 @@ export function DeckProfileSwitcher() {
             )}
 
             {/* Separator */}
-            <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+            <Separator className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
             {/* Create new profile */}
             <MenuItem
