@@ -605,9 +605,149 @@ export default myPlugin;
 
 ---
 
+### Phase 3: Frontend Plugin System ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `6ae6131`
+
+**Implemented Files**:
+- `packages/frontend/src/lib/plugins/slots.ts` - PLUGIN_SLOTS constant with 12 slot definitions
+- `packages/frontend/src/lib/plugins/types.ts` - FrontendPlugin, SlotProps, and related types
+- `packages/frontend/src/lib/plugins/registry.ts` - FrontendPluginRegistry class and hooks
+- `packages/frontend/src/lib/plugins/PluginSlot.tsx` - React component for slot rendering
+- `packages/frontend/src/lib/plugins/index.ts` - Public exports
+- `packages/frontend/src/tests/plugins/registry.test.ts` - Unit tests (13 tests passing)
+
+**Updated Files**:
+- `packages/frontend/src/components/note/NoteCard.tsx` - Integrated 3 plugin slots
+
+**Available Slots**:
+| Slot Name | Location |
+|-----------|----------|
+| `note:header` | Before note header content |
+| `note:footer` | After note content, before reactions |
+| `note:actions` | Additional note action buttons |
+| `compose:toolbar` | Additional compose toolbar items |
+| `compose:footer` | Below compose textarea |
+| `profile:header` | Additional profile header content |
+| `profile:tabs` | Additional profile tabs |
+| `settings:tabs` | Additional settings tabs |
+| `admin:sidebar` | Additional admin sidebar items |
+| `admin:dashboard` | Additional dashboard widgets |
+| `sidebar:bottom` | Before sidebar footer |
+
+**Slot Props Types**:
+- `NoteSlotProps`: noteId, userId, visibility
+- `ComposeSlotProps`: text, insertText callback, replyToId
+- `ProfileSlotProps`: userId, username, isOwnProfile
+- `SettingsSlotProps`: userId
+- `AdminSlotProps`: isAdmin
+- `SidebarSlotProps`: isCollapsed
+
+**Key Features**:
+- **FrontendPlugin Interface**: slots, pages, atoms, messages, lifecycle hooks
+- **PluginSlot Component**: Renders plugin components at designated slots
+- **Jotai Integration**: Reactive state via pluginListAtom, enabledPluginsAtom
+- **Registry Hooks**: usePlugins, useEnabledPlugins, usePluginSlotComponents, usePluginRegistry
+- **Error Handling**: Plugin errors don't break host components
+
+---
+
+### Phase 4: Plugin Distribution System ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `2a17484`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/PluginManager.ts` - Full plugin lifecycle management
+- `packages/backend/src/plugins/ManifestValidator.ts` - Manifest validation with detailed errors
+- `packages/backend/src/plugins/cli.ts` - CLI commands for plugin operations
+- `packages/shared/src/types/plugin.ts` - Shared plugin types (PluginManifest, PluginListEntry, etc.)
+- `plugins/README.md` - Plugin development documentation
+
+**Sample Plugins**:
+- `plugins/activity-logger/` - Backend plugin for activity logging
+- `plugins/auto-cw/` - Backend + Frontend plugin for automatic content warnings
+
+**CLI Commands** (via `bun run plugin <command>`):
+| Command | Description |
+|---------|-------------|
+| `install <source>` | Install from Git URL or local path |
+| `uninstall <id>` | Remove a plugin |
+| `list` | List all installed plugins |
+| `enable <id>` | Enable a disabled plugin |
+| `disable <id>` | Disable an enabled plugin |
+| `info <id>` | Show plugin details |
+
+**Key Features**:
+- **Git Installation**: Clone from GitHub/GitLab URLs
+- **Local Installation**: Copy from local directory
+- **Manifest Validation**: Schema validation with helpful error messages
+- **Permission Declaration**: Plugins declare required permissions
+- **Version Compatibility**: minRoxVersion/maxRoxVersion support
+
+---
+
+### Phase 5: Admin Plugin Management API ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `c6685b4`
+
+**Implemented Files**:
+- `packages/backend/src/routes/admin-plugins.ts` - REST API endpoints for plugin management
+- `packages/backend/src/tests/unit/AdminPluginsRoute.test.ts` - Unit tests (16 tests passing)
+- `docs/plugins/README.md` - Plugin system documentation
+- `docs/plugins/marketplace-specification.md` - Marketplace API specification
+
+**API Endpoints** (under `/api/admin/plugins`):
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all plugins |
+| GET | `/:id` | Get plugin details |
+| POST | `/:id/enable` | Enable a plugin |
+| POST | `/:id/disable` | Disable a plugin |
+| POST | `/install` | Install from source |
+| DELETE | `/:id` | Uninstall a plugin |
+| GET | `/:id/config` | Get plugin configuration |
+| PUT | `/:id/config` | Update plugin configuration |
+
+**Marketplace Specification**:
+- Separate service architecture (not part of Rox core)
+- REST API for search, download, publish
+- Publisher verification and trust levels
+- Plugin categories and security scanning
+- Implementation roadmap (Phase 1-4)
+
+---
+
+## Next Steps
+
+### Phase 6: Admin Plugin UI (Frontend) 🔄 IN PROGRESS
+
+**Goal**: Create management UI for plugins in admin dashboard
+
+**Components to Create**:
+- `PluginsPage` - Main plugin management page
+- `PluginCard` - Display plugin information
+- `PluginInstallDialog` - Install new plugins
+- `PluginConfigDialog` - Edit plugin configuration
+- API hooks for plugin management
+
+### Phase 7: Plugin Sandboxing & Security
+
+**Goal**: Enhance plugin security isolation
+
+### Phase 8: Hot Reloading
+
+**Goal**: Enable plugin updates without server restart
+
+---
+
 ## Notes
 
 - Recorded: 2025-12-10
-- Updated: 2025-12-19 (Phase 2 completed)
-- Status: Phase 1 & 2 complete, ready for Phase 3 (Frontend Plugin System)
+- Updated: 2025-12-19 (Phases 1-5 completed)
+- Status: Phases 1-5 complete, Phase 6 (Admin Plugin UI) in progress
+- PR #99 created for merging to main
+- This design prioritizes gradual implementation without breaking changes
 - This design prioritizes gradual implementation without breaking changes
