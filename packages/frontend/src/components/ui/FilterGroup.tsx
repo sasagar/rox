@@ -7,6 +7,21 @@ import {
 import type { ReactNode } from "react";
 
 /**
+ * Size-based styling configuration for FilterGroup
+ * Defined outside component to avoid recreation on each render
+ */
+const sizeConfig = {
+  filter: {
+    sm: "px-2.5 py-1 text-xs gap-1",
+    md: "px-3 py-1.5 text-sm gap-1.5",
+  },
+  badge: {
+    sm: "px-1.5 py-0.5 text-[10px]",
+    md: "px-2 py-0.5 text-xs",
+  },
+} as const;
+
+/**
  * Filter option definition
  */
 export interface FilterOption<T extends string = string> {
@@ -93,16 +108,6 @@ export function FilterGroup<T extends string = string>({
   className,
   ...props
 }: FilterGroupProps<T>) {
-  const sizeClasses = {
-    sm: "px-2.5 py-1 text-xs gap-1",
-    md: "px-3 py-1.5 text-sm gap-1.5",
-  };
-
-  const badgeSizeClasses = {
-    sm: "px-1.5 py-0.5 text-[10px]",
-    md: "px-2 py-0.5 text-xs",
-  };
-
   return (
     <RadioGroup
       {...props}
@@ -124,12 +129,12 @@ export function FilterGroup<T extends string = string>({
           <Radio
             key={option.value}
             value={option.value}
-            className={`group inline-flex items-center ${sizeClasses[size]} rounded-full border cursor-pointer transition-colors focus:outline-none data-focus-visible:ring-2 data-focus-visible:ring-primary-500 data-focus-visible:ring-offset-2 data-selected:bg-primary-600 data-selected:text-white data-selected:border-primary-600 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
+            className={`group inline-flex items-center ${sizeConfig.filter[size]} rounded-full border cursor-pointer transition-colors focus:outline-none data-focus-visible:ring-2 data-focus-visible:ring-primary-500 data-focus-visible:ring-offset-2 data-selected:bg-primary-600 data-selected:text-white data-selected:border-primary-600 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700`}
           >
             <span>{option.label}</span>
             {option.count !== undefined && (
               <span
-                className={`${badgeSizeClasses[size]} rounded-full font-medium group-data-selected:bg-white/20 group-data-selected:text-white bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300`}
+                className={`${sizeConfig.badge[size]} rounded-full font-medium group-data-selected:bg-white/20 group-data-selected:text-white bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300`}
               >
                 {option.count}
               </span>
