@@ -297,7 +297,7 @@ function MobileAdminNav({
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-(--card-bg) shadow-xl overflow-y-auto">
+      <div className="fixed inset-y-0 left-0 w-64 bg-(--card-bg) shadow-xl overflow-y-auto pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
           <span className="font-semibold text-(--text-primary)">
             <Trans>Admin Menu</Trans>
