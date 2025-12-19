@@ -722,16 +722,31 @@ export default myPlugin;
 
 ## Next Steps
 
-### Phase 6: Admin Plugin UI (Frontend) 🔄 IN PROGRESS
+### Phase 6: Admin Plugin UI (Frontend) ✅ COMPLETED (2025-12-19)
 
-**Goal**: Create management UI for plugins in admin dashboard
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `6a31438`
 
-**Components to Create**:
-- `PluginsPage` - Main plugin management page
-- `PluginCard` - Display plugin information
-- `PluginInstallDialog` - Install new plugins
-- `PluginConfigDialog` - Edit plugin configuration
-- API hooks for plugin management
+**Implemented Files**:
+- `packages/frontend/src/lib/api/plugins.ts` - Plugin API client
+- `packages/frontend/src/components/admin/plugins/PluginCard.tsx` - Plugin display card
+- `packages/frontend/src/components/admin/plugins/PluginInstallDialog.tsx` - Install dialog
+- `packages/frontend/src/components/admin/plugins/PluginConfigDialog.tsx` - Config editor dialog
+- `packages/frontend/src/components/admin/plugins/PluginsPage.tsx` - Main management page
+- `packages/frontend/src/components/admin/plugins/index.ts` - Component exports
+
+**Updated Files**:
+- `packages/frontend/src/lib/api/client.ts` - Added PUT method
+- `packages/frontend/src/components/admin/AdminLayout.tsx` - Added Plugins navigation
+
+**Features**:
+- View list of installed plugins
+- Enable/disable plugins
+- Install plugins from Git URL or local path
+- Uninstall plugins
+- View and edit plugin configuration (JSON)
+- Responsive design with loading/error states
+- React Aria accessible components
 
 ### Phase 7: Plugin Sandboxing & Security
 
