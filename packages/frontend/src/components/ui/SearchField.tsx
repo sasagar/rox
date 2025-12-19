@@ -6,6 +6,7 @@ import {
   type SearchFieldProps as AriaSearchFieldProps,
 } from "react-aria-components";
 import { Search, X } from "lucide-react";
+import { t, Trans } from "@lingui/macro";
 
 /**
  * Props for the SearchField component
@@ -65,13 +66,14 @@ export interface SearchFieldProps extends Omit<AriaSearchFieldProps, "children">
  * ```
  */
 export function SearchField({
-  label = "Search",
+  label,
   showLabel = false,
   placeholder,
   size = "md",
   className,
   ...props
 }: SearchFieldProps) {
+  const resolvedLabel = label ?? t`Search`;
   const sizeClasses = {
     sm: "h-8 text-sm",
     md: "h-10 text-base",
@@ -105,7 +107,7 @@ export function SearchField({
   return (
     <AriaSearchField {...props} className={`flex flex-col gap-1 ${className || ""}`}>
       <Label className={showLabel ? "text-sm font-medium text-gray-700 dark:text-gray-300" : "sr-only"}>
-        {label}
+        {resolvedLabel}
       </Label>
       <div className="relative">
         {/* Search icon */}
@@ -121,7 +123,9 @@ export function SearchField({
           className={`absolute ${iconRightClasses[size]} top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 data-[empty]:hidden`}
         >
           <X className={iconSizeClasses[size]} />
-          <span className="sr-only">Clear search</span>
+          <span className="sr-only">
+            <Trans>Clear search</Trans>
+          </span>
         </Button>
       </div>
     </AriaSearchField>
