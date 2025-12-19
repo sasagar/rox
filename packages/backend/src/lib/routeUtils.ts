@@ -132,7 +132,7 @@ export interface ErrorResponse {
 export function errorResponse(
   c: Context,
   message: string,
-  status: 400 | 401 | 403 | 404 | 409 | 500 = 400
+  status: 400 | 401 | 403 | 404 | 409 | 500 | 503 = 400
 ) {
   return c.json({ error: message } satisfies ErrorResponse, status);
 }

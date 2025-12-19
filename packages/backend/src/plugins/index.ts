@@ -55,10 +55,23 @@
 
 export { EventBus } from "./EventBus.js";
 export { PluginLoader } from "./PluginLoader.js";
+export { PluginWatcher } from "./PluginWatcher.js";
 export {
   FilePluginConfigStorage,
   InMemoryPluginConfigStorage,
 } from "./PluginConfigStorage.js";
 export { PluginManager } from "./PluginManager.js";
 export { validateManifest, parseManifest } from "./ManifestValidator.js";
+export {
+  PluginPermissionManager,
+  PluginPermissionError,
+  isValidPermission,
+  ALL_PERMISSIONS,
+  PERMISSION_DESCRIPTIONS,
+  PERMISSION_RISK_LEVELS,
+} from "./PluginPermissions.js";
+export {
+  createSecurePluginContext,
+  PluginSecurityAuditor,
+} from "./SecurePluginContext.js";
 export * from "./types";
