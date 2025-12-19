@@ -126,7 +126,7 @@ export default function ModeratorNotesPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex justify-center items-center min-h-[400px]">
+        <div className="flex justify-center items-center min-h-100">
           <Spinner size="lg" />
         </div>
       </Layout>
@@ -235,7 +235,7 @@ export default function ModeratorNotesPage() {
                           </div>
                         )}
                         <div className="p-3 rounded-lg bg-(--bg-secondary) border border-(--border-color)">
-                          <p className="text-(--text-primary) whitespace-pre-wrap break-words">
+                          <p className="text-(--text-primary) whitespace-pre-wrap wrap-break-word">
                             {note.text || (
                               <span className="text-(--text-muted) italic">
                                 <Trans>No text content</Trans>

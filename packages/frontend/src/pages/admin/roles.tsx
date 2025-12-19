@@ -296,7 +296,7 @@ export default function AdminRolesPage() {
         title={<Trans>Role Management</Trans>}
         subtitle={<Trans>Create and manage user roles with custom permissions</Trans>}
       >
-        <div className="flex justify-center items-center min-h-[400px]">
+        <div className="flex justify-center items-center min-h-100">
           <Spinner size="lg" />
         </div>
       </AdminLayout>
