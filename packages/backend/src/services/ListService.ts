@@ -15,6 +15,8 @@ import type { List, ListMember, ListWithMemberCount, ListMembership, ListNotifyL
 import type { Note } from "shared";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { NoteService } from "./NoteService.js";
+import type { SystemAccountService } from "./SystemAccountService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * List Service
@@ -38,12 +40,14 @@ export class ListService {
    * @param userRepository - User repository
    * @param noteRepository - Note repository
    * @param noteService - Note service for hydrating notes
+   * @param systemAccountService - System account service for managing system follows
    */
   constructor(
     private readonly listRepository: IListRepository,
     private readonly userRepository: IUserRepository,
     private readonly noteRepository: INoteRepository,
     private readonly noteService?: NoteService,
+    private readonly systemAccountService?: SystemAccountService,
   ) {}
 
   /**
@@ -243,12 +247,21 @@ export class ListService {
       throw new Error("User is already a member of this list");
     }
 
-    return await this.listRepository.addMember({
+    const member = await this.listRepository.addMember({
       id: generateId(),
       listId,
       userId: targetUserId,
       withReplies,
     });
+
+    // For remote users, ensure system account follows them to receive their notes
+    if (targetUser.host && this.systemAccountService) {
+      this.systemAccountService.ensureSystemFollow(targetUserId).catch((error) => {
+        logger.warn({ targetUserId, error }, "Failed to create system follow for remote user");
+      });
+    }
+
+    return member;
   }
 
   /**
@@ -275,7 +288,17 @@ export class ListService {
       throw new Error("Not authorized to modify this list");
     }
 
+    // Get user info before removal to check if remote
+    const targetUser = await this.userRepository.findById(targetUserId);
+
     await this.listRepository.removeMember(listId, targetUserId);
+
+    // For remote users, remove system follow if no longer in any list
+    if (targetUser?.host && this.systemAccountService) {
+      this.systemAccountService.removeSystemFollowIfOrphaned(targetUserId).catch((error) => {
+        logger.warn({ targetUserId, error }, "Failed to remove orphaned system follow");
+      });
+    }
   }
 
   /**
@@ -310,7 +333,20 @@ export class ListService {
       throw new Error("Not authorized to view this list");
     }
 
-    return await this.listRepository.getMembers(listId, limit, offset);
+    const members = await this.listRepository.getMembers(listId, limit, offset);
+
+    // Lazy initialization: ensure system follows exist for remote members
+    // This handles existing list members that were added before the system follow feature
+    if (this.systemAccountService) {
+      const remoteMembers = members.filter((m) => m.user?.host);
+      for (const member of remoteMembers) {
+        this.systemAccountService.ensureSystemFollow(member.userId).catch((error) => {
+          logger.warn({ userId: member.userId, error }, "Failed to ensure system follow for existing list member");
+        });
+      }
+    }
+
+    return members;
   }
 
   /**
