@@ -34,6 +34,7 @@ import { Layout } from "../../components/layout/Layout";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { MfmRenderer } from "../../components/mfm/MfmRenderer";
+import type { SessionResponse } from "../../lib/types/user";
 
 interface ProfileEmoji {
   name: string;
@@ -162,7 +163,7 @@ export default function AdminSystemFollowsPage() {
         apiClient.setToken(token);
 
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await apiClient.get<SessionResponse>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -208,6 +209,9 @@ export default function AdminSystemFollowsPage() {
   }, [searchQuery]);
 
   // Reload when filter or debounced search changes (reset pagination)
+  // Note: loadFollows is intentionally excluded from deps to prevent infinite loops.
+  // The effect should only trigger on filter/search changes, not on loadFollows reference changes.
+  // isLoading and token are checked inside the effect to ensure safe execution.
   useEffect(() => {
     if (!isLoading && token) {
       loadFollows(0);
@@ -392,6 +396,7 @@ export default function AdminSystemFollowsPage() {
                 <input
                   type="text"
                   placeholder={t`Search users...`}
+                  aria-label={t`Search users`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9 pr-3 py-1 text-sm border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500 w-48"
