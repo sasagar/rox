@@ -102,4 +102,13 @@ export interface IListRepository {
    * @returns Lists with notifyLevel !== "none" that contain the member
    */
   findListsWithNotificationsForMember(memberUserId: string): Promise<List[]>;
+
+  /**
+   * Count how many lists contain a specific user as a member
+   * Used for reference counting when managing system follows
+   *
+   * @param userId - The user ID to check
+   * @returns Number of lists containing the user
+   */
+  countListsContainingUser(userId: string): Promise<number>;
 }

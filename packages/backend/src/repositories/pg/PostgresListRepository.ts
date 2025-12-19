@@ -224,4 +224,13 @@ export class PostgresListRepository implements IListRepository {
 
     return results.map((r) => r.list) as List[];
   }
+
+  async countListsContainingUser(userId: string): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(userListMembers)
+      .where(eq(userListMembers.userId, userId));
+
+    return result?.count ?? 0;
+  }
 }

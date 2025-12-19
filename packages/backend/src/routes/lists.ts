@@ -27,6 +27,7 @@ function getListService(c: Context): ListService {
   const followRepository = c.get("followRepository");
   const deliveryService = c.get("activityPubDeliveryService");
   const cacheService = c.get("cacheService");
+  const systemAccountService = c.get("systemAccountService");
 
   // Create NoteService for hydrating notes in list timeline
   const noteService = new NoteService(
@@ -38,7 +39,7 @@ function getListService(c: Context): ListService {
     cacheService,
   );
 
-  return new ListService(listRepository, userRepository, noteRepository, noteService);
+  return new ListService(listRepository, userRepository, noteRepository, noteService, systemAccountService);
 }
 
 /**
