@@ -2053,4 +2053,171 @@ app.post("/blocked-usernames/test", async (c) => {
   return c.json(result);
 });
 
+// ============================================================================
+// System Account Follow Management Endpoints
+// ============================================================================
+
+/**
+ * List System Account Follows
+ *
+ * GET /api/admin/system-follows
+ *
+ * Returns a paginated list of accounts that the system account follows,
+ * including information about which lists each account is in.
+ *
+ * Query Parameters:
+ * - limit: Maximum number of follows (default: 100, max: 1000)
+ * - offset: Number of follows to skip (default: 0)
+ * - search: Search filter for username/display name
+ * - filter: Filter type (all, local, remote, in-lists, not-in-lists)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "follows": [
+ *     {
+ *       "id": "follow-id",
+ *       "user": { ... },
+ *       "createdAt": "2024-01-01T00:00:00.000Z",
+ *       "lists": [{ "id": "list-id", "name": "List Name" }],
+ *       "listCount": 2
+ *     }
+ *   ],
+ *   "total": 100,
+ *   "systemAccountId": "system-user-id"
+ * }
+ * ```
+ */
+app.get("/system-follows", async (c) => {
+  const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
+  const listRepository = c.get("listRepository");
+
+  // Get system account
+  const systemUser = await userRepository.findSystemUser();
+  if (!systemUser) {
+    return errorResponse(c, "System account not found. Please ensure the server has been initialized.", 404);
+  }
+
+  const { limit, offset } = parsePagination(c);
+  const search = c.req.query("search")?.toLowerCase() || "";
+  const filter = c.req.query("filter") || "all";
+
+  // Get all follows by system account
+  const allFollows = await followRepository.findByFollowerId(systemUser.id, 10000, 0);
+
+  // Get lists owned by system account for list membership lookup
+  const systemLists = await listRepository.findByUserId(systemUser.id);
+  const listMap = new Map(systemLists.map((l) => [l.id, { id: l.id, name: l.name }]));
+
+  // Build follow data with list info
+  const followsWithListInfo = await Promise.all(
+    allFollows.map(async (follow) => {
+      const followee = (follow as any).followee;
+      if (!followee) return null;
+
+      // Get lists containing this user (owned by system account)
+      const listsContaining = await listRepository.findListsContainingUser(followee.id, systemUser.id);
+      const lists = listsContaining.map((l) => listMap.get(l.id)).filter(Boolean);
+
+      return {
+        id: follow.id,
+        user: sanitizeUser(followee),
+        createdAt: follow.createdAt,
+        lists,
+        listCount: lists.length,
+      };
+    }),
+  );
+
+  // Filter out nulls
+  let filtered = followsWithListInfo.filter((f): f is NonNullable<typeof f> => f !== null);
+
+  // Apply search filter
+  if (search) {
+    filtered = filtered.filter((f) => {
+      const user = f.user;
+      return (
+        user.username?.toLowerCase().includes(search) ||
+        user.displayName?.toLowerCase().includes(search) ||
+        user.host?.toLowerCase().includes(search)
+      );
+    });
+  }
+
+  // Apply type filter
+  switch (filter) {
+    case "local":
+      filtered = filtered.filter((f) => f.user.host === null);
+      break;
+    case "remote":
+      filtered = filtered.filter((f) => f.user.host !== null);
+      break;
+    case "in-lists":
+      filtered = filtered.filter((f) => f.listCount > 0);
+      break;
+    case "not-in-lists":
+      filtered = filtered.filter((f) => f.listCount === 0);
+      break;
+  }
+
+  const total = filtered.length;
+  const paginated = filtered.slice(offset, offset + limit);
+
+  return c.json({
+    follows: paginated,
+    total,
+    systemAccountId: systemUser.id,
+  });
+});
+
+/**
+ * Unfollow User from System Account
+ *
+ * DELETE /api/admin/system-follows/:userId
+ *
+ * Unfollows a user from the system account.
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "message": "User has been unfollowed"
+ * }
+ * ```
+ */
+app.delete("/system-follows/:userId", async (c) => {
+  const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const userId = c.req.param("userId");
+
+  // Get system account
+  const systemUser = await userRepository.findSystemUser();
+  if (!systemUser) {
+    return errorResponse(c, "System account not found", 404);
+  }
+
+  // Check if user exists
+  const targetUser = await userRepository.findById(userId);
+  if (!targetUser) {
+    return errorResponse(c, "User not found", 404);
+  }
+
+  // Import FollowService dynamically to avoid circular dependencies
+  const { FollowService } = await import("../services/FollowService.js");
+  const followService = new FollowService(followRepository, userRepository, deliveryService);
+
+  try {
+    await followService.unfollow(systemUser.id, userId);
+    return c.json({
+      success: true,
+      message: `@${targetUser.username}${targetUser.host ? `@${targetUser.host}` : ""} has been unfollowed`,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to unfollow user";
+    return errorResponse(c, message);
+  }
+});
+
 export default app;

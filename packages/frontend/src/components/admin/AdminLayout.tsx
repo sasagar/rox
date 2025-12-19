@@ -38,6 +38,7 @@ import {
   Server,
   BarChart3,
   Ban,
+  UserCheck,
 } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -112,6 +113,7 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     items: [
       { href: "/admin/storage", icon: HardDrive, label: msg`Storage` },
       { href: "/admin/federation", icon: Globe, label: msg`Federation` },
+      { href: "/admin/system-follows", icon: UserCheck, label: msg`System Follows` },
       // Queue sub-tabs as direct items
       { href: "/admin/queue?tab=overview", icon: BarChart3, label: msg`Queue Overview` },
       { href: "/admin/queue?tab=servers", icon: Server, label: msg`Queue Servers` },
