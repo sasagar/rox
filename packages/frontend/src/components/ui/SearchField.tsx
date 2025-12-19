@@ -9,6 +9,38 @@ import { Search, X } from "lucide-react";
 import { t, Trans } from "@lingui/macro";
 
 /**
+ * Size-based styling configuration for SearchField
+ * Defined outside component to avoid recreation on each render
+ */
+const sizeConfig = {
+  height: {
+    sm: "h-8 text-sm",
+    md: "h-10 text-base",
+    lg: "h-12 text-lg",
+  },
+  icon: {
+    sm: "w-3.5 h-3.5",
+    md: "w-4 h-4",
+    lg: "w-5 h-5",
+  },
+  padding: {
+    sm: "pl-8 pr-8",
+    md: "pl-9 pr-9",
+    lg: "pl-11 pr-11",
+  },
+  iconLeft: {
+    sm: "left-2.5",
+    md: "left-3",
+    lg: "left-3.5",
+  },
+  iconRight: {
+    sm: "right-2",
+    md: "right-2.5",
+    lg: "right-3",
+  },
+} as const;
+
+/**
  * Props for the SearchField component
  * Extends React Aria SearchFieldProps with custom styling options
  */
@@ -74,35 +106,6 @@ export function SearchField({
   ...props
 }: SearchFieldProps) {
   const resolvedLabel = label ?? t`Search`;
-  const sizeClasses = {
-    sm: "h-8 text-sm",
-    md: "h-10 text-base",
-    lg: "h-12 text-lg",
-  };
-
-  const iconSizeClasses = {
-    sm: "w-3.5 h-3.5",
-    md: "w-4 h-4",
-    lg: "w-5 h-5",
-  };
-
-  const paddingClasses = {
-    sm: "pl-8 pr-8",
-    md: "pl-9 pr-9",
-    lg: "pl-11 pr-11",
-  };
-
-  const iconLeftClasses = {
-    sm: "left-2.5",
-    md: "left-3",
-    lg: "left-3.5",
-  };
-
-  const iconRightClasses = {
-    sm: "right-2",
-    md: "right-2.5",
-    lg: "right-3",
-  };
 
   return (
     <AriaSearchField {...props} className={`flex flex-col gap-1 ${className || ""}`}>
@@ -112,17 +115,17 @@ export function SearchField({
       <div className="relative">
         {/* Search icon */}
         <Search
-          className={`absolute ${iconLeftClasses[size]} top-1/2 -translate-y-1/2 ${iconSizeClasses[size]} text-gray-400 dark:text-gray-500 pointer-events-none`}
+          className={`absolute ${sizeConfig.iconLeft[size]} top-1/2 -translate-y-1/2 ${sizeConfig.icon[size]} text-gray-400 dark:text-gray-500 pointer-events-none`}
         />
         <Input
           placeholder={placeholder}
-          className={`w-full ${paddingClasses[size]} ${sizeClasses[size]} rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
+          className={`w-full ${sizeConfig.padding[size]} ${sizeConfig.height[size]} rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
         />
         {/* Clear button - only shown when there's a value */}
         <Button
-          className={`absolute ${iconRightClasses[size]} top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 data-empty:hidden`}
+          className={`absolute ${sizeConfig.iconRight[size]} top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 data-empty:hidden`}
         >
-          <X className={iconSizeClasses[size]} />
+          <X className={sizeConfig.icon[size]} />
           <span className="sr-only">
             <Trans>Clear search</Trans>
           </span>
