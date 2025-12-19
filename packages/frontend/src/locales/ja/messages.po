@@ -536,7 +536,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:332
+#: src/components/deck/DeckProfileSwitcher.tsx:334
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
 
@@ -787,8 +787,8 @@ msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:352
-#: src/components/deck/DeckProfileSwitcher.tsx:446
+#: src/components/deck/DeckProfileSwitcher.tsx:354
+#: src/components/deck/DeckProfileSwitcher.tsx:448
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -846,7 +846,7 @@ msgstr "すべてクリア"
 msgid "Clear failure status"
 msgstr "失敗ステータスをクリア"
 
-#: src/components/ui/SearchField.tsx:127
+#: src/components/ui/SearchField.tsx:130
 msgid "Clear search"
 msgstr "検索をクリア"
 
@@ -1001,7 +1001,7 @@ msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:189
-#: src/components/deck/DeckProfileSwitcher.tsx:283
+#: src/components/deck/DeckProfileSwitcher.tsx:285
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1038,7 +1038,7 @@ msgid "Create new list"
 msgstr "新しいリストを作成"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:182
-#: src/components/deck/DeckProfileSwitcher.tsx:276
+#: src/components/deck/DeckProfileSwitcher.tsx:278
 msgid "Create New Profile"
 msgstr "新しいプロファイルを作成"
 
@@ -1157,6 +1157,10 @@ msgstr "デッキモード"
 msgid "Deck mode displays timelines, notifications, and lists in a multi-column layout."
 msgstr "デッキモードはタイムライン、通知、リストをマルチカラムレイアウトで表示します。"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:228
+msgid "default"
+msgstr "デフォルト"
+
 #: src/pages/admin/roles.tsx:610
 msgid "Default"
 msgstr "デフォルト"
@@ -1185,7 +1189,7 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:362
+#: src/components/deck/DeckProfileSwitcher.tsx:364
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1224,8 +1228,8 @@ msgstr "ノートを削除"
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:254
-#: src/components/deck/DeckProfileSwitcher.tsx:326
+#: src/components/deck/DeckProfileSwitcher.tsx:256
+#: src/components/deck/DeckProfileSwitcher.tsx:328
 msgid "Delete Profile"
 msgstr "プロファイルを削除"
 
@@ -2038,7 +2042,7 @@ msgstr "フォローリクエスト承認"
 #. placeholder {0}: formatDate(follow.createdAt)
 #: src/pages/admin/system-follows.tsx:546
 msgid "Followed {0}"
-msgstr "{0}にフォロー"
+msgstr "{0}にフォロー開始"
 
 #: src/components/notification/NotificationItem.tsx:111
 msgid "followed you"
@@ -2934,7 +2938,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:267
+#: src/components/deck/DeckProfileSwitcher.tsx:269
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -3583,7 +3587,7 @@ msgstr "プロフィール画像"
 msgid "Profile information (username, display name, bio)"
 msgstr "プロフィール情報（ユーザー名、表示名、自己紹介）"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:425
+#: src/components/deck/DeckProfileSwitcher.tsx:427
 msgid "Profile name"
 msgstr "プロファイル名"
 
@@ -3908,8 +3912,8 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:243
-#: src/components/deck/DeckProfileSwitcher.tsx:290
+#: src/components/deck/DeckProfileSwitcher.tsx:245
+#: src/components/deck/DeckProfileSwitcher.tsx:292
 msgid "Rename Profile"
 msgstr "プロファイル名を変更"
 
@@ -4175,7 +4179,7 @@ msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープン�
 msgid "Rox License"
 msgstr "Roxライセンス"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:297
+#: src/components/deck/DeckProfileSwitcher.tsx:299
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4253,7 +4257,7 @@ msgid "Scroll for more..."
 msgstr "スクロールして続きを表示..."
 
 #: src/components/layout/Sidebar.tsx:125
-#: src/components/ui/SearchField.tsx:76
+#: src/components/ui/SearchField.tsx:108
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
@@ -4349,6 +4353,10 @@ msgstr "ドライブから選択"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "ドライブから選択"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:201
+msgid "Select Profile"
+msgstr "プロファイルを選択"
 
 #: src/components/deck/AddColumnDialog.tsx:316
 msgid "Select timeline type:"
