@@ -181,6 +181,27 @@ export class ApiClient {
   }
 
   /**
+   * Perform PUT request
+   *
+   * @param path - API endpoint path
+   * @param data - Request body data (will be JSON stringified)
+   * @returns Parsed JSON response
+   *
+   * @example
+   * ```ts
+   * const config = await apiClient.put<Config>('/api/config', {
+   *   enabled: true
+   * });
+   * ```
+   */
+  async put<T>(path: string, data?: unknown): Promise<T> {
+    return this.request<T>(path, {
+      method: "PUT",
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  /**
    * Perform DELETE request
    *
    * @param path - API endpoint path
