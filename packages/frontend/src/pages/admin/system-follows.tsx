@@ -77,7 +77,12 @@ export default function AdminSystemFollowsPage() {
   const [follows, setFollows] = useState<SystemFollow[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pagination state
+  const [offset, setOffset] = useState(0);
+  const PAGE_SIZE = 50;
 
   // Filter state
   const [userFilter, setUserFilter] = useState<FilterType>("all");
@@ -87,13 +92,19 @@ export default function AdminSystemFollowsPage() {
   const [userToUnfollow, setUserToUnfollow] = useState<SystemFollow | null>(null);
   const [isUnfollowing, setIsUnfollowing] = useState(false);
 
-  const loadFollows = useCallback(async () => {
+  const loadFollows = useCallback(async (append = false) => {
     if (!token) return;
 
+    const currentOffset = append ? offset : 0;
+
     try {
+      if (append) {
+        setIsLoadingMore(true);
+      }
       apiClient.setToken(token);
       const params = new URLSearchParams();
-      params.set("limit", "100");
+      params.set("limit", String(PAGE_SIZE));
+      params.set("offset", String(currentOffset));
       if (userFilter !== "all") {
         params.set("filter", userFilter);
       }
@@ -103,15 +114,23 @@ export default function AdminSystemFollowsPage() {
       const response = await apiClient.get<SystemFollowsResponse>(
         `/api/admin/system-follows?${params}`,
       );
-      setFollows(response.follows);
+
+      if (append) {
+        setFollows((prev) => [...prev, ...response.follows]);
+        setOffset(currentOffset + response.follows.length);
+      } else {
+        setFollows(response.follows);
+        setOffset(response.follows.length);
+      }
       setTotal(response.total);
     } catch (err) {
       console.error("Failed to load system follows:", err);
-      setError("Failed to load system follows");
+      setError(t`Failed to load system follows`);
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
-  }, [token, userFilter, searchQuery]);
+  }, [token, userFilter, searchQuery, offset]);
 
   // Check admin access and load follows
   useEffect(() => {
@@ -137,7 +156,7 @@ export default function AdminSystemFollowsPage() {
         await loadFollows();
       } catch (err) {
         console.error("Access check failed:", err);
-        setError("Access denied");
+        setError(t`Access denied`);
         setIsLoading(false);
       }
     };
@@ -145,12 +164,19 @@ export default function AdminSystemFollowsPage() {
     checkAccess();
   }, [token, loadFollows, setCurrentUser]);
 
-  // Reload when filter changes
+  // Reload when filter changes (reset pagination)
   useEffect(() => {
     if (!isLoading && token) {
-      loadFollows();
+      setOffset(0);
+      loadFollows(false);
     }
   }, [userFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLoadMore = () => {
+    loadFollows(true);
+  };
+
+  const hasMore = follows.length < total;
 
   const handleUnfollow = async () => {
     if (!token || !userToUnfollow) return;
@@ -192,17 +218,6 @@ export default function AdminSystemFollowsPage() {
     }
     return map;
   };
-
-  // Filter by search query (additional client-side filter)
-  const filteredFollows = follows.filter((follow) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      follow.user.username.toLowerCase().includes(query) ||
-      (follow.user.displayName?.toLowerCase().includes(query) ?? false) ||
-      (follow.user.host?.toLowerCase().includes(query) ?? false)
-    );
-  });
 
   // Calculate stats
   const localCount = follows.filter((f) => f.user.host === null).length;
@@ -391,13 +406,13 @@ export default function AdminSystemFollowsPage() {
                   <Trans>Not in Lists</Trans>
                 </button>
               </div>
-              <Button variant="ghost" size="sm" onPress={loadFollows}>
+              <Button variant="ghost" size="sm" onPress={() => loadFollows(false)}>
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            {filteredFollows.length === 0 ? (
+            {follows.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 mx-auto text-(--text-muted) mb-4" />
                 <p className="text-(--text-muted)">
@@ -406,7 +421,7 @@ export default function AdminSystemFollowsPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredFollows.map((follow) => (
+                {follows.map((follow) => (
                   <div
                     key={follow.id}
                     className="flex items-center justify-between p-4 rounded-lg border border-(--border-color) bg-(--bg-primary)"
@@ -477,6 +492,26 @@ export default function AdminSystemFollowsPage() {
                     </div>
                   </div>
                 ))}
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      variant="secondary"
+                      onPress={handleLoadMore}
+                      isDisabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          <Trans>Loading...</Trans>
+                        </>
+                      ) : (
+                        <Trans>Load More ({follows.length} / {total})</Trans>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
