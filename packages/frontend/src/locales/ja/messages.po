@@ -232,7 +232,7 @@ msgstr "9. 児童のプライバシー"
 msgid "A community for..."
 msgstr "コミュニティの説明..."
 
-#: src/components/settings/AboutSection.tsx:41
+#: src/components/settings/AboutSection.tsx:42
 msgid "About"
 msgstr "概要"
 
@@ -526,7 +526,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:300
+#: src/components/deck/DeckProfileSwitcher.tsx:316
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
 
@@ -771,9 +771,8 @@ msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:144
-#: src/components/deck/DeckProfileSwitcher.tsx:270
-#: src/components/deck/DeckProfileSwitcher.tsx:320
+#: src/components/deck/DeckProfileSwitcher.tsx:336
+#: src/components/deck/DeckProfileSwitcher.tsx:423
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -980,8 +979,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:131
-#: src/components/deck/DeckProfileSwitcher.tsx:257
+#: src/components/deck/DeckProfileSwitcher.tsx:181
+#: src/components/deck/DeckProfileSwitcher.tsx:276
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1017,7 +1016,12 @@ msgstr "リストを作成"
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:155
+#: src/components/deck/DeckProfileSwitcher.tsx:174
+#: src/components/deck/DeckProfileSwitcher.tsx:269
+msgid "Create New Profile"
+msgstr "新しいプロファイルを作成"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:168
 msgid "Create Profile"
 msgstr "プロファイルを作成"
 
@@ -1160,7 +1164,7 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:330
+#: src/components/deck/DeckProfileSwitcher.tsx:346
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1183,8 +1187,8 @@ msgid "Delete code"
 msgstr "コードを削除"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:208
-msgid "Delete Current Profile"
-msgstr "現在のプロファイルを削除"
+#~ msgid "Delete Current Profile"
+#~ msgstr "現在のプロファイルを削除"
 
 #: src/components/note/NoteComposer.tsx:1248
 msgid "Delete draft"
@@ -1199,7 +1203,8 @@ msgstr "ノートを削除"
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:294
+#: src/components/deck/DeckProfileSwitcher.tsx:247
+#: src/components/deck/DeckProfileSwitcher.tsx:310
 msgid "Delete Profile"
 msgstr "プロファイルを削除"
 
@@ -1755,7 +1760,7 @@ msgstr "すべての絵文字の読み込みに失敗しました"
 msgid "Failed to load files"
 msgstr "ファイルの読み込みに失敗しました"
 
-#: src/components/settings/AboutSection.tsx:51
+#: src/components/settings/AboutSection.tsx:52
 #: src/pages/legal/privacy.tsx:42
 #: src/pages/legal/terms.tsx:49
 msgid "Failed to load instance information"
@@ -2521,7 +2526,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:94
+#: src/components/deck/DeckProfileSwitcher.tsx:157
 msgid "Loading profiles..."
 msgstr "プロファイルを読み込み中..."
 
@@ -2529,7 +2534,7 @@ msgstr "プロファイルを読み込み中..."
 #: src/components/list/ListMembersModal.tsx:223
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
-#: src/components/settings/AboutSection.tsx:47
+#: src/components/settings/AboutSection.tsx:48
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
@@ -2861,7 +2866,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:222
+#: src/components/deck/DeckProfileSwitcher.tsx:260
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -3817,6 +3822,11 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:236
+#: src/components/deck/DeckProfileSwitcher.tsx:284
+msgid "Rename Profile"
+msgstr "プロファイル名を変更"
+
 #: src/pages/notifications.tsx:235
 msgid "Renote"
 msgstr "リノート"
@@ -4079,6 +4089,7 @@ msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープン�
 msgid "Rox License"
 msgstr "Roxライセンス"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:291
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4524,7 +4535,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/components/deck/DeckLayout.tsx:343
+#: src/components/deck/DeckLayout.tsx:345
 msgid "Swipe to navigate"
 msgstr "スワイプでナビゲート"
 

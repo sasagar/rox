@@ -8,7 +8,7 @@ import {
   Popover,
   Button as AriaButton,
 } from "react-aria-components";
-import { ChevronDown, Plus, Trash2, Check, Loader2 } from "lucide-react";
+import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
 import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
@@ -17,7 +17,7 @@ import { useDeckProfiles } from "../../hooks/useDeckProfiles";
  * Profile switcher component for the deck header
  *
  * Allows users to switch between saved deck profiles,
- * create new profiles, and delete existing ones.
+ * create new profiles, edit profile names, and delete existing ones.
  * Syncs with server-side storage.
  */
 export function DeckProfileSwitcher() {
@@ -26,17 +26,39 @@ export function DeckProfileSwitcher() {
     activeProfile,
     loading,
     createProfile,
+    updateProfile,
     deleteProfile,
     setActiveProfile,
   } = useDeckProfiles();
 
-  const [isCreating, setIsCreating] = useState(false);
+  // Create dialog state
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  // Edit dialog state
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editProfileName, setEditProfileName] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Delete confirmation state
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleOpenCreateDialog = useCallback(() => {
+    setNewProfileName("");
+    setCreateError(null);
+    setIsCreateDialogOpen(true);
+  }, []);
+
+  const handleCloseCreateDialog = useCallback(() => {
+    setIsCreateDialogOpen(false);
+    setNewProfileName("");
+    setCreateError(null);
+  }, []);
 
   const handleCreateProfile = useCallback(async () => {
     if (!newProfileName.trim() || isSubmitting) return;
@@ -51,8 +73,7 @@ export function DeckProfileSwitcher() {
       });
 
       if (newProfile) {
-        setNewProfileName("");
-        setIsCreating(false);
+        handleCloseCreateDialog();
       }
     } catch (error) {
       setCreateError(
@@ -61,7 +82,49 @@ export function DeckProfileSwitcher() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [newProfileName, isSubmitting, profiles.length, createProfile]);
+  }, [newProfileName, isSubmitting, profiles.length, createProfile, handleCloseCreateDialog]);
+
+  const handleOpenEditDialog = useCallback(() => {
+    if (activeProfile) {
+      setEditProfileName(activeProfile.name);
+      setEditError(null);
+      setIsEditDialogOpen(true);
+    }
+  }, [activeProfile]);
+
+  const handleCloseEditDialog = useCallback(() => {
+    setIsEditDialogOpen(false);
+    setEditProfileName("");
+    setEditError(null);
+  }, []);
+
+  const handleEditProfile = useCallback(async () => {
+    if (!editProfileName.trim() || isEditing || !activeProfile) return;
+
+    // No change
+    if (editProfileName.trim() === activeProfile.name) {
+      handleCloseEditDialog();
+      return;
+    }
+
+    setIsEditing(true);
+    setEditError(null);
+    try {
+      const updated = await updateProfile(activeProfile.id, {
+        name: editProfileName.trim(),
+      });
+
+      if (updated) {
+        handleCloseEditDialog();
+      }
+    } catch (error) {
+      setEditError(
+        error instanceof Error ? error.message : "Failed to update profile"
+      );
+    } finally {
+      setIsEditing(false);
+    }
+  }, [editProfileName, isEditing, activeProfile, updateProfile, handleCloseEditDialog]);
 
   const handleDeleteProfile = useCallback(
     async (profileId: string) => {
@@ -96,66 +159,30 @@ export function DeckProfileSwitcher() {
     );
   }
 
-  // If no profiles exist, show create prompt
+  // If no profiles exist, show create button that opens dialog
   if (profiles.length === 0) {
     return (
-      <div className="flex items-center gap-2">
-        {isCreating ? (
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={newProfileName}
-              onChange={(e) => setNewProfileName(e.target.value)}
-              placeholder="Profile name"
-              className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              autoFocus
-              disabled={isSubmitting}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleCreateProfile();
-                if (e.key === "Escape") {
-                  setIsCreating(false);
-                  setNewProfileName("");
-                  setCreateError(null);
-                }
-              }}
-            />
-            <Button
-              variant="primary"
-              size="sm"
-              onPress={handleCreateProfile}
-              isDisabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Trans>Create</Trans>
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={() => {
-                setIsCreating(false);
-                setNewProfileName("");
-                setCreateError(null);
-              }}
-              isDisabled={isSubmitting}
-            >
-              <Trans>Cancel</Trans>
-            </Button>
-            {createError && (
-              <span className="text-sm text-red-600 dark:text-red-400">
-                {createError}
-              </span>
-            )}
-          </div>
-        ) : (
-          <Button variant="secondary" size="sm" onPress={() => setIsCreating(true)}>
-            <Plus className="w-4 h-4 mr-1" />
-            <Trans>Create Profile</Trans>
-          </Button>
+      <>
+        <Button variant="secondary" size="sm" onPress={handleOpenCreateDialog}>
+          <Plus className="w-4 h-4 mr-1" />
+          <Trans>Create Profile</Trans>
+        </Button>
+
+        {/* Create Profile Dialog */}
+        {isCreateDialogOpen && (
+          <ProfileFormDialog
+            title={<Trans>Create New Profile</Trans>}
+            value={newProfileName}
+            onChange={setNewProfileName}
+            onSubmit={handleCreateProfile}
+            onCancel={handleCloseCreateDialog}
+            isSubmitting={isSubmitting}
+            error={createError}
+            submitLabel={<Trans>Create</Trans>}
+            placeholder="Profile name"
+          />
         )}
-      </div>
+      </>
     );
   }
 
@@ -196,18 +223,29 @@ export function DeckProfileSwitcher() {
               </MenuItem>
             ))}
 
-            {/* Delete action as separate menu item for accessibility */}
+            {/* Separator */}
+            <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+
+            {/* Edit current profile */}
+            {activeProfile && (
+              <MenuItem
+                onAction={handleOpenEditDialog}
+                className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 outline-none text-gray-700 dark:text-gray-300"
+              >
+                <Pencil className="w-4 h-4" />
+                <Trans>Rename Profile</Trans>
+              </MenuItem>
+            )}
+
+            {/* Delete current profile */}
             {profiles.length > 1 && activeProfile && (
-              <>
-                <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
-                <MenuItem
-                  onAction={() => setDeleteConfirmId(activeProfile.id)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 outline-none text-red-600 dark:text-red-400"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <Trans>Delete Current Profile</Trans>
-                </MenuItem>
-              </>
+              <MenuItem
+                onAction={() => setDeleteConfirmId(activeProfile.id)}
+                className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 outline-none text-red-600 dark:text-red-400"
+              >
+                <Trash2 className="w-4 h-4" />
+                <Trans>Delete Profile</Trans>
+              </MenuItem>
             )}
 
             {/* Separator */}
@@ -215,7 +253,7 @@ export function DeckProfileSwitcher() {
 
             {/* Create new profile */}
             <MenuItem
-              onAction={() => setIsCreating(true)}
+              onAction={handleOpenCreateDialog}
               className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 outline-none text-gray-700 dark:text-gray-300"
             >
               <Plus className="w-4 h-4" />
@@ -225,56 +263,34 @@ export function DeckProfileSwitcher() {
         </Popover>
       </MenuTrigger>
 
-      {/* Inline create form */}
-      {isCreating && (
-        <div className="flex items-center gap-2 ml-2">
-          <input
-            type="text"
-            value={newProfileName}
-            onChange={(e) => setNewProfileName(e.target.value)}
-            placeholder="Profile name"
-            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-            autoFocus
-            disabled={isSubmitting}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleCreateProfile();
-              if (e.key === "Escape") {
-                setIsCreating(false);
-                setNewProfileName("");
-                setCreateError(null);
-              }
-            }}
-          />
-          <Button
-            variant="primary"
-            size="sm"
-            onPress={handleCreateProfile}
-            isDisabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trans>Create</Trans>
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onPress={() => {
-              setIsCreating(false);
-              setNewProfileName("");
-              setCreateError(null);
-            }}
-            isDisabled={isSubmitting}
-          >
-            <Trans>Cancel</Trans>
-          </Button>
-          {createError && (
-            <span className="text-sm text-red-600 dark:text-red-400">
-              {createError}
-            </span>
-          )}
-        </div>
+      {/* Create Profile Dialog */}
+      {isCreateDialogOpen && (
+        <ProfileFormDialog
+          title={<Trans>Create New Profile</Trans>}
+          value={newProfileName}
+          onChange={setNewProfileName}
+          onSubmit={handleCreateProfile}
+          onCancel={handleCloseCreateDialog}
+          isSubmitting={isSubmitting}
+          error={createError}
+          submitLabel={<Trans>Create</Trans>}
+          placeholder="Profile name"
+        />
+      )}
+
+      {/* Edit Profile Dialog */}
+      {isEditDialogOpen && (
+        <ProfileFormDialog
+          title={<Trans>Rename Profile</Trans>}
+          value={editProfileName}
+          onChange={setEditProfileName}
+          onSubmit={handleEditProfile}
+          onCancel={handleCloseEditDialog}
+          isSubmitting={isEditing}
+          error={editError}
+          submitLabel={<Trans>Save</Trans>}
+          placeholder="Profile name"
+        />
       )}
 
       {/* Delete Confirmation Dialog */}
@@ -334,6 +350,91 @@ export function DeckProfileSwitcher() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Reusable dialog component for profile creation and editing
+ */
+interface ProfileFormDialogProps {
+  title: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  isSubmitting: boolean;
+  error: string | null;
+  submitLabel: React.ReactNode;
+  placeholder: string;
+}
+
+function ProfileFormDialog({
+  title,
+  value,
+  onChange,
+  onSubmit,
+  onCancel,
+  isSubmitting,
+  error,
+  submitLabel,
+  placeholder,
+}: ProfileFormDialogProps) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+      <div
+        className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profile-dialog-title"
+      >
+        <h2
+          id="profile-dialog-title"
+          className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+        >
+          {title}
+        </h2>
+        <div className="mb-6">
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            autoFocus
+            disabled={isSubmitting}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSubmit();
+              if (e.key === "Escape") onCancel();
+            }}
+          />
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+              {error}
+            </p>
+          )}
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="secondary"
+            onPress={onCancel}
+            isDisabled={isSubmitting}
+          >
+            <Trans>Cancel</Trans>
+          </Button>
+          <Button
+            variant="primary"
+            onPress={onSubmit}
+            isDisabled={isSubmitting || !value.trim()}
+          >
+            {isSubmitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              submitLabel
+            )}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
