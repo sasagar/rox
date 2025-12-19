@@ -6,7 +6,7 @@
    - インラインコメント（ファイル行に対するコメント）: `gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies --method POST -f body="..."` を使用
    - レビューサマリのnitpick: PRコメントとして返信し、該当レビューのURLを明記
 
-2. **Nitpickへの対応**: 
+2. **Nitpickへの対応**:
    - nitpickも必ず対応する（軽微な改善提案でも対応）
    - 対応後はコミットし、返信コメントで対応完了を報告
    - 変更内容と該当コミットハッシュを明記
