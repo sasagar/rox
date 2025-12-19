@@ -198,7 +198,7 @@ export function DeckProfileSwitcher() {
       <MenuTrigger>
         <AriaButton className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
           <span className="text-gray-900 dark:text-white">
-            {activeProfile?.name || "Select Profile"}
+            {activeProfile?.name || <Trans>Select Profile</Trans>}
           </span>
           <ChevronDown className="w-4 h-4 text-gray-500" />
         </AriaButton>
@@ -224,7 +224,9 @@ export function DeckProfileSwitcher() {
                     {profile.name}
                   </span>
                   {profile.isDefault && (
-                    <span className="text-xs text-gray-400">(default)</span>
+                    <span className="text-xs text-gray-400">
+                      (<Trans>default</Trans>)
+                    </span>
                   )}
                 </span>
               </MenuItem>
