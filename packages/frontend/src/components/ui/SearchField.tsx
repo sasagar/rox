@@ -120,7 +120,7 @@ export function SearchField({
         />
         {/* Clear button - only shown when there's a value */}
         <Button
-          className={`absolute ${iconRightClasses[size]} top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 data-[empty]:hidden`}
+          className={`absolute ${iconRightClasses[size]} top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 data-empty:hidden`}
         >
           <X className={iconSizeClasses[size]} />
           <span className="sr-only">
