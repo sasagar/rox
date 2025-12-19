@@ -15,6 +15,8 @@ import type pino from "pino";
 import type { IEventBus } from "../interfaces/IEventBus.js";
 import { logger as rootLogger } from "../lib/logger.js";
 import { FilePluginConfigStorage } from "./PluginConfigStorage.js";
+import { PluginPermissionManager } from "./PluginPermissions.js";
+import { createSecurePluginContext, PluginSecurityAuditor } from "./SecurePluginContext.js";
 import type {
   RoxPlugin,
   PluginContext,
@@ -66,6 +68,8 @@ export class PluginLoader {
   private loadTimeout: number;
   private roxVersion: string;
   private baseUrl: string;
+  private permissionManager: PluginPermissionManager;
+  private securityAuditor: PluginSecurityAuditor;
 
   /**
    * Create a new PluginLoader instance
@@ -85,6 +89,8 @@ export class PluginLoader {
     this.loadTimeout = options.loadTimeout ?? 30000;
     this.roxVersion = options.roxVersion ?? "0.0.0";
     this.baseUrl = options.baseUrl ?? process.env.URL ?? "http://localhost:3000";
+    this.permissionManager = new PluginPermissionManager(this.logger);
+    this.securityAuditor = new PluginSecurityAuditor(this.logger);
   }
 
   /**
@@ -180,8 +186,40 @@ export class PluginLoader {
         }
       }
 
-      // Create plugin context
-      const context = this.createPluginContext(pluginId);
+      // Validate and register plugin permissions
+      const permissions = manifest?.permissions ?? [];
+      const permissionValidation = this.permissionManager.validateManifestPermissions(
+        manifest ?? { id: pluginId, name: plugin.name, version: plugin.version, permissions },
+      );
+
+      if (!permissionValidation.valid) {
+        this.securityAuditor.log(pluginId, "load_rejected", false, undefined, {
+          reason: "invalid_permissions",
+          errors: permissionValidation.errors,
+        });
+        return {
+          success: false,
+          pluginId,
+          error: `Invalid permissions: ${permissionValidation.errors.join(", ")}`,
+        };
+      }
+
+      // Log high-risk permissions
+      if (permissionValidation.highRiskPermissions.length > 0) {
+        this.logger.warn(
+          { pluginId, highRiskPermissions: permissionValidation.highRiskPermissions },
+          "Plugin requests high-risk permissions",
+        );
+        this.securityAuditor.log(pluginId, "high_risk_permissions", true, undefined, {
+          permissions: permissionValidation.highRiskPermissions,
+        });
+      }
+
+      // Register plugin permissions
+      this.permissionManager.registerPlugin(pluginId, permissions);
+
+      // Create secure plugin context with permission enforcement
+      const context = this.createPluginContext(pluginId, manifest);
 
       // Initialize the plugin
       const loadedPlugin: LoadedPlugin = {
@@ -216,6 +254,10 @@ export class PluginLoader {
 
       this.plugins.set(pluginId, loadedPlugin);
 
+      this.securityAuditor.log(pluginId, "loaded", true, undefined, {
+        version: plugin.version,
+        permissions,
+      });
       this.logger.info(
         { pluginId, version: plugin.version },
         "Plugin loaded successfully",
@@ -223,6 +265,9 @@ export class PluginLoader {
 
       return { success: true, pluginId };
     } catch (error) {
+      this.securityAuditor.log(pluginId, "load_failed", false, undefined, {
+        error: error instanceof Error ? error.message : String(error),
+      });
       this.logger.error(
         { err: error, pluginId, pluginPath },
         "Failed to load plugin",
@@ -277,8 +322,12 @@ export class PluginLoader {
       this.scheduledTasks.delete(pluginId);
     }
 
+    // Unregister plugin permissions
+    this.permissionManager.unregisterPlugin(pluginId);
+
     this.plugins.delete(pluginId);
 
+    this.securityAuditor.log(pluginId, "unloaded", true);
     this.logger.info({ pluginId }, "Plugin unloaded");
   }
 
@@ -301,6 +350,24 @@ export class PluginLoader {
    */
   isPluginLoaded(pluginId: string): boolean {
     return this.plugins.has(pluginId);
+  }
+
+  /**
+   * Get the permission manager instance
+   *
+   * Useful for checking plugin permissions from other parts of the system.
+   */
+  getPermissionManager(): PluginPermissionManager {
+    return this.permissionManager;
+  }
+
+  /**
+   * Get the security auditor instance
+   *
+   * Useful for retrieving security audit logs.
+   */
+  getSecurityAuditor(): PluginSecurityAuditor {
+    return this.securityAuditor;
   }
 
   /**
@@ -400,13 +467,65 @@ export class PluginLoader {
   }
 
   /**
-   * Create a plugin context
+   * Create a plugin context with permission enforcement
+   *
+   * @param pluginId - Plugin identifier
+   * @param manifest - Optional plugin manifest with permissions
    */
-  private createPluginContext(pluginId: string): PluginContext {
+  private createPluginContext(pluginId: string, manifest?: PluginManifest | null): PluginContext {
     const pluginLogger = rootLogger.child({ plugin: pluginId });
     const configStorage = new FilePluginConfigStorage(pluginId, this.configDirectory);
     const taskIntervals: NodeJS.Timeout[] = [];
     this.scheduledTasks.set(pluginId, taskIntervals);
+
+    const onRegisterTask = (task: ScheduledTask) => {
+      const interval =
+        typeof task.schedule === "number"
+          ? task.schedule
+          : this.parseCronInterval(task.schedule);
+
+      if (task.runOnStartup) {
+        // Run immediately
+        Promise.resolve(task.handler()).catch((err) => {
+          pluginLogger.error({ err, taskId: task.id }, "Scheduled task failed");
+        });
+      }
+
+      // Set up recurring execution
+      const intervalId = setInterval(() => {
+        Promise.resolve(task.handler()).catch((err) => {
+          pluginLogger.error({ err, taskId: task.id }, "Scheduled task failed");
+        });
+      }, interval);
+
+      taskIntervals.push(intervalId);
+
+      pluginLogger.debug(
+        { taskId: task.id, interval },
+        "Registered scheduled task",
+      );
+    };
+
+    // If manifest declares permissions, create a secure context
+    if (manifest?.permissions && manifest.permissions.length > 0) {
+      return createSecurePluginContext({
+        pluginId,
+        events: this.eventBus,
+        logger: pluginLogger,
+        config: configStorage,
+        baseUrl: this.baseUrl,
+        roxVersion: this.roxVersion,
+        permissionManager: this.permissionManager,
+        onRegisterTask,
+      });
+    }
+
+    // Fallback to basic context for plugins without manifest permissions
+    // (backward compatibility, but logs a warning)
+    this.logger.warn(
+      { pluginId },
+      "Plugin loaded without permission manifest - using unrestricted context",
+    );
 
     return {
       events: this.eventBus,
@@ -414,33 +533,7 @@ export class PluginLoader {
       config: configStorage,
       baseUrl: this.baseUrl,
       roxVersion: this.roxVersion,
-      registerScheduledTask: (task: ScheduledTask) => {
-        const interval =
-          typeof task.schedule === "number"
-            ? task.schedule
-            : this.parseCronInterval(task.schedule);
-
-        if (task.runOnStartup) {
-          // Run immediately
-          Promise.resolve(task.handler()).catch((err) => {
-            pluginLogger.error({ err, taskId: task.id }, "Scheduled task failed");
-          });
-        }
-
-        // Set up recurring execution
-        const intervalId = setInterval(() => {
-          Promise.resolve(task.handler()).catch((err) => {
-            pluginLogger.error({ err, taskId: task.id }, "Scheduled task failed");
-          });
-        }, interval);
-
-        taskIntervals.push(intervalId);
-
-        pluginLogger.debug(
-          { taskId: task.id, interval },
-          "Registered scheduled task",
-        );
-      },
+      registerScheduledTask: onRegisterTask,
     };
   }
 
