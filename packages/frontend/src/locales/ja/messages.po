@@ -253,7 +253,7 @@ msgstr "すべて許可"
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
 
-#: src/pages/admin/system-follows.tsx:159
+#: src/pages/admin/system-follows.tsx:160
 msgid "Access denied"
 msgstr "アクセスが拒否されました"
 
@@ -564,7 +564,7 @@ msgstr "このインスタンスをキャッシュから削除してもよろし
 
 #. placeholder {0}: userToUnfollow.user.username
 #. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
-#: src/pages/admin/system-follows.tsx:535
+#: src/pages/admin/system-follows.tsx:544
 msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 msgstr "<0>@{0}{1}</0> のフォローを解除しますか？"
 
@@ -803,7 +803,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
-#: src/pages/admin/system-follows.tsx:572
+#: src/pages/admin/system-follows.tsx:582
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -1812,7 +1812,7 @@ msgstr "ストレージデータの読み込みに失敗しました"
 msgid "Failed to load storage statistics"
 msgstr "ストレージ統計の読み込みに失敗しました"
 
-#: src/pages/admin/system-follows.tsx:128
+#: src/pages/admin/system-follows.tsx:127
 msgid "Failed to load system follows"
 msgstr "システムフォローの読み込みに失敗しました"
 
@@ -2257,10 +2257,13 @@ msgstr "インポートがタイムアウトしました。サーバーはまだ
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/pages/admin/system-follows.tsx:312
 #: src/pages/admin/system-follows.tsx:395
 msgid "In Lists"
 msgstr "リスト追加あり"
+
+#: src/pages/admin/system-follows.tsx:312
+msgid "In Lists (loaded)"
+msgstr "リスト追加あり（表示中）"
 
 #: src/components/note/NoteCard.tsx:549
 msgid "In reply to"
@@ -2588,13 +2591,16 @@ msgstr "読み込み中..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
-#: src/pages/admin/system-follows.tsx:282
 #: src/pages/admin/system-follows.tsx:373
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "ローカル"
+
+#: src/pages/admin/system-follows.tsx:282
+msgid "Local (loaded)"
+msgstr "ローカル（表示中）"
 
 #: src/components/admin/AdminLayout.tsx:103
 msgid "Local Emojis"
@@ -3129,10 +3135,13 @@ msgstr "標準"
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
 
-#: src/pages/admin/system-follows.tsx:327
 #: src/pages/admin/system-follows.tsx:406
 msgid "Not in Lists"
 msgstr "リスト追加なし"
+
+#: src/pages/admin/system-follows.tsx:327
+msgid "Not in Lists (loaded)"
+msgstr "リスト追加なし（表示中）"
 
 #: src/components/pages/NoteDetailPageClient.tsx:107
 msgid "Note"
@@ -3828,12 +3837,15 @@ msgstr "設定を記憶し、より良い体験を提供します。"
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "テーマ設定、言語、UIカスタマイズなどの設定を記憶します。無効にすると、体験に影響する場合があります。"
 
-#: src/pages/admin/system-follows.tsx:297
 #: src/pages/admin/system-follows.tsx:384
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "リモート"
+
+#: src/pages/admin/system-follows.tsx:297
+msgid "Remote (loaded)"
+msgstr "リモート（表示中）"
 
 #: src/components/admin/AdminLayout.tsx:104
 msgid "Remote Emojis"
@@ -4819,7 +4831,7 @@ msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
 #. placeholder {0}: userToUnfollow.listCount
-#: src/pages/admin/system-follows.tsx:548
+#: src/pages/admin/system-follows.tsx:557
 msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
 msgstr "このユーザーは{0}件のリストに追加されています。フォロー解除してもリストからは削除されません。"
 
@@ -4967,13 +4979,13 @@ msgid "Under the AGPL-3.0 license, you must provide access to the source code of
 msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
 
 #: src/pages/admin/system-follows.tsx:488
-#: src/pages/admin/system-follows.tsx:585
+#: src/pages/admin/system-follows.tsx:595
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
 msgstr "フォロー解除"
 
-#: src/pages/admin/system-follows.tsx:530
+#: src/pages/admin/system-follows.tsx:539
 msgid "Unfollow User"
 msgstr "フォロー解除"
 
