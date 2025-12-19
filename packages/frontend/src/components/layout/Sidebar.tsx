@@ -290,7 +290,7 @@ export function Sidebar() {
 
       {/* Version display */}
       {instanceInfo?.software && (
-        <div className="px-3 py-2 border-t border-(--border-color)">
+        <div className="px-3 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] border-t border-(--border-color)">
           <SpaLink
             to="/settings?tab=advanced"
             onClick={handleNavClick}

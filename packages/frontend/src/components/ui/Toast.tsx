@@ -64,7 +64,7 @@ function ToastItem({ toast }: { toast: ToastType }) {
 
   return (
     <div
-      className={`${styles.container} px-4 py-3 rounded-lg shadow-md flex items-center gap-3 min-w-[280px] max-w-md`}
+      className={`${styles.container} px-4 py-3 rounded-lg shadow-md flex items-center gap-3 min-w-70 max-w-md`}
       style={{ animation: "slide-in 0.3s ease-out" }}
       role="alert"
     >
@@ -93,7 +93,7 @@ export function ToastContainer() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-[calc(100vw-2rem)]">
+    <div className="fixed top-[calc(1rem+env(safe-area-inset-top))] right-4 z-50 flex flex-col gap-2 max-w-[calc(100vw-2rem)]">
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} />
       ))}
