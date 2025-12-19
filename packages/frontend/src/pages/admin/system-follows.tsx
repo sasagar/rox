@@ -70,6 +70,17 @@ interface SystemFollowsResponse {
 
 type FilterType = "all" | "local" | "remote" | "in-lists" | "not-in-lists";
 
+/**
+ * Admin page for viewing and managing accounts followed by the system account.
+ *
+ * Renders a UI that shows summary statistics, a searchable and filterable list of follows
+ * with client-side pagination, and an unfollow confirmation modal that removes follows.
+ *
+ * Features include: search with debounce, filters (all/local/remote/in-lists/not-in-lists),
+ * "Load More" pagination, per-follow list membership display, and toast notifications for actions.
+ *
+ * @returns The React element for the Admin System Follows page
+ */
 export default function AdminSystemFollowsPage() {
   const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
