@@ -232,7 +232,7 @@ msgstr "9. Children's Privacy"
 msgid "A community for..."
 msgstr "A community for..."
 
-#: src/components/settings/AboutSection.tsx:41
+#: src/components/settings/AboutSection.tsx:42
 msgid "About"
 msgstr "About"
 
@@ -526,7 +526,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:300
+#: src/components/deck/DeckProfileSwitcher.tsx:316
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 
@@ -771,9 +771,8 @@ msgid "Can suspend users"
 msgstr "Can suspend users"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:144
-#: src/components/deck/DeckProfileSwitcher.tsx:270
-#: src/components/deck/DeckProfileSwitcher.tsx:320
+#: src/components/deck/DeckProfileSwitcher.tsx:336
+#: src/components/deck/DeckProfileSwitcher.tsx:423
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
@@ -980,8 +979,8 @@ msgstr "Copy link"
 msgid "Correct inaccurate data"
 msgstr "Correct inaccurate data"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:131
-#: src/components/deck/DeckProfileSwitcher.tsx:257
+#: src/components/deck/DeckProfileSwitcher.tsx:181
+#: src/components/deck/DeckProfileSwitcher.tsx:276
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1017,7 +1016,12 @@ msgstr "Create List"
 msgid "Create new list"
 msgstr "Create new list"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:155
+#: src/components/deck/DeckProfileSwitcher.tsx:174
+#: src/components/deck/DeckProfileSwitcher.tsx:269
+msgid "Create New Profile"
+msgstr "Create New Profile"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:168
 msgid "Create Profile"
 msgstr "Create Profile"
 
@@ -1160,7 +1164,7 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:330
+#: src/components/deck/DeckProfileSwitcher.tsx:346
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:704
@@ -1183,8 +1187,8 @@ msgid "Delete code"
 msgstr "Delete code"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:208
-msgid "Delete Current Profile"
-msgstr "Delete Current Profile"
+#~ msgid "Delete Current Profile"
+#~ msgstr "Delete Current Profile"
 
 #: src/components/note/NoteComposer.tsx:1248
 msgid "Delete draft"
@@ -1199,7 +1203,8 @@ msgstr "Delete Note"
 msgid "Delete Notes"
 msgstr "Delete Notes"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:294
+#: src/components/deck/DeckProfileSwitcher.tsx:247
+#: src/components/deck/DeckProfileSwitcher.tsx:310
 msgid "Delete Profile"
 msgstr "Delete Profile"
 
@@ -1755,7 +1760,7 @@ msgstr "Failed to load all emojis"
 msgid "Failed to load files"
 msgstr "Failed to load files"
 
-#: src/components/settings/AboutSection.tsx:51
+#: src/components/settings/AboutSection.tsx:52
 #: src/pages/legal/privacy.tsx:42
 #: src/pages/legal/terms.tsx:49
 msgid "Failed to load instance information"
@@ -2521,7 +2526,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:94
+#: src/components/deck/DeckProfileSwitcher.tsx:157
 msgid "Loading profiles..."
 msgstr "Loading profiles..."
 
@@ -2529,7 +2534,7 @@ msgstr "Loading profiles..."
 #: src/components/list/ListMembersModal.tsx:223
 #: src/components/note/NoteComposer.tsx:936
 #: src/components/note/NoteComposer.tsx:983
-#: src/components/settings/AboutSection.tsx:47
+#: src/components/settings/AboutSection.tsx:48
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
@@ -2861,7 +2866,7 @@ msgstr "New Note"
 msgid "New notification"
 msgstr "New notification"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:222
+#: src/components/deck/DeckProfileSwitcher.tsx:260
 msgid "New Profile"
 msgstr "New Profile"
 
@@ -3817,6 +3822,11 @@ msgstr "Remove banner"
 msgid "Rename"
 msgstr "Rename"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:236
+#: src/components/deck/DeckProfileSwitcher.tsx:284
+msgid "Rename Profile"
+msgstr "Rename Profile"
+
 #: src/pages/notifications.tsx:235
 msgid "Renote"
 msgstr "Renote"
@@ -4079,6 +4089,7 @@ msgstr "Rox is open source software licensed under the AGPL-3.0 license."
 msgid "Rox License"
 msgstr "Rox License"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:291
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4524,7 +4535,7 @@ msgstr "Suspend Users"
 msgid "Suspended"
 msgstr "Suspended"
 
-#: src/components/deck/DeckLayout.tsx:343
+#: src/components/deck/DeckLayout.tsx:345
 msgid "Swipe to navigate"
 msgstr "Swipe to navigate"
 
