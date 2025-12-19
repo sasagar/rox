@@ -337,11 +337,21 @@ export class ListService {
 
     // Lazy initialization: ensure system follows exist for remote members
     // This handles existing list members that were added before the system follow feature
+    // Uses Promise.allSettled for efficient batch processing without blocking the response
     if (this.systemAccountService) {
       const remoteMembers = members.filter((m) => m.user?.host);
-      for (const member of remoteMembers) {
-        this.systemAccountService.ensureSystemFollow(member.userId).catch((error) => {
-          logger.warn({ userId: member.userId, error }, "Failed to ensure system follow for existing list member");
+      if (remoteMembers.length > 0) {
+        const systemAccountService = this.systemAccountService;
+        Promise.allSettled(
+          remoteMembers.map((member) => systemAccountService.ensureSystemFollow(member.userId)),
+        ).then((results) => {
+          const failures = results.filter((r) => r.status === "rejected");
+          if (failures.length > 0) {
+            logger.warn(
+              { listId, failureCount: failures.length, totalRemote: remoteMembers.length },
+              "Some system follows failed during lazy initialization",
+            );
+          }
         });
       }
     }
