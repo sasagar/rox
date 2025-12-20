@@ -766,6 +766,7 @@ export default myPlugin;
 - `packages/backend/src/plugins/PluginLoader.ts` - Integrated permission validation
 
 **Permission System**:
+
 | Permission | Risk Level | Description |
 |------------|------------|-------------|
 | `note:read` | Low | Read notes and content |
