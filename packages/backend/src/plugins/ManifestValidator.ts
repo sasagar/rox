@@ -75,7 +75,7 @@ export function validateManifest(
   } else if (!isValidPluginId(m.id)) {
     errors.push({
       field: "id",
-      message: "id must be lowercase alphanumeric with hyphens, 2-50 characters, starting with a letter",
+      message: "id must be lowercase alphanumeric with hyphens, 3-50 characters, starting with a letter",
     });
   }
 

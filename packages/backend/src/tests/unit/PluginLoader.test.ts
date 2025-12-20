@@ -9,6 +9,7 @@ import { describe, test, expect, beforeEach, mock } from "bun:test";
 import { Hono } from "hono";
 import { EventBus } from "../../plugins/EventBus";
 import { InMemoryPluginConfigStorage } from "../../plugins/PluginConfigStorage";
+import { PluginLoader } from "../../plugins/PluginLoader";
 
 describe("InMemoryPluginConfigStorage", () => {
   let storage: InMemoryPluginConfigStorage;
@@ -352,5 +353,130 @@ describe("Plugin route registration simulation", () => {
     const response = await pluginApp.request("/test");
     expect(response.status).toBe(200);
     expect(middlewareCalled.value).toBe(true);
+  });
+});
+
+describe("PluginLoader", () => {
+  let eventBus: EventBus;
+  let app: Hono;
+  let loader: PluginLoader;
+
+  beforeEach(() => {
+    eventBus = new EventBus();
+    app = new Hono();
+    loader = new PluginLoader(eventBus, app, {
+      pluginDirectory: "./test-plugins",
+      roxVersion: "2025.12.0",
+      baseUrl: "https://example.com",
+    });
+  });
+
+  describe("constructor", () => {
+    test("should create a PluginLoader instance with default options", () => {
+      const defaultLoader = new PluginLoader(eventBus, app);
+      expect(defaultLoader).toBeInstanceOf(PluginLoader);
+    });
+
+    test("should create a PluginLoader instance with custom options", () => {
+      const customLoader = new PluginLoader(eventBus, app, {
+        pluginDirectory: "./custom-plugins",
+        loadTimeout: 60000,
+        roxVersion: "2025.12.0",
+        baseUrl: "https://custom.example.com",
+      });
+      expect(customLoader).toBeInstanceOf(PluginLoader);
+    });
+  });
+
+  describe("getPlugins", () => {
+    test("should return empty array when no plugins are loaded", () => {
+      const plugins = loader.getPlugins();
+      expect(plugins).toEqual([]);
+    });
+  });
+
+  describe("getPlugin", () => {
+    test("should return undefined for non-existent plugin", () => {
+      const plugin = loader.getPlugin("non-existent");
+      expect(plugin).toBeUndefined();
+    });
+  });
+
+  describe("isPluginLoaded", () => {
+    test("should return false for non-existent plugin", () => {
+      const isLoaded = loader.isPluginLoaded("non-existent");
+      expect(isLoaded).toBe(false);
+    });
+  });
+
+  describe("getLoadedPlugins", () => {
+    test("should return empty array when no plugins are loaded", () => {
+      const pluginIds = loader.getLoadedPlugins();
+      expect(pluginIds).toEqual([]);
+    });
+  });
+
+  describe("getPluginPath", () => {
+    test("should return undefined for non-existent plugin", () => {
+      const path = loader.getPluginPath("non-existent");
+      expect(path).toBeUndefined();
+    });
+  });
+
+  describe("getPermissionManager", () => {
+    test("should return the permission manager instance", () => {
+      const permManager = loader.getPermissionManager();
+      expect(permManager).toBeDefined();
+      expect(typeof permManager.hasPermission).toBe("function");
+      expect(typeof permManager.registerPlugin).toBe("function");
+    });
+  });
+
+  describe("getSecurityAuditor", () => {
+    test("should return the security auditor instance", () => {
+      const auditor = loader.getSecurityAuditor();
+      expect(auditor).toBeDefined();
+      expect(typeof auditor.log).toBe("function");
+      expect(typeof auditor.getAuditLog).toBe("function");
+    });
+  });
+
+  describe("loadFromDirectory", () => {
+    test("should return empty array for non-existent directory", async () => {
+      const results = await loader.loadFromDirectory();
+      expect(results).toEqual([]);
+    });
+  });
+
+  describe("unloadPlugin", () => {
+    test("should throw error for non-existent plugin", async () => {
+      await expect(loader.unloadPlugin("non-existent")).rejects.toThrow(
+        "Plugin not found: non-existent"
+      );
+    });
+  });
+
+  describe("setEnabled", () => {
+    test("should throw error for non-existent plugin", async () => {
+      await expect(loader.setEnabled("non-existent", true)).rejects.toThrow(
+        "Plugin not found: non-existent"
+      );
+    });
+  });
+
+  describe("reloadPlugin", () => {
+    test("should return error for non-existent plugin", async () => {
+      const result = await loader.reloadPlugin("non-existent");
+      expect(result.success).toBe(false);
+      expect(result.pluginId).toBe("non-existent");
+      expect(result.error).toBe("Plugin not found: non-existent");
+    });
+  });
+
+  describe("unloadAll", () => {
+    test("should complete without error when no plugins are loaded", async () => {
+      await loader.unloadAll();
+      expect(loader.getPlugins()).toEqual([]);
+    });
   });
 });

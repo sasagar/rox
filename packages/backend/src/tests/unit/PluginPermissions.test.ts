@@ -298,8 +298,8 @@ describe("PluginPermissions", () => {
       expect(ALL_PERMISSIONS).toContain("note:write");
       expect(ALL_PERMISSIONS).toContain("user:read");
       expect(ALL_PERMISSIONS).toContain("user:write");
-      expect(ALL_PERMISSIONS).toContain("file:read");
-      expect(ALL_PERMISSIONS).toContain("file:write");
+      expect(ALL_PERMISSIONS).toContain("storage:read");
+      expect(ALL_PERMISSIONS).toContain("storage:write");
       expect(ALL_PERMISSIONS).toContain("admin:read");
       expect(ALL_PERMISSIONS).toContain("admin:write");
       expect(ALL_PERMISSIONS).toContain("config:read");

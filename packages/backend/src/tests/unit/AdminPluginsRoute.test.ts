@@ -2,11 +2,11 @@
  * Admin Plugins Route Unit Tests
  *
  * Tests the admin plugin management API endpoints.
+ * Tests use the actual route implementations with mocked dependencies.
  */
 
 import { describe, test, expect, beforeEach, mock } from "bun:test";
-import { Hono } from "hono";
-import type { PluginListEntry, InstalledPlugin } from "shared";
+import type { PluginListEntry, InstalledPlugin, PluginSource, PluginInstallOptions } from "shared";
 
 // Type for API responses
 interface PluginListResponse {
@@ -22,6 +22,7 @@ interface PluginActionResponse {
   version?: string;
   config?: Record<string, unknown>;
   error?: string;
+  warnings?: string[];
 }
 
 interface PluginConfigResponse {
@@ -40,182 +41,90 @@ interface InstallResult {
   pluginId?: string;
   version?: string;
   error?: string;
+  warnings?: string[];
 }
 
-// Mock the PluginManager
-const mockPluginManager = {
-  list: mock(() => [] as PluginListEntry[]),
-  getPlugin: mock(() => undefined as InstalledPlugin | undefined),
-  enable: mock(() => true as boolean),
-  disable: mock(() => true as boolean),
-  install: mock(() => ({ success: true, pluginId: "test-plugin", version: "1.0.0" }) as InstallResult),
-  uninstall: mock(() => true as boolean),
-  isInstalled: mock(() => true as boolean),
-  getPluginConfig: mock(() => ({}) as Record<string, unknown>),
-  setPluginConfig: mock(() => true as boolean),
-};
+// Mock the PluginManager class methods
+const mockList = mock(() => [] as PluginListEntry[]);
+const mockGetPlugin = mock(() => undefined as InstalledPlugin | undefined);
+const mockEnable = mock((_pluginId: string) => true);
+const mockDisable = mock((_pluginId: string) => true);
+const mockInstall = mock(
+  async (_source: PluginSource, _options?: PluginInstallOptions): Promise<InstallResult> => ({
+    success: true,
+    pluginId: "test-plugin",
+    version: "1.0.0",
+  })
+);
+const mockUninstall = mock(async (_pluginId: string, _options?: { keepFiles?: boolean }) => true);
+const mockIsInstalled = mock((_pluginId: string) => true);
+const mockGetPluginConfig = mock((_pluginId: string) => ({}) as Record<string, unknown>);
+const mockSetPluginConfig = mock((_pluginId: string, _config: Record<string, unknown>) => true);
+
+// Mock the PluginManager module before importing routes
+mock.module("../../plugins/PluginManager.js", () => ({
+  PluginManager: class MockPluginManager {
+    list = mockList;
+    getPlugin = mockGetPlugin;
+    enable = mockEnable;
+    disable = mockDisable;
+    install = mockInstall;
+    uninstall = mockUninstall;
+    isInstalled = mockIsInstalled;
+    getPluginConfig = mockGetPluginConfig;
+    setPluginConfig = mockSetPluginConfig;
+  },
+}));
 
 // Mock the auth middleware to always pass
-const mockRequireAdmin = () => async (_c: any, next: () => Promise<void>) => {
-  await next();
-};
+mock.module("../../middleware/auth.js", () => ({
+  requireAdmin: () => async (_c: any, next: () => Promise<void>) => {
+    await next();
+  },
+}));
 
-// Create test app with mocked dependencies
-function createTestApp() {
-  const app = new Hono();
-
-  // Apply mock admin middleware
-  app.use("/*", mockRequireAdmin());
-
-  // List plugins
-  app.get("/", async (c) => {
-    const plugins = mockPluginManager.list();
-    return c.json({ plugins, total: plugins.length });
-  });
-
-  // Get plugin details
-  app.get("/:id", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    const plugin = mockPluginManager.getPlugin();
-    if (!plugin) {
-      return c.json({ error: "Plugin not found" }, 404);
-    }
-    return c.json(plugin);
-  });
-
-  // Enable plugin
-  app.post("/:id/enable", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    const success = mockPluginManager.enable();
-    if (!success) {
-      return c.json({ error: "Plugin not found" }, 404);
-    }
-    return c.json({
-      success: true,
-      message: "Plugin enabled",
-      requiresRestart: true,
-    });
-  });
-
-  // Disable plugin
-  app.post("/:id/disable", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    const success = mockPluginManager.disable();
-    if (!success) {
-      return c.json({ error: "Plugin not found" }, 404);
-    }
-    return c.json({
-      success: true,
-      message: "Plugin disabled",
-      requiresRestart: true,
-    });
-  });
-
-  // Install plugin
-  app.post("/install", async (c) => {
-    const body = await c.req.json<{ source: string; force?: boolean }>();
-    if (!body.source) {
-      return c.json({ error: "source is required" }, 400);
-    }
-
-    const result = mockPluginManager.install();
-    if (!result.success) {
-      return c.json({ error: result.error || "Installation failed" }, 400);
-    }
-
-    return c.json(
-      {
-        success: true,
-        pluginId: result.pluginId,
-        version: result.version,
-        requiresRestart: true,
-      },
-      201
-    );
-  });
-
-  // Uninstall plugin
-  app.delete("/:id", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    const success = mockPluginManager.uninstall();
-    if (!success) {
-      return c.json({ error: "Plugin not found or failed to uninstall" }, 404);
-    }
-    return c.json({
-      success: true,
-      message: "Plugin uninstalled",
-      requiresRestart: true,
-    });
-  });
-
-  // Get plugin config
-  app.get("/:id/config", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    if (!mockPluginManager.isInstalled()) {
-      return c.json({ error: "Plugin not found" }, 404);
-    }
-    const config = mockPluginManager.getPluginConfig();
-    return c.json(config);
-  });
-
-  // Update plugin config
-  app.put("/:id/config", async (c) => {
-    c.req.param("id"); // Extract but don't use - mock controls response
-    const body = await c.req.json();
-    if (!mockPluginManager.isInstalled()) {
-      return c.json({ error: "Plugin not found" }, 404);
-    }
-    mockPluginManager.setPluginConfig();
-    return c.json({
-      success: true,
-      config: body,
-    });
-  });
-
-  return app;
-}
+// Import the actual routes after mocking dependencies
+const { default: adminPluginsRoute } = await import("../../routes/admin-plugins.js");
 
 describe("Admin Plugins Route", () => {
-  let app: Hono;
-
   beforeEach(() => {
-    app = createTestApp();
     // Reset all mocks
-    mockPluginManager.list.mockReset();
-    mockPluginManager.getPlugin.mockReset();
-    mockPluginManager.enable.mockReset();
-    mockPluginManager.disable.mockReset();
-    mockPluginManager.install.mockReset();
-    mockPluginManager.uninstall.mockReset();
-    mockPluginManager.isInstalled.mockReset();
-    mockPluginManager.getPluginConfig.mockReset();
-    mockPluginManager.setPluginConfig.mockReset();
+    mockList.mockReset();
+    mockGetPlugin.mockReset();
+    mockEnable.mockReset();
+    mockDisable.mockReset();
+    mockInstall.mockReset();
+    mockUninstall.mockReset();
+    mockIsInstalled.mockReset();
+    mockGetPluginConfig.mockReset();
+    mockSetPluginConfig.mockReset();
 
     // Set default return values
-    mockPluginManager.list.mockReturnValue([]);
-    mockPluginManager.enable.mockReturnValue(true);
-    mockPluginManager.disable.mockReturnValue(true);
-    mockPluginManager.install.mockReturnValue({
+    mockList.mockReturnValue([]);
+    mockEnable.mockReturnValue(true);
+    mockDisable.mockReturnValue(true);
+    mockInstall.mockResolvedValue({
       success: true,
       pluginId: "test-plugin",
       version: "1.0.0",
     });
-    mockPluginManager.uninstall.mockReturnValue(true);
-    mockPluginManager.isInstalled.mockReturnValue(true);
-    mockPluginManager.getPluginConfig.mockReturnValue({});
-    mockPluginManager.setPluginConfig.mockReturnValue(true);
+    mockUninstall.mockResolvedValue(true);
+    mockIsInstalled.mockReturnValue(true);
+    mockGetPluginConfig.mockReturnValue({});
+    mockSetPluginConfig.mockReturnValue(true);
   });
 
   describe("GET /", () => {
     test("returns empty list when no plugins installed", async () => {
-      mockPluginManager.list.mockReturnValue([]);
+      mockList.mockReturnValue([]);
 
-      const res = await app.request("/");
+      const res = await adminPluginsRoute.request("/");
       expect(res.status).toBe(200);
 
       const data = (await res.json()) as PluginListResponse;
       expect(data.plugins).toEqual([]);
       expect(data.total).toBe(0);
+      expect(mockList).toHaveBeenCalled();
     });
 
     test("returns list of installed plugins", async () => {
@@ -241,9 +150,9 @@ describe("Admin Plugins Route", () => {
           source: "https://github.com/user/content-filter",
         },
       ];
-      mockPluginManager.list.mockReturnValue(mockPlugins);
+      mockList.mockReturnValue(mockPlugins);
 
-      const res = await app.request("/");
+      const res = await adminPluginsRoute.request("/");
       expect(res.status).toBe(200);
 
       const data = (await res.json()) as PluginListResponse;
@@ -269,33 +178,37 @@ describe("Admin Plugins Route", () => {
         permissions: ["note:read"],
         backend: "index.ts",
       };
-      mockPluginManager.getPlugin.mockReturnValue(mockPlugin);
+      mockGetPlugin.mockReturnValue(mockPlugin);
 
-      const res = await app.request("/activity-logger");
+      const res = await adminPluginsRoute.request("/activity-logger");
       expect(res.status).toBe(200);
 
       const data = (await res.json()) as InstalledPlugin;
       expect(data.id).toBe("activity-logger");
       expect(data.name).toBe("Activity Logger");
       expect(data.author).toBe("Rox Team");
+
+      // Verify the correct plugin ID was requested
+      expect(mockGetPlugin).toHaveBeenCalledWith("activity-logger");
     });
 
     test("returns 404 for non-existent plugin", async () => {
-      mockPluginManager.getPlugin.mockReturnValue(undefined);
+      mockGetPlugin.mockReturnValue(undefined);
 
-      const res = await app.request("/non-existent");
+      const res = await adminPluginsRoute.request("/non-existent");
       expect(res.status).toBe(404);
 
       const data = (await res.json()) as ErrorResponse;
       expect(data.error).toBe("Plugin not found");
+      expect(mockGetPlugin).toHaveBeenCalledWith("non-existent");
     });
   });
 
   describe("POST /:id/enable", () => {
     test("enables a plugin", async () => {
-      mockPluginManager.enable.mockReturnValue(true);
+      mockEnable.mockReturnValue(true);
 
-      const res = await app.request("/activity-logger/enable", {
+      const res = await adminPluginsRoute.request("/activity-logger/enable", {
         method: "POST",
       });
       expect(res.status).toBe(200);
@@ -304,23 +217,27 @@ describe("Admin Plugins Route", () => {
       expect(data.success).toBe(true);
       expect(data.message).toBe("Plugin enabled");
       expect(data.requiresRestart).toBe(true);
+
+      // Verify the correct plugin ID was passed
+      expect(mockEnable).toHaveBeenCalledWith("activity-logger");
     });
 
     test("returns 404 for non-existent plugin", async () => {
-      mockPluginManager.enable.mockReturnValue(false);
+      mockEnable.mockReturnValue(false);
 
-      const res = await app.request("/non-existent/enable", {
+      const res = await adminPluginsRoute.request("/non-existent/enable", {
         method: "POST",
       });
       expect(res.status).toBe(404);
+      expect(mockEnable).toHaveBeenCalledWith("non-existent");
     });
   });
 
   describe("POST /:id/disable", () => {
     test("disables a plugin", async () => {
-      mockPluginManager.disable.mockReturnValue(true);
+      mockDisable.mockReturnValue(true);
 
-      const res = await app.request("/activity-logger/disable", {
+      const res = await adminPluginsRoute.request("/activity-logger/disable", {
         method: "POST",
       });
       expect(res.status).toBe(200);
@@ -329,18 +246,31 @@ describe("Admin Plugins Route", () => {
       expect(data.success).toBe(true);
       expect(data.message).toBe("Plugin disabled");
       expect(data.requiresRestart).toBe(true);
+
+      // Verify the correct plugin ID was passed
+      expect(mockDisable).toHaveBeenCalledWith("activity-logger");
+    });
+
+    test("returns 404 for non-existent plugin", async () => {
+      mockDisable.mockReturnValue(false);
+
+      const res = await adminPluginsRoute.request("/non-existent/disable", {
+        method: "POST",
+      });
+      expect(res.status).toBe(404);
+      expect(mockDisable).toHaveBeenCalledWith("non-existent");
     });
   });
 
   describe("POST /install", () => {
     test("installs a plugin from Git URL", async () => {
-      mockPluginManager.install.mockReturnValue({
+      mockInstall.mockResolvedValue({
         success: true,
         pluginId: "my-plugin",
         version: "1.0.0",
       });
 
-      const res = await app.request("/install", {
+      const res = await adminPluginsRoute.request("/install", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -354,10 +284,63 @@ describe("Admin Plugins Route", () => {
       expect(data.pluginId).toBe("my-plugin");
       expect(data.version).toBe("1.0.0");
       expect(data.requiresRestart).toBe(true);
+
+      // Verify install was called with correct source type
+      expect(mockInstall).toHaveBeenCalledWith(
+        { type: "git", url: "https://github.com/user/my-plugin" },
+        { force: undefined, enable: true }
+      );
+    });
+
+    test("installs a plugin from local path", async () => {
+      mockInstall.mockResolvedValue({
+        success: true,
+        pluginId: "local-plugin",
+        version: "1.0.0",
+      });
+
+      const res = await adminPluginsRoute.request("/install", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "./plugins/local-plugin",
+        }),
+      });
+      expect(res.status).toBe(201);
+
+      // Verify install was called with local source type
+      expect(mockInstall).toHaveBeenCalledWith(
+        { type: "local", path: "./plugins/local-plugin" },
+        { force: undefined, enable: true }
+      );
+    });
+
+    test("passes force option when specified", async () => {
+      mockInstall.mockResolvedValue({
+        success: true,
+        pluginId: "my-plugin",
+        version: "1.0.0",
+      });
+
+      const res = await adminPluginsRoute.request("/install", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "https://github.com/user/my-plugin",
+          force: true,
+        }),
+      });
+      expect(res.status).toBe(201);
+
+      // Verify force option was passed
+      expect(mockInstall).toHaveBeenCalledWith(
+        { type: "git", url: "https://github.com/user/my-plugin" },
+        { force: true, enable: true }
+      );
     });
 
     test("returns 400 when source is missing", async () => {
-      const res = await app.request("/install", {
+      const res = await adminPluginsRoute.request("/install", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
@@ -369,12 +352,12 @@ describe("Admin Plugins Route", () => {
     });
 
     test("returns 400 when installation fails", async () => {
-      mockPluginManager.install.mockReturnValue({
+      mockInstall.mockResolvedValue({
         success: false,
         error: "Invalid manifest",
-      } as InstallResult);
+      });
 
-      const res = await app.request("/install", {
+      const res = await adminPluginsRoute.request("/install", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -386,13 +369,25 @@ describe("Admin Plugins Route", () => {
       const data = (await res.json()) as ErrorResponse;
       expect(data.error).toBe("Invalid manifest");
     });
+
+    test("returns 400 for invalid JSON body", async () => {
+      const res = await adminPluginsRoute.request("/install", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "invalid-json",
+      });
+      expect(res.status).toBe(400);
+
+      const data = (await res.json()) as ErrorResponse;
+      expect(data.error).toBe("Invalid JSON body");
+    });
   });
 
   describe("DELETE /:id", () => {
     test("uninstalls a plugin", async () => {
-      mockPluginManager.uninstall.mockReturnValue(true);
+      mockUninstall.mockResolvedValue(true);
 
-      const res = await app.request("/activity-logger", {
+      const res = await adminPluginsRoute.request("/activity-logger", {
         method: "DELETE",
       });
       expect(res.status).toBe(200);
@@ -401,53 +396,74 @@ describe("Admin Plugins Route", () => {
       expect(data.success).toBe(true);
       expect(data.message).toBe("Plugin uninstalled");
       expect(data.requiresRestart).toBe(true);
+
+      // Verify the correct plugin ID was passed
+      expect(mockUninstall).toHaveBeenCalledWith("activity-logger", { keepFiles: false });
+    });
+
+    test("uninstalls a plugin while keeping files", async () => {
+      mockUninstall.mockResolvedValue(true);
+
+      const res = await adminPluginsRoute.request("/activity-logger?keepFiles=true", {
+        method: "DELETE",
+      });
+      expect(res.status).toBe(200);
+
+      // Verify keepFiles option was passed
+      expect(mockUninstall).toHaveBeenCalledWith("activity-logger", { keepFiles: true });
     });
 
     test("returns 404 for non-existent plugin", async () => {
-      mockPluginManager.uninstall.mockReturnValue(false);
+      mockUninstall.mockResolvedValue(false);
 
-      const res = await app.request("/non-existent", {
+      const res = await adminPluginsRoute.request("/non-existent", {
         method: "DELETE",
       });
       expect(res.status).toBe(404);
+      expect(mockUninstall).toHaveBeenCalledWith("non-existent", { keepFiles: false });
     });
   });
 
   describe("GET /:id/config", () => {
     test("returns plugin configuration", async () => {
-      mockPluginManager.isInstalled.mockReturnValue(true);
-      mockPluginManager.getPluginConfig.mockReturnValue({
+      mockIsInstalled.mockReturnValue(true);
+      mockGetPluginConfig.mockReturnValue({
         enabled: true,
         keywords: ["spoiler", "nsfw"],
       });
 
-      const res = await app.request("/activity-logger/config");
+      const res = await adminPluginsRoute.request("/activity-logger/config");
       expect(res.status).toBe(200);
 
       const data = (await res.json()) as PluginConfigResponse;
       expect(data.enabled).toBe(true);
       expect(data.keywords).toEqual(["spoiler", "nsfw"]);
+
+      // Verify the correct plugin ID was passed
+      expect(mockIsInstalled).toHaveBeenCalledWith("activity-logger");
+      expect(mockGetPluginConfig).toHaveBeenCalledWith("activity-logger");
     });
 
     test("returns 404 for non-existent plugin", async () => {
-      mockPluginManager.isInstalled.mockReturnValue(false);
+      mockIsInstalled.mockReturnValue(false);
 
-      const res = await app.request("/non-existent/config");
+      const res = await adminPluginsRoute.request("/non-existent/config");
       expect(res.status).toBe(404);
+      expect(mockIsInstalled).toHaveBeenCalledWith("non-existent");
     });
   });
 
   describe("PUT /:id/config", () => {
     test("updates plugin configuration", async () => {
-      mockPluginManager.isInstalled.mockReturnValue(true);
-      mockPluginManager.setPluginConfig.mockReturnValue(true);
+      mockIsInstalled.mockReturnValue(true);
+      mockSetPluginConfig.mockReturnValue(true);
 
       const newConfig = {
         enabled: true,
         keywords: ["spoiler", "nsfw", "tw"],
       };
 
-      const res = await app.request("/activity-logger/config", {
+      const res = await adminPluginsRoute.request("/activity-logger/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newConfig),
@@ -457,17 +473,60 @@ describe("Admin Plugins Route", () => {
       const data = (await res.json()) as PluginActionResponse;
       expect(data.success).toBe(true);
       expect(data.config).toEqual(newConfig);
+
+      // Verify the correct plugin ID and config were passed
+      expect(mockIsInstalled).toHaveBeenCalledWith("activity-logger");
+      expect(mockSetPluginConfig).toHaveBeenCalledWith("activity-logger", newConfig);
     });
 
     test("returns 404 for non-existent plugin", async () => {
-      mockPluginManager.isInstalled.mockReturnValue(false);
+      mockIsInstalled.mockReturnValue(false);
 
-      const res = await app.request("/non-existent/config", {
+      const res = await adminPluginsRoute.request("/non-existent/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: true }),
       });
       expect(res.status).toBe(404);
+      expect(mockIsInstalled).toHaveBeenCalledWith("non-existent");
+    });
+
+    test("returns 400 for invalid JSON body", async () => {
+      mockIsInstalled.mockReturnValue(true);
+
+      const res = await adminPluginsRoute.request("/activity-logger/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: "invalid-json",
+      });
+      expect(res.status).toBe(400);
+
+      const data = (await res.json()) as ErrorResponse;
+      expect(data.error).toBe("Invalid JSON body");
+    });
+  });
+
+  describe("POST /:id/reload", () => {
+    test("returns 503 when plugin loader is not configured", async () => {
+      const res = await adminPluginsRoute.request("/activity-logger/reload", {
+        method: "POST",
+      });
+      expect(res.status).toBe(503);
+
+      const data = (await res.json()) as ErrorResponse;
+      expect(data.error).toBe("Hot reload not available. Plugin loader not configured.");
+    });
+  });
+
+  describe("POST /reload-all", () => {
+    test("returns 503 when plugin loader is not configured", async () => {
+      const res = await adminPluginsRoute.request("/reload-all", {
+        method: "POST",
+      });
+      expect(res.status).toBe(503);
+
+      const data = (await res.json()) as ErrorResponse;
+      expect(data.error).toBe("Hot reload not available. Plugin loader not configured.");
     });
   });
 });

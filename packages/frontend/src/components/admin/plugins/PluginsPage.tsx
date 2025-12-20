@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
-import { Package, Plus, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
+import { Package, Plus, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "../../ui/Button";
 import { AdminLayout } from "../AdminLayout";
 import { PluginCard } from "./PluginCard";
@@ -172,15 +172,6 @@ export function PluginsPage({ currentPath }: PluginsPageProps) {
       showReload
       onReload={() => loadPlugins(true)}
       isReloading={isReloading}
-      actions={[
-        {
-          key: "reload",
-          icon: <RefreshCw className={`w-4 h-4 ${isReloading ? "animate-spin" : ""}`} />,
-          label: <Trans>Reload</Trans>,
-          onPress: () => loadPlugins(true),
-          variant: "secondary",
-        },
-      ]}
     >
       <div className="space-y-6">
         {/* Install Button */}

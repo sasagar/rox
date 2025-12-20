@@ -2371,11 +2371,11 @@ msgid "Install"
 msgstr "Install"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:93
-#: src/components/admin/plugins/PluginsPage.tsx:192
+#: src/components/admin/plugins/PluginsPage.tsx:183
 msgid "Install Plugin"
 msgstr "Install Plugin"
 
-#: src/components/admin/plugins/PluginsPage.tsx:243
+#: src/components/admin/plugins/PluginsPage.tsx:234
 msgid "Install plugins to extend Rox functionality."
 msgstr "Install plugins to extend Rox functionality."
 
@@ -3201,7 +3201,7 @@ msgstr "No passkeys registered yet"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/admin/plugins/PluginsPage.tsx:240
+#: src/components/admin/plugins/PluginsPage.tsx:231
 msgid "No plugins installed"
 msgstr "No plugins installed"
 
@@ -3985,8 +3985,8 @@ msgid "Rejected"
 msgstr "Rejected"
 
 #: src/components/admin/plugins/PluginsPage.tsx:179
-msgid "Reload"
-msgstr "Reload"
+#~ msgid "Reload"
+#~ msgstr "Reload"
 
 #: src/components/gdpr/CookieConsentBanner.tsx:219
 msgid "Remember your preferences and settings for a better experience."
@@ -5104,7 +5104,7 @@ msgstr "Try adjusting your filters"
 msgid "Try again"
 msgstr "Try again"
 
-#: src/components/admin/plugins/PluginsPage.tsx:230
+#: src/components/admin/plugins/PluginsPage.tsx:221
 msgid "Try Again"
 msgstr "Try Again"
 

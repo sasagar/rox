@@ -48,6 +48,11 @@ export class PluginManager {
         const data = readFileSync(this.registryPath, "utf-8");
         const plugins = JSON.parse(data) as InstalledPlugin[];
         for (const plugin of plugins) {
+          // Validate plugin ID to prevent loading corrupted registry entries
+          if (!isValidPluginId(plugin.id)) {
+            console.error(`Skipping plugin with invalid id in registry: ${plugin.id}`);
+            continue;
+          }
           this.installedPlugins.set(plugin.id, plugin);
         }
       }
@@ -115,6 +120,14 @@ export class PluginManager {
             success: false,
             error: "Unknown source type",
           };
+      }
+
+      // Validate plugin ID format
+      if (!isValidPluginId(manifest.id)) {
+        return {
+          success: false,
+          error: `Invalid plugin id: ${manifest.id}`,
+        };
       }
 
       // Check if already installed

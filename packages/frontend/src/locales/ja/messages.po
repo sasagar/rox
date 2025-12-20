@@ -570,7 +570,7 @@ msgstr ""
 
 #: src/components/admin/plugins/PluginsPage.tsx:105
 msgid "Are you sure you want to uninstall this plugin?"
-msgstr ""
+msgstr "このプラグインをアンインストールしますか？"
 
 #: src/components/admin/AdminLayout.tsx:82
 msgid "Assets"
@@ -645,7 +645,7 @@ msgstr "タイムラインに戻る"
 
 #: src/components/admin/plugins/PluginCard.tsx:151
 msgid "Backend"
-msgstr ""
+msgstr "バックエンド"
 
 #: src/components/settings/ProfileImageSection.tsx:275
 msgid "Banner"
@@ -892,7 +892,7 @@ msgstr "閉じる"
 #: src/components/admin/plugins/PluginConfigDialog.tsx:138
 #: src/components/admin/plugins/PluginInstallDialog.tsx:101
 msgid "Close dialog"
-msgstr ""
+msgstr "ダイアログを閉じる"
 
 #: src/components/settings/AboutSection.tsx:138
 msgid "Closed"
@@ -926,15 +926,15 @@ msgstr "法的義務への準拠"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:174
 msgid "Configuration (JSON)"
-msgstr ""
+msgstr "設定（JSON）"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:157
 msgid "Configuration saved successfully!"
-msgstr ""
+msgstr "設定を保存しました！"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:133
 msgid "Configure {pluginName}"
-msgstr ""
+msgstr "{pluginName} の設定"
 
 #: src/pages/admin/settings.tsx:903
 msgid "Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration."
@@ -942,7 +942,7 @@ msgstr "利用規約とプライバシーポリシーページへのリンクを
 
 #: src/components/admin/plugins/PluginCard.tsx:121
 msgid "Configure plugin"
-msgstr ""
+msgstr "プラグインを設定"
 
 #: src/pages/admin/settings.tsx:292
 msgid "Configure your instance settings"
@@ -1355,7 +1355,7 @@ msgstr "無効にする"
 
 #: src/components/admin/plugins/PluginCard.tsx:94
 msgid "Disable plugin"
-msgstr ""
+msgstr "プラグインを無効化"
 
 #: src/components/admin/plugins/PluginCard.tsx:79
 #: src/pages/onboarding.tsx:447
@@ -1478,7 +1478,7 @@ msgstr "ロールを編集"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:191
 msgid "Edit the plugin configuration in JSON format. Changes require a server restart to take effect."
-msgstr ""
+msgstr "プラグインの設定をJSON形式で編集します。変更を反映するにはサーバーの再起動が必要です。"
 
 #: src/pages/contact/index.tsx:193
 #: src/pages/onboarding.tsx:282
@@ -1554,7 +1554,7 @@ msgstr "パターンが正規表現の場合に有効にします（大文字小
 
 #: src/components/admin/plugins/PluginCard.tsx:107
 msgid "Enable plugin"
-msgstr ""
+msgstr "プラグインを有効化"
 
 #: src/pages/admin/settings.tsx:457
 msgid "Enable Registration"
@@ -1591,7 +1591,7 @@ msgstr "セキュリティの確保と不正使用の防止"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:137
 msgid "Enter a Git repository URL (GitHub, GitLab) or a local path to the plugin directory."
-msgstr ""
+msgstr "GitリポジトリURL（GitHub、GitLab）またはプラグインディレクトリへのローカルパスを入力してください。"
 
 #: src/pages/admin/settings.tsx:946
 msgid "Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy"
@@ -1808,11 +1808,11 @@ msgstr "警告の削除に失敗しました"
 
 #: src/components/admin/plugins/PluginsPage.tsx:97
 msgid "Failed to disable plugin"
-msgstr ""
+msgstr "プラグインの無効化に失敗しました"
 
 #: src/components/admin/plugins/PluginsPage.tsx:83
 msgid "Failed to enable plugin"
-msgstr ""
+msgstr "プラグインの有効化に失敗しました"
 
 #: src/components/settings/DataExportSection.tsx:64
 msgid "Failed to export data"
@@ -1840,7 +1840,7 @@ msgstr "すべての絵文字の読み込みに失敗しました"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:62
 msgid "Failed to load configuration"
-msgstr ""
+msgstr "設定の読み込みに失敗しました"
 
 #: src/components/drive/DrivePickerDialog.tsx:196
 msgid "Failed to load files"
@@ -1866,7 +1866,7 @@ msgstr "パスキーの読み込みに失敗しました"
 
 #: src/components/admin/plugins/PluginsPage.tsx:60
 msgid "Failed to load plugins"
-msgstr ""
+msgstr "プラグインの読み込みに失敗しました"
 
 #: src/pages/admin/emojis.tsx:179
 msgid "Failed to load remote emojis"
@@ -1944,7 +1944,7 @@ msgstr "ノートの復元に失敗しました"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:101
 msgid "Failed to save configuration"
-msgstr ""
+msgstr "設定の保存に失敗しました"
 
 #: src/pages/admin/roles.tsx:219
 msgid "Failed to save role"
@@ -1977,7 +1977,7 @@ msgstr ""
 
 #: src/components/admin/plugins/PluginsPage.tsx:115
 msgid "Failed to uninstall plugin"
-msgstr ""
+msgstr "プラグインのアンインストールに失敗しました"
 
 #: src/pages/mod/users.tsx:181
 msgid "Failed to unsuspend user"
@@ -2163,7 +2163,7 @@ msgstr "本規約に関するご質問は、<0>お問い合わせフォーム</0
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:162
 msgid "Force reinstall if already installed"
-msgstr ""
+msgstr "インストール済みの場合は強制的に再インストール"
 
 #: src/pages/search.tsx:452
 msgid "Found on remote server"
@@ -2175,7 +2175,7 @@ msgstr "送信者:"
 
 #: src/components/admin/plugins/PluginCard.tsx:157
 msgid "Frontend"
-msgstr ""
+msgstr "フロントエンド"
 
 #: src/components/gdpr/CookieConsentBanner.tsx:216
 #: src/pages/legal/privacy.tsx:245
@@ -2368,24 +2368,24 @@ msgstr "引っ越しを開始"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:191
 msgid "Install"
-msgstr ""
+msgstr "インストール"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:93
-#: src/components/admin/plugins/PluginsPage.tsx:192
+#: src/components/admin/plugins/PluginsPage.tsx:183
 msgid "Install Plugin"
-msgstr ""
+msgstr "プラグインをインストール"
 
-#: src/components/admin/plugins/PluginsPage.tsx:243
+#: src/components/admin/plugins/PluginsPage.tsx:234
 msgid "Install plugins to extend Rox functionality."
-msgstr ""
+msgstr "プラグインをインストールしてRoxの機能を拡張できます。"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:65
 msgid "Installation failed"
-msgstr ""
+msgstr "インストールに失敗しました"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:186
 msgid "Installing..."
-msgstr ""
+msgstr "インストール中..."
 
 #: src/components/admin/AdminLayout.tsx:79
 #: src/pages/onboarding.tsx:418
@@ -2480,7 +2480,7 @@ msgstr "無効なファイル形式です。PNG、GIF、WebP、APNGのみ対応"
 #: src/components/admin/plugins/PluginConfigDialog.tsx:76
 #: src/components/admin/plugins/PluginConfigDialog.tsx:86
 msgid "Invalid JSON format"
-msgstr ""
+msgstr "無効なJSON形式"
 
 #: src/pages/admin/users.tsx:582
 msgid "Invalidate all active sessions"
@@ -2785,7 +2785,7 @@ msgstr "インスタンスのカスタム絵文字を管理"
 
 #: src/components/admin/plugins/PluginsPage.tsx:171
 msgid "Manage installed plugins"
-msgstr ""
+msgstr "インストール済みプラグインを管理"
 
 #: src/pages/admin/storage.tsx:254
 #: src/pages/admin/storage.tsx:268
@@ -3201,9 +3201,9 @@ msgstr "パスキーはまだ登録されていません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/admin/plugins/PluginsPage.tsx:240
+#: src/components/admin/plugins/PluginsPage.tsx:231
 msgid "No plugins installed"
-msgstr ""
+msgstr "インストール済みプラグインはありません"
 
 #: src/components/user/UserProfile.tsx:588
 msgid "No posts yet"
@@ -3555,7 +3555,7 @@ msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:46
 msgid "Please enter a plugin source"
-msgstr ""
+msgstr "プラグインのソースを入力してください"
 
 #: src/pages/onboarding.tsx:94
 msgid "Please enter a valid email address"
@@ -3612,28 +3612,28 @@ msgstr "確認のため「{CONFIRM_TEXT}」と入力してください"
 
 #: src/components/admin/plugins/PluginsPage.tsx:94
 msgid "Plugin disabled. Restart required to apply changes."
-msgstr ""
+msgstr "プラグインを無効化しました。変更を反映するにはサーバーの再起動が必要です。"
 
 #: src/components/admin/plugins/PluginsPage.tsx:80
 msgid "Plugin enabled. Restart required to apply changes."
-msgstr ""
+msgstr "プラグインを有効化しました。変更を反映するにはサーバーの再起動が必要です。"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:113
 msgid "Plugin installed successfully! Restart required."
-msgstr ""
+msgstr "プラグインをインストールしました！変更を反映するにはサーバーの再起動が必要です。"
 
 #: src/components/admin/plugins/PluginInstallDialog.tsx:128
 msgid "Plugin Source"
-msgstr ""
+msgstr "プラグインのソース"
 
 #: src/components/admin/plugins/PluginsPage.tsx:112
 msgid "Plugin uninstalled. Restart required to apply changes."
-msgstr ""
+msgstr "プラグインをアンインストールしました。変更を反映するにはサーバーの再起動が必要です。"
 
 #: src/components/admin/AdminLayout.tsx:123
 #: src/components/admin/plugins/PluginsPage.tsx:170
 msgid "Plugins"
-msgstr ""
+msgstr "プラグイン"
 
 #: src/components/layout/Sidebar.tsx:226
 #: src/components/layout/Sidebar.tsx:367
@@ -3985,8 +3985,8 @@ msgid "Rejected"
 msgstr "却下済み"
 
 #: src/components/admin/plugins/PluginsPage.tsx:179
-msgid "Reload"
-msgstr ""
+#~ msgid "Reload"
+#~ msgstr ""
 
 #: src/components/gdpr/CookieConsentBanner.tsx:219
 msgid "Remember your preferences and settings for a better experience."
@@ -5104,9 +5104,9 @@ msgstr "フィルターを調整してみてください"
 msgid "Try again"
 msgstr "再試行"
 
-#: src/components/admin/plugins/PluginsPage.tsx:230
+#: src/components/admin/plugins/PluginsPage.tsx:221
 msgid "Try Again"
-msgstr ""
+msgstr "再試行"
 
 #: src/pages/search.tsx:441
 msgid "Try searching \"All\" to include remote users"
@@ -5174,7 +5174,7 @@ msgstr "フォロー解除中..."
 
 #: src/components/admin/plugins/PluginCard.tsx:130
 msgid "Uninstall plugin"
-msgstr ""
+msgstr "プラグインをアンインストール"
 
 #: src/pages/admin/reports.tsx:429
 msgid "Unknown"
@@ -5190,12 +5190,12 @@ msgstr "不明なカラムタイプ"
 #: src/components/admin/plugins/PluginsPage.tsx:135
 #: src/components/admin/plugins/PluginsPage.tsx:162
 msgid "Unknown error"
-msgstr ""
+msgstr "不明なエラー"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:104
 #: src/components/admin/plugins/PluginInstallDialog.tsx:68
 msgid "Unknown error occurred"
-msgstr ""
+msgstr "不明なエラーが発生しました"
 
 #: src/pages/mod/notes.tsx:225
 msgid "Unknown User"
