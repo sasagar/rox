@@ -129,6 +129,11 @@ jobs:
             RANGE="${CURRENT_TAG}"
           fi
 
+          # Debug: Show commit range
+          echo "=== DEBUG: Commit range $RANGE ==="
+          git log $RANGE --oneline 2>&1 || echo "No commits found"
+          echo "=== END DEBUG ==="
+
           # Function to get GitHub username from commit hash using GitHub API
           # Falls back to email-based extraction if API fails
           get_github_username() {
@@ -199,7 +204,11 @@ jobs:
             fi
 
             # Bug fixes
+            echo "=== DEBUG: Testing git log for fix ===" >&2
+            git log $RANGE --pretty=format:"%s|%h|%H|%ae" --grep="^fix" 2>&1 >&2 || echo "git log failed" >&2
+            echo "=== END DEBUG ===" >&2
             FIXES=$(format_commits "^fix")
+            echo "=== DEBUG: FIXES variable: '$FIXES' ===" >&2
             if [ -n "$FIXES" ]; then
               echo "### 🐛 Bug Fixes"
               echo "$FIXES"
