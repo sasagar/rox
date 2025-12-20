@@ -48,6 +48,11 @@ msgstr "{0} is blocked"
 msgid "{0} is not blocked"
 msgstr "{0} is not blocked"
 
+#. placeholder {0}: follow.listCount
+#: src/pages/admin/system-follows.tsx:525
+msgid "{0} lists"
+msgstr "{0} lists"
+
 #. placeholder {0}: selectedUser.reports.total
 #: src/pages/mod/users.tsx:369
 msgid "{0} reports against this user"
@@ -248,6 +253,10 @@ msgstr "Accept all"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
+#: src/pages/admin/system-follows.tsx:188
+msgid "Access denied"
+msgstr "Access denied"
+
 #: src/pages/403.tsx:14
 msgid "Access Denied"
 msgstr "Access Denied"
@@ -393,7 +402,7 @@ msgstr "Admin"
 msgid "Admin Account"
 msgstr "Admin Account"
 
-#: src/components/admin/AdminLayout.tsx:303
+#: src/components/admin/AdminLayout.tsx:305
 msgid "Admin Menu"
 msgstr "Admin Menu"
 
@@ -444,6 +453,7 @@ msgstr "Aliases"
 
 #: src/pages/admin/federation.tsx:308
 #: src/pages/admin/reports.tsx:303
+#: src/pages/admin/system-follows.tsx:421
 #: src/pages/admin/users.tsx:389
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:376
@@ -458,7 +468,7 @@ msgstr "All Actions"
 msgid "All Categories"
 msgstr "All Categories"
 
-#: src/components/ui/EmojiPicker.tsx:1028
+#: src/components/ui/EmojiPicker.tsx:1029
 msgid "All custom emojis"
 msgstr "All custom emojis"
 
@@ -526,7 +536,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "Are you sure you want to delete \":{0}:\"?"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:300
+#: src/components/deck/DeckProfileSwitcher.tsx:337
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 
@@ -552,11 +562,17 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
+#. placeholder {0}: userToUnfollow.user.username
+#. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
+#: src/pages/admin/system-follows.tsx:611
+msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
+msgstr "Are you sure you want to unfollow <0>@{0}{1}</0>?"
+
 #: src/components/admin/plugins/PluginsPage.tsx:105
 msgid "Are you sure you want to uninstall this plugin?"
 msgstr "Are you sure you want to uninstall this plugin?"
 
-#: src/components/admin/AdminLayout.tsx:81
+#: src/components/admin/AdminLayout.tsx:82
 msgid "Assets"
 msgstr "Assets"
 
@@ -696,7 +712,7 @@ msgstr "Blocked Instances"
 msgid "Blocked on {0}"
 msgstr "Blocked on {0}"
 
-#: src/components/admin/AdminLayout.tsx:93
+#: src/components/admin/AdminLayout.tsx:94
 #: src/pages/admin/blocked-usernames.tsx:204
 msgid "Blocked Usernames"
 msgstr "Blocked Usernames"
@@ -713,7 +729,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/admin/AdminLayout.tsx:119
+#: src/components/admin/AdminLayout.tsx:121
 msgid "Blocks"
 msgstr "Blocks"
 
@@ -737,7 +753,7 @@ msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgid "Bulk Edit"
 msgstr "Bulk Edit"
 
-#: src/components/admin/AdminLayout.tsx:105
+#: src/components/admin/AdminLayout.tsx:106
 msgid "Bulk Import"
 msgstr "Bulk Import"
 
@@ -778,18 +794,17 @@ msgstr "Can manage reports"
 msgid "Can suspend users"
 msgstr "Can suspend users"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:165
+#: src/components/admin/plugins/PluginInstallDialog.tsx:176
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:144
-#: src/components/deck/DeckProfileSwitcher.tsx:270
-#: src/components/deck/DeckProfileSwitcher.tsx:320
+#: src/components/deck/DeckProfileSwitcher.tsx:357
+#: src/components/deck/DeckProfileSwitcher.tsx:461
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
 #: src/components/list/ListEditModal.tsx:229
 #: src/components/note/NoteCard.tsx:806
-#: src/components/note/NoteComposer.tsx:1341
+#: src/components/note/NoteComposer.tsx:1342
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -797,6 +812,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
+#: src/pages/admin/system-follows.tsx:649
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -839,6 +855,10 @@ msgstr "Clear all"
 msgid "Clear failure status"
 msgstr "Clear failure status"
 
+#: src/components/ui/SearchField.tsx:130
+msgid "Clear search"
+msgstr "Clear search"
+
 #: src/pages/admin/gone-users.tsx:242
 msgid "Clear Status"
 msgstr "Clear Status"
@@ -870,7 +890,7 @@ msgid "Close"
 msgstr "Close"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:138
-#: src/components/admin/plugins/PluginInstallDialog.tsx:99
+#: src/components/admin/plugins/PluginInstallDialog.tsx:101
 msgid "Close dialog"
 msgstr "Close dialog"
 
@@ -958,11 +978,11 @@ msgstr "Contact thread details"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/admin/AdminLayout.tsx:120
+#: src/components/admin/AdminLayout.tsx:122
 msgid "Contacts"
 msgstr "Contacts"
 
-#: src/components/admin/AdminLayout.tsx:99
+#: src/components/admin/AdminLayout.tsx:100
 msgid "Content"
 msgstr "Content"
 
@@ -1011,8 +1031,8 @@ msgstr "Copy link"
 msgid "Correct inaccurate data"
 msgstr "Correct inaccurate data"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:131
-#: src/components/deck/DeckProfileSwitcher.tsx:257
+#: src/components/deck/DeckProfileSwitcher.tsx:192
+#: src/components/deck/DeckProfileSwitcher.tsx:288
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1048,7 +1068,12 @@ msgstr "Create List"
 msgid "Create new list"
 msgstr "Create new list"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:155
+#: src/components/deck/DeckProfileSwitcher.tsx:185
+#: src/components/deck/DeckProfileSwitcher.tsx:281
+msgid "Create New Profile"
+msgstr "Create New Profile"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:179
 msgid "Create Profile"
 msgstr "Create Profile"
 
@@ -1116,7 +1141,7 @@ msgstr "Custom CSS applied to the entire app (max 10KB)"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
-#: src/components/ui/EmojiPicker.tsx:1111
+#: src/components/ui/EmojiPicker.tsx:1112
 #: src/pages/admin/emojis.tsx:744
 #: src/pages/admin/emojis.tsx:758
 #: src/pages/admin/emojis.tsx:808
@@ -1163,6 +1188,10 @@ msgstr "Deck Mode"
 msgid "Deck mode displays timelines, notifications, and lists in a multi-column layout."
 msgstr "Deck mode displays timelines, notifications, and lists in a multi-column layout."
 
+#: src/components/deck/DeckProfileSwitcher.tsx:231
+msgid "default"
+msgstr "default"
+
 #: src/pages/admin/roles.tsx:610
 msgid "Default"
 msgstr "Default"
@@ -1191,7 +1220,7 @@ msgstr "Default Roles"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:330
+#: src/components/deck/DeckProfileSwitcher.tsx:367
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:744
@@ -1214,8 +1243,8 @@ msgid "Delete code"
 msgstr "Delete code"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:208
-msgid "Delete Current Profile"
-msgstr "Delete Current Profile"
+#~ msgid "Delete Current Profile"
+#~ msgstr "Delete Current Profile"
 
 #: src/components/note/NoteComposer.tsx:1248
 msgid "Delete draft"
@@ -1230,7 +1259,8 @@ msgstr "Delete Note"
 msgid "Delete Notes"
 msgstr "Delete Notes"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:294
+#: src/components/deck/DeckProfileSwitcher.tsx:259
+#: src/components/deck/DeckProfileSwitcher.tsx:331
 msgid "Delete Profile"
 msgstr "Delete Profile"
 
@@ -1559,7 +1589,7 @@ msgstr "End of timeline"
 msgid "Ensure security and prevent abuse"
 msgstr "Ensure security and prevent abuse"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:135
+#: src/components/admin/plugins/PluginInstallDialog.tsx:137
 msgid "Enter a Git repository URL (GitHub, GitLab) or a local path to the plugin directory."
 msgstr "Enter a Git repository URL (GitHub, GitLab) or a local path to the plugin directory."
 
@@ -1834,6 +1864,10 @@ msgstr "Failed to load note"
 msgid "Failed to load passkeys"
 msgstr "Failed to load passkeys"
 
+#: src/components/admin/plugins/PluginsPage.tsx:60
+msgid "Failed to load plugins"
+msgstr "Failed to load plugins"
+
 #: src/pages/admin/emojis.tsx:179
 msgid "Failed to load remote emojis"
 msgstr "Failed to load remote emojis"
@@ -1850,6 +1884,10 @@ msgstr "Failed to load storage data"
 #: src/pages/admin/storage.tsx:157
 msgid "Failed to load storage statistics"
 msgstr "Failed to load storage statistics"
+
+#: src/pages/admin/system-follows.tsx:142
+msgid "Failed to load system follows"
+msgstr "Failed to load system follows"
 
 #: src/pages/admin/storage.tsx:179
 msgid "Failed to load user storage details"
@@ -1933,6 +1971,10 @@ msgstr "Failed to suspend user"
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
 
+#: src/pages/admin/system-follows.tsx:248
+msgid "Failed to unfollow user"
+msgstr "Failed to unfollow user"
+
 #: src/components/admin/plugins/PluginsPage.tsx:115
 msgid "Failed to uninstall plugin"
 msgstr "Failed to uninstall plugin"
@@ -1999,7 +2041,7 @@ msgstr "Favicon URL"
 msgid "Federated"
 msgstr "Federated"
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:116
 #: src/pages/admin/federation.tsx:209
 #: src/pages/admin/federation.tsx:223
 #: src/pages/admin/federation.tsx:236
@@ -2030,6 +2072,10 @@ msgstr "File uploaded successfully"
 #: src/pages/notifications.tsx:179
 msgid "Filter"
 msgstr "Filter"
+
+#: src/pages/admin/system-follows.tsx:407
+msgid "Filter by account type"
+msgstr "Filter by account type"
 
 #: src/pages/notifications.tsx:201
 msgid "Filter notifications"
@@ -2066,6 +2112,11 @@ msgstr "Follow @{0}"
 msgid "Follow requests accepted"
 msgstr "Follow requests accepted"
 
+#. placeholder {0}: formatDate(follow.createdAt)
+#: src/pages/admin/system-follows.tsx:546
+msgid "Followed {0}"
+msgstr "Followed {0}"
+
 #: src/components/notification/NotificationItem.tsx:111
 msgid "followed you"
 msgstr "followed you"
@@ -2085,6 +2136,10 @@ msgstr "Following"
 #: src/components/settings/DataExportSection.tsx:111
 msgid "Following and follower relationships"
 msgstr "Following and follower relationships"
+
+#: src/pages/admin/system-follows.tsx:391
+msgid "Following List"
+msgstr "Following List"
 
 #: src/components/user/UserProfile.tsx:467
 msgid "Following..."
@@ -2106,7 +2161,7 @@ msgstr "For privacy-related questions or to exercise your rights, please <0>cont
 msgid "For questions about these terms, please <0>contact us through our inquiry form</0>."
 msgstr "For questions about these terms, please <0>contact us through our inquiry form</0>."
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:151
+#: src/components/admin/plugins/PluginInstallDialog.tsx:162
 msgid "Force reinstall if already installed"
 msgstr "Force reinstall if already installed"
 
@@ -2131,7 +2186,7 @@ msgstr "Functional Cookies"
 #~ msgid "GDPR Data Requests"
 #~ msgstr "GDPR Data Requests"
 
-#: src/components/admin/AdminLayout.tsx:74
+#: src/components/admin/AdminLayout.tsx:75
 msgid "General"
 msgstr "General"
 
@@ -2179,7 +2234,7 @@ msgstr "Go to Timeline"
 msgid "Gone"
 msgstr "Gone"
 
-#: src/components/admin/AdminLayout.tsx:94
+#: src/components/admin/AdminLayout.tsx:95
 #: src/pages/admin/gone-users.tsx:168
 #: src/pages/admin/gone-users.tsx:181
 msgid "Gone Users"
@@ -2295,6 +2350,14 @@ msgstr "Import timed out. The server may still be processing. Please check back 
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
+#: src/pages/admin/system-follows.tsx:460
+msgid "In Lists"
+msgstr "In Lists"
+
+#: src/pages/admin/system-follows.tsx:364
+msgid "In Lists (loaded)"
+msgstr "In Lists (loaded)"
+
 #: src/components/note/NoteCard.tsx:563
 msgid "In reply to"
 msgstr "In reply to"
@@ -2303,11 +2366,11 @@ msgstr "In reply to"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:180
+#: src/components/admin/plugins/PluginInstallDialog.tsx:191
 msgid "Install"
 msgstr "Install"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:91
+#: src/components/admin/plugins/PluginInstallDialog.tsx:93
 #: src/components/admin/plugins/PluginsPage.tsx:192
 msgid "Install Plugin"
 msgstr "Install Plugin"
@@ -2316,15 +2379,15 @@ msgstr "Install Plugin"
 msgid "Install plugins to extend Rox functionality."
 msgstr "Install plugins to extend Rox functionality."
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:63
+#: src/components/admin/plugins/PluginInstallDialog.tsx:65
 msgid "Installation failed"
 msgstr "Installation failed"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:175
+#: src/components/admin/plugins/PluginInstallDialog.tsx:186
 msgid "Installing..."
 msgstr "Installing..."
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "Instance"
@@ -2449,7 +2512,7 @@ msgstr "Invitation code is required"
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
-#: src/components/admin/AdminLayout.tsx:92
+#: src/components/admin/AdminLayout.tsx:93
 msgid "Invitations"
 msgstr "Invitations"
 
@@ -2532,7 +2595,7 @@ msgstr "Leave empty for a permanent warning"
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/components/admin/AdminLayout.tsx:82
+#: src/components/admin/AdminLayout.tsx:83
 msgid "Legal"
 msgstr "Legal"
 
@@ -2602,6 +2665,10 @@ msgstr "Load All ({0} more)"
 msgid "Load more"
 msgstr "Load more"
 
+#: src/pages/admin/system-follows.tsx:577
+msgid "Load More ({currentCount} / {total})"
+msgstr "Load More ({currentCount} / {total})"
+
 #: src/components/deck/AddColumnDialog.tsx:351
 msgid "Loading"
 msgstr "Loading"
@@ -2624,7 +2691,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:94
+#: src/components/deck/DeckProfileSwitcher.tsx:168
 msgid "Loading profiles..."
 msgstr "Loading profiles..."
 
@@ -2636,18 +2703,24 @@ msgstr "Loading profiles..."
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
+#: src/pages/admin/system-follows.tsx:574
 msgid "Loading..."
 msgstr "Loading..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
+#: src/pages/admin/system-follows.tsx:434
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "Local"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/pages/admin/system-follows.tsx:334
+msgid "Local (loaded)"
+msgstr "Local (loaded)"
+
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Local Emojis"
 msgstr "Local Emojis"
 
@@ -2695,6 +2768,10 @@ msgstr "Maintainer Email"
 #: src/pages/admin/users.tsx:498
 msgid "Make admin"
 msgstr "Make admin"
+
+#: src/pages/admin/system-follows.tsx:304
+msgid "Manage accounts followed by the system account"
+msgstr "Manage accounts followed by the system account"
 
 #: src/pages/mod/instances.tsx:237
 msgid "Manage blocked instances"
@@ -2843,7 +2920,7 @@ msgstr "mentioned you"
 msgid "Mentions"
 msgstr "Mentions"
 
-#: src/components/admin/AdminLayout.tsx:393
+#: src/components/admin/AdminLayout.tsx:395
 msgid "Menu"
 msgstr "Menu"
 
@@ -2968,7 +3045,7 @@ msgstr "New Note"
 msgid "New notification"
 msgstr "New notification"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:222
+#: src/components/deck/DeckProfileSwitcher.tsx:272
 msgid "New Profile"
 msgstr "New Profile"
 
@@ -3019,7 +3096,7 @@ msgid "No drafts saved"
 msgstr "No drafts saved"
 
 #: src/components/note/NoteComposer.tsx:987
-#: src/components/ui/EmojiPicker.tsx:1180
+#: src/components/ui/EmojiPicker.tsx:1181
 msgid "No emojis found"
 msgstr "No emojis found"
 
@@ -3166,6 +3243,7 @@ msgstr "No text content"
 #: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
+#: src/pages/admin/system-follows.tsx:486
 #: src/pages/admin/users.tsx:424
 #: src/pages/search.tsx:434
 msgid "No users found"
@@ -3182,6 +3260,14 @@ msgstr "Normal"
 #: src/components/user/FollowListModal.tsx:198
 msgid "Not following anyone yet"
 msgstr "Not following anyone yet"
+
+#: src/pages/admin/system-follows.tsx:473
+msgid "Not in Lists"
+msgstr "Not in Lists"
+
+#: src/pages/admin/system-follows.tsx:379
+msgid "Not in Lists (loaded)"
+msgstr "Not in Lists (loaded)"
 
 #: src/components/pages/NoteDetailPageClient.tsx:107
 msgid "Note"
@@ -3467,7 +3553,7 @@ msgstr "Please enable notifications in your browser settings to receive push not
 #~ msgid "Please enter a message"
 #~ msgstr "Please enter a message"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:44
+#: src/components/admin/plugins/PluginInstallDialog.tsx:46
 msgid "Please enter a plugin source"
 msgstr "Please enter a plugin source"
 
@@ -3532,11 +3618,11 @@ msgstr "Plugin disabled. Restart required to apply changes."
 msgid "Plugin enabled. Restart required to apply changes."
 msgstr "Plugin enabled. Restart required to apply changes."
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:111
+#: src/components/admin/plugins/PluginInstallDialog.tsx:113
 msgid "Plugin installed successfully! Restart required."
 msgstr "Plugin installed successfully! Restart required."
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:126
+#: src/components/admin/plugins/PluginInstallDialog.tsx:128
 msgid "Plugin Source"
 msgstr "Plugin Source"
 
@@ -3544,14 +3630,14 @@ msgstr "Plugin Source"
 msgid "Plugin uninstalled. Restart required to apply changes."
 msgstr "Plugin uninstalled. Restart required to apply changes."
 
-#: src/components/admin/AdminLayout.tsx:121
+#: src/components/admin/AdminLayout.tsx:123
 #: src/components/admin/plugins/PluginsPage.tsx:170
 msgid "Plugins"
 msgstr "Plugins"
 
 #: src/components/layout/Sidebar.tsx:226
 #: src/components/layout/Sidebar.tsx:367
-#: src/components/note/NoteComposer.tsx:1389
+#: src/components/note/NoteComposer.tsx:1390
 msgid "Post"
 msgstr "Post"
 
@@ -3559,7 +3645,7 @@ msgstr "Post"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "Post illegal content or engage in illegal activities"
 
-#: src/components/note/NoteComposer.tsx:1385
+#: src/components/note/NoteComposer.tsx:1386
 msgid "Posting..."
 msgstr "Posting..."
 
@@ -3641,6 +3727,10 @@ msgstr "Profile Images"
 msgid "Profile information (username, display name, bio)"
 msgstr "Profile information (username, display name, bio)"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:442
+msgid "Profile name"
+msgstr "Profile name"
+
 #: src/pages/settings.tsx:120
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
@@ -3715,11 +3805,11 @@ msgstr "Queue Health"
 msgid "Queue Not Available"
 msgstr "Queue Not Available"
 
-#: src/components/admin/AdminLayout.tsx:117
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Queue Overview"
 msgstr "Queue Overview"
 
-#: src/components/admin/AdminLayout.tsx:118
+#: src/components/admin/AdminLayout.tsx:120
 msgid "Queue Servers"
 msgstr "Queue Servers"
 
@@ -3848,7 +3938,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 #: src/components/settings/AboutSection.tsx:123
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
@@ -3906,12 +3996,17 @@ msgstr "Remember your preferences and settings for a better experience."
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 
+#: src/pages/admin/system-follows.tsx:447
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "Remote"
 
-#: src/components/admin/AdminLayout.tsx:104
+#: src/pages/admin/system-follows.tsx:349
+msgid "Remote (loaded)"
+msgstr "Remote (loaded)"
+
+#: src/components/admin/AdminLayout.tsx:105
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
 
@@ -3961,6 +4056,11 @@ msgstr "Remove banner"
 msgid "Rename"
 msgstr "Rename"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:248
+#: src/components/deck/DeckProfileSwitcher.tsx:295
+msgid "Rename Profile"
+msgstr "Rename Profile"
+
 #: src/pages/notifications.tsx:235
 msgid "Renote"
 msgstr "Renote"
@@ -3991,7 +4091,7 @@ msgstr "Replies"
 msgid "Replies ({0})"
 msgstr "Replies ({0})"
 
-#: src/components/note/NoteComposer.tsx:1387
+#: src/components/note/NoteComposer.tsx:1388
 #: src/pages/notifications.tsx:233
 msgid "Reply"
 msgstr "Reply"
@@ -4064,7 +4164,7 @@ msgstr "Reporter"
 msgid "Reporting"
 msgstr "Reporting"
 
-#: src/components/admin/AdminLayout.tsx:106
+#: src/components/admin/AdminLayout.tsx:107
 #: src/pages/admin/reports.tsx:225
 #: src/pages/admin/reports.tsx:239
 #: src/pages/admin/reports.tsx:252
@@ -4202,7 +4302,7 @@ msgstr "Role name"
 msgid "Role updated"
 msgstr "Role updated"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:92
 #: src/pages/admin/roles.tsx:578
 msgid "Roles"
 msgstr "Roles"
@@ -4224,6 +4324,7 @@ msgid "Rox License"
 msgstr "Rox License"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:219
+#: src/components/deck/DeckProfileSwitcher.tsx:302
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4278,9 +4379,13 @@ msgstr "Saving..."
 msgid "Scan to follow from another server"
 msgstr "Scan to follow from another server"
 
-#: src/components/note/NoteComposer.tsx:1356
+#: src/components/note/NoteComposer.tsx:1357
 msgid "Schedule"
 msgstr "Schedule"
+
+#: src/components/note/NoteComposer.tsx:1322
+msgid "Schedule date and time"
+msgstr "Schedule date and time"
 
 #: src/components/note/NoteComposer.tsx:1301
 #: src/components/note/NoteComposer.tsx:1302
@@ -4292,17 +4397,22 @@ msgstr "Schedule post"
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
-#: src/components/ui/EmojiPicker.tsx:1136
-#: src/components/ui/EmojiPicker.tsx:1168
+#: src/components/ui/EmojiPicker.tsx:1137
+#: src/components/ui/EmojiPicker.tsx:1169
 msgid "Scroll for more..."
 msgstr "Scroll for more..."
 
 #: src/components/layout/Sidebar.tsx:125
+#: src/components/ui/SearchField.tsx:108
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
 msgid "Search"
 msgstr "Search"
+
+#: src/components/ui/EmojiPicker.tsx:925
+msgid "Search emoji"
+msgstr "Search emoji"
 
 #: src/components/ui/EmojiPicker.tsx:924
 msgid "Search emoji..."
@@ -4333,11 +4443,13 @@ msgid "Search User"
 msgstr "Search User"
 
 #: src/components/list/AddMemberModal.tsx:299
+#: src/pages/admin/system-follows.tsx:399
 msgid "Search users"
 msgstr "Search users"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
+#: src/pages/admin/system-follows.tsx:398
 #: src/pages/admin/users.tsx:373
 msgid "Search users..."
 msgstr "Search users..."
@@ -4387,6 +4499,10 @@ msgstr "Select from drive"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "Select from Drive"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:204
+msgid "Select Profile"
+msgstr "Select Profile"
 
 #: src/components/deck/AddColumnDialog.tsx:316
 msgid "Select timeline type:"
@@ -4584,7 +4700,7 @@ msgstr "Source Code URL (AGPL-3.0 Compliance)"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:1148
+#: src/components/ui/EmojiPicker.tsx:1149
 msgid "Standard Emojis"
 msgstr "Standard Emojis"
 
@@ -4602,7 +4718,7 @@ msgstr "Status"
 msgid "Step {0} of {1}"
 msgstr "Step {0} of {1}"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
 #: src/pages/settings.tsx:159
@@ -4670,7 +4786,7 @@ msgstr "Suspend Users"
 msgid "Suspended"
 msgstr "Suspended"
 
-#: src/components/deck/DeckLayout.tsx:343
+#: src/components/deck/DeckLayout.tsx:345
 msgid "Swipe to navigate"
 msgstr "Swipe to navigate"
 
@@ -4678,7 +4794,7 @@ msgstr "Swipe to navigate"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:112
 #: src/pages/admin/settings.tsx:620
 msgid "System"
 msgstr "System"
@@ -4687,6 +4803,11 @@ msgstr "System"
 #: src/pages/admin/storage.tsx:380
 msgid "System Files"
 msgstr "System Files"
+
+#: src/components/admin/AdminLayout.tsx:117
+#: src/pages/admin/system-follows.tsx:303
+msgid "System Follows"
+msgstr "System Follows"
 
 #: src/components/settings/AccountMigrationSection.tsx:368
 msgid "Target account is valid"
@@ -4775,7 +4896,7 @@ msgstr "The server is temporarily unavailable due to maintenance or high load. P
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
-#: src/components/admin/AdminLayout.tsx:80
+#: src/components/admin/AdminLayout.tsx:81
 #: src/components/settings/UISettingsSection.tsx:306
 msgid "Theme"
 msgstr "Theme"
@@ -4884,6 +5005,11 @@ msgstr "This thread is closed."
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
+#. placeholder {0}: userToUnfollow.listCount
+#: src/pages/admin/system-follows.tsx:624
+msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
+msgstr "This user is in {0} list(s). Unfollowing won't remove them from lists."
+
 #: src/pages/admin/blocked-usernames.tsx:302
 msgid "This username is allowed"
 msgstr "This username is allowed"
@@ -4915,6 +5041,7 @@ msgid "Top Servers by Delivery"
 msgstr "Top Servers by Delivery"
 
 #: src/pages/admin/queue.tsx:425
+#: src/pages/admin/system-follows.tsx:319
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "Total"
@@ -5017,12 +5144,12 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
-#: src/components/ui/EmojiPicker.tsx:1079
+#: src/components/ui/EmojiPicker.tsx:1080
 #: src/pages/admin/emojis.tsx:1586
 msgid "Uncategorized"
 msgstr "Uncategorized"
 
-#: src/components/ui/EmojiPicker.tsx:1071
+#: src/components/ui/EmojiPicker.tsx:1072
 msgid "Uncategorized emojis"
 msgstr "Uncategorized emojis"
 
@@ -5030,10 +5157,16 @@ msgstr "Uncategorized emojis"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 
+#: src/pages/admin/system-follows.tsx:555
+#: src/pages/admin/system-follows.tsx:662
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
 msgstr "Unfollow"
+
+#: src/pages/admin/system-follows.tsx:606
+msgid "Unfollow User"
+msgstr "Unfollow User"
 
 #: src/components/user/UserProfile.tsx:465
 msgid "Unfollowing..."
@@ -5054,11 +5187,13 @@ msgstr "Unknown column type"
 #: src/components/admin/plugins/PluginsPage.tsx:86
 #: src/components/admin/plugins/PluginsPage.tsx:100
 #: src/components/admin/plugins/PluginsPage.tsx:118
+#: src/components/admin/plugins/PluginsPage.tsx:135
+#: src/components/admin/plugins/PluginsPage.tsx:162
 msgid "Unknown error"
 msgstr "Unknown error"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:104
-#: src/components/admin/plugins/PluginInstallDialog.tsx:66
+#: src/components/admin/plugins/PluginInstallDialog.tsx:68
 msgid "Unknown error occurred"
 msgstr "Unknown error occurred"
 
@@ -5119,7 +5254,7 @@ msgstr "Uploaded media files metadata"
 msgid "Uploading files..."
 msgstr "Uploading files..."
 
-#: src/components/note/NoteComposer.tsx:1383
+#: src/components/note/NoteComposer.tsx:1384
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:882
@@ -5155,6 +5290,10 @@ msgstr "User deleted. {0} Delete activities sent to followers."
 #: src/pages/mod/users.tsx:317
 msgid "User Details"
 msgstr "User Details"
+
+#: src/pages/admin/system-follows.tsx:240
+msgid "User has been unfollowed"
+msgstr "User has been unfollowed"
 
 #: src/pages/admin/users.tsx:230
 msgid "User information refreshed"
@@ -5227,8 +5366,8 @@ msgstr "Username is required"
 msgid "Username must be at least 3 characters"
 msgstr "Username must be at least 3 characters"
 
-#: src/components/admin/AdminLayout.tsx:87
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:91
 #: src/pages/admin/federation.tsx:400
 #: src/pages/admin/users.tsx:293
 #: src/pages/mod/audit-logs.tsx:261
@@ -5466,7 +5605,7 @@ msgid "Width:"
 msgstr "Width:"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1326
+#: src/components/note/NoteComposer.tsx:1327
 msgid "Will be posted at {0}"
 msgstr "Will be posted at {0}"
 

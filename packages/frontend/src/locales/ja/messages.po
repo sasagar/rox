@@ -48,6 +48,11 @@ msgstr "{0}はブロック済みです"
 msgid "{0} is not blocked"
 msgstr "{0}はブロックされていません"
 
+#. placeholder {0}: follow.listCount
+#: src/pages/admin/system-follows.tsx:525
+msgid "{0} lists"
+msgstr ""
+
 #. placeholder {0}: selectedUser.reports.total
 #: src/pages/mod/users.tsx:369
 msgid "{0} reports against this user"
@@ -248,6 +253,10 @@ msgstr "すべて許可"
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
 
+#: src/pages/admin/system-follows.tsx:188
+msgid "Access denied"
+msgstr ""
+
 #: src/pages/403.tsx:14
 msgid "Access Denied"
 msgstr "アクセスが拒否されました"
@@ -393,7 +402,7 @@ msgstr "管理"
 msgid "Admin Account"
 msgstr "管理者アカウント"
 
-#: src/components/admin/AdminLayout.tsx:303
+#: src/components/admin/AdminLayout.tsx:305
 msgid "Admin Menu"
 msgstr "管理メニュー"
 
@@ -444,6 +453,7 @@ msgstr "エイリアス"
 
 #: src/pages/admin/federation.tsx:308
 #: src/pages/admin/reports.tsx:303
+#: src/pages/admin/system-follows.tsx:421
 #: src/pages/admin/users.tsx:389
 #: src/pages/mod/reports.tsx:288
 #: src/pages/search.tsx:376
@@ -458,7 +468,7 @@ msgstr "すべてのアクション"
 msgid "All Categories"
 msgstr "すべてのカテゴリ"
 
-#: src/components/ui/EmojiPicker.tsx:1028
+#: src/components/ui/EmojiPicker.tsx:1029
 msgid "All custom emojis"
 msgstr "すべてのカスタム絵文字"
 
@@ -526,7 +536,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:300
+#: src/components/deck/DeckProfileSwitcher.tsx:337
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
 
@@ -552,11 +562,17 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "このインスタンスをキャッシュから削除してもよろしいですか？"
 
+#. placeholder {0}: userToUnfollow.user.username
+#. placeholder {1}: userToUnfollow.user.host && `@${userToUnfollow.user.host}`
+#: src/pages/admin/system-follows.tsx:611
+msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
+msgstr ""
+
 #: src/components/admin/plugins/PluginsPage.tsx:105
 msgid "Are you sure you want to uninstall this plugin?"
 msgstr ""
 
-#: src/components/admin/AdminLayout.tsx:81
+#: src/components/admin/AdminLayout.tsx:82
 msgid "Assets"
 msgstr "素材"
 
@@ -696,7 +712,7 @@ msgstr "ブロック中のインスタンス"
 msgid "Blocked on {0}"
 msgstr "{0}にブロック"
 
-#: src/components/admin/AdminLayout.tsx:93
+#: src/components/admin/AdminLayout.tsx:94
 #: src/pages/admin/blocked-usernames.tsx:204
 msgid "Blocked Usernames"
 msgstr "禁止ユーザー名"
@@ -713,7 +729,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/admin/AdminLayout.tsx:119
+#: src/components/admin/AdminLayout.tsx:121
 msgid "Blocks"
 msgstr "ブロック"
 
@@ -737,7 +753,7 @@ msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大51
 msgid "Bulk Edit"
 msgstr "一括編集"
 
-#: src/components/admin/AdminLayout.tsx:105
+#: src/components/admin/AdminLayout.tsx:106
 msgid "Bulk Import"
 msgstr "一括インポート"
 
@@ -778,18 +794,17 @@ msgstr "通報を管理可能"
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:165
+#: src/components/admin/plugins/PluginInstallDialog.tsx:176
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:144
-#: src/components/deck/DeckProfileSwitcher.tsx:270
-#: src/components/deck/DeckProfileSwitcher.tsx:320
+#: src/components/deck/DeckProfileSwitcher.tsx:357
+#: src/components/deck/DeckProfileSwitcher.tsx:461
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
 #: src/components/list/ListEditModal.tsx:229
 #: src/components/note/NoteCard.tsx:806
-#: src/components/note/NoteComposer.tsx:1341
+#: src/components/note/NoteComposer.tsx:1342
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -797,6 +812,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/emojis.tsx:1611
 #: src/pages/admin/roles.tsx:567
 #: src/pages/admin/storage.tsx:543
+#: src/pages/admin/system-follows.tsx:649
 #: src/pages/admin/users.tsx:611
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
@@ -839,6 +855,10 @@ msgstr "すべてクリア"
 msgid "Clear failure status"
 msgstr "失敗ステータスをクリア"
 
+#: src/components/ui/SearchField.tsx:130
+msgid "Clear search"
+msgstr ""
+
 #: src/pages/admin/gone-users.tsx:242
 msgid "Clear Status"
 msgstr "ステータスをクリア"
@@ -870,7 +890,7 @@ msgid "Close"
 msgstr "閉じる"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:138
-#: src/components/admin/plugins/PluginInstallDialog.tsx:99
+#: src/components/admin/plugins/PluginInstallDialog.tsx:101
 msgid "Close dialog"
 msgstr ""
 
@@ -958,11 +978,11 @@ msgstr "お問い合わせスレッドの詳細"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:120
+#: src/components/admin/AdminLayout.tsx:122
 msgid "Contacts"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:99
+#: src/components/admin/AdminLayout.tsx:100
 msgid "Content"
 msgstr "コンテンツ"
 
@@ -1011,8 +1031,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:131
-#: src/components/deck/DeckProfileSwitcher.tsx:257
+#: src/components/deck/DeckProfileSwitcher.tsx:192
+#: src/components/deck/DeckProfileSwitcher.tsx:288
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1048,7 +1068,12 @@ msgstr "リストを作成"
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:155
+#: src/components/deck/DeckProfileSwitcher.tsx:185
+#: src/components/deck/DeckProfileSwitcher.tsx:281
+msgid "Create New Profile"
+msgstr ""
+
+#: src/components/deck/DeckProfileSwitcher.tsx:179
 msgid "Create Profile"
 msgstr "プロファイルを作成"
 
@@ -1116,7 +1141,7 @@ msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
-#: src/components/ui/EmojiPicker.tsx:1111
+#: src/components/ui/EmojiPicker.tsx:1112
 #: src/pages/admin/emojis.tsx:744
 #: src/pages/admin/emojis.tsx:758
 #: src/pages/admin/emojis.tsx:808
@@ -1163,6 +1188,10 @@ msgstr "デッキモード"
 msgid "Deck mode displays timelines, notifications, and lists in a multi-column layout."
 msgstr "デッキモードはタイムライン、通知、リストをマルチカラムレイアウトで表示します。"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:231
+msgid "default"
+msgstr ""
+
 #: src/pages/admin/roles.tsx:610
 msgid "Default"
 msgstr "デフォルト"
@@ -1191,7 +1220,7 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:330
+#: src/components/deck/DeckProfileSwitcher.tsx:367
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
 #: src/components/note/NoteCard.tsx:744
@@ -1214,8 +1243,8 @@ msgid "Delete code"
 msgstr "コードを削除"
 
 #: src/components/deck/DeckProfileSwitcher.tsx:208
-msgid "Delete Current Profile"
-msgstr "現在のプロファイルを削除"
+#~ msgid "Delete Current Profile"
+#~ msgstr "現在のプロファイルを削除"
 
 #: src/components/note/NoteComposer.tsx:1248
 msgid "Delete draft"
@@ -1230,7 +1259,8 @@ msgstr "ノートを削除"
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:294
+#: src/components/deck/DeckProfileSwitcher.tsx:259
+#: src/components/deck/DeckProfileSwitcher.tsx:331
 msgid "Delete Profile"
 msgstr "プロファイルを削除"
 
@@ -1559,7 +1589,7 @@ msgstr "タイムラインの終わり"
 msgid "Ensure security and prevent abuse"
 msgstr "セキュリティの確保と不正使用の防止"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:135
+#: src/components/admin/plugins/PluginInstallDialog.tsx:137
 msgid "Enter a Git repository URL (GitHub, GitLab) or a local path to the plugin directory."
 msgstr ""
 
@@ -1834,6 +1864,10 @@ msgstr "ノートの読み込みに失敗しました"
 msgid "Failed to load passkeys"
 msgstr "パスキーの読み込みに失敗しました"
 
+#: src/components/admin/plugins/PluginsPage.tsx:60
+msgid "Failed to load plugins"
+msgstr ""
+
 #: src/pages/admin/emojis.tsx:179
 msgid "Failed to load remote emojis"
 msgstr "リモート絵文字の読み込みに失敗しました"
@@ -1850,6 +1884,10 @@ msgstr "ストレージデータの読み込みに失敗しました"
 #: src/pages/admin/storage.tsx:157
 msgid "Failed to load storage statistics"
 msgstr "ストレージ統計の読み込みに失敗しました"
+
+#: src/pages/admin/system-follows.tsx:142
+msgid "Failed to load system follows"
+msgstr ""
 
 #: src/pages/admin/storage.tsx:179
 msgid "Failed to load user storage details"
@@ -1933,6 +1971,10 @@ msgstr "ユーザーの停止に失敗しました"
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
+#: src/pages/admin/system-follows.tsx:248
+msgid "Failed to unfollow user"
+msgstr ""
+
 #: src/components/admin/plugins/PluginsPage.tsx:115
 msgid "Failed to uninstall plugin"
 msgstr ""
@@ -1999,7 +2041,7 @@ msgstr "ファビコンURL"
 msgid "Federated"
 msgstr "分散型"
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:116
 #: src/pages/admin/federation.tsx:209
 #: src/pages/admin/federation.tsx:223
 #: src/pages/admin/federation.tsx:236
@@ -2030,6 +2072,10 @@ msgstr "ファイルをアップロードしました"
 #: src/pages/notifications.tsx:179
 msgid "Filter"
 msgstr "フィルター"
+
+#: src/pages/admin/system-follows.tsx:407
+msgid "Filter by account type"
+msgstr ""
 
 #: src/pages/notifications.tsx:201
 msgid "Filter notifications"
@@ -2066,6 +2112,11 @@ msgstr "@{0}をフォロー"
 msgid "Follow requests accepted"
 msgstr "フォローリクエスト承認"
 
+#. placeholder {0}: formatDate(follow.createdAt)
+#: src/pages/admin/system-follows.tsx:546
+msgid "Followed {0}"
+msgstr ""
+
 #: src/components/notification/NotificationItem.tsx:111
 msgid "followed you"
 msgstr "があなたをフォローしました"
@@ -2085,6 +2136,10 @@ msgstr "フォロー中"
 #: src/components/settings/DataExportSection.tsx:111
 msgid "Following and follower relationships"
 msgstr "フォローとフォロワーの関係"
+
+#: src/pages/admin/system-follows.tsx:391
+msgid "Following List"
+msgstr ""
 
 #: src/components/user/UserProfile.tsx:467
 msgid "Following..."
@@ -2106,7 +2161,7 @@ msgstr "プライバシーに関するご質問や権利の行使については
 msgid "For questions about these terms, please <0>contact us through our inquiry form</0>."
 msgstr "本規約に関するご質問は、<0>お問い合わせフォーム</0>からご連絡ください。"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:151
+#: src/components/admin/plugins/PluginInstallDialog.tsx:162
 msgid "Force reinstall if already installed"
 msgstr ""
 
@@ -2131,7 +2186,7 @@ msgstr "機能Cookie"
 #~ msgid "GDPR Data Requests"
 #~ msgstr "GDPRデータリクエスト"
 
-#: src/components/admin/AdminLayout.tsx:74
+#: src/components/admin/AdminLayout.tsx:75
 msgid "General"
 msgstr "全般"
 
@@ -2179,7 +2234,7 @@ msgstr "タイムラインへ"
 msgid "Gone"
 msgstr "削除済み"
 
-#: src/components/admin/AdminLayout.tsx:94
+#: src/components/admin/AdminLayout.tsx:95
 #: src/pages/admin/gone-users.tsx:168
 #: src/pages/admin/gone-users.tsx:181
 msgid "Gone Users"
@@ -2295,6 +2350,14 @@ msgstr "インポートがタイムアウトしました。サーバーはまだ
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
+#: src/pages/admin/system-follows.tsx:460
+msgid "In Lists"
+msgstr ""
+
+#: src/pages/admin/system-follows.tsx:364
+msgid "In Lists (loaded)"
+msgstr ""
+
 #: src/components/note/NoteCard.tsx:563
 msgid "In reply to"
 msgstr "返信元"
@@ -2303,11 +2366,11 @@ msgstr "返信元"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:180
+#: src/components/admin/plugins/PluginInstallDialog.tsx:191
 msgid "Install"
 msgstr ""
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:91
+#: src/components/admin/plugins/PluginInstallDialog.tsx:93
 #: src/components/admin/plugins/PluginsPage.tsx:192
 msgid "Install Plugin"
 msgstr ""
@@ -2316,15 +2379,15 @@ msgstr ""
 msgid "Install plugins to extend Rox functionality."
 msgstr ""
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:63
+#: src/components/admin/plugins/PluginInstallDialog.tsx:65
 msgid "Installation failed"
 msgstr ""
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:175
+#: src/components/admin/plugins/PluginInstallDialog.tsx:186
 msgid "Installing..."
 msgstr ""
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "インスタンス"
@@ -2449,7 +2512,7 @@ msgstr "招待コードを入力してください"
 msgid "Invitation Codes"
 msgstr "招待コード"
 
-#: src/components/admin/AdminLayout.tsx:92
+#: src/components/admin/AdminLayout.tsx:93
 msgid "Invitations"
 msgstr "招待"
 
@@ -2532,7 +2595,7 @@ msgstr "永続的な警告の場合は空のままにしてください"
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/components/admin/AdminLayout.tsx:82
+#: src/components/admin/AdminLayout.tsx:83
 msgid "Legal"
 msgstr "法的文書"
 
@@ -2602,6 +2665,10 @@ msgstr "すべて読み込む（残り{0}件）"
 msgid "Load more"
 msgstr "もっと読み込む"
 
+#: src/pages/admin/system-follows.tsx:577
+msgid "Load More ({currentCount} / {total})"
+msgstr ""
+
 #: src/components/deck/AddColumnDialog.tsx:351
 msgid "Loading"
 msgstr "読み込み中"
@@ -2624,7 +2691,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:94
+#: src/components/deck/DeckProfileSwitcher.tsx:168
 msgid "Loading profiles..."
 msgstr "プロファイルを読み込み中..."
 
@@ -2636,18 +2703,24 @@ msgstr "プロファイルを読み込み中..."
 #: src/components/user/FollowListModal.tsx:218
 #: src/components/user/UserProfile.tsx:608
 #: src/pages/admin/emojis.tsx:1267
+#: src/pages/admin/system-follows.tsx:574
 msgid "Loading..."
 msgstr "読み込み中..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
 #: src/components/deck/DeckColumn.tsx:138
+#: src/pages/admin/system-follows.tsx:434
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
 #: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "ローカル"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/pages/admin/system-follows.tsx:334
+msgid "Local (loaded)"
+msgstr ""
+
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Local Emojis"
 msgstr "ローカル絵文字"
 
@@ -2695,6 +2768,10 @@ msgstr "管理者メールアドレス"
 #: src/pages/admin/users.tsx:498
 msgid "Make admin"
 msgstr "管理者にする"
+
+#: src/pages/admin/system-follows.tsx:304
+msgid "Manage accounts followed by the system account"
+msgstr ""
 
 #: src/pages/mod/instances.tsx:237
 msgid "Manage blocked instances"
@@ -2843,7 +2920,7 @@ msgstr "があなたにメンションしました"
 msgid "Mentions"
 msgstr "メンション"
 
-#: src/components/admin/AdminLayout.tsx:393
+#: src/components/admin/AdminLayout.tsx:395
 msgid "Menu"
 msgstr "メニュー"
 
@@ -2968,7 +3045,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:222
+#: src/components/deck/DeckProfileSwitcher.tsx:272
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -3019,7 +3096,7 @@ msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
 #: src/components/note/NoteComposer.tsx:987
-#: src/components/ui/EmojiPicker.tsx:1180
+#: src/components/ui/EmojiPicker.tsx:1181
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
@@ -3166,6 +3243,7 @@ msgstr "テキストコンテンツなし"
 #: src/components/list/AddMemberModal.tsx:334
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
+#: src/pages/admin/system-follows.tsx:486
 #: src/pages/admin/users.tsx:424
 #: src/pages/search.tsx:434
 msgid "No users found"
@@ -3182,6 +3260,14 @@ msgstr "標準"
 #: src/components/user/FollowListModal.tsx:198
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
+
+#: src/pages/admin/system-follows.tsx:473
+msgid "Not in Lists"
+msgstr ""
+
+#: src/pages/admin/system-follows.tsx:379
+msgid "Not in Lists (loaded)"
+msgstr ""
 
 #: src/components/pages/NoteDetailPageClient.tsx:107
 msgid "Note"
@@ -3467,7 +3553,7 @@ msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知
 #~ msgid "Please enter a message"
 #~ msgstr "メッセージを入力してください"
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:44
+#: src/components/admin/plugins/PluginInstallDialog.tsx:46
 msgid "Please enter a plugin source"
 msgstr ""
 
@@ -3532,11 +3618,11 @@ msgstr ""
 msgid "Plugin enabled. Restart required to apply changes."
 msgstr ""
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:111
+#: src/components/admin/plugins/PluginInstallDialog.tsx:113
 msgid "Plugin installed successfully! Restart required."
 msgstr ""
 
-#: src/components/admin/plugins/PluginInstallDialog.tsx:126
+#: src/components/admin/plugins/PluginInstallDialog.tsx:128
 msgid "Plugin Source"
 msgstr ""
 
@@ -3544,14 +3630,14 @@ msgstr ""
 msgid "Plugin uninstalled. Restart required to apply changes."
 msgstr ""
 
-#: src/components/admin/AdminLayout.tsx:121
+#: src/components/admin/AdminLayout.tsx:123
 #: src/components/admin/plugins/PluginsPage.tsx:170
 msgid "Plugins"
 msgstr ""
 
 #: src/components/layout/Sidebar.tsx:226
 #: src/components/layout/Sidebar.tsx:367
-#: src/components/note/NoteComposer.tsx:1389
+#: src/components/note/NoteComposer.tsx:1390
 msgid "Post"
 msgstr "投稿"
 
@@ -3559,7 +3645,7 @@ msgstr "投稿"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "違法なコンテンツの投稿や違法行為への関与"
 
-#: src/components/note/NoteComposer.tsx:1385
+#: src/components/note/NoteComposer.tsx:1386
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -3641,6 +3727,10 @@ msgstr "プロフィール画像"
 msgid "Profile information (username, display name, bio)"
 msgstr "プロフィール情報（ユーザー名、表示名、自己紹介）"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:442
+msgid "Profile name"
+msgstr ""
+
 #: src/pages/settings.tsx:120
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
@@ -3715,11 +3805,11 @@ msgstr "キューの状態"
 msgid "Queue Not Available"
 msgstr "キューは利用できません"
 
-#: src/components/admin/AdminLayout.tsx:117
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Queue Overview"
 msgstr "キュー概要"
 
-#: src/components/admin/AdminLayout.tsx:118
+#: src/components/admin/AdminLayout.tsx:120
 msgid "Queue Servers"
 msgstr "キューサーバー"
 
@@ -3848,7 +3938,7 @@ msgstr "登録済みデバイス"
 msgid "Registering..."
 msgstr "登録中..."
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 #: src/components/settings/AboutSection.tsx:123
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
@@ -3906,12 +3996,17 @@ msgstr "設定を記憶し、より良い体験を提供します。"
 msgid "Remember your preferences such as theme settings, language, and UI customizations. Disabling these may affect your experience."
 msgstr "テーマ設定、言語、UIカスタマイズなどの設定を記憶します。無効にすると、体験に影響する場合があります。"
 
+#: src/pages/admin/system-follows.tsx:447
 #: src/pages/admin/users.tsx:339
 #: src/pages/admin/users.tsx:411
 msgid "Remote"
 msgstr "リモート"
 
-#: src/components/admin/AdminLayout.tsx:104
+#: src/pages/admin/system-follows.tsx:349
+msgid "Remote (loaded)"
+msgstr ""
+
+#: src/components/admin/AdminLayout.tsx:105
 msgid "Remote Emojis"
 msgstr "リモート絵文字"
 
@@ -3961,6 +4056,11 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
+#: src/components/deck/DeckProfileSwitcher.tsx:248
+#: src/components/deck/DeckProfileSwitcher.tsx:295
+msgid "Rename Profile"
+msgstr ""
+
 #: src/pages/notifications.tsx:235
 msgid "Renote"
 msgstr "リノート"
@@ -3991,7 +4091,7 @@ msgstr "返信"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:1387
+#: src/components/note/NoteComposer.tsx:1388
 #: src/pages/notifications.tsx:233
 msgid "Reply"
 msgstr "返信"
@@ -4064,7 +4164,7 @@ msgstr "報告者"
 msgid "Reporting"
 msgstr "報告対象"
 
-#: src/components/admin/AdminLayout.tsx:106
+#: src/components/admin/AdminLayout.tsx:107
 #: src/pages/admin/reports.tsx:225
 #: src/pages/admin/reports.tsx:239
 #: src/pages/admin/reports.tsx:252
@@ -4202,7 +4302,7 @@ msgstr "ロール名"
 msgid "Role updated"
 msgstr "ロールを更新しました"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:92
 #: src/pages/admin/roles.tsx:578
 msgid "Roles"
 msgstr "ロール"
@@ -4224,6 +4324,7 @@ msgid "Rox License"
 msgstr "Roxライセンス"
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:219
+#: src/components/deck/DeckProfileSwitcher.tsx:302
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4278,9 +4379,13 @@ msgstr "保存中..."
 msgid "Scan to follow from another server"
 msgstr "他のサーバーからフォローするにはスキャン"
 
-#: src/components/note/NoteComposer.tsx:1356
+#: src/components/note/NoteComposer.tsx:1357
 msgid "Schedule"
 msgstr "予約する"
+
+#: src/components/note/NoteComposer.tsx:1322
+msgid "Schedule date and time"
+msgstr ""
 
 #: src/components/note/NoteComposer.tsx:1301
 #: src/components/note/NoteComposer.tsx:1302
@@ -4292,17 +4397,22 @@ msgstr "予約投稿"
 msgid "Scheduled time must be in the future"
 msgstr "予約時刻は現在時刻より後に設定してください"
 
-#: src/components/ui/EmojiPicker.tsx:1136
-#: src/components/ui/EmojiPicker.tsx:1168
+#: src/components/ui/EmojiPicker.tsx:1137
+#: src/components/ui/EmojiPicker.tsx:1169
 msgid "Scroll for more..."
 msgstr "スクロールして続きを表示..."
 
 #: src/components/layout/Sidebar.tsx:125
+#: src/components/ui/SearchField.tsx:108
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:329
 #: src/pages/search.tsx:356
 msgid "Search"
 msgstr "検索"
+
+#: src/components/ui/EmojiPicker.tsx:925
+msgid "Search emoji"
+msgstr ""
 
 #: src/components/ui/EmojiPicker.tsx:924
 msgid "Search emoji..."
@@ -4333,11 +4443,13 @@ msgid "Search User"
 msgstr "ユーザーを検索"
 
 #: src/components/list/AddMemberModal.tsx:299
+#: src/pages/admin/system-follows.tsx:399
 msgid "Search users"
 msgstr "ユーザーを検索"
 
 #: src/components/note/NoteComposer.tsx:789
 #: src/pages/admin/storage.tsx:461
+#: src/pages/admin/system-follows.tsx:398
 #: src/pages/admin/users.tsx:373
 msgid "Search users..."
 msgstr "ユーザーを検索..."
@@ -4387,6 +4499,10 @@ msgstr "ドライブから選択"
 #: src/components/drive/DrivePickerDialog.tsx:270
 msgid "Select from Drive"
 msgstr "ドライブから選択"
+
+#: src/components/deck/DeckProfileSwitcher.tsx:204
+msgid "Select Profile"
+msgstr ""
 
 #: src/components/deck/AddColumnDialog.tsx:316
 msgid "Select timeline type:"
@@ -4584,7 +4700,7 @@ msgstr "ソースコードURL（AGPL-3.0準拠）"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:1148
+#: src/components/ui/EmojiPicker.tsx:1149
 msgid "Standard Emojis"
 msgstr "標準絵文字"
 
@@ -4602,7 +4718,7 @@ msgstr "ステータス"
 msgid "Step {0} of {1}"
 msgstr "ステップ {0} / {1}"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
 #: src/pages/settings.tsx:159
@@ -4670,7 +4786,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/components/deck/DeckLayout.tsx:343
+#: src/components/deck/DeckLayout.tsx:345
 msgid "Swipe to navigate"
 msgstr "スワイプでナビゲート"
 
@@ -4678,7 +4794,7 @@ msgstr "スワイプでナビゲート"
 msgid "Synced"
 msgstr "同期済み"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:112
 #: src/pages/admin/settings.tsx:620
 msgid "System"
 msgstr "システム"
@@ -4687,6 +4803,11 @@ msgstr "システム"
 #: src/pages/admin/storage.tsx:380
 msgid "System Files"
 msgstr "システムファイル"
+
+#: src/components/admin/AdminLayout.tsx:117
+#: src/pages/admin/system-follows.tsx:303
+msgid "System Follows"
+msgstr ""
 
 #: src/components/settings/AccountMigrationSection.tsx:368
 msgid "Target account is valid"
@@ -4775,7 +4896,7 @@ msgstr "メンテナンスまたは高負荷のため、サーバーは一時的
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
-#: src/components/admin/AdminLayout.tsx:80
+#: src/components/admin/AdminLayout.tsx:81
 #: src/components/settings/UISettingsSection.tsx:306
 msgid "Theme"
 msgstr "テーマ"
@@ -4884,6 +5005,11 @@ msgstr "このスレッドは終了しました。"
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
+#. placeholder {0}: userToUnfollow.listCount
+#: src/pages/admin/system-follows.tsx:624
+msgid "This user is in {0} list(s). Unfollowing won't remove them from lists."
+msgstr ""
+
 #: src/pages/admin/blocked-usernames.tsx:302
 msgid "This username is allowed"
 msgstr "このユーザー名は使用可能です"
@@ -4915,6 +5041,7 @@ msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
 
 #: src/pages/admin/queue.tsx:425
+#: src/pages/admin/system-follows.tsx:319
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "合計"
@@ -5017,12 +5144,12 @@ msgstr "ブロック解除"
 msgid "Unblock instance"
 msgstr "ブロック解除"
 
-#: src/components/ui/EmojiPicker.tsx:1079
+#: src/components/ui/EmojiPicker.tsx:1080
 #: src/pages/admin/emojis.tsx:1586
 msgid "Uncategorized"
 msgstr "未分類"
 
-#: src/components/ui/EmojiPicker.tsx:1071
+#: src/components/ui/EmojiPicker.tsx:1072
 msgid "Uncategorized emojis"
 msgstr "未分類の絵文字"
 
@@ -5030,10 +5157,16 @@ msgstr "未分類の絵文字"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
 
+#: src/pages/admin/system-follows.tsx:555
+#: src/pages/admin/system-follows.tsx:662
 #: src/pages/search.tsx:498
 #: src/pages/search.tsx:578
 msgid "Unfollow"
 msgstr "フォロー解除"
+
+#: src/pages/admin/system-follows.tsx:606
+msgid "Unfollow User"
+msgstr ""
 
 #: src/components/user/UserProfile.tsx:465
 msgid "Unfollowing..."
@@ -5054,11 +5187,13 @@ msgstr "不明なカラムタイプ"
 #: src/components/admin/plugins/PluginsPage.tsx:86
 #: src/components/admin/plugins/PluginsPage.tsx:100
 #: src/components/admin/plugins/PluginsPage.tsx:118
+#: src/components/admin/plugins/PluginsPage.tsx:135
+#: src/components/admin/plugins/PluginsPage.tsx:162
 msgid "Unknown error"
 msgstr ""
 
 #: src/components/admin/plugins/PluginConfigDialog.tsx:104
-#: src/components/admin/plugins/PluginInstallDialog.tsx:66
+#: src/components/admin/plugins/PluginInstallDialog.tsx:68
 msgid "Unknown error occurred"
 msgstr ""
 
@@ -5119,7 +5254,7 @@ msgstr "アップロードしたメディアファイルのメタデータ"
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:1383
+#: src/components/note/NoteComposer.tsx:1384
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:882
@@ -5155,6 +5290,10 @@ msgstr "ユーザーを削除しました。{0}件のDelete Activityをフォロ
 #: src/pages/mod/users.tsx:317
 msgid "User Details"
 msgstr "ユーザー詳細"
+
+#: src/pages/admin/system-follows.tsx:240
+msgid "User has been unfollowed"
+msgstr ""
 
 #: src/pages/admin/users.tsx:230
 msgid "User information refreshed"
@@ -5227,8 +5366,8 @@ msgstr "ユーザー名を入力してください"
 msgid "Username must be at least 3 characters"
 msgstr "ユーザー名は3文字以上必要です"
 
-#: src/components/admin/AdminLayout.tsx:87
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:91
 #: src/pages/admin/federation.tsx:400
 #: src/pages/admin/users.tsx:293
 #: src/pages/mod/audit-logs.tsx:261
@@ -5466,7 +5605,7 @@ msgid "Width:"
 msgstr "幅:"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1326
+#: src/components/note/NoteComposer.tsx:1327
 msgid "Will be posted at {0}"
 msgstr "{0}に投稿予定"
 

@@ -8,8 +8,9 @@
  */
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import type { PluginConfigStorage } from "./types/plugin.js";
+import { isValidPluginId } from "shared";
 
 /**
  * File-based Plugin Configuration Storage
@@ -27,9 +28,23 @@ export class FilePluginConfigStorage implements PluginConfigStorage {
    *
    * @param pluginId - Plugin identifier (used for filename)
    * @param baseDir - Base directory for config files (default: ./data/plugins)
+   * @throws Error if pluginId is invalid (prevents path traversal attacks)
    */
   constructor(pluginId: string, baseDir: string = "./data/plugins") {
-    this.configPath = join(baseDir, `${pluginId}.config.json`);
+    // Validate plugin ID to prevent path traversal attacks
+    // (e.g., "../../../etc/passwd" or "foo/../../bar")
+    if (!isValidPluginId(pluginId)) {
+      throw new Error(`Invalid plugin ID: ${pluginId}`);
+    }
+
+    const resolvedBase = resolve(baseDir);
+    this.configPath = join(resolvedBase, `${pluginId}.config.json`);
+
+    // Additional safety check: ensure the resolved path is within baseDir
+    const resolvedConfig = resolve(this.configPath);
+    if (!resolvedConfig.startsWith(resolvedBase)) {
+      throw new Error(`Path traversal detected: ${pluginId}`);
+    }
   }
 
   /**

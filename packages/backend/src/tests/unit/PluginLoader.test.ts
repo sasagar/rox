@@ -312,7 +312,7 @@ describe("Plugin event integration", () => {
 });
 
 describe("Plugin route registration simulation", () => {
-  test("should allow registering routes on Hono app", () => {
+  test("should allow registering routes on Hono app", async () => {
     const app = new Hono();
     const pluginApp = new Hono();
 
@@ -323,12 +323,19 @@ describe("Plugin route registration simulation", () => {
     // Mount plugin routes
     app.route("/api/x/my-plugin", pluginApp);
 
-    // Verify routes are registered (by checking app.routes if available)
-    // Since Hono doesn't expose routes easily, we just verify no errors occurred
-    expect(true).toBe(true);
+    // Verify routes are functional by making test requests
+    const getResponse = await app.request("/api/x/my-plugin/status");
+    expect(getResponse.status).toBe(200);
+    const getBody = await getResponse.json();
+    expect(getBody).toEqual({ status: "ok" });
+
+    const postResponse = await app.request("/api/x/my-plugin/action", { method: "POST" });
+    expect(postResponse.status).toBe(200);
+    const postBody = await postResponse.json();
+    expect(postBody).toEqual({ action: "done" });
   });
 
-  test("should support middleware in plugin app", () => {
+  test("should support middleware in plugin app", async () => {
     const pluginApp = new Hono();
     const middlewareCalled = { value: false };
 
@@ -340,7 +347,10 @@ describe("Plugin route registration simulation", () => {
 
     pluginApp.get("/test", (c) => c.json({ test: true }));
 
-    // Middleware is registered
-    expect(true).toBe(true);
+    // Verify middleware is called when route is accessed
+    expect(middlewareCalled.value).toBe(false);
+    const response = await pluginApp.request("/test");
+    expect(response.status).toBe(200);
+    expect(middlewareCalled.value).toBe(true);
   });
 });

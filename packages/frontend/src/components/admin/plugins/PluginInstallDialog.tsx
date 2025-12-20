@@ -19,6 +19,8 @@ import {
   TextField,
   Label,
   Input,
+  Button as AriaButton,
+  Checkbox,
 } from "react-aria-components";
 import { X, Download, Loader2, AlertTriangle, CheckCircle } from "lucide-react";
 import { Button } from "../../ui/Button";
@@ -90,16 +92,16 @@ export function PluginInstallDialog({ trigger, onInstall }: PluginInstallDialogP
                     <Download className="w-5 h-5" />
                     <Trans>Install Plugin</Trans>
                   </Heading>
-                  <button
+                  <AriaButton
                     className="rounded-md p-1 text-(--text-muted) hover:bg-(--bg-tertiary) hover:text-(--text-primary) cursor-pointer"
-                    onClick={() => {
+                    onPress={() => {
                       close();
                       handleClose();
                     }}
                     aria-label={t`Close dialog`}
                   >
                     <X className="h-5 w-5" />
-                  </button>
+                  </AriaButton>
                 </div>
 
                 {/* Content */}
@@ -140,16 +142,25 @@ export function PluginInstallDialog({ trigger, onInstall }: PluginInstallDialogP
                   </TextField>
 
                   {/* Force Reinstall Checkbox */}
-                  <label className="flex items-center gap-2 text-sm text-(--text-secondary)">
-                    <input
-                      type="checkbox"
-                      checked={force}
-                      onChange={(e) => setForce(e.target.checked)}
-                      disabled={isLoading || success}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
+                  <Checkbox
+                    isSelected={force}
+                    onChange={setForce}
+                    isDisabled={isLoading || success}
+                    className="group flex items-center gap-2 text-sm text-(--text-secondary)"
+                  >
+                    <div className="w-4 h-4 shrink-0 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 group-data-selected:bg-primary-600 group-data-selected:border-primary-600 flex items-center justify-center">
+                      <svg
+                        className="w-3 h-3 text-white hidden group-data-selected:block"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
                     <Trans>Force reinstall if already installed</Trans>
-                  </label>
+                  </Checkbox>
                 </div>
 
                 {/* Footer */}

@@ -57,7 +57,7 @@ export function PluginsPage({ currentPath }: PluginsPageProps) {
       const response = await pluginApi.list();
       setPlugins(response.plugins);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load plugins");
+      setError(err instanceof Error ? err.message : t`Failed to load plugins`);
     } finally {
       setIsLoading(false);
       setIsReloading(false);
@@ -132,7 +132,7 @@ export function PluginsPage({ currentPath }: PluginsPageProps) {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : "Unknown error",
+        error: err instanceof Error ? err.message : t`Unknown error`,
       };
     }
   };
@@ -159,7 +159,7 @@ export function PluginsPage({ currentPath }: PluginsPageProps) {
     } catch (err) {
       return {
         success: false,
-        error: err instanceof Error ? err.message : "Unknown error",
+        error: err instanceof Error ? err.message : t`Unknown error`,
       };
     }
   };

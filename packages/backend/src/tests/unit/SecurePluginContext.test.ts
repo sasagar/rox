@@ -234,7 +234,9 @@ describe("SecurePluginContext", () => {
     });
 
     it("should allow config write with config:write permission", async () => {
-      permissionManager.registerPlugin("test-plugin", ["config:write"]);
+      // Register both read and write permissions to properly test write operations
+      // (reading back the value requires config:read)
+      permissionManager.registerPlugin("test-plugin", ["config:read", "config:write"]);
 
       const context = createSecurePluginContext({
         pluginId: "test-plugin",
@@ -247,11 +249,14 @@ describe("SecurePluginContext", () => {
         onRegisterTask: () => {},
       });
 
-      // Should not throw - verify operations complete without error
-      await context.config.set("test-key", "value");
+      // Verify write operations work with proper permissions
+      await context.config.set("test-key", "test-value");
+      const value = await context.config.get<string>("test-key");
+      expect(value).toBe("test-value");
+
       await context.config.delete("test-key");
-      // If we get here, no error was thrown
-      expect(true).toBe(true);
+      const deletedValue = await context.config.get<string>("test-key");
+      expect(deletedValue).toBeUndefined();
     });
 
     it("should reject config write without config:write permission", async () => {

@@ -169,10 +169,17 @@ export interface PluginListEntry {
  * - Must end with a lowercase letter or digit
  * - Can contain lowercase letters, digits, and hyphens in the middle
  *
+ * Regex breakdown: `/^[a-z][a-z0-9-]{1,48}[a-z0-9]$/`
+ * - `^[a-z]` - Start with a lowercase letter
+ * - `[a-z0-9-]{1,48}` - 1-48 characters of lowercase letters, digits, or hyphens
+ * - `[a-z0-9]$` - End with a lowercase letter or digit
+ * - Total length: 3-50 characters (1 + 1-48 + 1)
+ *
  * @example
  * isValidPluginId("my-plugin") // true
- * isValidPluginId("a1") // false (too short)
+ * isValidPluginId("a1") // false (too short, needs at least 3 chars)
  * isValidPluginId("my_plugin") // false (underscores not allowed)
+ * isValidPluginId("my-plugin-") // false (cannot end with hyphen)
  */
 export function isValidPluginId(id: string): boolean {
   return /^[a-z][a-z0-9-]{1,48}[a-z0-9]$/.test(id);
