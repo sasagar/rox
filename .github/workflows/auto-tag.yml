@@ -110,6 +110,8 @@ jobs:
           fi
 
       - name: Generate changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
           CURRENT_TAG="v${{ needs.auto-tag.outputs.version }}"
@@ -120,23 +122,34 @@ jobs:
             RANGE="${CURRENT_TAG}"
           fi
 
-          # Function to extract GitHub username from email or use email prefix
-          # GitHub noreply emails: username@users.noreply.github.com or ID+username@users.noreply.github.com
-          extract_username() {
-            local email="$1"
+          # Function to get GitHub username from commit hash using GitHub API
+          # Falls back to email-based extraction if API fails
+          get_github_username() {
+            local hash="$1"
+            local email="$2"
+
+            # Try to get author login from GitHub API
+            local api_result
+            api_result=$(gh api "repos/${{ github.repository }}/commits/${hash}" --jq '.author.login // empty' 2>/dev/null || true)
+
+            if [ -n "$api_result" ]; then
+              echo "$api_result"
+              return
+            fi
+
+            # Fallback: Extract from GitHub noreply email
             if [[ "$email" == *"@users.noreply.github.com" ]]; then
-              # Extract username from GitHub noreply email
               local prefix="${email%%@*}"
-              # Handle ID+username format
               if [[ "$prefix" == *"+"* ]]; then
                 echo "${prefix#*+}"
               else
                 echo "$prefix"
               fi
-            else
-              # Use email prefix as fallback
-              echo "${email%%@*}"
+              return
             fi
+
+            # Final fallback: Use email prefix
+            echo "${email%%@*}"
           }
 
           # Function to format commits with proper GitHub username mentions
@@ -145,13 +158,13 @@ jobs:
             local invert="${2:-false}"
 
             if [ "$invert" = "true" ]; then
-              git log $RANGE --pretty=format:"%s|%h|%ae" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true
+              git log $RANGE --pretty=format:"%s|%h|%H|%ae" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true
             else
-              git log $RANGE --pretty=format:"%s|%h|%ae" --grep="$grep_pattern" 2>/dev/null || true
-            fi | while IFS='|' read -r subject hash email; do
+              git log $RANGE --pretty=format:"%s|%h|%H|%ae" --grep="$grep_pattern" 2>/dev/null || true
+            fi | while IFS='|' read -r subject short_hash full_hash email; do
               if [ -n "$subject" ]; then
-                username=$(extract_username "$email")
-                echo "- $subject ($hash) @$username"
+                username=$(get_github_username "$full_hash" "$email")
+                echo "- $subject ($short_hash) @$username"
               fi
             done
           }
