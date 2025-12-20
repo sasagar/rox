@@ -113,7 +113,13 @@ function createSecureEventBus(
         const writePermission = requiredPermissions.find((p) =>
           p.endsWith(":write")
         );
-        if (writePermission && !permissionManager.hasPermission(pluginId, writePermission)) {
+        if (!writePermission) {
+          // Defensive check: all before events should have a write permission defined
+          logger.warn(
+            { pluginId, eventType: type, requiredPermissions },
+            "No write permission defined for before event - subscription allowed by default"
+          );
+        } else if (!permissionManager.hasPermission(pluginId, writePermission)) {
           logger.warn(
             {
               pluginId,
@@ -127,8 +133,7 @@ function createSecureEventBus(
             pluginId,
             writePermission
           );
-        }
-        if (writePermission) {
+        } else {
           permissionManager.logPermissionCheck(
             pluginId,
             writePermission,
