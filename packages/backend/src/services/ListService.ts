@@ -341,21 +341,19 @@ export class ListService {
     if (this.systemAccountService) {
       const remoteMembers = members.filter((m) => m.user?.host);
       if (remoteMembers.length > 0) {
-        Promise.allSettled(
+        // Promise.allSettled never rejects, so no .catch() needed
+        // All failures are handled in .then() via results with status === "rejected"
+        void Promise.allSettled(
           remoteMembers.map((member) => this.systemAccountService!.ensureSystemFollow(member.userId)),
-        )
-          .then((results) => {
-            const failures = results.filter((r) => r.status === "rejected");
-            if (failures.length > 0) {
-              logger.warn(
-                { listId, failureCount: failures.length, totalRemote: remoteMembers.length },
-                "Some system follows failed during lazy initialization",
-              );
-            }
-          })
-          .catch((error) => {
-            logger.error({ listId, error }, "Unexpected error in system follow lazy initialization");
-          });
+        ).then((results) => {
+          const failures = results.filter((r) => r.status === "rejected");
+          if (failures.length > 0) {
+            logger.warn(
+              { listId, failureCount: failures.length, totalRemote: remoteMembers.length },
+              "Some system follows failed during lazy initialization",
+            );
+          }
+        });
       }
     }
 
