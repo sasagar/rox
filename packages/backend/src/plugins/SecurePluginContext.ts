@@ -72,6 +72,11 @@ function createSecureEventBus(
     on: (type, handler) => {
       const requiredPermissions = EVENT_PERMISSIONS[type];
       if (requiredPermissions) {
+        const firstPermission = requiredPermissions[0];
+        if (!firstPermission) {
+          throw new Error(`No permission defined in EVENT_PERMISSIONS for '${type}'`);
+        }
+
         const hasPermission = permissionManager.hasAnyPermission(
           pluginId,
           requiredPermissions
@@ -85,25 +90,18 @@ function createSecureEventBus(
             },
             "Plugin attempted to subscribe to event without permission"
           );
-          const firstPermission = requiredPermissions[0];
-          if (!firstPermission) {
-            throw new Error(`No permission defined in EVENT_PERMISSIONS for '${type}'`);
-          }
           throw new PluginPermissionError(
             `Plugin '${pluginId}' does not have permission to subscribe to '${type}' events`,
             pluginId,
             firstPermission
           );
         }
-        const firstPermission = requiredPermissions[0];
-        if (firstPermission) {
-          permissionManager.logPermissionCheck(
-            pluginId,
-            firstPermission,
-            true,
-            `subscribe to ${type}`
-          );
-        }
+        permissionManager.logPermissionCheck(
+          pluginId,
+          firstPermission,
+          true,
+          `subscribe to ${type}`
+        );
       }
       return events.on(type, handler);
     },
@@ -143,10 +141,15 @@ function createSecureEventBus(
     },
 
     removeAllListeners: () => {
-      // Only allow removing own listeners - this is handled by the loader
+      // Plugins are not allowed to remove all listeners - this is a security restriction
       logger.warn(
         { pluginId },
         "Plugin attempted to remove all listeners - operation restricted"
+      );
+      throw new PluginPermissionError(
+        `Plugin '${pluginId}' is not allowed to remove all listeners`,
+        pluginId,
+        "admin:write"
       );
     },
   };
@@ -371,11 +374,12 @@ export class PluginSecurityAuditor {
     if (options?.pluginId) {
       entries = entries.filter((e) => e.pluginId === options.pluginId);
     }
-    if (options?.startTime) {
-      entries = entries.filter((e) => e.timestamp >= options.startTime!);
+    const { startTime, endTime } = options ?? {};
+    if (startTime) {
+      entries = entries.filter((e) => e.timestamp >= startTime);
     }
-    if (options?.endTime) {
-      entries = entries.filter((e) => e.timestamp <= options.endTime!);
+    if (endTime) {
+      entries = entries.filter((e) => e.timestamp <= endTime);
     }
     if (options?.grantedOnly) {
       entries = entries.filter((e) => e.granted);
