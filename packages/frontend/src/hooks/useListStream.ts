@@ -34,6 +34,10 @@ export interface UseListStreamOptions {
 /**
  * Get WebSocket endpoint URL for list timeline
  *
+ * Note: Token is passed via query parameter, which is a common pattern for WebSocket auth.
+ * While this may be logged in server access logs, the connection uses WSS (encrypted)
+ * in production, making this approach acceptable.
+ *
  * @param listId - List ID to connect to
  * @param token - Authentication token
  * @returns WebSocket URL with token
