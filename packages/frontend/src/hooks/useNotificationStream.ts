@@ -44,6 +44,21 @@ const notificationConnection: NotificationWSConnection = {
 // Additional callbacks for mention stream (separate from notification column callbacks)
 const mentionCallbacks = new Map<string, (notification: Notification) => void>();
 
+// Token getter for reconnection (set by hook, avoids dynamic import issues)
+let tokenGetterForReconnect: (() => string | null) | null = null;
+
+/**
+ * Set the token getter function for WebSocket reconnection
+ * This avoids dynamic import issues with custom Jotai stores
+ *
+ * @param getter - Function that returns the current auth token
+ */
+export function setTokenGetterForReconnect(
+  getter: (() => string | null) | null
+): void {
+  tokenGetterForReconnect = getter;
+}
+
 /**
  * Register a callback to receive mention/reply notifications
  * Used by useMentionStream hook
@@ -248,14 +263,11 @@ function connectNotificationWS(token: string): void {
       reconnectAttempts++;
 
       connection.reconnectTimeout = setTimeout(() => {
-        // Re-fetch token from store
-        import("jotai").then(({ getDefaultStore }) => {
-          const store = getDefaultStore();
-          const currentToken = store.get(tokenAtom);
-          if (currentToken) {
-            connectNotificationWS(currentToken);
-          }
-        });
+        // Re-fetch token using the registered getter
+        const currentToken = tokenGetterForReconnect?.();
+        if (currentToken) {
+          connectNotificationWS(currentToken);
+        }
       }, delay);
     }
   };
@@ -358,6 +370,14 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
     onNewNotificationRef.current = onNewNotification;
     uiSettingsRef.current = uiSettings;
   }, [token, prependColumnNotifications, onNewNotification, uiSettings]);
+
+  // Register token getter for reconnection
+  useEffect(() => {
+    setTokenGetterForReconnect(() => tokenRef.current);
+    return () => {
+      setTokenGetterForReconnect(null);
+    };
+  }, []);
 
   // Subscribe to connection state changes
   useEffect(() => {
