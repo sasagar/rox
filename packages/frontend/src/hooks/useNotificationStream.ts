@@ -47,6 +47,9 @@ const mentionCallbacks = new Map<string, (notification: Notification) => void>()
 /**
  * Register a callback to receive mention/reply notifications
  * Used by useMentionStream hook
+ *
+ * @param columnId - Column ID to register callback for
+ * @param callback - Callback function to receive notifications
  */
 export function registerMentionCallback(
   columnId: string,
@@ -57,6 +60,8 @@ export function registerMentionCallback(
 
 /**
  * Unregister a mention callback
+ *
+ * @param columnId - Column ID to unregister callback for
  */
 export function unregisterMentionCallback(columnId: string): void {
   mentionCallbacks.delete(columnId);
@@ -82,6 +87,9 @@ const NOTIFICATION_SOUND_TYPES: readonly NotificationSoundType[] = [
 
 /**
  * Type guard to check if a notification type supports sound
+ *
+ * @param type - Notification type string to check
+ * @returns True if the type is a valid notification sound type
  */
 function isNotificationSoundType(type: string): type is NotificationSoundType {
   return NOTIFICATION_SOUND_TYPES.includes(type as NotificationSoundType);
@@ -100,6 +108,9 @@ function notifyConnectionChange(connected: boolean) {
 
 /**
  * Get WebSocket endpoint URL for notifications
+ *
+ * @param token - Authentication token
+ * @returns WebSocket URL with token
  */
 function getNotificationsWSUrl(token: string): string {
   const protocol =
@@ -112,8 +123,10 @@ function getNotificationsWSUrl(token: string): string {
 
 /**
  * Connect to notification WebSocket stream (singleton)
+ *
+ * @param token - Authentication token
  */
-function connectNotificationWS(token: string) {
+function connectNotificationWS(token: string): void {
   const connection = notificationConnection;
 
   // Already connected or connecting
@@ -231,8 +244,10 @@ function connectNotificationWS(token: string) {
 
 /**
  * Disconnect notification WebSocket stream (singleton)
+ *
+ * @param force - Force disconnect even if there are active subscribers
  */
-function disconnectNotificationWS(force = false) {
+function disconnectNotificationWS(force = false): void {
   const connection = notificationConnection;
 
   if (force || connection.connectionCount <= 0) {
@@ -271,6 +286,8 @@ export interface UseNotificationStreamOptions {
  *
  * @param options - Stream options including columnId
  *
+ * @returns Object containing connection state and control functions
+ *
  * @example
  * ```tsx
  * // In a notification column component
@@ -280,7 +297,14 @@ export interface UseNotificationStreamOptions {
  * });
  * ```
  */
-export function useNotificationStream(options: UseNotificationStreamOptions) {
+export function useNotificationStream(options: UseNotificationStreamOptions): {
+  /** Whether WebSocket is currently connected */
+  connected: boolean;
+  /** Manually connect to WebSocket */
+  connect: () => void;
+  /** Manually disconnect from WebSocket */
+  disconnect: () => void;
+} {
   const { enabled = true, columnId, onNewNotification } = options;
 
   // Column-scoped atom setter

@@ -33,6 +33,10 @@ export interface UseListStreamOptions {
 
 /**
  * Get WebSocket endpoint URL for list timeline
+ *
+ * @param listId - List ID to connect to
+ * @param token - Authentication token
+ * @returns WebSocket URL with token
  */
 function getListWSUrl(listId: string, token: string): string {
   const protocol =
@@ -48,6 +52,8 @@ function getListWSUrl(listId: string, token: string): string {
  *
  * @param options - Stream options including columnId and listId
  *
+ * @returns Object containing connection state and control functions
+ *
  * @example
  * ```tsx
  * // In a list column component
@@ -58,7 +64,14 @@ function getListWSUrl(listId: string, token: string): string {
  * });
  * ```
  */
-export function useListStream(options: UseListStreamOptions) {
+export function useListStream(options: UseListStreamOptions): {
+  /** Whether WebSocket is currently connected */
+  connected: boolean;
+  /** Manually connect to WebSocket */
+  connect: () => void;
+  /** Manually disconnect from WebSocket */
+  disconnect: () => void;
+} {
   const { enabled = true, columnId, listId, onNewNote } = options;
 
   // Column-scoped atom setter for notes
