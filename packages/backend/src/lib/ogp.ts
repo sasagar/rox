@@ -166,7 +166,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
 
   // Escape values for HTML attributes
   const escapedTitle = escapeHtml(title);
-  const escapedDescription = description; // Already escaped above
+  const escapedDescription = description; // Already escaped above or literal string
   const escapedNoteUrl = escapeHtml(noteUrl);
   const escapedInstanceName = escapeHtml(instanceName);
   const escapedThemeColor = escapeHtml(themeColor);
