@@ -109,6 +109,12 @@ function notifyConnectionChange(connected: boolean) {
 /**
  * Get WebSocket endpoint URL for notifications
  *
+ * Note: Token is passed via query parameter, which is a common pattern for WebSocket auth.
+ * While this may be logged in server access logs, the connection uses WSS (encrypted)
+ * in production, making this approach acceptable. An alternative would be to send
+ * the token in the first message after connection, but the current approach is simpler
+ * and widely adopted.
+ *
  * @param token - Authentication token
  * @returns WebSocket URL with token
  */
