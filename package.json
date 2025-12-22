@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2025.12.6",
+  "version": "2026.1.0-alpha.3",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
@@ -47,7 +47,8 @@
     "db:import": "if [ -f .env ]; then set -a && . ./.env && set +a; fi && bun packages/backend/scripts/import.ts",
     "lingui:extract": "bun run --cwd packages/frontend lingui:extract",
     "lingui:compile": "bun run --cwd packages/frontend lingui:compile",
-    "typedoc": "typedoc"
+    "typedoc": "typedoc",
+    "plugin": "bun packages/backend/src/plugins/cli.ts"
   },
   "workspaces": [
     "packages/*"

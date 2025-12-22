@@ -30,6 +30,7 @@ import type { IContactRepository } from "../interfaces/repositories/IContactRepo
 import type { IBlockedUsernameRepository } from "../interfaces/repositories/IBlockedUsernameRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
+import type { IEventBus } from "../interfaces/IEventBus.js";
 import {
   PostgresUserRepository,
   PostgresNoteRepository,
@@ -74,6 +75,7 @@ import { UserDeletionService } from "../services/UserDeletionService.js";
 import { UserDataExportService } from "../services/UserDataExportService.js";
 import { BlockedUsernameService } from "../services/BlockedUsernameService.js";
 import { SystemAccountService } from "../services/SystemAccountService.js";
+import { EventBus } from "../plugins/EventBus.js";
 import { logger } from "../lib/logger.js";
 
 export interface AppContainer {
@@ -119,6 +121,7 @@ export interface AppContainer {
   userDataExportService: UserDataExportService;
   blockedUsernameService: BlockedUsernameService;
   systemAccountService: SystemAccountService;
+  eventBus: IEventBus;
 }
 
 /**
@@ -134,6 +137,9 @@ export function createContainer(): AppContainer {
 
   // Storage Adapter選択
   const fileStorage = createStorageAdapter();
+
+  // EventBus for plugin system
+  const eventBus = new EventBus();
 
   // Cache Service (Dragonfly/Redis)
   const cacheService = new DragonflyCacheAdapter();
@@ -253,6 +259,7 @@ export function createContainer(): AppContainer {
     userDataExportService,
     blockedUsernameService,
     systemAccountService,
+    eventBus,
   };
 }
 

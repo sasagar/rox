@@ -519,8 +519,285 @@ const analyticsPlugin: RoxPlugin = {
 
 ---
 
+## Implementation Status
+
+### Phase 1: EventBus Foundation ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `a72bfff`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/types/events.ts` - Event type definitions
+- `packages/backend/src/plugins/EventBus.ts` - EventBus implementation
+- `packages/backend/src/plugins/index.ts` - Plugin exports
+- `packages/backend/src/interfaces/IEventBus.ts` - IEventBus interface
+- `packages/backend/src/tests/unit/EventBus.test.ts` - Unit tests (all passing)
+
+**Integrated Services**:
+- `NoteService` - beforeCreate/afterCreate/beforeDelete/afterDelete
+- `AuthService` - beforeRegister/afterRegister
+- `DIコンテナ` - EventBus instance available via container
+
+**Event Types**:
+```typescript
+type RoxEvent =
+  | NoteBeforeCreateEvent   // Cancellable, modifiable
+  | NoteAfterCreateEvent    // Notification only
+  | NoteBeforeDeleteEvent   // Cancellable
+  | NoteAfterDeleteEvent    // Notification only
+  | UserBeforeRegisterEvent // Cancellable, modifiable
+  | UserAfterRegisterEvent  // Notification only
+```
+
+**API**:
+- `eventBus.on(type, handler)` - Subscribe to after events
+- `eventBus.onBefore(type, handler)` - Subscribe to before events
+- `eventBus.emit(type, data)` - Emit after events (parallel)
+- `eventBus.emitBefore(type, data)` - Emit before events (sequential, cancellable)
+
+---
+
+### Phase 2: Plugin Loader & Integration ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/types/plugin.ts` - RoxPlugin, PluginContext, PluginManifest interfaces
+- `packages/backend/src/plugins/PluginLoader.ts` - Plugin discovery, loading, and lifecycle management
+- `packages/backend/src/plugins/PluginConfigStorage.ts` - File-based and in-memory config storage
+- `packages/backend/src/tests/unit/PluginLoader.test.ts` - Unit tests (all passing)
+
+**Updated Files**:
+- `packages/backend/src/plugins/index.ts` - Export PluginLoader and config storage
+- `packages/backend/src/index.ts` - Integrated PluginLoader into app startup and shutdown
+
+**Key Features**:
+- **RoxPlugin Interface**: Complete plugin definition with id, name, version, lifecycle hooks
+- **PluginContext**: Provides plugins with events, logger, config storage, scheduled tasks
+- **PluginLoader**: Loads plugins from directory, validates dependencies, version compatibility
+- **Plugin Routes**: Plugins can register routes under `/api/x/{pluginId}/`
+- **Scheduled Tasks**: Plugins can register recurring tasks with cron-like or ms intervals
+- **Graceful Shutdown**: Plugins are properly unloaded during server shutdown
+
+**Environment Variable**:
+- `PLUGIN_DIRECTORY`: Directory to load plugins from (default: `./plugins`)
+
+**Example Plugin**:
+```typescript
+const myPlugin: RoxPlugin = {
+  id: 'my-plugin',
+  name: 'My Plugin',
+  version: '1.0.0',
+
+  onLoad({ events, logger, config }) {
+    events.on('note:afterCreate', ({ note }) => {
+      logger.info({ noteId: note.id }, 'Note created');
+    });
+  },
+
+  routes(app) {
+    app.get('/status', (c) => c.json({ status: 'ok' }));
+  }
+};
+
+export default myPlugin;
+```
+
+---
+
+### Phase 3: Frontend Plugin System ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `6ae6131`
+
+**Implemented Files**:
+- `packages/frontend/src/lib/plugins/slots.ts` - PLUGIN_SLOTS constant with 12 slot definitions
+- `packages/frontend/src/lib/plugins/types.ts` - FrontendPlugin, SlotProps, and related types
+- `packages/frontend/src/lib/plugins/registry.ts` - FrontendPluginRegistry class and hooks
+- `packages/frontend/src/lib/plugins/PluginSlot.tsx` - React component for slot rendering
+- `packages/frontend/src/lib/plugins/index.ts` - Public exports
+- `packages/frontend/src/tests/plugins/registry.test.ts` - Unit tests (13 tests passing)
+
+**Updated Files**:
+- `packages/frontend/src/components/note/NoteCard.tsx` - Integrated 3 plugin slots
+
+**Available Slots**:
+
+| Slot Name | Location |
+|-----------|----------|
+| `note:header` | Before note header content |
+| `note:footer` | After note content, before reactions |
+| `note:actions` | Additional note action buttons |
+| `compose:toolbar` | Additional compose toolbar items |
+| `compose:footer` | Below compose textarea |
+| `profile:header` | Additional profile header content |
+| `profile:tabs` | Additional profile tabs |
+| `settings:tabs` | Additional settings tabs |
+| `admin:sidebar` | Additional admin sidebar items |
+| `admin:dashboard` | Additional dashboard widgets |
+| `sidebar:bottom` | Before sidebar footer |
+
+**Slot Props Types**:
+- `NoteSlotProps`: noteId, userId, visibility
+- `ComposeSlotProps`: text, insertText callback, replyToId
+- `ProfileSlotProps`: userId, username, isOwnProfile
+- `SettingsSlotProps`: userId
+- `AdminSlotProps`: isAdmin
+- `SidebarSlotProps`: isCollapsed
+
+**Key Features**:
+- **FrontendPlugin Interface**: slots, pages, atoms, messages, lifecycle hooks
+- **PluginSlot Component**: Renders plugin components at designated slots
+- **Jotai Integration**: Reactive state via pluginListAtom, enabledPluginsAtom
+- **Registry Hooks**: usePlugins, useEnabledPlugins, usePluginSlotComponents, usePluginRegistry
+- **Error Handling**: Plugin errors don't break host components
+
+---
+
+### Phase 4: Plugin Distribution System ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `2a17484`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/PluginManager.ts` - Full plugin lifecycle management
+- `packages/backend/src/plugins/ManifestValidator.ts` - Manifest validation with detailed errors
+- `packages/backend/src/plugins/cli.ts` - CLI commands for plugin operations
+- `packages/shared/src/types/plugin.ts` - Shared plugin types (PluginManifest, PluginListEntry, etc.)
+- `plugins/README.md` - Plugin development documentation
+
+**Sample Plugins**:
+- `plugins/activity-logger/` - Backend plugin for activity logging
+- `plugins/auto-cw/` - Backend + Frontend plugin for automatic content warnings
+
+**CLI Commands** (via `bun run plugin <command>`):
+
+| Command | Description |
+|---------|-------------|
+| `install <source>` | Install from Git URL or local path |
+| `uninstall <id>` | Remove a plugin |
+| `list` | List all installed plugins |
+| `enable <id>` | Enable a disabled plugin |
+| `disable <id>` | Disable an enabled plugin |
+| `info <id>` | Show plugin details |
+
+**Key Features**:
+- **Git Installation**: Clone from GitHub/GitLab URLs
+- **Local Installation**: Copy from local directory
+- **Manifest Validation**: Schema validation with helpful error messages
+- **Permission Declaration**: Plugins declare required permissions
+- **Version Compatibility**: minRoxVersion/maxRoxVersion support
+
+---
+
+### Phase 5: Admin Plugin Management API ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `c6685b4`
+
+**Implemented Files**:
+- `packages/backend/src/routes/admin-plugins.ts` - REST API endpoints for plugin management
+- `packages/backend/src/tests/unit/AdminPluginsRoute.test.ts` - Unit tests (16 tests passing)
+- `docs/plugins/README.md` - Plugin system documentation
+- `docs/plugins/marketplace-specification.md` - Marketplace API specification
+
+**API Endpoints** (under `/api/admin/plugins`):
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all plugins |
+| GET | `/:id` | Get plugin details |
+| POST | `/:id/enable` | Enable a plugin |
+| POST | `/:id/disable` | Disable a plugin |
+| POST | `/install` | Install from source |
+| DELETE | `/:id` | Uninstall a plugin |
+| GET | `/:id/config` | Get plugin configuration |
+| PUT | `/:id/config` | Update plugin configuration |
+
+**Marketplace Specification**:
+- Separate service architecture (not part of Rox core)
+- REST API for search, download, publish
+- Publisher verification and trust levels
+- Plugin categories and security scanning
+- Implementation roadmap (Phase 1-4)
+
+---
+
+## Next Steps
+
+### Phase 6: Admin Plugin UI (Frontend) ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `6a31438`
+
+**Implemented Files**:
+- `packages/frontend/src/lib/api/plugins.ts` - Plugin API client
+- `packages/frontend/src/components/admin/plugins/PluginCard.tsx` - Plugin display card
+- `packages/frontend/src/components/admin/plugins/PluginInstallDialog.tsx` - Install dialog
+- `packages/frontend/src/components/admin/plugins/PluginConfigDialog.tsx` - Config editor dialog
+- `packages/frontend/src/components/admin/plugins/PluginsPage.tsx` - Main management page
+- `packages/frontend/src/components/admin/plugins/index.ts` - Component exports
+
+**Updated Files**:
+- `packages/frontend/src/lib/api/client.ts` - Added PUT method
+- `packages/frontend/src/components/admin/AdminLayout.tsx` - Added Plugins navigation
+
+**Features**:
+- View list of installed plugins
+- Enable/disable plugins
+- Install plugins from Git URL or local path
+- Uninstall plugins
+- View and edit plugin configuration (JSON)
+- Responsive design with loading/error states
+- React Aria accessible components
+
+### Phase 7: Plugin Sandboxing & Security ✅ COMPLETED (2025-12-19)
+
+**Branch**: `feature/plugin-eventbus-foundation`
+**Commit**: `ff129a3`
+
+**Implemented Files**:
+- `packages/backend/src/plugins/PluginPermissions.ts` - Permission validation system
+- `packages/backend/src/plugins/SecurePluginContext.ts` - Permission-aware context wrapper
+- `packages/backend/src/tests/unit/PluginPermissions.test.ts` - Permission tests (26 tests)
+- `packages/backend/src/tests/unit/SecurePluginContext.test.ts` - Secure context tests (22 tests)
+
+**Updated Files**:
+- `packages/backend/src/plugins/PluginLoader.ts` - Integrated permission validation
+
+**Permission System**:
+
+| Permission | Risk Level | Description |
+|------------|------------|-------------|
+| `note:read` | Low | Read notes and content |
+| `note:write` | Medium | Create, update, delete notes |
+| `user:read` | Low | Read user profiles |
+| `user:write` | High | Modify user data |
+| `file:read` | Low | Read uploaded files |
+| `file:write` | Medium | Upload, modify, delete files |
+| `admin:read` | Medium | Read admin settings |
+| `admin:write` | High | Modify admin settings |
+| `config:read` | Low | Read plugin configuration |
+| `config:write` | Low | Modify plugin configuration |
+
+**Key Features**:
+- **PluginPermissionManager**: Validates and tracks plugin permissions
+- **SecurePluginContext**: Wraps event bus and config with permission checks
+- **PluginSecurityAuditor**: Logs security-relevant plugin actions
+- **Event Permission Mapping**: Specific permissions required for event subscriptions
+- **Manifest Validation**: Validates permissions, warns about high-risk combinations
+- **Backward Compatibility**: Plugins without permissions use unrestricted context (with warning)
+
+### Phase 8: Hot Reloading
+
+**Goal**: Enable plugin updates without server restart
+
+---
+
 ## Notes
 
 - Recorded: 2025-12-10
-- Status: Design phase (not yet implemented)
+- Updated: 2025-12-19 (Phases 1-7 completed)
+- Status: Phases 1-7 complete, Phase 8 (Hot Reloading) planned
+- PR #99 created for merging to main
 - This design prioritizes gradual implementation without breaking changes

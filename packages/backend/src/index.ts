@@ -30,6 +30,7 @@ import nodeinfoRoute from "./routes/ap/nodeinfo.js";
 import proxyRoute from "./routes/proxy.js";
 import healthRoute from "./routes/health.js";
 import adminRoute from "./routes/admin.js";
+import adminPluginsRoute, { setPluginLoader } from "./routes/admin-plugins.js";
 import reportsRoute from "./routes/reports.js";
 import invitationsRoute from "./routes/invitations.js";
 import instanceRoute from "./routes/instance.js";
@@ -55,6 +56,8 @@ import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
 import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
+import { PluginLoader } from "./plugins/PluginLoader.js";
+import { PluginWatcher } from "./plugins/PluginWatcher.js";
 
 const app = new Hono();
 
@@ -88,6 +91,7 @@ app.route("/api/notes", notesRoute);
 app.route("/api/notes/reactions", reactionsRoute);
 app.route("/api/following", followingRoute);
 app.route("/api/admin", adminRoute);
+app.route("/api/admin/plugins", adminPluginsRoute);
 app.route("/api/mod", moderatorRoute);
 app.route("/api/reports", reportsRoute);
 app.route("/api/invitations", invitationsRoute);
@@ -175,6 +179,49 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Initialize plugin loader
+const pluginLoader = new PluginLoader(container.eventBus, app, {
+  pluginDirectory: process.env.PLUGIN_DIRECTORY || "./plugins",
+  roxVersion: packageJson.version,
+  baseUrl: process.env.URL || "http://localhost:3000",
+});
+
+// Make plugin loader available for admin routes (hot reload)
+setPluginLoader(pluginLoader);
+
+// Initialize plugin watcher for development hot reload
+const pluginWatcher = new PluginWatcher({
+  pluginLoader,
+  logger,
+});
+
+// Load plugins (non-blocking)
+pluginLoader.loadFromDirectory().then((results) => {
+  const loaded = results.filter((r) => r.success);
+  const failed = results.filter((r) => !r.success);
+
+  if (loaded.length > 0) {
+    logger.info(
+      { plugins: loaded.map((r) => r.pluginId) },
+      `Loaded ${loaded.length} plugin(s)`,
+    );
+  }
+
+  if (failed.length > 0) {
+    for (const result of failed) {
+      logger.warn(
+        { pluginId: result.pluginId, error: result.error },
+        "Failed to load plugin",
+      );
+    }
+  }
+
+  // Start file watcher after plugins are loaded (development only)
+  pluginWatcher.start();
+}).catch((error) => {
+  logger.error({ err: error }, "Failed to initialize plugins");
+});
+
 // Print startup banner (plain text for systemd/console compatibility)
 const env = process.env.NODE_ENV || "development";
 const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
@@ -220,6 +267,13 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
+
+    // Stop plugin watcher and unload all plugins
+    logger.info("Stopping plugin watcher");
+    pluginWatcher.stop();
+
+    logger.info("Unloading plugins");
+    await pluginLoader.unloadAll();
 
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");

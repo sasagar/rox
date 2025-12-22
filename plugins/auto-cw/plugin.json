@@ -1,0 +1,28 @@
+{
+  "id": "auto-cw",
+  "name": "Auto Content Warning",
+  "version": "1.0.0",
+  "description": "Automatically adds content warnings based on configurable keywords",
+  "author": "Rox Team",
+  "minRoxVersion": "2025.12.0",
+  "permissions": ["note:read", "note:write", "config:read", "config:write"],
+  "backend": "index.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "keywords": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Keywords that trigger automatic CW"
+      },
+      "cwText": {
+        "type": "string",
+        "description": "Content warning text to add"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "Whether the plugin is enabled"
+      }
+    }
+  }
+}
