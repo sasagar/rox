@@ -83,8 +83,12 @@ export function TimelineColumnContent({
           ? "global"
           : "local";
 
-  // Enable real-time updates
-  useTimelineStream(streamType, { enabled: true, onNewNote: handleNewNote });
+  // Enable real-time updates with column-scoped state
+  useTimelineStream(streamType, {
+    enabled: true,
+    onNewNote: handleNewNote,
+    columnId,
+  });
 
   // Load initial data
   useEffect(() => {

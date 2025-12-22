@@ -15,6 +15,11 @@ import { useEffect, useCallback, useRef, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { timelineNotesAtom } from "../lib/atoms/timeline";
+import {
+  prependColumnNotesAtomFamily,
+  removeColumnNoteAtomFamily,
+  updateColumnNoteAtomFamily,
+} from "../lib/atoms/column";
 import type { Note } from "../lib/types/note";
 
 /**
@@ -215,6 +220,11 @@ export interface UseTimelineStreamOptions {
   enabled?: boolean;
   /** Callback when a new note is received */
   onNewNote?: (note: Note) => void;
+  /**
+   * Column ID for deck view.
+   * When provided, updates are written to column-scoped atoms instead of global timeline atom.
+   */
+  columnId?: string;
 }
 
 /**
@@ -242,8 +252,22 @@ export function useTimelineStream(
   options: UseTimelineStreamOptions | boolean = true,
 ) {
   // Support legacy boolean argument for backwards compatibility
-  const { enabled = true, onNewNote } = typeof options === "boolean" ? { enabled: options } : options;
-  const setNotes = useSetAtom(timelineNotesAtom);
+  const { enabled = true, onNewNote, columnId } = typeof options === "boolean" ? { enabled: options } : options;
+
+  // Global atom setter (for regular timeline view)
+  const setGlobalNotes = useSetAtom(timelineNotesAtom);
+
+  // Column-scoped atom setters (for deck view)
+  const prependColumnNotes = useSetAtom(
+    prependColumnNotesAtomFamily(columnId ?? "")
+  );
+  const removeColumnNote = useSetAtom(
+    removeColumnNoteAtomFamily(columnId ?? "")
+  );
+  const updateColumnNote = useSetAtom(
+    updateColumnNoteAtomFamily(columnId ?? "")
+  );
+
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
 
@@ -255,7 +279,11 @@ export function useTimelineStream(
 
   // Refs to store stable references to latest values
   const tokenRef = useRef(token);
-  const setNotesRef = useRef(setNotes);
+  const columnIdRef = useRef(columnId);
+  const setGlobalNotesRef = useRef(setGlobalNotes);
+  const prependColumnNotesRef = useRef(prependColumnNotes);
+  const removeColumnNoteRef = useRef(removeColumnNote);
+  const updateColumnNoteRef = useRef(updateColumnNote);
   const onNewNoteRef = useRef(onNewNote);
   const isInitializedRef = useRef(false);
 
@@ -265,8 +293,18 @@ export function useTimelineStream(
   }, [token]);
 
   useEffect(() => {
-    setNotesRef.current = setNotes;
-  }, [setNotes]);
+    columnIdRef.current = columnId;
+  }, [columnId]);
+
+  useEffect(() => {
+    setGlobalNotesRef.current = setGlobalNotes;
+  }, [setGlobalNotes]);
+
+  useEffect(() => {
+    prependColumnNotesRef.current = prependColumnNotes;
+    removeColumnNoteRef.current = removeColumnNote;
+    updateColumnNoteRef.current = updateColumnNote;
+  }, [prependColumnNotes, removeColumnNote, updateColumnNote]);
 
   useEffect(() => {
     onNewNoteRef.current = onNewNote;
@@ -294,35 +332,64 @@ export function useTimelineStream(
 
     connection.callbacks.onNote = (note: Note) => {
       if (!isActiveRef.current) return;
-      setNotesRef.current((prev) => {
-        if (prev.some((n) => n.id === note.id)) {
-          return prev;
-        }
-        // Call onNewNote callback for sound notification etc.
-        onNewNoteRef.current?.(note);
-        return [note, ...prev];
-      });
+
+      // Call onNewNote callback for sound notification etc.
+      onNewNoteRef.current?.(note);
+
+      // Update appropriate atom based on whether we're in deck mode
+      if (columnIdRef.current) {
+        // Deck view: update column-scoped atom
+        prependColumnNotesRef.current([note]);
+      } else {
+        // Regular view: update global atom
+        setGlobalNotesRef.current((prev) => {
+          if (prev.some((n) => n.id === note.id)) {
+            return prev;
+          }
+          return [note, ...prev];
+        });
+      }
     };
 
     connection.callbacks.onNoteDeleted = (noteId: string) => {
       if (!isActiveRef.current) return;
-      setNotesRef.current((prev) => prev.filter((n) => n.id !== noteId));
+
+      if (columnIdRef.current) {
+        // Deck view: update column-scoped atom
+        removeColumnNoteRef.current(noteId);
+      } else {
+        // Regular view: update global atom
+        setGlobalNotesRef.current((prev) => prev.filter((n) => n.id !== noteId));
+      }
     };
 
     connection.callbacks.onNoteReacted = (event: NoteReactedEvent) => {
       if (!isActiveRef.current) return;
-      setNotesRef.current((prev) =>
-        prev.map((note) => {
-          if (note.id === event.noteId) {
-            return {
-              ...note,
-              reactions: event.counts,
-              reactionEmojis: event.emojis,
-            };
-          }
-          return note;
-        }),
-      );
+
+      if (columnIdRef.current) {
+        // Deck view: update column-scoped atom
+        updateColumnNoteRef.current({
+          noteId: event.noteId,
+          updates: {
+            reactions: event.counts,
+            reactionEmojis: event.emojis,
+          },
+        });
+      } else {
+        // Regular view: update global atom
+        setGlobalNotesRef.current((prev) =>
+          prev.map((note) => {
+            if (note.id === event.noteId) {
+              return {
+                ...note,
+                reactions: event.counts,
+                reactionEmojis: event.emojis,
+              };
+            }
+            return note;
+          }),
+        );
+      }
     };
 
     return () => {

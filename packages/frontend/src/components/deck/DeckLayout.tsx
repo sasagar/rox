@@ -239,9 +239,16 @@ export function DeckLayout({
       <main
         className={`min-h-screen transition-all duration-300 ${sidebarMarginClass} pt-mobile-header lg:pt-0`}
       >
-        {/* Deck Header - Profile Switcher */}
+        {/* Deck Header - Profile Switcher (Desktop) */}
         {showProfileSwitcher && (
           <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-4 py-2 hidden lg:block">
+            <DeckProfileSwitcher />
+          </div>
+        )}
+
+        {/* Deck Header - Profile Switcher (Mobile) */}
+        {showProfileSwitcher && (
+          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-2 py-1.5 lg:hidden">
             <DeckProfileSwitcher />
           </div>
         )}
@@ -283,11 +290,13 @@ export function DeckLayout({
         </div>
 
         {/* Mobile: Single column with swipe */}
-        {/* Height: 100vh - header (4rem + safe-area) - AppBar (3.5rem) - safe-area-bottom */}
+        {/* Height: 100vh - header (4rem + safe-area) - profile switcher (~2.5rem) - AppBar (3.5rem) - safe-area-bottom */}
         <div
           className="lg:hidden overflow-hidden"
           style={{
-            height: "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 3.5rem - env(safe-area-inset-bottom, 0px))",
+            height: showProfileSwitcher
+              ? "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 2.5rem - 3.5rem - env(safe-area-inset-bottom, 0px))"
+              : "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 3.5rem - env(safe-area-inset-bottom, 0px))",
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
