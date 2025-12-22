@@ -371,13 +371,8 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
     uiSettingsRef.current = uiSettings;
   }, [token, prependColumnNotifications, onNewNotification, uiSettings]);
 
-  // Register token getter for reconnection
-  useEffect(() => {
-    setTokenGetterForReconnect(() => tokenRef.current);
-    return () => {
-      setTokenGetterForReconnect(null);
-    };
-  }, []);
+  // Note: Token getter registration moved to connection lifecycle effect
+  // to avoid race conditions with multiple hook instances
 
   // Subscribe to connection state changes
   useEffect(() => {
@@ -442,6 +437,12 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
     const connection = notificationConnection;
     connection.connectionCount++;
 
+    // Register token getter when first subscriber connects
+    // This avoids race conditions when multiple hook instances mount/unmount
+    if (connection.connectionCount === 1) {
+      setTokenGetterForReconnect(() => tokenRef.current);
+    }
+
     // Connect on first subscriber
     if (connection.connectionCount === 1 && !isInitializedRef.current) {
       isInitializedRef.current = true;
@@ -459,6 +460,7 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
       if (connection.connectionCount <= 0) {
         connection.connectionCount = 0;
         isInitializedRef.current = false;
+        setTokenGetterForReconnect(null);
         disconnectNotificationWS(true);
       }
     };
