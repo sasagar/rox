@@ -169,10 +169,14 @@ export function useListStream(options: UseListStreamOptions): {
               console.warn("Received malformed note:", message.data);
               break;
             }
-            // Update column-scoped atom
-            prependNotesRef.current([note]);
-            // Call user callback
-            onNewNoteRef.current?.(note);
+            try {
+              // Update column-scoped atom
+              prependNotesRef.current([note]);
+              // Call user callback
+              onNewNoteRef.current?.(note);
+            } catch (error) {
+              console.error("Failed to process note:", error);
+            }
             break;
           }
           case "heartbeat":

@@ -526,8 +526,10 @@ ws.get(
           return;
         }
 
-        // Check access: owner can always see, others only if public
-        if (!list.isPublic && list.userId !== user.id) {
+        // Check access: owner can always see, members can see, others only if public
+        const isOwner = list.userId === user.id;
+        const isMember = await listRepository.isMember(listId, user.id);
+        if (!list.isPublic && !isOwner && !isMember) {
           ws.send(JSON.stringify({ event: "error", data: { message: "Access denied" } }));
           ws.close(4003, "Access denied");
           return;

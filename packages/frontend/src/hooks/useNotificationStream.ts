@@ -184,22 +184,31 @@ function connectNotificationWS(token: string): void {
           break;
         case "notification": {
           const notification = message.data as Notification;
-          // Basic validation to ensure notification has required fields
+          // Validate required notification fields
           if (
             !notification ||
             typeof notification.id !== "string" ||
-            typeof notification.type !== "string"
+            typeof notification.type !== "string" ||
+            typeof notification.createdAt !== "string"
           ) {
             console.warn("Received malformed notification:", message.data);
             break;
           }
           // Notify all notification column subscribers
           for (const callback of connection.columnCallbacks.values()) {
-            callback(notification);
+            try {
+              callback(notification);
+            } catch (error) {
+              console.error("Error in notification callback:", error);
+            }
           }
           // Also notify mention stream subscribers (for MentionsColumn)
           for (const callback of mentionCallbacks.values()) {
-            callback(notification);
+            try {
+              callback(notification);
+            } catch (error) {
+              console.error("Error in mention callback:", error);
+            }
           }
           break;
         }
