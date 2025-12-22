@@ -66,6 +66,10 @@ export function unregisterMentionCallback(columnId: string): void {
 let reconnectAttempts = 0;
 const MAX_RECONNECT_DELAY = 60000; // 60 seconds
 
+// Sound debounce to prevent rapid consecutive plays
+let lastSoundPlayedAt = 0;
+const SOUND_DEBOUNCE_MS = 500; // Minimum 500ms between sounds
+
 // Valid notification sound types
 const NOTIFICATION_SOUND_TYPES: readonly NotificationSoundType[] = [
   "follow",
@@ -194,7 +198,13 @@ function connectNotificationWS(token: string) {
     }
 
     // Reconnect with exponential backoff (only if there are still subscribers and not auth error)
-    if (connection.connectionCount > 0 && event.code !== 4001) {
+    // 4001: Authentication required, 4003: Access denied, 4004: Not found
+    if (
+      connection.connectionCount > 0 &&
+      event.code !== 4001 &&
+      event.code !== 4003 &&
+      event.code !== 4004
+    ) {
       const delay = Math.min(
         1000 * Math.pow(2, reconnectAttempts),
         MAX_RECONNECT_DELAY
@@ -330,19 +340,23 @@ export function useNotificationStream(options: UseNotificationStreamOptions) {
       // Call user callback
       onNewNotificationRef.current?.(notification);
 
-      // Play notification sound
-      const settings = uiSettingsRef.current;
-      const defaultSound = settings.notificationSound ?? "default";
-      const defaultVolume = settings.notificationVolume ?? 50;
+      // Play notification sound with debounce to prevent rapid consecutive plays
+      const now = Date.now();
+      if (now - lastSoundPlayedAt >= SOUND_DEBOUNCE_MS) {
+        const settings = uiSettingsRef.current;
+        const defaultSound = settings.notificationSound ?? "default";
+        const defaultVolume = settings.notificationVolume ?? 50;
 
-      if (defaultSound !== "none" || settings.notificationSoundsByType) {
-        if (isNotificationSoundType(notification.type)) {
-          playNotificationSoundForType(
-            notification.type,
-            settings.notificationSoundsByType,
-            defaultSound,
-            defaultVolume
-          );
+        if (defaultSound !== "none" || settings.notificationSoundsByType) {
+          if (isNotificationSoundType(notification.type)) {
+            playNotificationSoundForType(
+              notification.type,
+              settings.notificationSoundsByType,
+              defaultSound,
+              defaultVolume
+            );
+            lastSoundPlayedAt = now;
+          }
         }
       }
     };

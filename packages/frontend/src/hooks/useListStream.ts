@@ -134,8 +134,13 @@ export function useListStream(options: UseListStreamOptions) {
             break;
           case "note": {
             const note = message.data as Note;
-            // Basic validation
-            if (!note || typeof note.id !== "string") {
+            // Validate required note fields
+            if (
+              !note ||
+              typeof note.id !== "string" ||
+              typeof note.userId !== "string" ||
+              typeof note.createdAt !== "string"
+            ) {
               console.warn("Received malformed note:", message.data);
               break;
             }
