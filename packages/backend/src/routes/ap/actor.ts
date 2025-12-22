@@ -56,7 +56,10 @@ async function handleUserOgpRequest(c: Context): Promise<Response> {
     themeColor: instanceInfo.theme.primaryColor,
   });
 
-  return c.html(html);
+  return c.html(html, 200, {
+    // Cache OGP responses for 5 minutes to reduce load from embed crawlers
+    "Cache-Control": "public, max-age=300",
+  });
 }
 
 /**
