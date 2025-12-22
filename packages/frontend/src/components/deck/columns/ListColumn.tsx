@@ -18,6 +18,7 @@ import { Spinner } from "../../ui/Spinner";
 import { ErrorMessage } from "../../ui/ErrorMessage";
 import { AnimatedList } from "../../ui/AnimatedList";
 import { useInfiniteScroll } from "../../../hooks/useInfiniteScroll";
+import { useListStream } from "../../../hooks/useListStream";
 
 /**
  * Props for ListColumnContent
@@ -111,6 +112,13 @@ export function ListColumnContent({
       controller.abort();
     };
   }, [currentUser, listId, updateState]);
+
+  // Enable real-time updates via WebSocket
+  useListStream({
+    columnId,
+    listId,
+    enabled: !!currentUser && !!listId,
+  });
 
   // Load more
   const loadMore = useCallback(async () => {

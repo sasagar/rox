@@ -15,6 +15,7 @@ import { getTimelineStreamService } from "../services/TimelineStreamService.js";
 import { getNotificationStreamService } from "../services/NotificationStreamService.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
+import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
@@ -432,6 +433,114 @@ ws.get(
 
         // Send connected event
         ws.send(JSON.stringify({ event: "connected", data: { userId: user.id, channel: "notifications" } }));
+
+        // Start heartbeat
+        heartbeatInterval = setInterval(() => {
+          try {
+            ws.send(JSON.stringify({ event: "heartbeat", data: { timestamp: Date.now() } }));
+          } catch {
+            // Connection closed
+          }
+        }, 30000);
+      },
+
+      onMessage(event, ws) {
+        try {
+          const message = JSON.parse(event.data.toString());
+          if (message.type === "ping") {
+            ws.send(JSON.stringify({ event: "pong", data: { timestamp: Date.now() } }));
+          }
+        } catch {
+          // Invalid message format, ignore
+        }
+      },
+
+      onClose() {
+        if (wsData.unsubscribe) {
+          wsData.unsubscribe();
+        }
+        if (heartbeatInterval) {
+          clearInterval(heartbeatInterval);
+        }
+      },
+
+      onError() {
+        if (wsData.unsubscribe) {
+          wsData.unsubscribe();
+        }
+        if (heartbeatInterval) {
+          clearInterval(heartbeatInterval);
+        }
+      },
+    };
+  }),
+);
+
+/**
+ * WebSocket endpoint for list timeline
+ *
+ * Requires authentication via token query parameter.
+ * Streams new notes from users in the specified list.
+ * User must own the list or list must be public.
+ */
+ws.get(
+  "/list/:listId",
+  upgradeWebSocket((c) => {
+    const token = c.req.query("token");
+    const listId = c.req.param("listId");
+    const userRepository = c.get("userRepository");
+    const sessionRepository = c.get("sessionRepository");
+    const listRepository = c.get("listRepository") as IListRepository;
+
+    let wsData: WSData = {};
+    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+
+    return {
+      async onOpen(_event, ws) {
+        // Validate token
+        if (!token) {
+          ws.send(JSON.stringify({ event: "error", data: { message: "Authentication required" } }));
+          ws.close(4001, "Authentication required");
+          return;
+        }
+
+        const user = await validateToken(token, userRepository, sessionRepository);
+        if (!user) {
+          ws.send(JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }));
+          ws.close(4001, "Invalid or expired token");
+          return;
+        }
+
+        // Validate list access
+        const list = await listRepository.findById(listId);
+        if (!list) {
+          ws.send(JSON.stringify({ event: "error", data: { message: "List not found" } }));
+          ws.close(4004, "List not found");
+          return;
+        }
+
+        // Check access: owner can always see, others only if public
+        if (!list.isPublic && list.userId !== user.id) {
+          ws.send(JSON.stringify({ event: "error", data: { message: "Access denied" } }));
+          ws.close(4003, "Access denied");
+          return;
+        }
+
+        wsData.userId = user.id;
+        wsData.channel = `list:${listId}`;
+
+        // Subscribe to list timeline
+        const streamService = getTimelineStreamService();
+        wsData.unsubscribe = streamService.subscribeList(listId, (event) => {
+          try {
+            ws.send(JSON.stringify({ event: event.type, data: event.data }));
+          } catch {
+            // Connection closed
+          }
+        });
+
+        // Send connected event
+        ws.send(JSON.stringify({ event: "connected", data: { userId: user.id, listId, channel: "list" } }));
 
         // Start heartbeat
         heartbeatInterval = setInterval(() => {

@@ -233,4 +233,14 @@ export class PostgresListRepository implements IListRepository {
 
     return result?.count ?? 0;
   }
+
+  async findListsForMember(memberUserId: string): Promise<List[]> {
+    const results = await this.db
+      .select({ list: userLists })
+      .from(userLists)
+      .innerJoin(userListMembers, eq(userLists.id, userListMembers.listId))
+      .where(eq(userListMembers.userId, memberUserId));
+
+    return results.map((r) => r.list) as List[];
+  }
 }

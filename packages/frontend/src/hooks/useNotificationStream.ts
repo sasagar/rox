@@ -41,6 +41,48 @@ const notificationConnection: NotificationWSConnection = {
   columnCallbacks: new Map(),
 };
 
+// Additional callbacks for mention stream (separate from notification column callbacks)
+const mentionCallbacks = new Map<string, (notification: Notification) => void>();
+
+/**
+ * Register a callback to receive mention/reply notifications
+ * Used by useMentionStream hook
+ */
+export function registerMentionCallback(
+  columnId: string,
+  callback: (notification: Notification) => void
+): void {
+  mentionCallbacks.set(columnId, callback);
+}
+
+/**
+ * Unregister a mention callback
+ */
+export function unregisterMentionCallback(columnId: string): void {
+  mentionCallbacks.delete(columnId);
+}
+
+// Reconnection state for exponential backoff
+let reconnectAttempts = 0;
+const MAX_RECONNECT_DELAY = 60000; // 60 seconds
+
+// Valid notification sound types
+const NOTIFICATION_SOUND_TYPES: readonly NotificationSoundType[] = [
+  "follow",
+  "mention",
+  "reply",
+  "reaction",
+  "renote",
+  "quote",
+] as const;
+
+/**
+ * Type guard to check if a notification type supports sound
+ */
+function isNotificationSoundType(type: string): type is NotificationSoundType {
+  return NOTIFICATION_SOUND_TYPES.includes(type as NotificationSoundType);
+}
+
 // Subscribers for connection state changes
 type ConnectionStateListener = (connected: boolean) => void;
 const connectionListeners = new Set<ConnectionStateListener>();
@@ -90,6 +132,9 @@ function connectNotificationWS(token: string) {
   connection.socket = socket;
 
   socket.onopen = () => {
+    // Reset reconnect attempts on successful connection
+    reconnectAttempts = 0;
+
     // Start ping interval to keep connection alive
     connection.pingInterval = setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
@@ -107,8 +152,21 @@ function connectNotificationWS(token: string) {
           break;
         case "notification": {
           const notification = message.data as Notification;
-          // Notify all column subscribers
+          // Basic validation to ensure notification has required fields
+          if (
+            !notification ||
+            typeof notification.id !== "string" ||
+            typeof notification.type !== "string"
+          ) {
+            console.warn("Received malformed notification:", message.data);
+            break;
+          }
+          // Notify all notification column subscribers
           for (const callback of connection.columnCallbacks.values()) {
+            callback(notification);
+          }
+          // Also notify mention stream subscribers (for MentionsColumn)
+          for (const callback of mentionCallbacks.values()) {
             callback(notification);
           }
           break;
@@ -135,8 +193,14 @@ function connectNotificationWS(token: string) {
       connection.pingInterval = null;
     }
 
-    // Reconnect after delay (only if there are still subscribers and not auth error)
+    // Reconnect with exponential backoff (only if there are still subscribers and not auth error)
     if (connection.connectionCount > 0 && event.code !== 4001) {
+      const delay = Math.min(
+        1000 * Math.pow(2, reconnectAttempts),
+        MAX_RECONNECT_DELAY
+      );
+      reconnectAttempts++;
+
       connection.reconnectTimeout = setTimeout(() => {
         // Re-fetch token from store
         import("jotai").then(({ getDefaultStore }) => {
@@ -146,7 +210,7 @@ function connectNotificationWS(token: string) {
             connectNotificationWS(currentToken);
           }
         });
-      }, 5000);
+      }, delay);
     }
   };
 
@@ -233,19 +297,10 @@ export function useNotificationStream(options: UseNotificationStreamOptions) {
   // Keep refs up to date
   useEffect(() => {
     tokenRef.current = token;
-  }, [token]);
-
-  useEffect(() => {
     prependNotificationsRef.current = prependColumnNotifications;
-  }, [prependColumnNotifications]);
-
-  useEffect(() => {
     onNewNotificationRef.current = onNewNotification;
-  }, [onNewNotification]);
-
-  useEffect(() => {
     uiSettingsRef.current = uiSettings;
-  }, [uiSettings]);
+  }, [token, prependColumnNotifications, onNewNotification, uiSettings]);
 
   // Subscribe to connection state changes
   useEffect(() => {
@@ -281,14 +336,9 @@ export function useNotificationStream(options: UseNotificationStreamOptions) {
       const defaultVolume = settings.notificationVolume ?? 50;
 
       if (defaultSound !== "none" || settings.notificationSoundsByType) {
-        const soundType = notification.type as NotificationSoundType;
-        if (
-          ["follow", "mention", "reply", "reaction", "renote", "quote"].includes(
-            notification.type
-          )
-        ) {
+        if (isNotificationSoundType(notification.type)) {
           playNotificationSoundForType(
-            soundType,
+            notification.type,
             settings.notificationSoundsByType,
             defaultSound,
             defaultVolume

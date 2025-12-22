@@ -1068,6 +1068,15 @@ export class NoteService {
     // Push to social timelines (author + followers)
     // Social timeline = home timeline + local timeline for local users
     streamService.pushToSocialTimelines(homeTimelineUserIds, noteWithUser);
+
+    // Push to list timelines containing the author
+    if (this.listRepository) {
+      const lists = await this.listRepository.findListsForMember(authorId);
+      const listIds = lists.map((list) => list.id);
+      if (listIds.length > 0) {
+        streamService.pushToListTimelines(listIds, noteWithUser);
+      }
+    }
   }
 
   /**

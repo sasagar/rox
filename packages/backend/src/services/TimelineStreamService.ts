@@ -22,7 +22,7 @@ export type TimelineEventType = "note" | "noteDeleted" | "noteUpdated" | "noteRe
 /**
  * Timeline channel types
  */
-export type TimelineChannel = "home" | "local" | "social";
+export type TimelineChannel = "home" | "local" | "social" | "list";
 
 /**
  * Timeline event payload
@@ -46,6 +46,8 @@ export interface TimelineConnectionMetrics {
   localTimelineConnections: number;
   /** Number of unique users connected to social timeline */
   uniqueSocialUsers: number;
+  /** Number of list timeline subscriptions */
+  listTimelineConnections: number;
   /** Total notes pushed since service start */
   totalNotesPushed: number;
   /** Peak concurrent connections reached */
@@ -75,6 +77,7 @@ export class TimelineStreamService {
   private homeUsers: Map<string, number> = new Map(); // userId -> connection count
   private localConnections = 0;
   private socialUsers: Map<string, number> = new Map(); // userId -> connection count
+  private listConnections: Map<string, number> = new Map(); // listId -> connection count
 
   // Metrics
   private totalNotesPushed = 0;
@@ -172,6 +175,33 @@ export class TimelineStreamService {
   }
 
   /**
+   * Subscribe to list timeline
+   *
+   * @param listId - List ID to subscribe to
+   * @param callback - Callback to receive timeline events
+   * @returns Unsubscribe function
+   */
+  subscribeList(listId: string, callback: (event: TimelineEvent) => void): () => void {
+    const channel = `list:${listId}`;
+    this.emitter.on(channel, callback);
+
+    // Track connection
+    const currentCount = this.listConnections.get(listId) || 0;
+    this.listConnections.set(listId, currentCount + 1);
+    this.updatePeakConnections();
+
+    return () => {
+      this.emitter.off(channel, callback);
+      const count = this.listConnections.get(listId) || 1;
+      if (count <= 1) {
+        this.listConnections.delete(listId);
+      } else {
+        this.listConnections.set(listId, count - 1);
+      }
+    };
+  }
+
+  /**
    * Push a new note to home timelines of followers
    *
    * @param followerIds - Array of follower user IDs
@@ -220,6 +250,29 @@ export class TimelineStreamService {
 
     for (const followerId of followerIds) {
       const channel = `social:${followerId}`;
+      if (this.emitter.listenerCount(channel) > 0) {
+        this.emitter.emit(channel, event);
+        this.totalNotesPushed++;
+      }
+    }
+  }
+
+  /**
+   * Push a new note to list timelines
+   *
+   * Called when a note is created by a user who is in one or more lists.
+   *
+   * @param listIds - Array of list IDs that contain the note author
+   * @param note - Note data to push
+   */
+  pushToListTimelines(listIds: string[], note: unknown): void {
+    const event: TimelineEvent = {
+      type: "note",
+      data: note,
+    };
+
+    for (const listId of listIds) {
+      const channel = `list:${listId}`;
       if (this.emitter.listenerCount(channel) > 0) {
         this.emitter.emit(channel, event);
         this.totalNotesPushed++;
@@ -309,6 +362,9 @@ export class TimelineStreamService {
     for (const count of this.socialUsers.values()) {
       total += count;
     }
+    for (const count of this.listConnections.values()) {
+      total += count;
+    }
     return total;
   }
 
@@ -329,11 +385,16 @@ export class TimelineStreamService {
    */
   getMetrics(): TimelineConnectionMetrics {
     const memUsage = process.memoryUsage();
+    let listConnectionCount = 0;
+    for (const count of this.listConnections.values()) {
+      listConnectionCount += count;
+    }
     return {
       totalConnections: this.getTotalConnections(),
       uniqueHomeUsers: this.homeUsers.size,
       localTimelineConnections: this.localConnections,
       uniqueSocialUsers: this.socialUsers.size,
+      listTimelineConnections: listConnectionCount,
       totalNotesPushed: this.totalNotesPushed,
       peakConnections: this.peakConnections,
       uptimeMs: Date.now() - this.serviceStartTime,

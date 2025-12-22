@@ -18,6 +18,7 @@ import { Spinner } from "../../ui/Spinner";
 import { ErrorMessage } from "../../ui/ErrorMessage";
 import { AnimatedList } from "../../ui/AnimatedList";
 import { useInfiniteScroll } from "../../../hooks/useInfiniteScroll";
+import { useMentionStream } from "../../../hooks/useMentionStream";
 
 /**
  * Props for MentionsColumnContent
@@ -74,9 +75,12 @@ export function MentionsColumnContent({
     loadInitialData();
   }, [currentUser, loadInitialData]);
 
-  // TODO: Add real-time updates for mentions
-  // Currently not implemented as notification WebSocket only sends noteId, not full note data.
-  // Would require additional API call to fetch note details on each mention notification.
+  // Enable real-time updates for mentions via notification WebSocket
+  // When a mention/reply notification arrives, the hook fetches the full note data
+  useMentionStream({
+    columnId,
+    enabled: !!currentUser,
+  });
 
   // Load more
   const loadMore = useCallback(async () => {

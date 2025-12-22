@@ -111,4 +111,13 @@ export interface IListRepository {
    * @returns Number of lists containing the user
    */
   countListsContainingUser(userId: string): Promise<number>;
+
+  /**
+   * Find all lists that contain a specific user as member
+   * Used for pushing notes to list timelines in real-time
+   *
+   * @param memberUserId - The user ID of the list member
+   * @returns All lists containing the member (regardless of notification settings)
+   */
+  findListsForMember(memberUserId: string): Promise<List[]>;
 }
