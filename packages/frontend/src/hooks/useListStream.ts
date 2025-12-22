@@ -160,11 +160,16 @@ export function useListStream(options: UseListStreamOptions): {
           case "note": {
             const note = message.data as Note;
             // Validate required note fields
+            // Note type requires: id, userId, createdAt, updatedAt, user (object)
+            // text is optional in the Note interface
             if (
               !note ||
               typeof note.id !== "string" ||
               typeof note.userId !== "string" ||
-              typeof note.createdAt !== "string"
+              typeof note.createdAt !== "string" ||
+              typeof note.updatedAt !== "string" ||
+              !note.user ||
+              typeof note.user.id !== "string"
             ) {
               console.warn("Received malformed note:", message.data);
               break;
