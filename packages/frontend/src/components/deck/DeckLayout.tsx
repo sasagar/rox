@@ -239,22 +239,23 @@ export function DeckLayout({
       <main
         className={`min-h-screen transition-all duration-300 ${sidebarMarginClass} pt-mobile-header lg:pt-0`}
       >
-        {/* Deck Header - Profile Switcher (Desktop) */}
+        {/* Deck Header - Profile Switcher (Responsive) */}
         {showProfileSwitcher && (
-          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-4 py-2 hidden lg:block">
-            <DeckProfileSwitcher />
-          </div>
-        )}
-
-        {/* Deck Header - Profile Switcher (Mobile) */}
-        {showProfileSwitcher && (
-          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-2 py-1.5 lg:hidden">
+          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-2 py-1.5 lg:px-4 lg:py-2">
             <DeckProfileSwitcher />
           </div>
         )}
 
         {/* Desktop: Horizontal scrolling columns */}
-        <div className="hidden lg:block h-[calc(100vh-12*var(--spacing))] overflow-hidden">
+        {/* Height: 100vh - sidebar header (12 * spacing) - profile switcher (~3rem when shown) */}
+        <div
+          className="hidden lg:block overflow-hidden"
+          style={{
+            height: showProfileSwitcher
+              ? "calc(100vh - 12 * var(--spacing) - 3rem)"
+              : "calc(100vh - 12 * var(--spacing))",
+          }}
+        >
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
