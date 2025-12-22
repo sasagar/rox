@@ -80,7 +80,10 @@ async function handleNoteOgpRequest(c: Context): Promise<Response> {
     themeColor: instanceInfo.theme.primaryColor,
   });
 
-  return c.html(html);
+  return c.html(html, 200, {
+    // Cache OGP responses for 5 minutes to reduce load from embed crawlers
+    "Cache-Control": "public, max-age=300",
+  });
 }
 
 /**
@@ -205,9 +208,9 @@ note.get("/notes/:id", async (c: Context) => {
 
   // Add file attachments
   if (noteData.fileIds && noteData.fileIds.length > 0) {
-    const fileRepository = c.get("fileRepository");
+    const driveFileRepository = c.get("driveFileRepository");
     const files = await Promise.all(
-      noteData.fileIds.map((fileId) => fileRepository.findById(fileId)),
+      noteData.fileIds.map((fileId) => driveFileRepository.findById(fileId)),
     );
 
     apNote.attachment = files
