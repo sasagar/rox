@@ -74,6 +74,10 @@ export function MentionsColumnContent({
     loadInitialData();
   }, [currentUser, loadInitialData]);
 
+  // TODO: Add real-time updates for mentions
+  // Currently not implemented as notification WebSocket only sends noteId, not full note data.
+  // Would require additional API call to fetch note details on each mention notification.
+
   // Load more
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
