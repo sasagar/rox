@@ -490,13 +490,20 @@ ws.get(
     const listId = c.req.param("listId");
     const userRepository = c.get("userRepository");
     const sessionRepository = c.get("sessionRepository");
-    const listRepository = c.get("listRepository") as IListRepository;
+    const listRepository = c.get("listRepository") as IListRepository | undefined;
 
     let wsData: WSData = {};
     let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 
     return {
       async onOpen(_event, ws) {
+        // Validate listRepository availability
+        if (!listRepository) {
+          ws.send(JSON.stringify({ event: "error", data: { message: "Service unavailable" } }));
+          ws.close(4000, "Service unavailable");
+          return;
+        }
+
         // Validate token
         if (!token) {
           ws.send(JSON.stringify({ event: "error", data: { message: "Authentication required" } }));

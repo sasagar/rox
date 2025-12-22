@@ -239,7 +239,8 @@ export class PostgresListRepository implements IListRepository {
       .select({ list: userLists })
       .from(userLists)
       .innerJoin(userListMembers, eq(userLists.id, userListMembers.listId))
-      .where(eq(userListMembers.userId, memberUserId));
+      .where(eq(userListMembers.userId, memberUserId))
+      .orderBy(userLists.createdAt);
 
     return results.map((r) => r.list) as List[];
   }
