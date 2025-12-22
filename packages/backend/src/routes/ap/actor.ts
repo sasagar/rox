@@ -53,6 +53,7 @@ async function handleUserOgpRequest(c: Context): Promise<Response> {
     avatarUrl,
     baseUrl,
     instanceName: instanceInfo.name,
+    instanceIconUrl: instanceInfo.iconUrl,
     themeColor: instanceInfo.theme.primaryColor,
   });
 

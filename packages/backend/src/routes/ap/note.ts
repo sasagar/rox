@@ -62,11 +62,6 @@ async function handleNoteOgpRequest(c: Context): Promise<Response> {
   const instanceSettingsService = c.get("instanceSettingsService");
   const instanceInfo = await instanceSettingsService.getPublicInstanceInfo();
 
-  // Fallback to instance icon if no image
-  if (!imageUrl) {
-    imageUrl = instanceInfo.iconUrl;
-  }
-
   const html = generateNoteOgpHtml({
     noteId: noteData.id,
     text: noteData.text,
@@ -75,8 +70,11 @@ async function handleNoteOgpRequest(c: Context): Promise<Response> {
     authorDisplayName: author.displayName,
     authorHost: author.host,
     imageUrl,
+    authorAvatarUrl: author.avatarUrl,
+    createdAt: noteData.createdAt?.toISOString(),
     baseUrl,
     instanceName: instanceInfo.name,
+    instanceIconUrl: instanceInfo.iconUrl,
     themeColor: instanceInfo.theme.primaryColor,
   });
 

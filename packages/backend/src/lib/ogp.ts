@@ -64,10 +64,16 @@ export interface NoteOgpOptions {
   authorHost: string | null;
   /** First image URL from attachments */
   imageUrl: string | null;
+  /** Author avatar URL for fallback */
+  authorAvatarUrl?: string | null;
+  /** Note creation timestamp (ISO string) */
+  createdAt?: string | null;
   /** Instance base URL */
   baseUrl: string;
   /** Instance name */
   instanceName: string;
+  /** Instance icon URL */
+  instanceIconUrl?: string | null;
   /** Theme color (hex) */
   themeColor: string;
 }
@@ -90,6 +96,8 @@ export interface UserOgpOptions {
   baseUrl: string;
   /** Instance name */
   instanceName: string;
+  /** Instance icon URL */
+  instanceIconUrl?: string | null;
   /** Theme color (hex) */
   themeColor: string;
 }
@@ -136,14 +144,20 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
     authorDisplayName,
     authorHost,
     imageUrl,
+    authorAvatarUrl,
+    createdAt,
     baseUrl,
     instanceName,
+    instanceIconUrl,
     themeColor,
   } = options;
 
   const formattedUsername = formatUsername(authorUsername, authorHost);
   const displayName = authorDisplayName || authorUsername;
   const noteUrl = `${baseUrl}/notes/${noteId}`;
+  const authorUrl = authorHost
+    ? `${baseUrl}/@${authorUsername}@${authorHost}`
+    : `${baseUrl}/@${authorUsername}`;
 
   // Determine title and description based on CW
   let title: string;
@@ -156,11 +170,11 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   } else if (text) {
     // Regular note with text
     const plainText = stripHtml(text);
-    title = `Note by ${displayName} (${formattedUsername})`;
-    description = escapeHtml(truncateText(plainText, 200));
+    title = `${displayName} (${formattedUsername})`;
+    description = escapeHtml(truncateText(plainText, 300));
   } else {
     // Media-only or renote
-    title = `Note by ${displayName} (${formattedUsername})`;
+    title = `${displayName} (${formattedUsername})`;
     description = "View this note for more details.";
   }
 
@@ -168,28 +182,74 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   const escapedTitle = escapeHtml(title);
   const escapedDescription = description; // Already escaped above or literal string
   const escapedNoteUrl = escapeHtml(noteUrl);
+  const escapedAuthorUrl = escapeHtml(authorUrl);
   const escapedInstanceName = escapeHtml(instanceName);
   const escapedThemeColor = escapeHtml(themeColor);
+  const escapedDisplayName = escapeHtml(displayName);
 
   // Determine Twitter card type based on image presence
   const twitterCard = imageUrl ? "summary_large_image" : "summary";
 
-  // Build image meta tag if present
-  const imageMeta = imageUrl
-    ? `<meta property="og:image" content="${escapeHtml(imageUrl)}">\n  `
-    : "";
+  // Use note image, fallback to author avatar, then instance icon
+  const finalImageUrl = imageUrl || authorAvatarUrl;
+
+  // Build comprehensive image meta tags for better embed support
+  let imageMeta = "";
+  if (finalImageUrl) {
+    const escapedImageUrl = escapeHtml(finalImageUrl);
+    const imageAlt = text
+      ? escapeHtml(truncateText(stripHtml(text), 100))
+      : `Note by ${escapedDisplayName}`;
+    imageMeta = `<meta property="og:image" content="${escapedImageUrl}">
+  <meta property="og:image:alt" content="${imageAlt}">
+  <meta name="twitter:image" content="${escapedImageUrl}">
+  <meta name="twitter:image:alt" content="${imageAlt}">
+  `;
+    // Add image dimensions hint for large images (Discord/Slack optimization)
+    if (imageUrl) {
+      imageMeta += `<meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  `;
+    }
+  }
+
+  // Build article metadata for better Discord/Slack embeds
+  let articleMeta = "";
+  if (createdAt) {
+    articleMeta += `<meta property="article:published_time" content="${escapeHtml(createdAt)}">
+  `;
+  }
+  articleMeta += `<meta property="article:author" content="${escapedAuthorUrl}">
+  `;
+
+  // Build provider/footer meta for Discord embeds
+  let providerMeta = "";
+  if (instanceIconUrl) {
+    providerMeta = `<link rel="icon" href="${escapeHtml(instanceIconUrl)}" type="image/png">
+  `;
+  }
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  ${providerMeta}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
-  ${imageMeta}<meta property="og:url" content="${escapedNoteUrl}">
+  <meta property="og:url" content="${escapedNoteUrl}">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="og:locale" content="ja_JP">
+  ${imageMeta}${articleMeta}<!-- Twitter -->
   <meta name="twitter:card" content="${twitterCard}">
+  <meta name="twitter:title" content="${escapedTitle}">
+  <meta name="twitter:description" content="${escapedDescription}">
+  <meta name="twitter:site" content="${escapedInstanceName}">
+  <!-- Discord / Slack / Other -->
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="author" content="${escapedDisplayName}">
+  <!-- Page -->
   <title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedNoteUrl}">
 </head>
@@ -228,10 +288,12 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
     avatarUrl,
     baseUrl,
     instanceName,
+    instanceIconUrl,
     themeColor,
   } = options;
 
   const formattedUsername = formatUsername(username, host);
+  const name = displayName || username;
 
   // Profile URL is /@username for local users, /@username@host for remote
   const profileUrl = host
@@ -245,8 +307,8 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
 
   // Build description from bio or default
   const description = bio
-    ? truncateText(stripHtml(bio), 200)
-    : `View ${formattedUsername}'s profile`;
+    ? truncateText(stripHtml(bio), 300)
+    : `View ${formattedUsername}'s profile on ${instanceName}`;
 
   // Escape values for HTML attributes
   const escapedTitle = escapeHtml(title);
@@ -254,23 +316,53 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   const escapedProfileUrl = escapeHtml(profileUrl);
   const escapedInstanceName = escapeHtml(instanceName);
   const escapedThemeColor = escapeHtml(themeColor);
+  const escapedName = escapeHtml(name);
 
-  // Build image meta tag if avatar present
-  const imageMeta = avatarUrl
-    ? `<meta property="og:image" content="${escapeHtml(avatarUrl)}">\n  `
-    : "";
+  // Build comprehensive image meta tags for better embed support
+  let imageMeta = "";
+  if (avatarUrl) {
+    const escapedAvatarUrl = escapeHtml(avatarUrl);
+    imageMeta = `<meta property="og:image" content="${escapedAvatarUrl}">
+  <meta property="og:image:alt" content="${escapedName}'s avatar">
+  <meta property="og:image:width" content="400">
+  <meta property="og:image:height" content="400">
+  <meta name="twitter:image" content="${escapedAvatarUrl}">
+  <meta name="twitter:image:alt" content="${escapedName}'s avatar">
+  `;
+  }
+
+  // Build profile metadata
+  const profileMeta = `<meta property="profile:username" content="${escapeHtml(username)}">
+  `;
+
+  // Build provider/footer meta for Discord embeds
+  let providerMeta = "";
+  if (instanceIconUrl) {
+    providerMeta = `<link rel="icon" href="${escapeHtml(instanceIconUrl)}" type="image/png">
+  `;
+  }
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  ${providerMeta}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
-  ${imageMeta}<meta property="og:url" content="${escapedProfileUrl}">
+  <meta property="og:url" content="${escapedProfileUrl}">
   <meta property="og:type" content="profile">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="og:locale" content="ja_JP">
+  ${imageMeta}${profileMeta}<!-- Twitter -->
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapedTitle}">
+  <meta name="twitter:description" content="${escapedDescription}">
+  <meta name="twitter:site" content="${escapedInstanceName}">
+  <!-- Discord / Slack / Other -->
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="author" content="${escapedName}">
+  <!-- Page -->
   <title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedProfileUrl}">
 </head>
