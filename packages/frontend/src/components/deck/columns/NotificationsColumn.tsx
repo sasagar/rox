@@ -15,6 +15,7 @@ import { Button } from "../../ui/Button";
 import { Spinner } from "../../ui/Spinner";
 import { ErrorMessage } from "../../ui/ErrorMessage";
 import { useInfiniteScroll } from "../../../hooks/useInfiniteScroll";
+import { useNotificationStream } from "../../../hooks/useNotificationStream";
 
 /**
  * Props for NotificationsColumnContent
@@ -86,6 +87,12 @@ export function NotificationsColumnContent({
       controller.abort();
     };
   }, [currentUser, loadInitialData]);
+
+  // Enable real-time updates with column-scoped state
+  useNotificationStream({
+    columnId,
+    enabled: !!currentUser,
+  });
 
   // Load more
   const loadMore = useCallback(async () => {
