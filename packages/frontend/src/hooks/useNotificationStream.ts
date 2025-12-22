@@ -67,13 +67,22 @@ export function unregisterMentionCallback(columnId: string): void {
   mentionCallbacks.delete(columnId);
 }
 
+// WebSocket connection constants
+const PING_INTERVAL_MS = 25000; // 25 seconds
+const INITIAL_RECONNECT_DELAY_MS = 1000; // 1 second
+const MAX_RECONNECT_DELAY_MS = 60000; // 60 seconds
+const SOUND_DEBOUNCE_MS = 500; // Minimum 500ms between sounds
+
+// WebSocket close codes - custom codes for specific error conditions
+const WS_CLOSE_AUTH_REQUIRED = 4001;
+const WS_CLOSE_ACCESS_DENIED = 4003;
+const WS_CLOSE_NOT_FOUND = 4004;
+
 // Reconnection state for exponential backoff
 let reconnectAttempts = 0;
-const MAX_RECONNECT_DELAY = 60000; // 60 seconds
 
 // Sound debounce to prevent rapid consecutive plays
 let lastSoundPlayedAt = 0;
-const SOUND_DEBOUNCE_MS = 500; // Minimum 500ms between sounds
 
 // Valid notification sound types
 const NOTIFICATION_SOUND_TYPES: readonly NotificationSoundType[] = [
@@ -163,7 +172,7 @@ function connectNotificationWS(token: string): void {
       if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({ type: "ping" }));
       }
-    }, 25000);
+    }, PING_INTERVAL_MS);
   };
 
   socket.onmessage = (event) => {
@@ -217,16 +226,15 @@ function connectNotificationWS(token: string): void {
     }
 
     // Reconnect with exponential backoff (only if there are still subscribers and not auth error)
-    // 4001: Authentication required, 4003: Access denied, 4004: Not found
-    if (
-      connection.connectionCount > 0 &&
-      event.code !== 4001 &&
-      event.code !== 4003 &&
-      event.code !== 4004
-    ) {
+    const isAuthError =
+      event.code === WS_CLOSE_AUTH_REQUIRED ||
+      event.code === WS_CLOSE_ACCESS_DENIED ||
+      event.code === WS_CLOSE_NOT_FOUND;
+
+    if (connection.connectionCount > 0 && !isAuthError) {
       const delay = Math.min(
-        1000 * Math.pow(2, reconnectAttempts),
-        MAX_RECONNECT_DELAY
+        INITIAL_RECONNECT_DELAY_MS * Math.pow(2, reconnectAttempts),
+        MAX_RECONNECT_DELAY_MS
       );
       reconnectAttempts++;
 

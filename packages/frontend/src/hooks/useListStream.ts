@@ -17,6 +17,16 @@ import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
 import { prependColumnNotesAtomFamily } from "../lib/atoms/column";
 import type { Note } from "../lib/types/note";
 
+// WebSocket connection constants
+const PING_INTERVAL_MS = 25000; // 25 seconds
+const INITIAL_RECONNECT_DELAY_MS = 1000; // 1 second
+const MAX_RECONNECT_DELAY_MS = 60000; // 60 seconds
+
+// WebSocket close codes - custom codes for specific error conditions
+const WS_CLOSE_AUTH_REQUIRED = 4001;
+const WS_CLOSE_ACCESS_DENIED = 4003;
+const WS_CLOSE_NOT_FOUND = 4004;
+
 /**
  * Options for useListStream hook
  */
@@ -98,8 +108,6 @@ export function useListStream(options: UseListStreamOptions): {
   const onNewNoteRef = useRef(onNewNote);
   const tokenRef = useRef(token);
 
-  const MAX_RECONNECT_DELAY = 60000; // 60 seconds
-
   // Keep refs up to date
   useEffect(() => {
     prependNotesRef.current = prependColumnNotes;
@@ -139,7 +147,7 @@ export function useListStream(options: UseListStreamOptions): {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify({ type: "ping" }));
         }
-      }, 25000);
+      }, PING_INTERVAL_MS);
     };
 
     socket.onmessage = (event) => {
@@ -190,10 +198,15 @@ export function useListStream(options: UseListStreamOptions): {
       }
 
       // Reconnect with exponential backoff (unless auth error or intentional close)
-      if (event.code !== 4001 && event.code !== 4003 && event.code !== 4004) {
+      const isAuthError =
+        event.code === WS_CLOSE_AUTH_REQUIRED ||
+        event.code === WS_CLOSE_ACCESS_DENIED ||
+        event.code === WS_CLOSE_NOT_FOUND;
+
+      if (!isAuthError) {
         const delay = Math.min(
-          1000 * Math.pow(2, reconnectAttemptsRef.current),
-          MAX_RECONNECT_DELAY
+          INITIAL_RECONNECT_DELAY_MS * Math.pow(2, reconnectAttemptsRef.current),
+          MAX_RECONNECT_DELAY_MS
         );
         reconnectAttemptsRef.current++;
 
@@ -230,6 +243,8 @@ export function useListStream(options: UseListStreamOptions): {
   }, []);
 
   // Manage WebSocket connection lifecycle
+  // Note: The cleanup function handles disconnect when isAuthenticated changes,
+  // so a separate effect for logout is not needed.
   useEffect(() => {
     if (!enabled || !isAuthenticated || !listId) return;
 
@@ -239,13 +254,6 @@ export function useListStream(options: UseListStreamOptions): {
       disconnect();
     };
   }, [enabled, isAuthenticated, listId, connect, disconnect]);
-
-  // Handle auth state changes (logout)
-  useEffect(() => {
-    if (!isAuthenticated) {
-      disconnect();
-    }
-  }, [isAuthenticated, disconnect]);
 
   return {
     connected,
