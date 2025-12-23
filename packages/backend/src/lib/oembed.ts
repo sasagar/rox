@@ -144,6 +144,7 @@ function formatUsername(username: string, host: string | null): string {
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
+    noteId,
     authorAvatarUrl,
     imageUrl,
     baseUrl,
@@ -153,24 +154,29 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
 
-  // Use "rich" type like FixupX - this makes Discord show:
-  // - author_name at the top (small text with link) - FxTwitter uses this for STATS, not author
+  // Note URL for author_url link
+  const noteUrl = `${baseUrl}/notes/${noteId}`;
+
+  // Use "rich" type like FxTwitter - this makes Discord show:
+  // - author_name at the top (small text with link)
   // - OGP og:title as the main title (author name)
   // - OGP og:description as the main content (note text)
-  // - provider_name at the bottom (footer with timestamp)
+  // - provider_name at the bottom (footer)
   //
-  // IMPORTANT: FxTwitter puts stats (🔁 6 ❤️ 38) in author_name, NOT the author name!
-  // The author name comes from OGP og:title instead.
-  // We don't have stats yet, so we omit author_name to avoid duplicating og:title.
+  // IMPORTANT: FxTwitter puts stats (🔁 6 ❤️ 38) in author_name.
+  // We don't have stats, so we use a Unicode space character to trigger
+  // Discord's author_name rendering without showing visible text.
+  // This moves provider_name to the footer position.
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
-    // Title field like FixupX - required for proper Discord embed structure
+    // Title field like FxTwitter - required for proper Discord embed structure
     title: "Embed",
-    // author_name is OMITTED - FxTwitter uses this for stats, not author name
-    // The author name is displayed via OGP og:title instead
-    // Provider info - FxTwitter uses simple service name only (no timestamp)
-    // Discord may add timestamp from article:published_time meta tag
+    // Use invisible character to trigger author_name rendering
+    // This pushes provider_name to footer position in Discord
+    author_name: "​", // Zero-width space (U+200B)
+    author_url: noteUrl,
+    // Provider info - displayed in footer when author_name exists
     provider_name: instanceName,
     provider_url: baseUrl,
     // Cache for 5 minutes
