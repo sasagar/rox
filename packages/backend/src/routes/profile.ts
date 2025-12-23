@@ -95,14 +95,17 @@ function parseUserParam(param: string): { username: string; host: string | null 
 }
 
 /**
- * GET /@:username
+ * GET /:atuser (matches /@username)
  *
  * Handles user profile URLs in /@username format.
+ * Uses /:atuser pattern because Hono doesn't match literal @ in route patterns.
+ * Only handles paths starting with @ - others pass through.
+ *
  * - Embed crawlers (Discord, Slack, etc.) receive OGP HTML
  * - ActivityPub requests for local users are redirected to /users/:username
  * - Browser requests receive redirect to frontend
  *
- * @param username - Username with @ prefix (e.g., "@alice" or "@alice@mastodon.social")
+ * @param atuser - Path segment (e.g., "@alice" or "@alice@mastodon.social")
  * @returns OGP HTML, redirect, or 404
  *
  * @example
@@ -117,16 +120,17 @@ function parseUserParam(param: string): { username: string; host: string | null 
  * curl https://example.com/@alice
  * ```
  */
-profile.get("/@:username", async (c: Context) => {
-  const { username: usernameParam } = c.req.param();
+profile.get("/:atuser", async (c: Context) => {
+  const atuser = c.req.param("atuser");
   const accept = c.req.header("Accept") || "";
   const userAgent = c.req.header("User-Agent") || "";
 
-  if (!usernameParam) {
+  // Only handle paths starting with @ (user profile URLs)
+  if (!atuser || !atuser.startsWith("@")) {
     return c.notFound();
   }
 
-  const { username, host } = parseUserParam(usernameParam);
+  const { username, host } = parseUserParam(atuser);
 
   // Check if this is an ActivityPub request
   if (isActivityPubRequest(accept)) {
