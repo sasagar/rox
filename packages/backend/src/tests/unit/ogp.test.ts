@@ -175,17 +175,17 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('<meta property="og:image"');
   });
 
-  it("should use summary_large_image twitter card when image is present", () => {
+  it("should use tweet twitter card type like FxTwitter", () => {
+    const html = generateNoteOgpHtml(baseOptions);
+    expect(html).toContain('content="tweet"');
+  });
+
+  it("should use tweet twitter card type even with image", () => {
     const html = generateNoteOgpHtml({
       ...baseOptions,
       imageUrl: "https://example.com/image.jpg",
     });
-    expect(html).toContain('content="summary_large_image"');
-  });
-
-  it("should use summary twitter card when no image", () => {
-    const html = generateNoteOgpHtml(baseOptions);
-    expect(html).toContain('content="summary"');
+    expect(html).toContain('content="tweet"');
   });
 
   it("should handle content warning", () => {
