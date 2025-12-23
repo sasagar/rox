@@ -162,15 +162,15 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('article:author');
   });
 
-  it("should have twitter:card after og:image like Misskey", () => {
+  it("should have twitter:card before og:image like Misskey", () => {
     const html = generateNoteOgpHtml({
       ...baseOptions,
       imageUrl: "https://example.com/image.jpg",
     });
     const ogImageIndex = html.indexOf('og:image');
     const twitterCardIndex = html.indexOf('twitter:card');
-    // Misskey has twitter:card after og:image for proper Discord footer positioning
-    expect(ogImageIndex).toBeLessThan(twitterCardIndex);
+    // Misskey has twitter:card before og:image (verified from misskey.io)
+    expect(twitterCardIndex).toBeLessThan(ogImageIndex);
   });
 
   it("should include note URL in og:url", () => {
@@ -339,12 +339,12 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('og:locale');
   });
 
-  it("should have twitter:card after og:image like Misskey", () => {
+  it("should have twitter:card before og:image like Misskey", () => {
     const html = generateUserOgpHtml(baseOptions);
     const ogImageIndex = html.indexOf('og:image');
     const twitterCardIndex = html.indexOf('twitter:card');
-    // Misskey has twitter:card after og:image for proper Discord footer positioning
-    expect(ogImageIndex).toBeLessThan(twitterCardIndex);
+    // Misskey has twitter:card before og:image (verified from misskey.io)
+    expect(twitterCardIndex).toBeLessThan(ogImageIndex);
   });
 
   it("should not include og:image dimension tags", () => {
