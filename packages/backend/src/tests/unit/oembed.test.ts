@@ -34,46 +34,19 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      expect(response.type).toBe("rich");
+      // Uses "link" type so Discord uses OGP title instead of oEmbed title
+      expect(response.type).toBe("link");
       expect(response.author_name).toBe("Alice (@alice)");
       expect(response.author_url).toBe("https://example.com/@alice");
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should use note text as title", () => {
+    it("should not include title to avoid duplication with OGP", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      expect(response.title).toBe("Hello, world!");
-    });
-
-    it("should truncate long text in title", () => {
-      const longText = "a".repeat(300);
-      const response = generateNoteOEmbed({
-        ...baseOptions,
-        text: longText,
-      });
-
-      expect(response.title!.length).toBeLessThanOrEqual(201); // 200 + ellipsis
-      expect(response.title!.endsWith("…")).toBe(true);
-    });
-
-    it("should use CW as title when present", () => {
-      const response = generateNoteOEmbed({
-        ...baseOptions,
-        cw: "Spoiler warning",
-      });
-
-      expect(response.title).toBe("CW: Spoiler warning");
-    });
-
-    it("should handle media-only notes", () => {
-      const response = generateNoteOEmbed({
-        ...baseOptions,
-        text: null,
-      });
-
-      expect(response.title).toBe("View this note for more details.");
+      // Title is intentionally omitted - Discord will use og:title from OGP instead
+      expect(response.title).toBeUndefined();
     });
 
     it("should include image thumbnail when available", () => {
