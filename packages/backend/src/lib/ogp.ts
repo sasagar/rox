@@ -303,11 +303,11 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   }
 
   // Minimal OGP meta tags matching Misskey's exact implementation
-  // Key findings from comparing with Misskey:
+  // Key findings from comparing with Misskey (profile pages):
   // 1. theme-color comes BEFORE og:site_name
   // 2. Misskey includes instance_url meta tag after og:site_name
   // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. twitter:card comes BEFORE og:image (Misskey's exact order)
+  // 4. For profiles: og:image comes BEFORE twitter:card (different from notes!)
   // 5. No redundant twitter:* tags
   // 6. Misskey uses og:type="blog" for user profiles (not "profile")
 
@@ -324,8 +324,8 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>

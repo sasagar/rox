@@ -339,12 +339,13 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('og:locale');
   });
 
-  it("should have twitter:card before og:image like Misskey", () => {
+  it("should have og:image before twitter:card like Misskey profiles", () => {
     const html = generateUserOgpHtml(baseOptions);
     const ogImageIndex = html.indexOf('og:image');
     const twitterCardIndex = html.indexOf('twitter:card');
-    // Misskey has twitter:card before og:image (verified from misskey.io)
-    expect(twitterCardIndex).toBeLessThan(ogImageIndex);
+    // Misskey profiles have og:image before twitter:card (different from notes!)
+    // Verified from misskey.io/@syuilo
+    expect(ogImageIndex).toBeLessThan(twitterCardIndex);
   });
 
   it("should not include og:image dimension tags", () => {
