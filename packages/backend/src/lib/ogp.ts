@@ -206,7 +206,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   // 1. theme-color comes BEFORE og:site_name
   // 2. Misskey includes instance_url meta tag after og:site_name
   // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
+  // 4. twitter:card comes BEFORE og:image (Misskey's exact order)
   // 5. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
@@ -222,8 +222,8 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  ${imageMeta}<meta property="twitter:card" content="summary">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  <meta property="twitter:card" content="summary">
+  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedNoteUrl}">View note</a></p>
@@ -307,7 +307,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // 1. theme-color comes BEFORE og:site_name
   // 2. Misskey includes instance_url meta tag after og:site_name
   // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
+  // 4. twitter:card comes BEFORE og:image (Misskey's exact order)
   // 5. No redundant twitter:* tags
   // 6. Misskey uses og:type="blog" for user profiles (not "profile")
 
@@ -324,8 +324,8 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  ${imageMeta}<meta property="twitter:card" content="summary">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  <meta property="twitter:card" content="summary">
+  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>
