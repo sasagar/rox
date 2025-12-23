@@ -190,9 +190,9 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   const escapedThemeColor = escapeHtml(themeColor);
   const escapedDisplayName = escapeHtml(displayName);
 
-  // Use "tweet" card type like FxTwitter for better Discord embed rendering
-  // Falls back to "summary_large_image" for notes with images, "summary" otherwise
-  // Note: "tweet" type triggers special X/Twitter-like embed styling in Discord
+  // Use fixed "tweet" card type like FxTwitter for better Discord embed rendering
+  // The "tweet" type triggers special X/Twitter-like embed styling in Discord
+  // This provides consistent behavior regardless of image presence
   const twitterCard = "tweet";
 
   // Use note image, fallback to author avatar, then instance icon
