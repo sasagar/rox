@@ -208,6 +208,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   // 3. Misskey includes <meta name="description"> (standard HTML meta)
   // 4. twitter:card comes BEFORE og:image (Misskey's exact order)
   // 5. No redundant twitter:* tags
+  // 6. Misskey includes <link rel="alternate"> for ActivityPub discovery
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -218,6 +219,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">
+  <link rel="alternate" href="${escapedNoteUrl}" type="application/activity+json">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
@@ -310,6 +312,10 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // 4. For profiles: og:image comes BEFORE twitter:card (different from notes!)
   // 5. No redundant twitter:* tags
   // 6. Misskey uses og:type="blog" for user profiles (not "profile")
+  // 7. Misskey includes <link rel="alternate"> for ActivityPub discovery
+
+  // Build ActivityPub alternate URL for local users only
+  const activityPubUrl = host ? null : `${baseUrl}/users/${username}`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -319,7 +325,8 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
-  <meta name="description" content="${escapedDescription}">
+  <meta name="description" content="${escapedDescription}">${activityPubUrl ? `
+  <link rel="alternate" href="${escapeHtml(activityPubUrl)}" type="application/activity+json">` : ""}
   <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
