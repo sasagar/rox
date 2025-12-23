@@ -229,12 +229,17 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
+  // Build oEmbed discovery link for rich embeds (Discord, Slack)
+  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
+  const oembedLink = `<link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="oEmbed">
+  `;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<!-- Open Graph / Facebook -->
+  ${providerMeta}${oembedLink}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
@@ -342,12 +347,17 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
+  // Build oEmbed discovery link for rich embeds (Discord, Slack)
+  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
+  const oembedLink = `<link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="oEmbed">
+  `;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<!-- Open Graph / Facebook -->
+  ${providerMeta}${oembedLink}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
