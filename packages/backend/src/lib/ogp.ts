@@ -160,22 +160,23 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
     : `${baseUrl}/@${authorUsername}`;
 
   // Determine title and description based on CW
+  // Note: Discord uses oEmbed author_name for user info, so og:title should be the note content
   let title: string;
   let description: string;
 
   if (cw) {
-    // Content Warning present: show CW as main content indicator
-    title = `CW: ${escapeHtml(truncateText(cw, 60))}`;
-    description = "This note contains sensitive content.";
+    // Content Warning present: show CW as title
+    title = `CW: ${truncateText(cw, 100)}`;
+    description = `Note by ${displayName} (${formattedUsername})`;
   } else if (text) {
-    // Regular note with text
+    // Regular note: show note text as title (Discord displays this as embed description)
     const plainText = stripHtml(text);
-    title = `${displayName} (${formattedUsername})`;
-    description = escapeHtml(truncateText(plainText, 300));
+    title = truncateText(plainText, 200);
+    description = `Note by ${displayName} (${formattedUsername})`;
   } else {
     // Media-only or renote
-    title = `${displayName} (${formattedUsername})`;
-    description = "View this note for more details.";
+    title = `Note by ${displayName}`;
+    description = formattedUsername;
   }
 
   // Escape values for HTML attributes

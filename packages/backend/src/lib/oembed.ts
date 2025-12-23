@@ -144,8 +144,6 @@ function formatUsername(username: string, host: string | null): string {
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
-    text,
-    cw,
     authorUsername,
     authorDisplayName,
     authorHost,
@@ -163,24 +161,16 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
     ? `${baseUrl}/@${authorUsername}@${authorHost}`
     : `${baseUrl}/@${authorUsername}`;
 
-  // Build title based on CW or content
-  let title: string;
-  if (cw) {
-    title = `CW: ${truncateText(cw, 100)}`;
-  } else if (text) {
-    title = truncateText(stripHtml(text), 200);
-  } else {
-    title = "View this note for more details.";
-  }
-
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
 
+  // Use "link" type so Discord uses OGP title/description while we provide author/provider info
+  // Note: Do NOT include "title" in oEmbed - Discord will use og:title from OGP instead
+  // This avoids duplicate display of information
   const response: OEmbedResponse = {
     version: "1.0",
-    type: "rich",
-    title,
-    // Author info - maps to Discord embed author section
+    type: "link",
+    // Author info - maps to Discord embed author section (small text above title)
     author_name: `${displayName} (${formattedUsername})`,
     author_url: authorUrl,
     // Provider info - maps to Discord embed footer
