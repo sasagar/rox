@@ -34,22 +34,22 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      // Uses "link" type so Discord uses OGP title instead of oEmbed title
-      expect(response.type).toBe("link");
-      // Provider name includes timestamp like X/Twitter: "Instance・MM月DD日 HH:mm"
+      // Uses "rich" type like FixupX - this enables footer display in Discord
+      expect(response.type).toBe("rich");
+      // Author name appears at top of embed (small text)
+      expect(response.author_name).toBe("Alice (@alice)");
+      expect(response.author_url).toBe("https://example.com/@alice");
+      // Provider name includes timestamp like X/Twitter: "Instance・MM月DD日 HH:mm" (appears in footer)
       expect(response.provider_name).toContain("Test Instance");
       expect(response.provider_name).toContain("・");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should not include title or author_name to avoid duplication with OGP", () => {
+    it("should not include title to let Discord use og:description", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      // Title and author_name are intentionally omitted - Discord will use og:title from OGP instead
-      // This avoids duplicate display of author information (FxTwitter also omits these)
+      // Title is intentionally omitted - Discord will use og:description from OGP instead
       expect(response.title).toBeUndefined();
-      expect(response.author_name).toBeUndefined();
-      expect(response.author_url).toBeUndefined();
     });
 
     it("should include image thumbnail when available", () => {
@@ -71,6 +71,16 @@ describe("oEmbed", () => {
       expect(response.thumbnail_height).toBe(128);
     });
 
+    it("should handle remote users", () => {
+      const response = generateNoteOEmbed({
+        ...baseOptions,
+        authorHost: "remote.social",
+      });
+
+      expect(response.author_name).toBe("Alice (@alice@remote.social)");
+      expect(response.author_url).toBe("https://example.com/@alice@remote.social");
+    });
+
     it("should include cache_age", () => {
       const response = generateNoteOEmbed(baseOptions);
 
@@ -84,6 +94,15 @@ describe("oEmbed", () => {
       });
 
       expect(response.thumbnail_url).toBeUndefined();
+    });
+
+    it("should use username when displayName is null", () => {
+      const response = generateNoteOEmbed({
+        ...baseOptions,
+        authorDisplayName: null,
+      });
+
+      expect(response.author_name).toBe("alice (@alice)");
     });
   });
 

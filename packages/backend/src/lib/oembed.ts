@@ -165,12 +165,23 @@ function formatTimestamp(isoString: string | null): string {
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
+    authorUsername,
+    authorDisplayName,
+    authorHost,
     authorAvatarUrl,
     imageUrl,
     createdAt,
     baseUrl,
     instanceName,
   } = options;
+
+  const formattedUsername = formatUsername(authorUsername, authorHost);
+  const displayName = authorDisplayName || authorUsername;
+
+  // Build author URL (profile page)
+  const authorUrl = authorHost
+    ? `${baseUrl}/@${authorUsername}@${authorHost}`
+    : `${baseUrl}/@${authorUsername}`;
 
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
@@ -179,13 +190,17 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const timestamp = formatTimestamp(createdAt);
   const footerText = timestamp ? `${instanceName}・${timestamp}` : instanceName;
 
-  // Use "link" type so Discord uses OGP title/description
-  // Note: Do NOT include "title" or "author_name" in oEmbed - Discord will use og:title from OGP
-  // This avoids duplicate display of author information (FxTwitter also omits author_name)
+  // Use "rich" type like FixupX - this makes Discord show:
+  // - author_name at the top (small text with link)
+  // - provider_name at the bottom (footer with timestamp)
+  // - OGP og:description as the main content
   const response: OEmbedResponse = {
     version: "1.0",
-    type: "link",
-    // Provider info - maps to Discord embed footer (with timestamp like X/Twitter)
+    type: "rich",
+    // Author info - maps to Discord embed author section (top, small text)
+    author_name: `${displayName} (${formattedUsername})`,
+    author_url: authorUrl,
+    // Provider info - maps to Discord embed footer (bottom, with timestamp like X/Twitter)
     provider_name: footerText,
     provider_url: baseUrl,
     // Cache for 5 minutes
