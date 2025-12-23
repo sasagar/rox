@@ -355,9 +355,10 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('og:image:height');
   });
 
-  it("should include profile URL in og:url", () => {
+  it("should include ActivityPub URL in og:url for local users", () => {
     const html = generateUserOgpHtml(baseOptions);
-    expect(html).toContain('content="https://example.com/@alice"');
+    // Local users use /users/ path for og:url (same as ActivityPub alternate link)
+    expect(html).toContain('content="https://example.com/users/alice"');
   });
 
   it("should not include refresh meta tag (Discord compatibility)", () => {

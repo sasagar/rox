@@ -324,7 +324,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
-  <meta property="og:url" content="${escapedProfileUrl}">
+  <meta property="og:url" content="${activityPubUrl ? escapeHtml(activityPubUrl) : escapedProfileUrl}">
   <meta property="twitter:card" content="summary">
   ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
