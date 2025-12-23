@@ -39,9 +39,8 @@ describe("oEmbed", () => {
       // author_name is OMITTED - FxTwitter uses it for stats, author comes from OGP og:title
       expect(response.author_name).toBeUndefined();
       expect(response.author_url).toBeUndefined();
-      // Provider name includes timestamp like X/Twitter: "Instance・MM月DD日 HH:mm" (appears in footer)
-      expect(response.provider_name).toContain("Test Instance");
-      expect(response.provider_name).toContain("・");
+      // Provider name is instance name only (like FxTwitter), no timestamp
+      expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
