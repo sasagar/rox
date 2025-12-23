@@ -45,11 +45,11 @@ describe("oEmbed", () => {
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should not include title to let Discord use og:description", () => {
+    it("should include title 'Embed' like FixupX for proper Discord rendering", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      // Title is intentionally omitted - Discord will use og:description from OGP instead
-      expect(response.title).toBeUndefined();
+      // Title is "Embed" like FixupX - required for Discord to position elements correctly
+      expect(response.title).toBe("Embed");
     });
 
     it("should include image thumbnail when available", () => {

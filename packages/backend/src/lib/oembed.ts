@@ -194,9 +194,12 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   // - author_name at the top (small text with link)
   // - provider_name at the bottom (footer with timestamp)
   // - OGP og:description as the main content
+  // NOTE: FixupX includes title: "Embed" which may affect Discord's rendering
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
+    // Title field like FixupX - required for proper Discord embed structure
+    title: "Embed",
     // Author info - maps to Discord embed author section (top, small text)
     author_name: `${displayName} (${formattedUsername})`,
     author_url: authorUrl,
