@@ -201,26 +201,27 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's working implementation
-  // Key differences from before:
-  // 1. twitter:card uses "property" attribute (not "name")
-  // 2. No redundant twitter:title, twitter:description, twitter:site, twitter:image
-  // 3. No og:locale, article:published_time, article:author
-  // 4. No og:image:alt, og:image:width, og:image:height
+  // Minimal OGP meta tags matching Misskey's exact implementation
+  // Key findings from comparing with Misskey:
+  // 1. theme-color comes BEFORE og:site_name
+  // 2. Misskey includes <meta name="description"> (standard HTML meta)
+  // 3. twitter:card uses "property" attribute (not "name")
+  // 4. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta property="og:site_name" content="${escapedInstanceName}">
+  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
   <meta property="twitter:card" content="summary">
-  ${imageMeta}<meta name="theme-color" content="${escapedThemeColor}">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedNoteUrl}">
 </head>
 <body>
@@ -300,24 +301,27 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's working implementation
-  // Key: twitter:card uses "property" attribute (not "name")
-  // No redundant twitter:title, twitter:description, twitter:site, twitter:image
-  // No og:locale, profile:username, or extra image metadata
+  // Minimal OGP meta tags matching Misskey's exact implementation
+  // Key findings from comparing with Misskey:
+  // 1. theme-color comes BEFORE og:site_name
+  // 2. Misskey includes <meta name="description"> (standard HTML meta)
+  // 3. twitter:card uses "property" attribute (not "name")
+  // 4. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta property="og:site_name" content="${escapedInstanceName}">
+  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="profile">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
   <meta property="twitter:card" content="summary">
-  ${imageMeta}<meta name="theme-color" content="${escapedThemeColor}">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedProfileUrl}">
 </head>
 <body>

@@ -126,6 +126,8 @@ describe("generateNoteOgpHtml", () => {
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card"');
     expect(html).toContain('<meta name="theme-color"');
+    // Misskey includes standard HTML description meta tag
+    expect(html).toContain('<meta name="description"');
   });
 
   it("should use property attribute for twitter:card like Misskey", () => {
@@ -133,6 +135,14 @@ describe("generateNoteOgpHtml", () => {
     // Misskey uses property attribute, not name attribute
     expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).not.toContain('<meta name="twitter:card"');
+  });
+
+  it("should have theme-color before og:site_name like Misskey", () => {
+    const html = generateNoteOgpHtml(baseOptions);
+    const themeColorIndex = html.indexOf('name="theme-color"');
+    const siteNameIndex = html.indexOf('og:site_name');
+    // Misskey has theme-color before og:site_name
+    expect(themeColorIndex).toBeLessThan(siteNameIndex);
   });
 
   it("should not include redundant Twitter Card tags", () => {
@@ -284,6 +294,8 @@ describe("generateUserOgpHtml", () => {
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
+    // Misskey includes standard HTML description meta tag
+    expect(html).toContain('<meta name="description"');
   });
 
   it("should use property attribute for twitter:card like Misskey", () => {
@@ -291,6 +303,14 @@ describe("generateUserOgpHtml", () => {
     // Misskey uses property attribute, not name attribute
     expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).not.toContain('<meta name="twitter:card"');
+  });
+
+  it("should have theme-color before og:site_name like Misskey", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    const themeColorIndex = html.indexOf('name="theme-color"');
+    const siteNameIndex = html.indexOf('og:site_name');
+    // Misskey has theme-color before og:site_name
+    expect(themeColorIndex).toBeLessThan(siteNameIndex);
   });
 
   it("should not include redundant Twitter Card tags", () => {
