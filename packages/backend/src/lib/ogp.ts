@@ -160,28 +160,30 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
     : `${baseUrl}/@${authorUsername}`;
 
   // Determine title and description based on CW
-  // Note: Discord uses oEmbed author_name for user info, so og:title should be the note content
+  // FxTwitter-style: og:title = author name, og:description = full note text
+  // This allows Discord to display the full note text without truncation
   let title: string;
   let description: string;
 
+  // Title is always the author info (like FxTwitter)
+  title = `${displayName} (${formattedUsername})`;
+
   if (cw) {
-    // Content Warning present: show CW as title
-    title = `CW: ${truncateText(cw, 100)}`;
-    description = `Note by ${displayName} (${formattedUsername})`;
+    // Content Warning present: show CW indicator + hidden content notice
+    description = `⚠️ CW: ${truncateText(cw, 100)}`;
   } else if (text) {
-    // Regular note: show note text as title (Discord displays this as embed description)
+    // Regular note: show full text in description (Discord displays this as embed body)
     const plainText = stripHtml(text);
-    title = truncateText(plainText, 200);
-    description = `Note by ${displayName} (${formattedUsername})`;
+    // Use longer truncation for description to show more content
+    description = truncateText(plainText, 4096);
   } else {
     // Media-only or renote
-    title = `Note by ${displayName}`;
-    description = formattedUsername;
+    description = "📷 Media attached";
   }
 
   // Escape values for HTML attributes
   const escapedTitle = escapeHtml(title);
-  const escapedDescription = description; // Already escaped above or literal string
+  const escapedDescription = escapeHtml(description);
   const escapedNoteUrl = escapeHtml(noteUrl);
   const escapedAuthorUrl = escapeHtml(authorUrl);
   const escapedInstanceName = escapeHtml(instanceName);

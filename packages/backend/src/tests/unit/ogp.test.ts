@@ -193,9 +193,10 @@ describe("generateNoteOgpHtml", () => {
       ...baseOptions,
       cw: "Spoiler alert!",
     });
+    // CW is shown in description with warning indicator
     expect(html).toContain("CW: Spoiler alert!");
-    // Description now shows "Note by DisplayName (@username)" instead of "sensitive content"
-    expect(html).toContain("Note by Alice (@alice)");
+    // Title is author name (FxTwitter style)
+    expect(html).toContain("Alice (@alice)");
   });
 
   it("should handle note without text (media only)", () => {
@@ -203,8 +204,9 @@ describe("generateNoteOgpHtml", () => {
       ...baseOptions,
       text: null,
     });
-    // Title now shows "Note by DisplayName" for media-only notes
-    expect(html).toContain("Note by Alice");
+    // Title is author name, description indicates media
+    expect(html).toContain("Alice (@alice)");
+    expect(html).toContain("Media attached");
   });
 
   it("should escape HTML in note text", () => {
