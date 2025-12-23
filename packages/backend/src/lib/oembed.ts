@@ -147,6 +147,7 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
     noteId,
     authorAvatarUrl,
     imageUrl,
+    createdAt,
     baseUrl,
     instanceName,
   } = options;
@@ -157,24 +158,33 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   // Note URL for author_url link
   const noteUrl = `${baseUrl}/notes/${noteId}`;
 
+  // Format timestamp for display (like FxTwitter's stats line)
+  // FxTwitter shows: "💬 16.1K   🔁 120.9K   ❤️ 264.9K"
+  // We don't have stats, so show timestamp instead
+  let authorNameText = "📝 Note";
+  if (createdAt) {
+    const date = new Date(createdAt);
+    const formatted = date.toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    authorNameText = `📅 ${formatted}`;
+  }
+
   // Use "rich" type like FxTwitter - this makes Discord show:
   // - author_name at the top (small text with link)
   // - OGP og:title as the main title (author name)
   // - OGP og:description as the main content (note text)
   // - provider_name at the bottom (footer)
-  //
-  // IMPORTANT: FxTwitter puts stats (🔁 6 ❤️ 38) in author_name.
-  // We don't have stats, so we use a Unicode space character to trigger
-  // Discord's author_name rendering without showing visible text.
-  // This moves provider_name to the footer position.
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
     // Title field like FxTwitter - required for proper Discord embed structure
     title: "Embed",
-    // Use invisible character to trigger author_name rendering
+    // Show timestamp in author_name position (like FxTwitter shows stats)
     // This pushes provider_name to footer position in Discord
-    author_name: "​", // Zero-width space (U+200B)
+    author_name: authorNameText,
     author_url: noteUrl,
     // Provider info - displayed in footer when author_name exists
     provider_name: instanceName,

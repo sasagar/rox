@@ -36,9 +36,9 @@ describe("oEmbed", () => {
       expect(response.version).toBe("1.0");
       // Uses "rich" type like FxTwitter - this enables footer display in Discord
       expect(response.type).toBe("rich");
-      // author_name uses zero-width space to trigger Discord's author rendering
+      // author_name shows timestamp (like FxTwitter shows stats)
       // This pushes provider_name to footer position
-      expect(response.author_name).toBe("​"); // Zero-width space
+      expect(response.author_name).toContain("📅");
       expect(response.author_url).toBe("https://example.com/notes/abc123");
       // Provider name is instance name only (like FxTwitter), no timestamp
       expect(response.provider_name).toBe("Test Instance");
