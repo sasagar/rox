@@ -115,27 +115,6 @@ function formatUsername(username: string, host: string | null): string {
 }
 
 /**
- * Format timestamp for footer display (similar to X/Twitter style)
- *
- * @param isoString - ISO 8601 timestamp string
- * @returns Formatted timestamp (e.g., "12月23日 16:16")
- */
-function formatTimestamp(isoString: string | null): string {
-  if (!isoString) return "";
-
-  try {
-    const date = new Date(isoString);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${month}月${day}日 ${hours}:${minutes}`;
-  } catch {
-    return "";
-  }
-}
-
-/**
  * Generate oEmbed response for a note
  *
  * Discord uses oEmbed for rich embed fields like:
@@ -167,17 +146,12 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
     authorAvatarUrl,
     imageUrl,
-    createdAt,
     baseUrl,
     instanceName,
   } = options;
 
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
-
-  // Format footer with timestamp (similar to X/Twitter style: "Instance Name・12月23日 16:16")
-  const timestamp = formatTimestamp(createdAt);
-  const footerText = timestamp ? `${instanceName}・${timestamp}` : instanceName;
 
   // Use "rich" type like FixupX - this makes Discord show:
   // - author_name at the top (small text with link) - FxTwitter uses this for STATS, not author
@@ -195,8 +169,9 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
     title: "Embed",
     // author_name is OMITTED - FxTwitter uses this for stats, not author name
     // The author name is displayed via OGP og:title instead
-    // Provider info - maps to Discord embed footer (bottom, with timestamp like X/Twitter)
-    provider_name: footerText,
+    // Provider info - FxTwitter uses simple service name only (no timestamp)
+    // Discord may add timestamp from article:published_time meta tag
+    provider_name: instanceName,
     provider_url: baseUrl,
     // Cache for 5 minutes
     cache_age: 300,
