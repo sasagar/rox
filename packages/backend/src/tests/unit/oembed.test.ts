@@ -34,11 +34,12 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      // Uses "rich" type like FixupX - this enables footer display in Discord
+      // Uses "rich" type like FxTwitter - this enables footer display in Discord
       expect(response.type).toBe("rich");
-      // author_name is OMITTED - FxTwitter uses it for stats, author comes from OGP og:title
-      expect(response.author_name).toBeUndefined();
-      expect(response.author_url).toBeUndefined();
+      // author_name uses zero-width space to trigger Discord's author rendering
+      // This pushes provider_name to footer position
+      expect(response.author_name).toBe("​"); // Zero-width space
+      expect(response.author_url).toBe("https://example.com/notes/abc123");
       // Provider name is instance name only (like FxTwitter), no timestamp
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
