@@ -34,7 +34,7 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      // Uses "rich" type like FxTwitter - this enables footer display in Discord
+      // Uses "rich" type like FixupX — enables footer display in Discord clients
       expect(response.type).toBe("rich");
       // author_name shows timestamp (like FxTwitter shows stats)
       // This pushes provider_name to footer position
