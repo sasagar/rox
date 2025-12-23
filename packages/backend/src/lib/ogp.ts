@@ -204,9 +204,10 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   // Minimal OGP meta tags matching Misskey's exact implementation
   // Key findings from comparing with Misskey:
   // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
-  // 4. No redundant twitter:* tags
+  // 2. Misskey includes instance_url meta tag after og:site_name
+  // 3. Misskey includes <meta name="description"> (standard HTML meta)
+  // 4. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
+  // 5. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -215,6 +216,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
@@ -303,10 +305,11 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // Minimal OGP meta tags matching Misskey's exact implementation
   // Key findings from comparing with Misskey:
   // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
-  // 4. No redundant twitter:* tags
-  // 5. Misskey uses og:type="blog" for user profiles (not "profile")
+  // 2. Misskey includes instance_url meta tag after og:site_name
+  // 3. Misskey includes <meta name="description"> (standard HTML meta)
+  // 4. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
+  // 5. No redundant twitter:* tags
+  // 6. Misskey uses og:type="blog" for user profiles (not "profile")
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -315,6 +318,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
