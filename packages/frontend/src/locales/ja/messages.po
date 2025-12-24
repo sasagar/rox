@@ -536,7 +536,7 @@ msgid "Are you sure you want to delete \":{0}:\"?"
 msgstr "\":{0}:\" を削除してもよろしいですか？"
 
 #. placeholder {0}: profileToDelete.name
-#: src/components/deck/DeckProfileSwitcher.tsx:334
+#: src/components/deck/DeckProfileSwitcher.tsx:337
 msgid "Are you sure you want to delete \"{0}\"? This will remove all columns and settings for this profile. This action cannot be undone."
 msgstr "「{0}」を削除してもよろしいですか？このプロファイルのすべてのカラムと設定が削除されます。この操作は取り消せません。"
 
@@ -550,7 +550,7 @@ msgstr "{0}個の絵文字を削除してもよろしいですか？この操作
 msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
 msgstr "<0>@{0}</0> を削除してもよろしいですか？この操作により："
 
-#: src/components/note/NoteCard.tsx:756
+#: src/components/note/NoteCard.tsx:906
 msgid "Are you sure you want to delete this note? This action cannot be undone."
 msgstr "このノートを削除してもよろしいですか？この操作は元に戻せません。"
 
@@ -787,14 +787,14 @@ msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
 #: src/components/deck/AddColumnDialog.tsx:420
-#: src/components/deck/DeckProfileSwitcher.tsx:354
-#: src/components/deck/DeckProfileSwitcher.tsx:448
+#: src/components/deck/DeckProfileSwitcher.tsx:357
+#: src/components/deck/DeckProfileSwitcher.tsx:461
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
 #: src/components/list/ListEditModal.tsx:229
-#: src/components/note/NoteCard.tsx:764
+#: src/components/note/NoteCard.tsx:914
 #: src/components/note/NoteComposer.tsx:1342
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
@@ -955,7 +955,7 @@ msgstr "お問い合わせ"
 msgid "Content"
 msgstr "コンテンツ"
 
-#: src/components/note/NoteCard.tsx:432
+#: src/components/note/NoteCard.tsx:528
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -992,6 +992,7 @@ msgstr "アドレスをコピー"
 msgid "Copy code"
 msgstr "コードをコピー"
 
+#: src/components/note/NoteCard.tsx:813
 #: src/components/user/UserQRCodeModal.tsx:217
 msgid "Copy link"
 msgstr "リンクをコピー"
@@ -1000,8 +1001,8 @@ msgstr "リンクをコピー"
 msgid "Correct inaccurate data"
 msgstr "不正確なデータの訂正"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:189
-#: src/components/deck/DeckProfileSwitcher.tsx:285
+#: src/components/deck/DeckProfileSwitcher.tsx:192
+#: src/components/deck/DeckProfileSwitcher.tsx:288
 #: src/components/drive/DrivePickerDialog.tsx:349
 #: src/components/list/ListCreateModal.tsx:171
 msgid "Create"
@@ -1037,12 +1038,12 @@ msgstr "リストを作成"
 msgid "Create new list"
 msgstr "新しいリストを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:182
-#: src/components/deck/DeckProfileSwitcher.tsx:278
+#: src/components/deck/DeckProfileSwitcher.tsx:185
+#: src/components/deck/DeckProfileSwitcher.tsx:281
 msgid "Create New Profile"
 msgstr "新しいプロファイルを作成"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:176
+#: src/components/deck/DeckProfileSwitcher.tsx:179
 msgid "Create Profile"
 msgstr "プロファイルを作成"
 
@@ -1157,7 +1158,7 @@ msgstr "デッキモード"
 msgid "Deck mode displays timelines, notifications, and lists in a multi-column layout."
 msgstr "デッキモードはタイムライン、通知、リストをマルチカラムレイアウトで表示します。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:228
+#: src/components/deck/DeckProfileSwitcher.tsx:231
 msgid "default"
 msgstr "デフォルト"
 
@@ -1189,11 +1190,11 @@ msgstr "デフォルトロール数"
 msgid "Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version."
 msgstr "デフォルト: https://github.com/Love-Rox/rox。改変版を運用している場合は変更してください。"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:364
+#: src/components/deck/DeckProfileSwitcher.tsx:367
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
-#: src/components/note/NoteCard.tsx:704
-#: src/components/note/NoteCard.tsx:771
+#: src/components/note/NoteCard.tsx:851
+#: src/components/note/NoteCard.tsx:921
 #: src/components/pages/ListDetailPageClient.tsx:191
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:1082
@@ -1219,7 +1220,7 @@ msgstr "コードを削除"
 msgid "Delete draft"
 msgstr "下書きを削除"
 
-#: src/components/note/NoteCard.tsx:753
+#: src/components/note/NoteCard.tsx:903
 #: src/pages/mod/audit-logs.tsx:244
 msgid "Delete Note"
 msgstr "ノートを削除"
@@ -1228,8 +1229,8 @@ msgstr "ノートを削除"
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:256
-#: src/components/deck/DeckProfileSwitcher.tsx:328
+#: src/components/deck/DeckProfileSwitcher.tsx:259
+#: src/components/deck/DeckProfileSwitcher.tsx:331
 msgid "Delete Profile"
 msgstr "プロファイルを削除"
 
@@ -1282,7 +1283,7 @@ msgid "Deleted: {0}"
 msgstr "削除日時: {0}"
 
 #: src/components/list/ListDeleteConfirmDialog.tsx:136
-#: src/components/note/NoteCard.tsx:771
+#: src/components/note/NoteCard.tsx:921
 #: src/components/settings/AccountDeletionSection.tsx:169
 msgid "Deleting..."
 msgstr "削除中..."
@@ -1301,12 +1302,12 @@ msgstr "説明"
 msgid "Deselect"
 msgstr "選択解除"
 
-#: src/components/note/NoteCard.tsx:403
+#: src/components/note/NoteCard.tsx:499
 #: src/components/note/NoteComposer.tsx:658
 msgid "Direct"
 msgstr "ダイレクト"
 
-#: src/components/note/NoteCard.tsx:400
+#: src/components/note/NoteCard.tsx:496
 msgid "Direct message - Only visible to specified recipients"
 msgstr "ダイレクトメッセージ - 指定した宛先のみに表示されます"
 
@@ -1532,11 +1533,11 @@ msgstr "有効"
 msgid "Enabled - View multiple columns side by side"
 msgstr "有効 - マルチカラムで表示"
 
-#: src/components/deck/columns/ListColumn.tsx:232
+#: src/components/deck/columns/ListColumn.tsx:240
 msgid "End of list"
 msgstr "リストの終わり"
 
-#: src/components/deck/columns/TimelineColumn.tsx:245
+#: src/components/deck/columns/TimelineColumn.tsx:249
 msgid "End of timeline"
 msgstr "タイムラインの終わり"
 
@@ -1588,19 +1589,19 @@ msgstr "パスワードを入力してください"
 msgid "Enter your server to follow"
 msgstr "フォローするにはあなたのサーバーを入力"
 
-#: src/components/deck/columns/ListColumn.tsx:193
+#: src/components/deck/columns/ListColumn.tsx:201
 msgid "Error loading list"
 msgstr "リストの読み込みエラー"
 
-#: src/components/deck/columns/MentionsColumn.tsx:150
+#: src/components/deck/columns/MentionsColumn.tsx:158
 msgid "Error loading mentions"
 msgstr "メンションの読み込みエラー"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:158
+#: src/components/deck/columns/NotificationsColumn.tsx:165
 msgid "Error loading notifications"
 msgstr "通知の読み込みエラー"
 
-#: src/components/deck/columns/TimelineColumn.tsx:206
+#: src/components/deck/columns/TimelineColumn.tsx:210
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -1676,7 +1677,7 @@ msgstr "エイリアスの追加に失敗しました"
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
-#: src/components/note/NoteCard.tsx:225
+#: src/components/note/NoteCard.tsx:244
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
@@ -1704,6 +1705,10 @@ msgstr "失敗ステータスのクリアに失敗しました"
 #: src/pages/onboarding.tsx:186
 msgid "Failed to complete setup. Please try again."
 msgstr "セットアップの完了に失敗しました。もう一度お試しください。"
+
+#: src/components/note/NoteCard.tsx:317
+msgid "Failed to copy link"
+msgstr "リンクのコピーに失敗しました"
 
 #: src/components/drive/DrivePickerDialog.tsx:228
 msgid "Failed to create folder"
@@ -1737,7 +1742,7 @@ msgstr "ファイルの削除に失敗しました"
 msgid "Failed to delete invitation code"
 msgstr "招待コードの削除に失敗しました"
 
-#: src/components/note/NoteCard.tsx:265
+#: src/components/note/NoteCard.tsx:284
 msgid "Failed to delete note"
 msgstr "ノートの削除に失敗しました"
 
@@ -1869,7 +1874,7 @@ msgstr "インスタンスの削除に失敗しました"
 msgid "Failed to rename passkey"
 msgstr "パスキーの名前変更に失敗しました"
 
-#: src/components/note/NoteCard.tsx:243
+#: src/components/note/NoteCard.tsx:262
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
@@ -2277,7 +2282,7 @@ msgstr "リスト追加あり"
 msgid "In Lists (loaded)"
 msgstr "リスト追加あり（表示中）"
 
-#: src/components/note/NoteCard.tsx:549
+#: src/components/note/NoteCard.tsx:645
 msgid "In reply to"
 msgstr "返信元"
 
@@ -2519,6 +2524,10 @@ msgstr "軽量"
 msgid "Line Height"
 msgstr "行の高さ"
 
+#: src/components/note/NoteCard.tsx:312
+msgid "Link copied to clipboard"
+msgstr "リンクをクリップボードにコピーしました"
+
 #: src/components/deck/AddColumnDialog.tsx:119
 #: src/components/deck/DeckColumn.tsx:148
 msgid "List"
@@ -2546,10 +2555,10 @@ msgstr "リスト"
 msgid "Load All ({0} more)"
 msgstr "すべて読み込む（残り{0}件）"
 
-#: src/components/deck/columns/ListColumn.tsx:248
-#: src/components/deck/columns/MentionsColumn.tsx:205
-#: src/components/deck/columns/NotificationsColumn.tsx:212
-#: src/components/deck/columns/TimelineColumn.tsx:261
+#: src/components/deck/columns/ListColumn.tsx:256
+#: src/components/deck/columns/MentionsColumn.tsx:213
+#: src/components/deck/columns/NotificationsColumn.tsx:219
+#: src/components/deck/columns/TimelineColumn.tsx:265
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2588,7 +2597,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/deck/DeckProfileSwitcher.tsx:165
+#: src/components/deck/DeckProfileSwitcher.tsx:168
 msgid "Loading profiles..."
 msgstr "プロファイルを読み込み中..."
 
@@ -2871,7 +2880,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:688
+#: src/components/note/NoteCard.tsx:786
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -2938,7 +2947,7 @@ msgstr "新規投稿"
 msgid "New notification"
 msgstr "新しい通知"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:269
+#: src/components/deck/DeckProfileSwitcher.tsx:272
 msgid "New Profile"
 msgstr "新規プロファイル"
 
@@ -2964,7 +2973,7 @@ msgstr "監査ログがありません"
 msgid "No blocked instances"
 msgstr "ブロック中のインスタンスはありません"
 
-#: src/components/deck/DeckLayout.tsx:308
+#: src/components/deck/DeckLayout.tsx:318
 msgid "No columns yet. Add your first column to get started."
 msgstr "カラムがまだありません。最初のカラムを追加しましょう。"
 
@@ -3026,7 +3035,7 @@ msgstr "インスタンスが見つかりません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
-#: src/components/deck/columns/ListColumn.tsx:183
+#: src/components/deck/columns/ListColumn.tsx:191
 msgid "No list selected"
 msgstr "リストが選択されていません"
 
@@ -3043,7 +3052,7 @@ msgstr "一致する通知がありません"
 msgid "No members yet"
 msgstr "メンバーはまだいません"
 
-#: src/components/deck/columns/MentionsColumn.tsx:197
+#: src/components/deck/columns/MentionsColumn.tsx:205
 #: src/pages/mentions.tsx:158
 msgid "No mentions yet"
 msgstr "まだメンションはありません"
@@ -3060,19 +3069,19 @@ msgstr "まだメッセージはありません。会話を始めましょう！
 msgid "No metrics available"
 msgstr "メトリクスがありません"
 
-#: src/components/deck/columns/MentionsColumn.tsx:189
+#: src/components/deck/columns/MentionsColumn.tsx:197
 msgid "No more mentions"
 msgstr "これ以上のメンションはありません"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:196
+#: src/components/deck/columns/NotificationsColumn.tsx:203
 msgid "No more notifications"
 msgstr "これ以上の通知はありません"
 
-#: src/components/deck/columns/ListColumn.tsx:240
+#: src/components/deck/columns/ListColumn.tsx:248
 msgid "No notes in this list"
 msgstr "このリストにはノートがありません"
 
-#: src/components/deck/columns/TimelineColumn.tsx:253
+#: src/components/deck/columns/TimelineColumn.tsx:257
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
@@ -3082,7 +3091,7 @@ msgstr "まだ投稿がありません"
 msgid "No notifications"
 msgstr "通知はありません"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:204
+#: src/components/deck/columns/NotificationsColumn.tsx:211
 msgid "No notifications yet"
 msgstr "通知はまだありません"
 
@@ -3162,7 +3171,12 @@ msgstr "リスト追加なし（表示中）"
 msgid "Note"
 msgstr "ノート"
 
-#: src/components/note/NoteCard.tsx:255
+#. placeholder {0}: note.user.username
+#: src/components/note/NoteCard.tsx:339
+msgid "Note by @{0}"
+msgstr "@{0}のノート"
+
+#: src/components/note/NoteCard.tsx:274
 #: src/components/pages/NoteDetailPageClient.tsx:66
 msgid "Note deleted"
 msgstr "ノートを削除しました"
@@ -3179,7 +3193,7 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:237
+#: src/components/note/NoteCard.tsx:256
 msgid "Note renoted"
 msgstr "リノートしました"
 
@@ -3277,6 +3291,10 @@ msgstr "スタッフのみ閲覧可能"
 #: src/components/settings/AboutSection.tsx:133
 msgid "Open"
 msgstr "オープン"
+
+#: src/components/note/NoteCard.tsx:820
+msgid "Open in new tab"
+msgstr "新しいタブで開く"
 
 #: src/components/LandingPage.tsx:104
 msgid "Open Registration"
@@ -3462,15 +3480,15 @@ msgstr "プロフィールを更新するにはログインしてください"
 msgid "Please log in to use the deck."
 msgstr "デッキを使用するにはログインしてください。"
 
-#: src/components/deck/columns/ListColumn.tsx:175
+#: src/components/deck/columns/ListColumn.tsx:183
 msgid "Please log in to view list"
 msgstr "リストを表示するにはログインしてください"
 
-#: src/components/deck/columns/MentionsColumn.tsx:140
+#: src/components/deck/columns/MentionsColumn.tsx:148
 msgid "Please log in to view mentions"
 msgstr "メンションを表示するにはログインしてください"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:148
+#: src/components/deck/columns/NotificationsColumn.tsx:155
 msgid "Please log in to view notifications"
 msgstr "通知を表示するにはログインしてください"
 
@@ -3587,7 +3605,7 @@ msgstr "プロフィール画像"
 msgid "Profile information (username, display name, bio)"
 msgstr "プロフィール情報（ユーザー名、表示名、自己紹介）"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:427
+#: src/components/deck/DeckProfileSwitcher.tsx:442
 msgid "Profile name"
 msgstr "プロファイル名"
 
@@ -3706,7 +3724,7 @@ msgstr "がリアクションしました"
 msgid "Reaction"
 msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:218
+#: src/components/note/NoteCard.tsx:237
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
@@ -3912,8 +3930,8 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:245
-#: src/components/deck/DeckProfileSwitcher.tsx:292
+#: src/components/deck/DeckProfileSwitcher.tsx:248
+#: src/components/deck/DeckProfileSwitcher.tsx:295
 msgid "Rename Profile"
 msgstr "プロファイル名を変更"
 
@@ -3921,7 +3939,7 @@ msgstr "プロファイル名を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:423
+#: src/components/note/NoteCard.tsx:519
 msgid "Renoted"
 msgstr "リノート"
 
@@ -3956,7 +3974,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:715
+#: src/components/note/NoteCard.tsx:866
 msgid "Report"
 msgstr "報告"
 
@@ -4179,7 +4197,7 @@ msgstr "RoxはAGPL-3.0ライセンスの下で公開されているオープン�
 msgid "Rox License"
 msgstr "Roxライセンス"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:299
+#: src/components/deck/DeckProfileSwitcher.tsx:302
 #: src/components/list/ListEditModal.tsx:242
 #: src/components/settings/PasskeySection.tsx:325
 #: src/pages/admin/storage.tsx:533
@@ -4354,7 +4372,7 @@ msgstr "ドライブから選択"
 msgid "Select from Drive"
 msgstr "ドライブから選択"
 
-#: src/components/deck/DeckProfileSwitcher.tsx:201
+#: src/components/deck/DeckProfileSwitcher.tsx:204
 msgid "Select Profile"
 msgstr "プロファイルを選択"
 
@@ -4460,6 +4478,14 @@ msgstr "設定"
 msgid "Setup Complete"
 msgstr "セットアップ完了"
 
+#: src/components/note/NoteCard.tsx:801
+msgid "Share"
+msgstr "共有"
+
+#: src/components/note/NoteCard.tsx:828
+msgid "Share via..."
+msgstr "共有方法..."
+
 #: src/components/LandingPage.tsx:246
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 msgstr "思いを共有し、友人とつながり、Fediverse全体での会話に参加しましょう。データはあなたのもので、誰が何を見るかを管理できます。"
@@ -4469,7 +4495,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:442
+#: src/components/note/NoteCard.tsx:538
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -4640,7 +4666,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/components/deck/DeckLayout.tsx:345
+#: src/components/deck/DeckLayout.tsx:355
 msgid "Swipe to navigate"
 msgstr "スワイプでナビゲート"
 
@@ -5236,7 +5262,7 @@ msgstr "検証に失敗しました"
 msgid "Version"
 msgstr "バージョン"
 
-#: src/components/note/NoteCard.tsx:588
+#: src/components/note/NoteCard.tsx:684
 msgid "View"
 msgstr "表示"
 
