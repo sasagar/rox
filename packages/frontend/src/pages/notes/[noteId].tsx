@@ -37,7 +37,7 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
 
   // Generate OGP meta tags if note data is available
   // Use public URL for OGP meta tags (not internal Docker URL)
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://rox.love-rox.cc";
+  const baseUrl = process.env.URL || "https://rox.love-rox.cc";
   const instanceName = "Rox Origin"; // TODO: Fetch from instance settings
   const themeColor = "#f97316"; // TODO: Fetch from instance settings
 
