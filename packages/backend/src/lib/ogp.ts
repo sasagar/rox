@@ -201,23 +201,18 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // oEmbed discovery link - required for Discord to fetch provider_name for footer
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
-
-  // OGP meta tags with oEmbed discovery
-  // Discord uses oEmbed provider_name for footer positioning (not og:site_name)
+  // OGP meta tags (no oEmbed discovery - matches Misskey's approach)
+  // Misskey does not use oEmbed discovery, Discord uses OGP tags directly
   // Key elements:
-  // 1. oEmbed discovery link enables Discord to fetch provider_name
-  // 2. theme-color comes BEFORE og:site_name
-  // 3. og:type="article" for notes
-  // 4. twitter:card after og:image
+  // 1. theme-color comes BEFORE og:site_name (matches Misskey)
+  // 2. og:type="article" for notes
+  // 3. og:image comes before twitter:card
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="${escapedTitle}">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta name="description" content="${escapedDescription}">
@@ -305,24 +300,20 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // oEmbed discovery link - required for Discord to fetch provider_name for footer
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
-
-  // OGP meta tags with oEmbed discovery
-  // Discord uses oEmbed provider_name for footer positioning (not og:site_name)
+  // OGP meta tags (no oEmbed discovery - matches Misskey's approach)
+  // Misskey does not use oEmbed discovery for user profiles
+  // Discord uses og:site_name from OGP tags when no oEmbed is available
   // Key elements:
-  // 1. oEmbed discovery link enables Discord to fetch provider_name
-  // 2. theme-color comes BEFORE og:site_name
-  // 3. instance_url meta tag after og:site_name
-  // 4. og:type="blog" (Misskey pattern)
-  // 5. og:image comes before twitter:card
+  // 1. theme-color comes BEFORE og:site_name (matches Misskey)
+  // 2. instance_url meta tag after og:site_name
+  // 3. og:type="blog" (Misskey pattern for profiles)
+  // 4. og:image comes before twitter:card
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="${escapedTitle}">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">

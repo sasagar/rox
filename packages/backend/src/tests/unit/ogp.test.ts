@@ -222,12 +222,10 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('content="summary"');
   });
 
-  it("should include oEmbed discovery link for Discord footer", () => {
+  it("should not include oEmbed discovery link (matches Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // oEmbed discovery link is required for Discord to fetch provider_name for footer
-    expect(html).toContain('application/json+oembed');
-    expect(html).toContain('/oembed?url=');
-    expect(html).toContain('rel="alternate"');
+    // Misskey does not use oEmbed discovery, Discord uses OGP tags directly
+    expect(html).not.toContain('application/json+oembed');
   });
 
   it("should handle content warning", () => {
