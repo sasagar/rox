@@ -122,27 +122,25 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="article">');
-    expect(html).toContain('<meta property="og:site_name"');
-    // Uses property attribute like Misskey (not name attribute)
-    expect(html).toContain('<meta property="twitter:card"');
+    // FxTwitter-style: no og:site_name, use oEmbed provider_name instead
+    expect(html).not.toContain('<meta property="og:site_name"');
+    // FxTwitter-style: no twitter:card to let oEmbed control display
+    expect(html).not.toContain('twitter:card');
     expect(html).toContain('<meta name="theme-color"');
-    // Misskey includes standard HTML description meta tag
+    // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
   });
 
-  it("should use property attribute for twitter:card like Misskey", () => {
+  it("should not include twitter:card (FxTwitter-style for oEmbed control)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // Misskey uses property attribute, not name attribute
-    expect(html).toContain('<meta property="twitter:card" content="summary">');
-    expect(html).not.toContain('<meta name="twitter:card"');
+    // FxTwitter removes twitter:card to let oEmbed control the embed display
+    expect(html).not.toContain('twitter:card');
   });
 
-  it("should have theme-color before og:site_name like Misskey", () => {
+  it("should not include og:site_name (FxTwitter-style for oEmbed footer)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    const themeColorIndex = html.indexOf('name="theme-color"');
-    const siteNameIndex = html.indexOf('og:site_name');
-    // Misskey has theme-color before og:site_name
-    expect(themeColorIndex).toBeLessThan(siteNameIndex);
+    // FxTwitter-style: remove og:site_name so Discord uses oEmbed provider_name for footer
+    expect(html).not.toContain('og:site_name');
   });
 
   it("should not include redundant Twitter Card tags", () => {
@@ -209,17 +207,19 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('<meta property="og:image"');
   });
 
-  it("should use summary twitter card type like Misskey", () => {
+  it("should not include twitter:card (FxTwitter-style)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    expect(html).toContain('content="summary"');
+    // FxTwitter removes twitter:card to let oEmbed control the embed display
+    expect(html).not.toContain('twitter:card');
   });
 
-  it("should use summary twitter card type even with image", () => {
+  it("should not include twitter:card even with image (FxTwitter-style)", () => {
     const html = generateNoteOgpHtml({
       ...baseOptions,
       imageUrl: "https://example.com/image.jpg",
     });
-    expect(html).toContain('content="summary"');
+    // FxTwitter removes twitter:card to let oEmbed control the embed display
+    expect(html).not.toContain('twitter:card');
   });
 
   it("should include oEmbed discovery link for Discord footer", () => {
@@ -293,27 +293,25 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="blog">');
-    expect(html).toContain('<meta property="og:site_name"');
-    // Uses property attribute like Misskey (not name attribute)
-    expect(html).toContain('<meta property="twitter:card" content="summary">');
+    // FxTwitter-style: no og:site_name, use oEmbed provider_name instead
+    expect(html).not.toContain('<meta property="og:site_name"');
+    // FxTwitter-style: no twitter:card to let oEmbed control display
+    expect(html).not.toContain('twitter:card');
     expect(html).toContain('<meta name="theme-color"');
-    // Misskey includes standard HTML description meta tag
+    // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
   });
 
-  it("should use property attribute for twitter:card like Misskey", () => {
+  it("should not include twitter:card (FxTwitter-style for oEmbed control)", () => {
     const html = generateUserOgpHtml(baseOptions);
-    // Misskey uses property attribute, not name attribute
-    expect(html).toContain('<meta property="twitter:card" content="summary">');
-    expect(html).not.toContain('<meta name="twitter:card"');
+    // FxTwitter removes twitter:card to let oEmbed control the embed display
+    expect(html).not.toContain('twitter:card');
   });
 
-  it("should have theme-color before og:site_name like Misskey", () => {
+  it("should not include og:site_name (FxTwitter-style for oEmbed footer)", () => {
     const html = generateUserOgpHtml(baseOptions);
-    const themeColorIndex = html.indexOf('name="theme-color"');
-    const siteNameIndex = html.indexOf('og:site_name');
-    // Misskey has theme-color before og:site_name
-    expect(themeColorIndex).toBeLessThan(siteNameIndex);
+    // FxTwitter-style: remove og:site_name so Discord uses oEmbed provider_name for footer
+    expect(html).not.toContain('og:site_name');
   });
 
   it("should not include redundant Twitter Card tags", () => {
