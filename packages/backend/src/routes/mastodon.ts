@@ -564,6 +564,20 @@ app.get("/accounts/:id/statuses", async (c: Context) => {
     sinceId: sinceId || undefined,
   });
 
+  // Collect all file IDs first to avoid N+1 query problem
+  const allFileIds = notes
+    .filter((note) => !note.isDeleted && note.fileIds.length > 0)
+    .flatMap((note) => note.fileIds);
+
+  // Fetch all files in a single query
+  const allFiles =
+    allFileIds.length > 0
+      ? await driveFileRepository.findByIds(allFileIds)
+      : [];
+
+  // Create a map for quick lookup
+  const fileMap = new Map(allFiles.map((f) => [f.id, f]));
+
   // Build statuses array
   const statuses: MastodonStatus[] = [];
 
@@ -571,22 +585,21 @@ app.get("/accounts/:id/statuses", async (c: Context) => {
     // Skip deleted notes
     if (note.isDeleted) continue;
 
-    // Get media attachments
+    // Get media attachments from the pre-fetched map
     const mediaAttachments: MastodonMediaAttachment[] = [];
-    if (note.fileIds.length > 0) {
-      const files = await driveFileRepository.findByIds(note.fileIds);
-      for (const file of files) {
-        mediaAttachments.push({
-          id: file.id,
-          type: convertMediaType(file.type),
-          url: file.url,
-          preview_url: file.thumbnailUrl,
-          remote_url: null,
-          meta: {},
-          description: file.comment,
-          blurhash: file.blurhash,
-        });
-      }
+    for (const fileId of note.fileIds) {
+      const file = fileMap.get(fileId);
+      if (!file) continue;
+      mediaAttachments.push({
+        id: file.id,
+        type: convertMediaType(file.type),
+        url: file.url,
+        preview_url: file.thumbnailUrl,
+        remote_url: null,
+        meta: {},
+        description: file.comment,
+        blurhash: file.blurhash,
+      });
     }
 
     statuses.push({
