@@ -206,28 +206,23 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   // FxTwitter pattern: include discovery link so Discord can fetch provider_name
   const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
 
-  // OGP meta tags with oEmbed discovery for Discord footer support
-  // Key elements:
-  // 1. theme-color comes BEFORE og:site_name (matches Misskey)
-  // 2. og:type="article" for notes
-  // 3. og:image comes before twitter:card
-  // 4. oEmbed discovery link enables Discord to show provider_name in footer
-
-  // FxTwitter-style: Remove og:site_name and twitter:card to let oEmbed control footer
-  // Discord will use oEmbed provider_name for footer when og:site_name is absent
+  // OGP meta tags matching Misskey's exact structure
+  // Misskey order: theme-color → og:site_name → og:type → og:title → og:description → og:url → og:image → twitter:card
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="application-name" content="Rox">
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta property="og:site_name" content="${escapedInstanceName}">
   ${providerMeta}<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  ${imageMeta}<link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
   <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>
@@ -312,22 +307,15 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // FxTwitter pattern: include discovery link so Discord can fetch provider_name
   const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
 
-  // OGP meta tags with oEmbed discovery for Discord footer support
-  // Key elements:
-  // 1. theme-color comes BEFORE og:site_name (matches Misskey)
-  // 2. instance_url meta tag after og:site_name
-  // 3. og:type="blog" (Misskey pattern for profiles)
-  // 4. og:image comes before twitter:card
-  // 5. oEmbed discovery link enables Discord to show provider_name in footer
-
-  // FxTwitter-style: Remove og:site_name and twitter:card to let oEmbed control footer
-  // Discord will use oEmbed provider_name for footer when og:site_name is absent
+  // OGP meta tags matching Misskey's exact structure
+  // Misskey order: theme-color → og:site_name → instance_url → og:type → og:title → og:description → og:url → og:image → twitter:card
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="application-name" content="Rox">
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   ${providerMeta}<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapedDescription}">
@@ -335,7 +323,8 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  ${imageMeta}<link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
   <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>

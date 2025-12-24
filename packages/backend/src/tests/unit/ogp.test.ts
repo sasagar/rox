@@ -122,25 +122,23 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="article">');
-    // FxTwitter-style: no og:site_name, use oEmbed provider_name instead
-    expect(html).not.toContain('<meta property="og:site_name"');
-    // FxTwitter-style: no twitter:card to let oEmbed control display
-    expect(html).not.toContain('twitter:card');
+    // Matching Misskey structure
+    expect(html).toContain('<meta property="og:site_name"');
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
     // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
   });
 
-  it("should not include twitter:card (FxTwitter-style for oEmbed control)", () => {
+  it("should include twitter:card summary (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // FxTwitter removes twitter:card to let oEmbed control the embed display
-    expect(html).not.toContain('twitter:card');
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
   });
 
-  it("should not include og:site_name (FxTwitter-style for oEmbed footer)", () => {
+  it("should include og:site_name (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // FxTwitter-style: remove og:site_name so Discord uses oEmbed provider_name for footer
-    expect(html).not.toContain('og:site_name');
+    expect(html).toContain('og:site_name');
+    expect(html).toContain("My Instance");
   });
 
   it("should not include redundant Twitter Card tags", () => {
@@ -205,21 +203,6 @@ describe("generateNoteOgpHtml", () => {
   it("should not include og:image when imageUrl is null", () => {
     const html = generateNoteOgpHtml(baseOptions);
     expect(html).not.toContain('<meta property="og:image"');
-  });
-
-  it("should not include twitter:card (FxTwitter-style)", () => {
-    const html = generateNoteOgpHtml(baseOptions);
-    // FxTwitter removes twitter:card to let oEmbed control the embed display
-    expect(html).not.toContain('twitter:card');
-  });
-
-  it("should not include twitter:card even with image (FxTwitter-style)", () => {
-    const html = generateNoteOgpHtml({
-      ...baseOptions,
-      imageUrl: "https://example.com/image.jpg",
-    });
-    // FxTwitter removes twitter:card to let oEmbed control the embed display
-    expect(html).not.toContain('twitter:card');
   });
 
   it("should include oEmbed discovery link for Discord footer", () => {
@@ -293,25 +276,12 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="blog">');
-    // FxTwitter-style: no og:site_name, use oEmbed provider_name instead
-    expect(html).not.toContain('<meta property="og:site_name"');
-    // FxTwitter-style: no twitter:card to let oEmbed control display
-    expect(html).not.toContain('twitter:card');
+    // Matching Misskey structure
+    expect(html).toContain('<meta property="og:site_name"');
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
     // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
-  });
-
-  it("should not include twitter:card (FxTwitter-style for oEmbed control)", () => {
-    const html = generateUserOgpHtml(baseOptions);
-    // FxTwitter removes twitter:card to let oEmbed control the embed display
-    expect(html).not.toContain('twitter:card');
-  });
-
-  it("should not include og:site_name (FxTwitter-style for oEmbed footer)", () => {
-    const html = generateUserOgpHtml(baseOptions);
-    // FxTwitter-style: remove og:site_name so Discord uses oEmbed provider_name for footer
-    expect(html).not.toContain('og:site_name');
   });
 
   it("should not include redundant Twitter Card tags", () => {
