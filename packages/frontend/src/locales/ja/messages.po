@@ -893,9 +893,13 @@ msgid "Color"
 msgstr "カラー"
 
 #: src/components/deck/AddColumnDialog.tsx:245
-#: src/components/deck/DeckColumn.tsx:149
+#: src/components/deck/DeckColumn.tsx:162
 msgid "Column"
 msgstr "カラム"
+
+#: src/components/deck/DeckColumn.tsx:282
+msgid "Column settings"
+msgstr "カラム設定"
 
 #: src/pages/admin/emojis.tsx:939
 msgid "comma, separated, aliases"
@@ -1533,11 +1537,11 @@ msgstr "有効"
 msgid "Enabled - View multiple columns side by side"
 msgstr "有効 - マルチカラムで表示"
 
-#: src/components/deck/columns/ListColumn.tsx:240
+#: src/components/deck/columns/ListColumn.tsx:269
 msgid "End of list"
 msgstr "リストの終わり"
 
-#: src/components/deck/columns/TimelineColumn.tsx:249
+#: src/components/deck/columns/TimelineColumn.tsx:256
 msgid "End of timeline"
 msgstr "タイムラインの終わり"
 
@@ -1589,19 +1593,19 @@ msgstr "パスワードを入力してください"
 msgid "Enter your server to follow"
 msgstr "フォローするにはあなたのサーバーを入力"
 
-#: src/components/deck/columns/ListColumn.tsx:201
+#: src/components/deck/columns/ListColumn.tsx:230
 msgid "Error loading list"
 msgstr "リストの読み込みエラー"
 
-#: src/components/deck/columns/MentionsColumn.tsx:158
+#: src/components/deck/columns/MentionsColumn.tsx:171
 msgid "Error loading mentions"
 msgstr "メンションの読み込みエラー"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:165
+#: src/components/deck/columns/NotificationsColumn.tsx:181
 msgid "Error loading notifications"
 msgstr "通知の読み込みエラー"
 
-#: src/components/deck/columns/TimelineColumn.tsx:210
+#: src/components/deck/columns/TimelineColumn.tsx:217
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -2127,7 +2131,7 @@ msgid "Get Started"
 msgstr "始める"
 
 #: src/components/deck/AddColumnDialog.tsx:130
-#: src/components/deck/DeckColumn.tsx:140
+#: src/components/deck/DeckColumn.tsx:153
 #: src/pages/timeline.tsx:128
 msgid "Global"
 msgstr "グローバル"
@@ -2202,7 +2206,7 @@ msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (ma
 msgstr "セーフゾーンを考慮した高解像度PWA用マスカブルアイコン、512x512ピクセル (最大2MB)。"
 
 #: src/components/deck/AddColumnDialog.tsx:127
-#: src/components/deck/DeckColumn.tsx:137
+#: src/components/deck/DeckColumn.tsx:150
 #: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:129
@@ -2529,7 +2533,7 @@ msgid "Link copied to clipboard"
 msgstr "リンクをクリップボードにコピーしました"
 
 #: src/components/deck/AddColumnDialog.tsx:119
-#: src/components/deck/DeckColumn.tsx:148
+#: src/components/deck/DeckColumn.tsx:161
 msgid "List"
 msgstr "リスト"
 
@@ -2555,10 +2559,10 @@ msgstr "リスト"
 msgid "Load All ({0} more)"
 msgstr "すべて読み込む（残り{0}件）"
 
-#: src/components/deck/columns/ListColumn.tsx:256
-#: src/components/deck/columns/MentionsColumn.tsx:213
-#: src/components/deck/columns/NotificationsColumn.tsx:219
-#: src/components/deck/columns/TimelineColumn.tsx:265
+#: src/components/deck/columns/ListColumn.tsx:285
+#: src/components/deck/columns/MentionsColumn.tsx:226
+#: src/components/deck/columns/NotificationsColumn.tsx:235
+#: src/components/deck/columns/TimelineColumn.tsx:272
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2614,7 +2618,7 @@ msgid "Loading..."
 msgstr "読み込み中..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
-#: src/components/deck/DeckColumn.tsx:138
+#: src/components/deck/DeckColumn.tsx:151
 #: src/pages/admin/system-follows.tsx:434
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
@@ -2815,7 +2819,7 @@ msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
 #: src/components/deck/AddColumnDialog.tsx:113
-#: src/components/deck/DeckColumn.tsx:147
+#: src/components/deck/DeckColumn.tsx:160
 #: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
@@ -2904,7 +2908,7 @@ msgstr "マイRoxサーバー"
 msgid "Name"
 msgstr "名前"
 
-#: src/components/deck/DeckColumn.tsx:123
+#: src/components/deck/DeckColumn.tsx:136
 msgid "Narrow"
 msgstr "狭い"
 
@@ -2973,7 +2977,7 @@ msgstr "監査ログがありません"
 msgid "No blocked instances"
 msgstr "ブロック中のインスタンスはありません"
 
-#: src/components/deck/DeckLayout.tsx:318
+#: src/components/deck/DeckLayout.tsx:310
 msgid "No columns yet. Add your first column to get started."
 msgstr "カラムがまだありません。最初のカラムを追加しましょう。"
 
@@ -3035,7 +3039,7 @@ msgstr "インスタンスが見つかりません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
-#: src/components/deck/columns/ListColumn.tsx:191
+#: src/components/deck/columns/ListColumn.tsx:220
 msgid "No list selected"
 msgstr "リストが選択されていません"
 
@@ -3052,7 +3056,7 @@ msgstr "一致する通知がありません"
 msgid "No members yet"
 msgstr "メンバーはまだいません"
 
-#: src/components/deck/columns/MentionsColumn.tsx:205
+#: src/components/deck/columns/MentionsColumn.tsx:218
 #: src/pages/mentions.tsx:158
 msgid "No mentions yet"
 msgstr "まだメンションはありません"
@@ -3069,19 +3073,19 @@ msgstr "まだメッセージはありません。会話を始めましょう！
 msgid "No metrics available"
 msgstr "メトリクスがありません"
 
-#: src/components/deck/columns/MentionsColumn.tsx:197
+#: src/components/deck/columns/MentionsColumn.tsx:210
 msgid "No more mentions"
 msgstr "これ以上のメンションはありません"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:203
+#: src/components/deck/columns/NotificationsColumn.tsx:219
 msgid "No more notifications"
 msgstr "これ以上の通知はありません"
 
-#: src/components/deck/columns/ListColumn.tsx:248
+#: src/components/deck/columns/ListColumn.tsx:277
 msgid "No notes in this list"
 msgstr "このリストにはノートがありません"
 
-#: src/components/deck/columns/TimelineColumn.tsx:257
+#: src/components/deck/columns/TimelineColumn.tsx:264
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
@@ -3091,7 +3095,7 @@ msgstr "まだ投稿がありません"
 msgid "No notifications"
 msgstr "通知はありません"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:211
+#: src/components/deck/columns/NotificationsColumn.tsx:227
 msgid "No notifications yet"
 msgstr "通知はまだありません"
 
@@ -3151,7 +3155,7 @@ msgstr "ユーザーが見つかりませんでした"
 msgid "No users with fetch errors found"
 msgstr "取得エラーのあるユーザーはいません"
 
-#: src/components/deck/DeckColumn.tsx:124
+#: src/components/deck/DeckColumn.tsx:137
 msgid "Normal"
 msgstr "標準"
 
@@ -3251,7 +3255,7 @@ msgid "Notification types"
 msgstr "通知の種類"
 
 #: src/components/deck/AddColumnDialog.tsx:107
-#: src/components/deck/DeckColumn.tsx:146
+#: src/components/deck/DeckColumn.tsx:159
 #: src/components/layout/Sidebar.tsx:131
 #: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
@@ -3480,15 +3484,15 @@ msgstr "プロフィールを更新するにはログインしてください"
 msgid "Please log in to use the deck."
 msgstr "デッキを使用するにはログインしてください。"
 
-#: src/components/deck/columns/ListColumn.tsx:183
+#: src/components/deck/columns/ListColumn.tsx:212
 msgid "Please log in to view list"
 msgstr "リストを表示するにはログインしてください"
 
-#: src/components/deck/columns/MentionsColumn.tsx:148
+#: src/components/deck/columns/MentionsColumn.tsx:161
 msgid "Please log in to view mentions"
 msgstr "メンションを表示するにはログインしてください"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:155
+#: src/components/deck/columns/NotificationsColumn.tsx:171
 msgid "Please log in to view notifications"
 msgstr "通知を表示するにはログインしてください"
 
@@ -3795,6 +3799,10 @@ msgstr "リダイレクト中..."
 msgid "Refresh"
 msgstr "更新"
 
+#: src/components/deck/DeckColumn.tsx:269
+msgid "Refresh column"
+msgstr "カラムを更新"
+
 #: src/pages/admin/federation.tsx:241
 msgid "Refresh List"
 msgstr "リストを更新"
@@ -3925,6 +3933,10 @@ msgstr "アバターを削除"
 #: src/components/settings/ProfileImageSection.tsx:299
 msgid "Remove banner"
 msgstr "バナーを削除"
+
+#: src/components/deck/DeckColumn.tsx:292
+msgid "Remove column"
+msgstr "カラムを削除"
 
 #: src/components/settings/PasskeySection.tsx:344
 msgid "Rename"
@@ -4555,7 +4567,7 @@ msgid "Skipped"
 msgstr "スキップ"
 
 #: src/components/deck/AddColumnDialog.tsx:129
-#: src/components/deck/DeckColumn.tsx:139
+#: src/components/deck/DeckColumn.tsx:152
 #: src/pages/timeline.tsx:127
 msgid "Social"
 msgstr "ソーシャル"
@@ -4666,7 +4678,7 @@ msgstr "ユーザー凍結"
 msgid "Suspended"
 msgstr "停止中"
 
-#: src/components/deck/DeckLayout.tsx:355
+#: src/components/deck/DeckLayout.tsx:347
 msgid "Swipe to navigate"
 msgstr "スワイプでナビゲート"
 
@@ -4899,7 +4911,7 @@ msgid "This username is blocked"
 msgstr "このユーザー名はブロックされています"
 
 #: src/components/deck/AddColumnDialog.tsx:101
-#: src/components/deck/DeckColumn.tsx:141
+#: src/components/deck/DeckColumn.tsx:154
 #: src/pages/timeline.tsx:123
 msgid "Timeline"
 msgstr "タイムライン"
@@ -5052,7 +5064,7 @@ msgstr "フォロー解除中..."
 msgid "Unknown"
 msgstr "不明"
 
-#: src/components/deck/DeckColumn.tsx:96
+#: src/components/deck/DeckColumn.tsx:102
 msgid "Unknown column type"
 msgstr "不明なカラムタイプ"
 
@@ -5455,11 +5467,11 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
-#: src/components/deck/DeckColumn.tsx:125
+#: src/components/deck/DeckColumn.tsx:138
 msgid "Wide"
 msgstr "広い"
 
-#: src/components/deck/DeckColumn.tsx:250
+#: src/components/deck/DeckColumn.tsx:304
 msgid "Width:"
 msgstr "幅:"
 

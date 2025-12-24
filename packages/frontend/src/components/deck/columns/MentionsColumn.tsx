@@ -75,6 +75,19 @@ export function MentionsColumnContent({
     loadInitialData();
   }, [currentUser, loadInitialData]);
 
+  // Reload data when state is reset (notes become empty while not loading)
+  useEffect(() => {
+    if (
+      notes.length === 0 &&
+      !loading &&
+      !error &&
+      hasLoadedRef.current &&
+      currentUser
+    ) {
+      loadInitialData();
+    }
+  }, [notes.length, loading, error, currentUser, loadInitialData]);
+
   // Enable real-time updates for mentions via notification WebSocket
   // When a mention/reply notification arrives, the hook fetches the full note data
   useMentionStream({
