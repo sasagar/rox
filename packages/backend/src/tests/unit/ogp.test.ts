@@ -222,9 +222,12 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('content="summary"');
   });
 
-  it("should not include oEmbed discovery link", () => {
+  it("should include oEmbed discovery link for Discord footer", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    expect(html).not.toContain('application/json+oembed');
+    // oEmbed discovery link is required for Discord to fetch provider_name for footer
+    expect(html).toContain('application/json+oembed');
+    expect(html).toContain('/oembed?url=');
+    expect(html).toContain('rel="alternate"');
   });
 
   it("should handle content warning", () => {

@@ -201,18 +201,23 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's exact implementation
-  // Key findings from comparing with Misskey:
-  // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. twitter:card uses "property" attribute (not "name")
-  // 4. No redundant twitter:* tags
+  // oEmbed discovery link - required for Discord to fetch provider_name for footer
+  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
+
+  // OGP meta tags with oEmbed discovery
+  // Discord uses oEmbed provider_name for footer positioning (not og:site_name)
+  // Key elements:
+  // 1. oEmbed discovery link enables Discord to fetch provider_name
+  // 2. theme-color comes BEFORE og:site_name
+  // 3. og:type="article" for notes
+  // 4. twitter:card after og:image
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="${escapedTitle}">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta name="description" content="${escapedDescription}">
@@ -220,8 +225,8 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedNoteUrl}">View note</a></p>
@@ -300,20 +305,24 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's exact implementation
-  // Key findings from comparing with Misskey:
-  // 1. theme-color comes BEFORE og:site_name
-  // 2. instance_url meta tag after og:site_name
-  // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. Misskey uses og:type="blog" for user profiles (not "profile")
+  // oEmbed discovery link - required for Discord to fetch provider_name for footer
+  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
+
+  // OGP meta tags with oEmbed discovery
+  // Discord uses oEmbed provider_name for footer positioning (not og:site_name)
+  // Key elements:
+  // 1. oEmbed discovery link enables Discord to fetch provider_name
+  // 2. theme-color comes BEFORE og:site_name
+  // 3. instance_url meta tag after og:site_name
+  // 4. og:type="blog" (Misskey pattern)
   // 5. og:image comes before twitter:card
-  // 6. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="${escapedTitle}">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
