@@ -153,7 +153,7 @@ export function Sidebar() {
     {
       icon: <User className="w-6 h-6" />,
       label: <Trans>Profile</Trans>,
-      href: `/${currentUser.username}`,
+      href: `/@${currentUser.username}`,
       key: "profile",
     },
     {
@@ -254,7 +254,7 @@ export function Sidebar() {
       {/* User Profile at Bottom */}
       <div className="p-3 border-t border-(--border-color)">
         <SpaLink
-          to={`/${currentUser.username}`}
+          to={`/@${currentUser.username}`}
           onClick={handleNavClick}
           className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors"
         >
@@ -406,7 +406,7 @@ export function Sidebar() {
       {/* User Profile at Bottom */}
       <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
         <SpaLink
-          to={`/${currentUser.username}`}
+          to={`/@${currentUser.username}`}
           className={`flex items-center rounded-lg hover:bg-(--bg-tertiary) transition-colors ${
             isCollapsed ? "justify-center p-2" : "gap-3 px-2 py-2"
           }`}
@@ -507,7 +507,7 @@ export function Sidebar() {
           </SpaLink>
         </SpaLink>
 
-        <SpaLink to={`/${currentUser.username}`} className="p-1 -mr-1 rounded-full">
+        <SpaLink to={`/@${currentUser.username}`} className="p-1 -mr-1 rounded-full">
           <Avatar
             src={currentUser.avatarUrl}
             alt={currentUser.name || currentUser.username}

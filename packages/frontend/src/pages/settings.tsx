@@ -122,7 +122,7 @@ export default function SettingsPage() {
 
       // Redirect to profile page
       setTimeout(() => {
-        window.location.href = `/${currentUser?.username}`;
+        window.location.href = `/@${currentUser?.username}`;
       }, 500);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to update profile";
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                     type="button"
                     variant="secondary"
                     onPress={() => {
-                      window.location.href = `/${currentUser.username}`;
+                      window.location.href = `/@${currentUser.username}`;
                     }}
                     isDisabled={isSubmitting}
                   >

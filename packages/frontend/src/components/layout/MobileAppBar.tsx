@@ -68,7 +68,7 @@ export function MobileAppBar() {
     },
     {
       icon: <User style={iconStyle} />,
-      href: `/${currentUser.username}`,
+      href: `/@${currentUser.username}`,
       key: "profile",
       label: "Profile",
     },

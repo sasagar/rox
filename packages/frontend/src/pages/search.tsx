@@ -198,7 +198,7 @@ export default function SearchPage() {
     if (user.host) {
       window.location.href = `/@${user.username}@${user.host}`;
     } else {
-      window.location.href = `/${user.username}`;
+      window.location.href = `/@${user.username}`;
     }
   };
 
