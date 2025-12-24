@@ -86,7 +86,7 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
       <link rel="alternate" type="application/json+oembed" href={oembedUrl} title="oEmbed" />
       <title>{title} | {instanceName}</title>
       <meta name="description" content={description} />
-      <meta property="og:type" content="article" />
+      <meta property="og:type" content="blog" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={profileUrl} />
