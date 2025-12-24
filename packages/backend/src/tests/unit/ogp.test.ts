@@ -222,10 +222,13 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('content="summary"');
   });
 
-  it("should not include oEmbed discovery link (matches Misskey)", () => {
+  it("should include oEmbed discovery link for Discord footer", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // Misskey does not use oEmbed discovery, Discord uses OGP tags directly
-    expect(html).not.toContain('application/json+oembed');
+    // oEmbed discovery link enables Discord to fetch provider_name for footer
+    // FxTwitter uses this pattern to show site name in footer
+    expect(html).toContain('application/json+oembed');
+    expect(html).toContain('rel="alternate"');
+    expect(html).toContain('/oembed?url=');
   });
 
   it("should handle content warning", () => {
