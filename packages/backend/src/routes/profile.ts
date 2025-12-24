@@ -85,9 +85,10 @@ function parseUserParam(param: string): { username: string; host: string | null 
   // Check for remote user format (username@host)
   const atIndex = cleaned.indexOf("@");
   if (atIndex > 0) {
+    const host = cleaned.slice(atIndex + 1);
     return {
       username: cleaned.slice(0, atIndex),
-      host: cleaned.slice(atIndex + 1),
+      host: host || null, // Handle edge case: "username@" → treat as local user
     };
   }
 

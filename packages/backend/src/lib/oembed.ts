@@ -164,11 +164,8 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   let authorNameText = "📝 Note";
   if (createdAt) {
     const date = new Date(createdAt);
-    const formatted = date.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    // Use ISO date format (YYYY-MM-DD) for locale-independent display
+    const formatted = date.toISOString().split("T")[0];
     authorNameText = `📅 ${formatted}`;
   }
 

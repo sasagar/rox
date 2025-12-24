@@ -37,8 +37,8 @@ const EMBED_CRAWLER_PATTERNS: readonly string[] = [
   // iMessage/Apple
   "Applebot",
 
-  // Line
-  "Line",
+  // Line (uses "Line/" prefix in User-Agent to avoid matching "Timeline", etc.)
+  "Line/",
 ];
 
 /**
