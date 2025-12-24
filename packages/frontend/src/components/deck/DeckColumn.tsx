@@ -15,10 +15,16 @@ import {
   Globe,
   Users,
   Radio,
+  RefreshCw,
 } from "lucide-react";
 import { Trans, useLingui } from "@lingui/react/macro";
+import { useSetAtom } from "jotai";
 import { Button } from "../ui/Button";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
+import {
+  resetColumnStateAtomFamily,
+  resetNotificationColumnStateAtomFamily,
+} from "../../lib/atoms/column";
 import type { DeckColumn as DeckColumnType, DeckColumnWidth } from "../../lib/types/deck";
 
 // Column content components (to be implemented)
@@ -117,6 +123,13 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
   const { activeProfile, updateActiveColumns } = useDeckProfiles();
   const columns = activeProfile?.columns ?? [];
   const [showSettings, setShowSettings] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Reset atoms for refreshing
+  const resetNotesState = useSetAtom(resetColumnStateAtomFamily(column.id));
+  const resetNotificationsState = useSetAtom(
+    resetNotificationColumnStateAtomFamily(column.id)
+  );
 
   // Translated width options
   const widthOptions: WidthOption[] = useMemo(() => [
@@ -185,6 +198,34 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
     [column.id, columns, updateActiveColumns]
   );
 
+  /**
+   * Handle refresh button press.
+   * Resets the column state to trigger a reload of data.
+   */
+  const handleRefresh = useCallback(() => {
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+
+    // Reset the appropriate state based on column type
+    if (column.config.type === "notifications") {
+      resetNotificationsState();
+    } else {
+      // timeline, mentions, list all use notes state
+      resetNotesState();
+    }
+
+    // Show spinning animation briefly then stop
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 500);
+  }, [
+    isRefreshing,
+    column.config.type,
+    resetNotesState,
+    resetNotificationsState,
+  ]);
+
   return (
     <div
       ref={setNodeRef}
@@ -220,12 +261,25 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
 
         {/* Column Actions */}
         <div className="flex items-center gap-1">
+          {/* Refresh Button */}
+          <Button
+            variant="ghost"
+            onPress={handleRefresh}
+            className="p-1.5 rounded"
+            aria-label={t`Refresh column`}
+            isDisabled={isRefreshing}
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+          </Button>
+
           {/* Settings Toggle */}
           <Button
             variant="ghost"
             onPress={() => setShowSettings(!showSettings)}
             className="p-1.5 rounded"
-            aria-label="Column settings"
+            aria-label={t`Column settings`}
           >
             <Settings className="w-4 h-4" />
           </Button>
@@ -235,7 +289,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
             variant="ghost"
             onPress={handleRemove}
             className="p-1.5 rounded text-gray-400 hover:text-red-500"
-            aria-label="Remove column"
+            aria-label={t`Remove column`}
           >
             <X className="w-4 h-4" />
           </Button>

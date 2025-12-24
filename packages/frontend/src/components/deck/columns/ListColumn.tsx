@@ -67,23 +67,15 @@ export function ListColumnContent({
     }
   }, [listId, updateState]);
 
-  // Load initial data
-  useEffect(() => {
-    if (hasLoadedRef.current || !currentUser || !listId) return;
-    hasLoadedRef.current = true;
-
-    // Cancel any previous request
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    const loadInitialData = async () => {
+  // Load initial data function (reusable)
+  const loadInitialData = useCallback(
+    async (signal?: AbortSignal) => {
       updateState({ loading: true, error: null });
 
       try {
         const data = await listsApi.getTimeline(listId, { limit: 20 });
         // Check if aborted before updating state
-        if (controller.signal.aborted) return;
+        if (signal?.aborted) return;
 
         const lastNote = data[data.length - 1];
 
@@ -95,7 +87,7 @@ export function ListColumnContent({
         });
       } catch (err) {
         // Ignore abort errors
-        if (controller.signal.aborted) return;
+        if (signal?.aborted) return;
         updateState({
           loading: false,
           error:
@@ -104,14 +96,43 @@ export function ListColumnContent({
               : "Failed to load list timeline",
         });
       }
-    };
+    },
+    [listId, updateState]
+  );
 
-    loadInitialData();
+  // Load initial data on mount
+  useEffect(() => {
+    if (hasLoadedRef.current || !currentUser || !listId) return;
+    hasLoadedRef.current = true;
+
+    // Cancel any previous request
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    loadInitialData(controller.signal);
 
     return () => {
       controller.abort();
     };
-  }, [currentUser, listId, updateState]);
+  }, [currentUser, listId, loadInitialData]);
+
+  // Reload data when state is reset (notes become empty while not loading)
+  useEffect(() => {
+    if (
+      notes.length === 0 &&
+      !loading &&
+      !error &&
+      hasLoadedRef.current &&
+      currentUser &&
+      listId
+    ) {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      loadInitialData(controller.signal);
+    }
+  }, [notes.length, loading, error, currentUser, listId, loadInitialData]);
 
   // Enable real-time updates via WebSocket
   useListStream({
@@ -174,8 +195,16 @@ export function ListColumnContent({
   // Retry
   const handleRetry = useCallback(() => {
     updateState({ error: null });
+    // For initial load failures, reload from scratch
+    if (notes.length === 0) {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      loadInitialData(controller.signal);
+      return;
+    }
     loadMore();
-  }, [loadMore, updateState]);
+  }, [loadMore, loadInitialData, updateState, notes.length]);
 
   if (!currentUser) {
     return (

@@ -90,43 +90,50 @@ export function TimelineColumnContent({
     columnId,
   });
 
-  // Load initial data
+  // Load initial data function (reusable)
+  const loadInitialData = useCallback(async () => {
+    updateState({ loading: true, error: null });
+
+    try {
+      const fetchFunction =
+        timelineType === "home"
+          ? notesApi.getHomeTimeline
+          : timelineType === "social"
+            ? notesApi.getSocialTimeline
+            : timelineType === "global"
+              ? notesApi.getGlobalTimeline
+              : notesApi.getLocalTimeline;
+
+      const newNotes = await fetchFunction({ limit: 20 });
+      const lastNote = newNotes[newNotes.length - 1];
+
+      updateState({
+        notes: newNotes,
+        loading: false,
+        hasMore: newNotes.length >= 20,
+        cursor: lastNote?.id ?? null,
+      });
+    } catch (err) {
+      updateState({
+        loading: false,
+        error: err instanceof Error ? err.message : "Failed to load notes",
+      });
+    }
+  }, [timelineType, updateState]);
+
+  // Load initial data on mount
   useEffect(() => {
     if (hasLoadedRef.current) return;
     hasLoadedRef.current = true;
-
-    const loadInitialData = async () => {
-      updateState({ loading: true, error: null });
-
-      try {
-        const fetchFunction =
-          timelineType === "home"
-            ? notesApi.getHomeTimeline
-            : timelineType === "social"
-              ? notesApi.getSocialTimeline
-              : timelineType === "global"
-                ? notesApi.getGlobalTimeline
-                : notesApi.getLocalTimeline;
-
-        const newNotes = await fetchFunction({ limit: 20 });
-        const lastNote = newNotes[newNotes.length - 1];
-
-        updateState({
-          notes: newNotes,
-          loading: false,
-          hasMore: newNotes.length >= 20,
-          cursor: lastNote?.id ?? null,
-        });
-      } catch (err) {
-        updateState({
-          loading: false,
-          error: err instanceof Error ? err.message : "Failed to load notes",
-        });
-      }
-    };
-
     loadInitialData();
-  }, [timelineType, updateState]);
+  }, [loadInitialData]);
+
+  // Reload data when state is reset (notes become empty while not loading)
+  useEffect(() => {
+    if (notes.length === 0 && !loading && !error && hasLoadedRef.current) {
+      loadInitialData();
+    }
+  }, [notes.length, loading, error, loadInitialData]);
 
   // Load more notes for pagination
   const loadMore = useCallback(async () => {
@@ -188,13 +195,13 @@ export function TimelineColumnContent({
   // Retry on error
   const handleRetry = useCallback(() => {
     updateState({ error: null });
-    // For initial load failures, reset and reload from scratch
+    // For initial load failures, reload from scratch
     if (notes.length === 0) {
-      hasLoadedRef.current = false;
-      updateState({ hasMore: true });
+      loadInitialData();
+      return;
     }
     loadMore();
-  }, [loadMore, updateState, notes.length]);
+  }, [loadMore, loadInitialData, updateState, notes.length]);
 
   return (
     <div

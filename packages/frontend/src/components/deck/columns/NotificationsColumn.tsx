@@ -88,6 +88,22 @@ export function NotificationsColumnContent({
     };
   }, [currentUser, loadInitialData]);
 
+  // Reload data when state is reset (notifications become empty while not loading)
+  useEffect(() => {
+    if (
+      notifications.length === 0 &&
+      !loading &&
+      !error &&
+      hasLoadedRef.current &&
+      currentUser
+    ) {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      loadInitialData(controller.signal);
+    }
+  }, [notifications.length, loading, error, currentUser, loadInitialData]);
+
   // Enable real-time updates with column-scoped state
   useNotificationStream({
     columnId,
