@@ -1,6 +1,19 @@
 import { describe, it, expect, beforeEach, mock } from "bun:test";
+import type { Context } from "hono";
 import { Hono } from "hono";
 import mastodonRoutes from "../../routes/mastodon.js";
+
+/**
+ * Helper to set context values in tests without type errors
+ * This is needed because the Hono context has strict typing for c.set()
+ */
+const setMock = (c: Context, key: string, value: unknown) => {
+  (c.set as (k: string, v: unknown) => void)(key, value);
+};
+
+// Helper type for JSON responses in tests
+// biome-ignore lint/suspicious/noExplicitAny: Flexible type for test JSON responses
+type JsonResponse = any;
 
 /**
  * Unit tests for Mastodon Compatible API endpoints
@@ -58,20 +71,20 @@ describe("Mastodon API - GET /statuses/:id", () => {
 
     // Set up mock repositories via middleware
     app.use("*", async (c, next) => {
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         findById: mock((id: string) => {
           if (id === "note123") return Promise.resolve(mockNote);
           return Promise.resolve(null);
         }),
         countByUserId: mock(() => Promise.resolve(42)),
       });
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock((id: string) => {
           if (id === "user123") return Promise.resolve(mockUser);
           return Promise.resolve(null);
         }),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -84,7 +97,7 @@ describe("Mastodon API - GET /statuses/:id", () => {
     const res = await app.request("/statuses/note123");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.id).toBe("note123");
     expect(data.content).toContain("Hello, world!");
     expect(data.visibility).toBe("public");
@@ -98,7 +111,7 @@ describe("Mastodon API - GET /statuses/:id", () => {
     const res = await app.request("/statuses/nonexistent");
     expect(res.status).toBe(404);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.error).toBe("Record not found");
   });
 
@@ -106,16 +119,16 @@ describe("Mastodon API - GET /statuses/:id", () => {
     // Update mock to return deleted note
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         findById: mock(() =>
           Promise.resolve({ ...mockNote, isDeleted: true })
         ),
         countByUserId: mock(() => Promise.resolve(42)),
       });
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -129,16 +142,16 @@ describe("Mastodon API - GET /statuses/:id", () => {
   it("should handle note with content warning", async () => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         findById: mock(() =>
           Promise.resolve({ ...mockNote, cw: "Spoiler!" })
         ),
         countByUserId: mock(() => Promise.resolve(42)),
       });
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -148,7 +161,7 @@ describe("Mastodon API - GET /statuses/:id", () => {
     const res = await app.request("/statuses/note123");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.sensitive).toBe(true);
     expect(data.spoiler_text).toBe("Spoiler!");
   });
@@ -160,16 +173,16 @@ describe("Mastodon API - GET /statuses/:id", () => {
     ) => {
       const testApp = new Hono();
       testApp.use("*", async (c, next) => {
-        c.set("noteRepository", {
+        setMock(c, "noteRepository", {
           findById: mock(() =>
             Promise.resolve({ ...mockNote, visibility })
           ),
           countByUserId: mock(() => Promise.resolve(42)),
         });
-        c.set("userRepository", {
+        setMock(c, "userRepository", {
           findById: mock(() => Promise.resolve(mockUser)),
         });
-        c.set("driveFileRepository", {
+        setMock(c, "driveFileRepository", {
           findByIds: mock(() => Promise.resolve([])),
         });
         await next();
@@ -177,7 +190,7 @@ describe("Mastodon API - GET /statuses/:id", () => {
       testApp.route("/", mastodonRoutes);
 
       const res = await testApp.request("/statuses/note123");
-      const data = await res.json();
+      const data: JsonResponse = await res.json();
       expect(data.visibility).toBe(expected);
     };
 
@@ -190,16 +203,16 @@ describe("Mastodon API - GET /statuses/:id", () => {
   it("should include media attachments", async () => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         findById: mock(() =>
           Promise.resolve({ ...mockNote, fileIds: ["file1"] })
         ),
         countByUserId: mock(() => Promise.resolve(42)),
       });
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() =>
           Promise.resolve([
             {
@@ -220,7 +233,7 @@ describe("Mastodon API - GET /statuses/:id", () => {
     const res = await app.request("/statuses/note123");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.media_attachments).toHaveLength(1);
     expect(data.media_attachments[0].type).toBe("image");
     expect(data.media_attachments[0].description).toBe("A photo");
@@ -248,13 +261,13 @@ describe("Mastodon API - GET /accounts/:id", () => {
   beforeEach(() => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock((id: string) => {
           if (id === "user123") return Promise.resolve(mockUser);
           return Promise.resolve(null);
         }),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(42)),
       });
       await next();
@@ -266,7 +279,7 @@ describe("Mastodon API - GET /accounts/:id", () => {
     const res = await app.request("/accounts/user123");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.id).toBe("user123");
     expect(data.username).toBe("alice");
     expect(data.acct).toBe("alice");
@@ -282,19 +295,19 @@ describe("Mastodon API - GET /accounts/:id", () => {
     const res = await app.request("/accounts/nonexistent");
     expect(res.status).toBe(404);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.error).toBe("Record not found");
   });
 
   it("should return 404 for deleted user", async () => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() =>
           Promise.resolve({ ...mockUser, isDeleted: true })
         ),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(42)),
       });
       await next();
@@ -308,12 +321,12 @@ describe("Mastodon API - GET /accounts/:id", () => {
   it("should handle remote user with host", async () => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() =>
           Promise.resolve({ ...mockUser, host: "mastodon.social" })
         ),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(42)),
       });
       await next();
@@ -323,7 +336,7 @@ describe("Mastodon API - GET /accounts/:id", () => {
     const res = await app.request("/accounts/user123");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data.acct).toBe("alice@mastodon.social");
     expect(data.url).toBe("https://mastodon.social/@alice");
   });
@@ -399,17 +412,17 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
   beforeEach(() => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock((id: string) => {
           if (id === "user123") return Promise.resolve(mockUser);
           return Promise.resolve(null);
         }),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(2)),
         findByUserId: mock(() => Promise.resolve(mockNotes)),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -421,7 +434,7 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
     const res = await app.request("/accounts/user123/statuses");
     expect(res.status).toBe(200);
 
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data).toHaveLength(2);
     expect(data[0].id).toBe("note1");
     expect(data[1].id).toBe("note2");
@@ -437,17 +450,17 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
     app = new Hono();
     let capturedOptions: unknown;
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(2)),
-        findByUserId: mock((userId: string, options: unknown) => {
+        findByUserId: mock((_userId: string, options: unknown) => {
           capturedOptions = options;
           return Promise.resolve(mockNotes);
         }),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -462,17 +475,17 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
     app = new Hono();
     let capturedOptions: unknown;
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(2)),
-        findByUserId: mock((userId: string, options: unknown) => {
+        findByUserId: mock((_userId: string, options: unknown) => {
           capturedOptions = options;
           return Promise.resolve(mockNotes);
         }),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -486,10 +499,10 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
   it("should skip deleted notes", async () => {
     app = new Hono();
     app.use("*", async (c, next) => {
-      c.set("userRepository", {
+      setMock(c, "userRepository", {
         findById: mock(() => Promise.resolve(mockUser)),
       });
-      c.set("noteRepository", {
+      setMock(c, "noteRepository", {
         countByUserId: mock(() => Promise.resolve(2)),
         findByUserId: mock(() =>
           Promise.resolve([
@@ -498,7 +511,7 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
           ])
         ),
       });
-      c.set("driveFileRepository", {
+      setMock(c, "driveFileRepository", {
         findByIds: mock(() => Promise.resolve([])),
       });
       await next();
@@ -506,7 +519,7 @@ describe("Mastodon API - GET /accounts/:id/statuses", () => {
     app.route("/", mastodonRoutes);
 
     const res = await app.request("/accounts/user123/statuses");
-    const data = await res.json();
+    const data: JsonResponse = await res.json();
     expect(data).toHaveLength(1);
     expect(data[0].id).toBe("note1");
   });
