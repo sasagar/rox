@@ -26,7 +26,7 @@ function parseUserParam(param: string): { username: string; host: string | null 
 
 /**
  * User profile page
- * Dynamic route for displaying user profiles
+ * Dynamic route for displaying user profiles with OGP meta tags
  *
  * @example
  * /alice - Shows alice's profile (local)
@@ -46,7 +46,50 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
 
   const { username, host } = parseUserParam(usernameParam);
 
-  return <UserProfile username={username} host={host} />;
+  // Fetch user data for OGP meta tags (Server Component can fetch directly)
+  let user: Awaited<ReturnType<typeof import("../../lib/api/users").usersApi.getByUsername>> | null = null;
+  try {
+    // Fetch user by username and host
+    user = await import("../../lib/api/users").then(m => m.usersApi.getByUsername(username, host));
+  } catch (error) {
+    console.error("Failed to fetch user for OGP:", error);
+  }
+
+  // Generate OGP meta tags if user data is available
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://rox.love-rox.cc";
+  const instanceName = "Rox Origin"; // TODO: Fetch from instance settings
+  const themeColor = "#f97316"; // TODO: Fetch from instance settings
+
+  const title = user
+    ? `${user.displayName || user.username} (@${username}${host ? `@${host}` : ""})`
+    : `@${username}${host ? `@${host}` : ""}`;
+  const description = user?.bio || `View ${username}'s profile on Rox`;
+  const profileUrl = `${baseUrl}/@${username}${host ? `@${host}` : ""}`;
+  const avatarUrl = user?.avatarUrl || null;
+
+  return (
+    <>
+      {/* OGP Meta Tags - matching Misskey's exact structure */}
+      <meta name="application-name" content="Rox" />
+      <meta name="referrer" content="origin" />
+      <meta name="theme-color" content={themeColor} />
+      <meta name="theme-color-orig" content={themeColor} />
+      <meta property="og:site_name" content={instanceName} />
+      <meta property="instance_url" content={baseUrl} />
+      <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
+      <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
+      <title>{title} | {instanceName}</title>
+      <meta name="description" content={description} />
+      <meta property="og:type" content="article" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={profileUrl} />
+      {avatarUrl && <meta property="og:image" content={avatarUrl} />}
+      <meta property="twitter:card" content="summary" />
+
+      <UserProfile username={username} host={host} />
+    </>
+  );
 }
 
 /**

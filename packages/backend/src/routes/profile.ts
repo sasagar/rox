@@ -12,61 +12,10 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import {
-  isEmbedCrawler,
   isActivityPubRequest,
 } from "../lib/crawlerDetection.js";
-import { generateUserOgpHtml } from "../lib/ogp.js";
 
 const profile = new Hono();
-
-/**
- * Handle OGP request for embed crawlers (Discord, Slack, etc.)
- *
- * @param c - Hono context
- * @param username - Username without @ prefix
- * @param host - Host for remote users (null for local)
- * @returns HTML response with OGP meta tags
- */
-async function handleUserOgpRequest(
-  c: Context,
-  username: string,
-  host: string | null,
-): Promise<Response> {
-  const baseUrl = process.env.URL || "http://localhost:3000";
-
-  // Get user from repository
-  const userRepository = c.get("userRepository");
-  const user = await userRepository.findByUsername(username, host);
-
-  // Only serve OGP for existing, non-deleted users
-  if (!user || user.isDeleted) {
-    return c.notFound();
-  }
-
-  // Get instance settings
-  const instanceSettingsService = c.get("instanceSettingsService");
-  const instanceInfo = await instanceSettingsService.getPublicInstanceInfo();
-
-  // Use avatar or fallback to instance icon
-  const avatarUrl = user.avatarUrl || instanceInfo.iconUrl;
-
-  const html = generateUserOgpHtml({
-    username: user.username,
-    displayName: user.displayName,
-    bio: user.bio,
-    host: user.host,
-    avatarUrl,
-    baseUrl,
-    instanceName: instanceInfo.name,
-    instanceIconUrl: instanceInfo.iconUrl,
-    themeColor: instanceInfo.theme.primaryColor,
-  });
-
-  return c.html(html, 200, {
-    // Cache OGP responses for 5 minutes to reduce load from embed crawlers
-    "Cache-Control": "public, max-age=300",
-  });
-}
 
 /**
  * Parse username parameter from /@username format
@@ -131,7 +80,6 @@ profile.get("/:atuser", async (c: Context, next) => {
   }
 
   const accept = c.req.header("Accept") || "";
-  const userAgent = c.req.header("User-Agent") || "";
 
   const { username, host } = parseUserParam(atuser);
 
@@ -146,13 +94,16 @@ profile.get("/:atuser", async (c: Context, next) => {
     return c.notFound();
   }
 
-  // Serve OGP HTML for embed crawlers
-  if (isEmbedCrawler(userAgent)) {
-    return handleUserOgpRequest(c, username, host);
-  }
+  // EXPERIMENT: Return 404 for all non-ActivityPub requests (including embed crawlers)
+  // This allows nginx to route to frontend, which now serves full SPA with OGP meta tags
+  // This matches Misskey's approach where Discord bots receive the full page with embedded meta tags
+  //
+  // Previous approach: Serve minimal OGP HTML for embed crawlers
+  // if (isEmbedCrawler(userAgent)) {
+  //   return handleUserOgpRequest(c, username, host);
+  // }
 
-  // Regular browser request - return 404 so nginx routes to frontend
-  // (or we could serve a basic HTML page, but frontend handles this better)
+  // Return 404 so nginx routes to frontend (Waku SSR with OGP meta tags)
   return c.notFound();
 });
 

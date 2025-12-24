@@ -12,77 +12,10 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import { logger } from "../../lib/logger.js";
 import {
-  isEmbedCrawler,
   isActivityPubRequest,
 } from "../../lib/crawlerDetection.js";
-import { generateNoteOgpHtml } from "../../lib/ogp.js";
 
 const note = new Hono();
-
-/**
- * Handle OGP request for embed crawlers (Discord, Slack, etc.)
- *
- * @param c - Hono context
- * @returns HTML response with OGP meta tags
- */
-async function handleNoteOgpRequest(c: Context): Promise<Response> {
-  const { id } = c.req.param();
-  const baseUrl = process.env.URL || "http://localhost:3000";
-
-  // Get note from repository
-  const noteRepository = c.get("noteRepository");
-  const noteData = await noteRepository.findById(id as string);
-
-  if (!noteData || noteData.isDeleted) {
-    return c.notFound();
-  }
-
-  // Get note author
-  const userRepository = c.get("userRepository");
-  const author = await userRepository.findById(noteData.userId);
-
-  if (!author) {
-    return c.notFound();
-  }
-
-  // Get first image from attachments (if any)
-  let imageUrl: string | null = null;
-  if (noteData.fileIds && noteData.fileIds.length > 0) {
-    const driveFileRepository = c.get("driveFileRepository");
-    for (const fileId of noteData.fileIds) {
-      const file = await driveFileRepository.findById(fileId);
-      if (file && file.type.startsWith("image/")) {
-        imageUrl = file.url;
-        break;
-      }
-    }
-  }
-
-  // Get instance settings
-  const instanceSettingsService = c.get("instanceSettingsService");
-  const instanceInfo = await instanceSettingsService.getPublicInstanceInfo();
-
-  const html = generateNoteOgpHtml({
-    noteId: noteData.id,
-    text: noteData.text,
-    cw: noteData.cw,
-    authorUsername: author.username,
-    authorDisplayName: author.displayName,
-    authorHost: author.host,
-    imageUrl,
-    authorAvatarUrl: author.avatarUrl,
-    createdAt: noteData.createdAt?.toISOString(),
-    baseUrl,
-    instanceName: instanceInfo.name,
-    instanceIconUrl: instanceInfo.iconUrl,
-    themeColor: instanceInfo.theme.primaryColor,
-  });
-
-  return c.html(html, 200, {
-    // Cache OGP responses for 5 minutes to reduce load from embed crawlers
-    "Cache-Control": "public, max-age=300",
-  });
-}
 
 /**
  * GET /notes/:id
@@ -107,16 +40,19 @@ async function handleNoteOgpRequest(c: Context): Promise<Response> {
 note.get("/notes/:id", async (c: Context) => {
   const { id } = c.req.param();
   const accept = c.req.header("Accept") || "";
-  const userAgent = c.req.header("User-Agent") || "";
+
+  // EXPERIMENT: Return 404 for all non-ActivityPub requests (including embed crawlers)
+  // This allows nginx to route to frontend, which now serves full SPA with OGP meta tags
+  // This matches Misskey's approach where Discord bots receive the full page with embedded meta tags
+  //
+  // Previous approach: Serve minimal OGP HTML for embed crawlers
+  // if (isEmbedCrawler(userAgent)) {
+  //   return handleNoteOgpRequest(c);
+  // }
 
   // Check if this is an ActivityPub request
-  if (isActivityPubRequest(accept)) {
-    // Continue with ActivityPub handling below
-  } else if (isEmbedCrawler(userAgent)) {
-    // Serve OGP HTML for embed crawlers
-    return handleNoteOgpRequest(c);
-  } else {
-    // Regular browser request - pass to frontend
+  if (!isActivityPubRequest(accept)) {
+    // Non-ActivityPub request - return 404 so nginx routes to frontend (Waku SSR with OGP meta tags)
     return c.text("", 404);
   }
 
