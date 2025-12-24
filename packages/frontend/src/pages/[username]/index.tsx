@@ -73,11 +73,12 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
 
   return (
     <>
-      {/* OGP Meta Tags - FxTwitter-style for Discord oEmbed control */}
+      {/* OGP Meta Tags - matching Misskey's exact structure */}
       <meta name="application-name" content="Rox" />
       <meta name="referrer" content="origin" />
       <meta name="theme-color" content={themeColor} />
       <meta name="theme-color-orig" content={themeColor} />
+      <meta property="og:site_name" content={instanceName} />
       <meta property="instance_url" content={baseUrl} />
       <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
       <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
@@ -90,6 +91,8 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
       <meta property="og:description" content={description} />
       <meta property="og:url" content={profileUrl} />
       {avatarUrl && <meta property="og:image" content={avatarUrl} />}
+      {/* User profiles always use summary card */}
+      <meta property="twitter:card" content="summary" />
 
       <UserProfile username={username} host={host} />
     </>

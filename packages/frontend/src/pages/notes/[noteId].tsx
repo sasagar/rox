@@ -61,13 +61,14 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
 
   return (
     <>
-      {/* OGP Meta Tags - FxTwitter-style for Discord oEmbed control */}
+      {/* OGP Meta Tags - matching Misskey's exact structure */}
       {note && (
         <>
           <meta name="application-name" content="Rox" />
           <meta name="referrer" content="origin" />
           <meta name="theme-color" content={themeColor} />
           <meta name="theme-color-orig" content={themeColor} />
+          <meta property="og:site_name" content={instanceName} />
           <meta property="instance_url" content={baseUrl} />
           <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
           <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
@@ -84,6 +85,8 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
           {(imageUrl || authorAvatarUrl) && (
             <meta property="og:image" content={imageUrl || authorAvatarUrl || ""} />
           )}
+          {/* Use summary_large_image for posts with images, summary for text-only */}
+          <meta property="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
         </>
       )}
 
