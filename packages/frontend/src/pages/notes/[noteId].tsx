@@ -54,6 +54,11 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
   // Get author avatar
   const authorAvatarUrl = user?.avatarUrl || null;
 
+  // Generate oEmbed discovery URL
+  const oembedUrl = note
+    ? `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`
+    : null;
+
   return (
     <>
       {/* OGP Meta Tags - matching Misskey's exact structure */}
@@ -67,6 +72,10 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
           <meta property="instance_url" content={baseUrl} />
           <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
           <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
+          {/* oEmbed discovery link for Discord/Slack rich embeds */}
+          {oembedUrl && (
+            <link rel="alternate" type="application/json+oembed" href={oembedUrl} title="oEmbed" />
+          )}
           <title>{title} | {instanceName}</title>
           <meta name="description" content={description} />
           <meta property="og:type" content="article" />
@@ -76,7 +85,8 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
           {(imageUrl || authorAvatarUrl) && (
             <meta property="og:image" content={imageUrl || authorAvatarUrl || ""} />
           )}
-          <meta property="twitter:card" content="summary" />
+          {/* Use summary_large_image for posts with images, summary for text-only */}
+          <meta property="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
         </>
       )}
 

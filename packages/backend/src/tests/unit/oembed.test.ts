@@ -34,21 +34,40 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      // Uses "rich" type like Misskey
+      // Uses "rich" type for full author information
       expect(response.type).toBe("rich");
-      // No author_name to make Discord show og:site_name in footer (like Misskey)
-      expect(response.author_name).toBeUndefined();
-      expect(response.author_url).toBeUndefined();
-      // Provider name is instance name - shows in footer when author_name is absent
+      // Author information with Fediverse-style ID
+      expect(response.author_name).toBe("Alice (@alice@example.com)");
+      expect(response.author_url).toBe("https://example.com/@alice");
+      // Provider name is instance name - shows in footer
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should not include title (not needed without author_name)", () => {
+    it("should include title from note text", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      // No title needed when author_name is absent
-      expect(response.title).toBeUndefined();
+      // Title from text content
+      expect(response.title).toBe("Hello, world!");
+    });
+
+    it("should use content warning as title when present", () => {
+      const response = generateNoteOEmbed({
+        ...baseOptions,
+        cw: "Sensitive content",
+      });
+
+      expect(response.title).toBe("Sensitive content");
+    });
+
+    it("should include HTML blockquote for rich rendering", () => {
+      const response = generateNoteOEmbed(baseOptions);
+
+      expect(response.html).toContain('<blockquote class="activitypub-post">');
+      expect(response.html).toContain("<p>Hello, world!</p>");
+      expect(response.html).toContain("Alice (@alice@example.com)");
+      expect(response.html).toContain("https://example.com/@alice");
+      expect(response.html).toContain("https://example.com/notes/abc123");
     });
 
     it("should include image thumbnail when available", () => {
@@ -104,18 +123,28 @@ describe("oEmbed", () => {
 
       expect(response.version).toBe("1.0");
       expect(response.type).toBe("rich");
-      // No author_name to make Discord show og:site_name in footer (like Misskey)
-      expect(response.author_name).toBeUndefined();
-      expect(response.author_url).toBeUndefined();
+      // Author information with Fediverse-style ID
+      expect(response.author_name).toBe("Alice (@alice@example.com)");
+      expect(response.author_url).toBe("https://example.com/@alice");
+      // Provider name is instance name - shows in footer
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should not include title (not needed without author_name)", () => {
+    it("should include title from display name", () => {
       const response = generateUserOEmbed(baseOptions);
 
-      // No title needed when author_name is absent
-      expect(response.title).toBeUndefined();
+      expect(response.title).toBe("Alice");
+    });
+
+    it("should include HTML blockquote with bio", () => {
+      const response = generateUserOEmbed(baseOptions);
+
+      expect(response.html).toContain('<blockquote class="activitypub-profile">');
+      // escapeHtml uses &#039; for apostrophe
+      expect(response.html).toContain("<p>Hello, I&#039;m Alice!</p>");
+      expect(response.html).toContain("Alice (@alice@example.com)");
+      expect(response.html).toContain("https://example.com/@alice");
     });
 
     it("should include avatar as thumbnail", () => {
