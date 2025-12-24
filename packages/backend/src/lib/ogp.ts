@@ -212,16 +212,17 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="application-name" content="Rox">
+  <meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  ${providerMeta}<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
   ${imageMeta}<meta property="twitter:card" content="summary">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedNoteUrl}">View note</a></p>
@@ -313,17 +314,18 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="application-name" content="Rox">
+  <meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
+  ${providerMeta}<meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
   ${imageMeta}<meta property="twitter:card" content="summary">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>
