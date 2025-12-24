@@ -91,8 +91,10 @@ export function isActivityPubRequest(accept: string | undefined): boolean {
     return false;
   }
 
+  // HTTP Accept header comparison should be case-insensitive (RFC 7231)
+  const lowerAccept = accept.toLowerCase();
   return (
-    accept.includes("application/activity+json") ||
-    accept.includes("application/ld+json")
+    lowerAccept.includes("application/activity+json") ||
+    lowerAccept.includes("application/ld+json")
   );
 }
