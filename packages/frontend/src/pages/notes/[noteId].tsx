@@ -19,18 +19,24 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
   }
 
   // Fetch note data for OGP meta tags (Server Component can fetch directly)
+  // Note: Server-side rendering needs to use internal Docker network
+  // Environment variable INTERNAL_API_URL should be set to http://rox-backend:3000
   let note = null;
   let user = null;
   try {
+    // In SSR context, we need to use the internal API URL
+    // This is handled by the API client's default baseUrl configuration
     note = await notesApi.getNote(noteId);
     if (note?.user?.id) {
       user = await usersApi.getById(note.user.id);
     }
   } catch (error) {
     console.error("Failed to fetch note for OGP:", error);
+    // Continue without OGP data - page will still render but without meta tags
   }
 
   // Generate OGP meta tags if note data is available
+  // Use public URL for OGP meta tags (not internal Docker URL)
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://rox.love-rox.cc";
   const instanceName = "Rox Origin"; // TODO: Fetch from instance settings
   const themeColor = "#f97316"; // TODO: Fetch from instance settings
