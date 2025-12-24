@@ -94,18 +94,19 @@ export function useMentionStream(options: UseMentionStreamOptions) {
         return;
       }
 
+      // Mark as processing immediately to prevent race conditions
+      // where the same notification arrives twice before the first fetch completes
+      processedNoteIdsRef.current.add(notification.noteId);
+
+      // Limit the size of the processed set to prevent memory leaks
+      if (processedNoteIdsRef.current.size > 1000) {
+        const entries = Array.from(processedNoteIdsRef.current);
+        processedNoteIdsRef.current = new Set(entries.slice(-500));
+      }
+
       try {
         // Fetch the full note data
         const note = await notesApi.getNote(notification.noteId);
-
-        // Mark as processed
-        processedNoteIdsRef.current.add(note.id);
-
-        // Limit the size of the processed set to prevent memory leaks
-        if (processedNoteIdsRef.current.size > 1000) {
-          const entries = Array.from(processedNoteIdsRef.current);
-          processedNoteIdsRef.current = new Set(entries.slice(-500));
-        }
 
         // Update column-scoped atom
         prependNotesRef.current([note]);
@@ -113,6 +114,8 @@ export function useMentionStream(options: UseMentionStreamOptions) {
         // Call user callback
         onNewMentionRef.current?.(note);
       } catch (error) {
+        // Remove from processed set so it can be retried later
+        processedNoteIdsRef.current.delete(notification.noteId);
         console.error("Failed to fetch mention note:", error);
       }
     },
