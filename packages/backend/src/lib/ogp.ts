@@ -211,6 +211,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta name="application-name" content="Rox">
   <meta name="referrer" content="origin">
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="theme-color-orig" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
@@ -309,6 +310,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta name="application-name" content="Rox">
   <meta name="referrer" content="origin">
   <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="theme-color-orig" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
